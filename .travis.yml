@@ -3,6 +3,8 @@ language: php
 php:
   - 7.2
   - 7.3
+
+dist: xenial
   
 install:
   - composer install
@@ -10,6 +12,7 @@ install:
   
 before_script:
   - pecl install ast
+  - phpenv config-rm xdebug.ini
 
 script:
   - vendor/bin/phan
