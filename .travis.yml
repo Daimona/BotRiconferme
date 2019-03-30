@@ -8,6 +8,9 @@ install:
   - composer install
   - composer validate
   
+before_script:
+  - pecl install ast
+
 script:
   - vendor/bin/phan
   - composer test
