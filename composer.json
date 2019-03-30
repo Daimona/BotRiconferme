@@ -9,5 +9,11 @@
 	"require-dev": {
 		"mediawiki/mediawiki-codesniffer": "24.0.0",
 		"phan/phan": "1.2.6"
+	},
+	"scripts": {
+		"test": [
+			"phpcs -p -s"
+		],
+		"fix": "phpcbf"
 	}
 }
