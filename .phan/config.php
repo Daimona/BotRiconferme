@@ -1,15 +1,15 @@
 <?php
 
 return [
-    'directory_list' => [
-        'includes',
-    ],
+	'directory_list' => [
+		'includes',
+	],
 
-    'file_list' => [
+	'file_list' => [
 		'run.php',
-	]
+	],
 
-    'exclude_analysis_directory_list' => [
-        'vendor/'
-    ],
+	'exclude_analysis_directory_list' => [
+		'vendor/'
+	],
 ];
