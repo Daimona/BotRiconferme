@@ -3,6 +3,7 @@
 return [
 	'directory_list' => [
 		'includes',
+		'vendor/'
 	],
 
 	'file_list' => [
