@@ -79,9 +79,9 @@ class UpdateList extends Task {
 
 	/**
 	 * @param string $admin
-	 * @return string|null
+	 * @return int|null
 	 */
-	protected function getFlagTimestamp( string $admin ) : ?string {
+	protected function getFlagTimestamp( string $admin ) : ?int {
 		$this->getLogger()->info( "Retrieving flag date for $admin" );
 		$params = [
 			'action' => 'query',
@@ -141,7 +141,7 @@ class UpdateList extends Task {
 	 * Throw everything
 	 */
 	public function handleException( Throwable $ex ) {
-		$this->getLogger()->error( $ex );
+		$this->getLogger()->error( $ex->getMessage() );
 	}
 
 	/**
