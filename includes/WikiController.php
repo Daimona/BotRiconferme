@@ -21,7 +21,7 @@ class WikiController extends ContextSource {
 			throw new LoginException( $e->getMessage() );
 		}
 
-		if( !isset( $res->login->result ) || $res->login->result !== 'Success' ) {
+		if ( !isset( $res->login->result ) || $res->login->result !== 'Success' ) {
 			throw new LoginException( 'Unknown error' );
 		}
 
@@ -48,7 +48,7 @@ class WikiController extends ContextSource {
 	/**
 	 * @param string $title
 	 * @return string
-	 * @throw MissingPageException
+	 * @throws MissingPageException
 	 */
 	public function getPageContent( string $title ) : string {
 		$this->getLogger()->debug( "Retrieving page $title" );

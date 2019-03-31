@@ -1,7 +1,10 @@
 <?php
 
 class MissingPageException extends Exception {
-	public function __construct( $msg ) {
+	/**
+	 * @param string $msg
+	 */
+	public function __construct( string $msg ) {
 		parent::__construct( "The specified page doesn't exist: $msg" );
 	}
 }

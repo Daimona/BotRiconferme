@@ -49,7 +49,7 @@ class Request {
 				$params = array_merge( $params, get_object_vars( $res->continue ) );
 				$finished = false;
 			}
-		} while( !$finished );
+		} while ( !$finished );
 
 		return $sets;
 	}
@@ -78,7 +78,7 @@ class Request {
 			}
 
 			$result = curl_exec( $curl );
-			if( $result === false ) {
+			if ( $result === false ) {
 				throw new APIRequestException( curl_error( $curl ) );
 			}
 			curl_close( $curl );
