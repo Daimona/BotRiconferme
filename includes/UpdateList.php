@@ -134,7 +134,7 @@ class UpdateList extends Task {
 		];
 
 		$this->getController()->login();
-		$req = new Request( $params );
+		$req = new Request( $params, true );
 		$req->execute();
 	}
 

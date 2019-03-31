@@ -5,7 +5,8 @@ namespace BotRiconferme;
 class Bot {
 	/** @var string[] */
 	const TASKS_MAP = [
-		'update-list' => UpdateList::class
+		'update-list' => UpdateList::class,
+		'user-notice' => UserNotice::class
 	];
 
 	/**
