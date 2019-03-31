@@ -17,6 +17,7 @@ return [
 	'plugins' => [
 		'UnreachableCodePlugin',
 		'PregRegexCheckerPlugin',
-		'UnusedSuppressionPlugin'
+		'UnusedSuppressionPlugin',
+		'DuplicateArrayKeyPlugin'
 	],
 ];
