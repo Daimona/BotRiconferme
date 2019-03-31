@@ -13,7 +13,7 @@ abstract class ContextSource implements LoggerAwareInterface {
 	private $config;
 
 	public function __construct() {
-		$this->setLogger( new BotLogger );
+		$this->setLogger( new Logger );
 		$this->setConfig( Config::getInstance() );
 	}
 
