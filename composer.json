@@ -4,11 +4,21 @@
     "type": "project",
     "license": "AGPL-3.0-or-later",
     "require": {
-        "php": "^7.2.0"
+        "php": "^7.2.0",
+		"ext-json": "*",
+		"psr/log": "dev-master"
     },
+	"suggest": {
+		"ext-curl": "Faster requests"
+	},
 	"require-dev": {
 		"mediawiki/mediawiki-codesniffer": "24.0.0",
 		"phan/phan": "1.2.6"
+	},
+	"autoload": {
+		"psr-4": {
+            "": "includes/"
+		}
 	},
 	"scripts": {
 		"test": [
