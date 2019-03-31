@@ -7,7 +7,6 @@ use BotRiconferme\Bot;
 
 $cfg = Config::getInstance();
 
-$cfg->set( 'time-period', 60 * 60 * 24 * 365 );
 $cfg->set( 'url', 'localhost/pedia/api.php' );
 $cfg->set( 'list-title', 'Utente:Daimona_Eaytoy/List.json' );
 $cfg->set( 'list-update-summary', 'Aggiornamento lista' );

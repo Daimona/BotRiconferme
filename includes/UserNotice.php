@@ -27,12 +27,11 @@ class UserNotice extends Task {
 		$this->getLogger()->debug( 'Retrieving users list' );
 		$content = $this->getController()->getPageContent( $this->getConfig()->get( 'list-title' ) );
 		$users = json_decode( $content, true );
-		$now = time();
-		$period = $this->getConfig()->get( 'time-period' );
+		$now = date( "d/m" );
 
 		$ret = [];
-		foreach ( $users as $user => $time ) {
-			if ( $now - $time > $period ) {
+		foreach ( $users as $user => $date ) {
+			if ( $date === $now ) {
 				$ret[] = $user;
 			}
 		}

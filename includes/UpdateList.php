@@ -15,9 +15,9 @@ class UpdateList extends Task {
 		$extra = [];
 		foreach ( $actual as $adm ) {
 			if ( !isset( $list[ $adm ] ) ) {
-				$ts = $this->getFlagTimestamp( $adm );
-				if ( $ts !== null ) {
-					$missing[ $adm ] = $ts;
+				$date = $this->getFlagDate( $adm );
+				if ( $date !== null ) {
+					$missing[ $adm ] = $date;
 				}
 			}
 		}
@@ -81,9 +81,9 @@ class UpdateList extends Task {
 
 	/**
 	 * @param string $admin
-	 * @return int|null
+	 * @return string|null
 	 */
-	protected function getFlagTimestamp( string $admin ) : ?int {
+	protected function getFlagDate( string $admin ) : ?string {
 		$this->getLogger()->info( "Retrieving flag date for $admin" );
 		$params = [
 			'action' => 'query',
@@ -113,7 +113,7 @@ class UpdateList extends Task {
 			return null;
 		}
 
-		return \DateTime::createFromFormat( \DateTime::ISO8601, $ts )->getTimestamp();
+		return date( "d/m", strtotime( $ts ) );
 	}
 
 	/**
