@@ -13,9 +13,9 @@ class UpdateList extends Task {
 
 		$missing = [];
 		$extra = [];
-		foreach ( $actual as $adm ) {
+		foreach ( $actual as $adm => $groups ) {
 			if ( !isset( $list[ $adm ] ) ) {
-				$date = $this->getFlagDate( $adm );
+				$date = $this->getFlagDate( $adm, $groups );
 				if ( $date !== null ) {
 					$missing[ $adm ] = $date;
 				}
@@ -23,7 +23,7 @@ class UpdateList extends Task {
 		}
 
 		foreach ( $list as $name => $_ ) {
-			if ( !in_array( $name, $actual ) ) {
+			if ( !isset( $actual[ $name ] ) ) {
 				$extra[ $name ] = true;
 			}
 		}
@@ -48,6 +48,7 @@ class UpdateList extends Task {
 			'action' => 'query',
 			'list' => 'allusers',
 			'augroup' => 'sysop',
+			'auprop' => 'groups'
 			'aulimit' => 'max'
 		];
 
@@ -63,7 +64,7 @@ class UpdateList extends Task {
 		$ret = [];
 		foreach ( $data as $set ) {
 			foreach ( $set->query->allusers as $u ) {
-				$ret[] = $u->name;
+				$ret[ $u->name ] = $u->groups;
 			}
 		}
 		return $ret;
@@ -81,9 +82,10 @@ class UpdateList extends Task {
 
 	/**
 	 * @param string $admin
+	 * @param array $groups
 	 * @return string|null
 	 */
-	protected function getFlagDate( string $admin ) : ?string {
+	protected function getFlagDate( string $admin, array $groups ) : ?string {
 		$this->getLogger()->info( "Retrieving flag date for $admin" );
 		$params = [
 			'action' => 'query',
@@ -96,11 +98,16 @@ class UpdateList extends Task {
 		$req = new Request( $params );
 		$data = $req->execute();
 
+		$searchFor = [ 'sysop' ];
+		if ( array_intersect( $groups ), [ 'checkuser', 'bureaucrat' ] ) {
+			$searchFor = [ 'checkuser', 'bureaucrat' ];
+		}
+
 		$ts = null;
 		foreach ( $data as $set ) {
 			foreach ( $set->query->logevents as $entry ) {
-				if ( in_array( 'sysop', $entry->params->newgroups ) &&
-					!in_array( 'sysop', $entry->params->oldgroups )
+				if ( count( array_intersect( $entry->params->newgroups, $searchFor ) ) >
+					count( array_intersect( $entry->params->oldgroups, $searchFor ) )
 				) {
 					$ts = $entry->timestamp;
 					break;
