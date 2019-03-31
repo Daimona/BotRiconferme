@@ -19,7 +19,7 @@ class UpdateList extends Task {
 				}
 			}
 		}
-		
+
 		foreach ( $list as $name => $_ ) {
 			if ( !in_array( $name, $actual ) ) {
 				$extra[ $name ] = true;
