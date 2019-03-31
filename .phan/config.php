@@ -13,4 +13,10 @@ return [
 	'exclude_analysis_directory_list' => [
 		'vendor/'
 	],
+
+	'plugins' => [
+		'UnreachableCodePlugin',
+		'PregRegexCheckerPlugin',
+		'UnusedSuppressionPlugin'
+	],
 ];
