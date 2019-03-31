@@ -2,6 +2,9 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
+use BotRiconferme\Config;
+use BotRiconferme\Bot;
+
 $cfg = Config::getInstance();
 
 $cfg->set( 'url', 'localhost/pedia/api.php' );

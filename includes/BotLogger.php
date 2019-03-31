@@ -1,5 +1,7 @@
 <?php
 
+namespace BotRiconferme;
+
 use Psr\Log\AbstractLogger;
 
 class BotLogger extends AbstractLogger {

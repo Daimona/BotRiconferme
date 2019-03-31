@@ -1,5 +1,7 @@
 <?php
 
+namespace BotRiconferme;
+
 class Config {
 	/** @var array */
 	private $opts = [];

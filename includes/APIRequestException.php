@@ -1,4 +1,6 @@
 <?php
 
-class APIRequestException extends Exception {
+namespace BotRiconferme;
+
+class APIRequestException extends \Exception {
 }

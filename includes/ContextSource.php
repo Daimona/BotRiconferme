@@ -1,5 +1,7 @@
 <?php
 
+namespace BotRiconferme;
+
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 

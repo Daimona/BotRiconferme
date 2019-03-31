@@ -1,5 +1,7 @@
 <?php
 
+namespace BotRiconferme;
+
 abstract class Task extends ContextSource {
 	// Status codes
 	const STATUS_OK = 0;
@@ -25,10 +27,10 @@ abstract class Task extends ContextSource {
 	/**
 	 * Exception handler
 	 *
-	 * @param Throwable $ex
+	 * @param \Throwable $ex
 	 * @internal To be used as exception handler only
 	 */
-	abstract public function handleException( Throwable $ex );
+	abstract public function handleException( \Throwable $ex );
 
 	/**
 	 * Error handler

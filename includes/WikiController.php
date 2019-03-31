@@ -1,5 +1,7 @@
 <?php
 
+namespace BotRiconferme;
+
 class WikiController extends ContextSource {
 	/**
 	 * @throws LoginException

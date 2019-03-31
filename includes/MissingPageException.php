@@ -1,6 +1,8 @@
 <?php
 
-class MissingPageException extends Exception {
+namespace BotRiconferme;
+
+class MissingPageException extends \Exception {
 	/**
 	 * @param string $msg
 	 */

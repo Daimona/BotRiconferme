@@ -1,5 +1,7 @@
 <?php
 
+namespace BotRiconferme;
+
 class UpdateList extends Task {
 	/**
 	 * @inheritDoc
@@ -111,7 +113,7 @@ class UpdateList extends Task {
 			return null;
 		}
 
-		return DateTime::createFromFormat( DateTime::ISO8601, $ts )->getTimestamp();
+		return \DateTime::createFromFormat( \DateTime::ISO8601, $ts )->getTimestamp();
 	}
 
 	/**
@@ -140,7 +142,7 @@ class UpdateList extends Task {
 	 * @inheritDoc
 	 * Throw everything
 	 */
-	public function handleException( Throwable $ex ) {
+	public function handleException( \Throwable $ex ) {
 		$this->getLogger()->error( $ex->getMessage() );
 	}
 
@@ -149,6 +151,6 @@ class UpdateList extends Task {
 	 * Abort on anything
 	 */
 	public function handleError( $errno, $errstr, $errfile, $errline ) {
-		throw new ErrorException( $errstr, 0, $errno, $errfile, $errline );
+		throw new \ErrorException( $errstr, 0, $errno, $errfile, $errline );
 	}
 }
