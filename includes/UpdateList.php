@@ -48,7 +48,7 @@ class UpdateList extends Task {
 			'action' => 'query',
 			'list' => 'allusers',
 			'augroup' => 'sysop',
-			'auprop' => 'groups'
+			'auprop' => 'groups',
 			'aulimit' => 'max'
 		];
 
