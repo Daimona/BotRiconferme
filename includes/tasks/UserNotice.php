@@ -16,7 +16,7 @@ class UserNotice extends Task {
 			$ricNums[ array_pop( $bits ) ] = $num;
 		}
 		
-		foreach ( $this->getDataProvider()->getUsersToProcess() as $user ) {
+		foreach ( $this->getDataProvider()->getUsersToProcess() as $user => $_ ) {
 			$this->addMsg( $user, $ricNums[ $user ] );
 		}
 

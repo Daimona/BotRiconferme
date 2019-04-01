@@ -18,7 +18,7 @@ class Config {
 	/**
 	 * Specific instance getter
 	 *
-	 * @param string $name
+	 * @param array $defaults
 	 */
 	public static function init( array $defaults ) {
 		if ( self::$instance ) {
@@ -35,7 +35,7 @@ class Config {
 		// On-wiki values
 		try {
 			$conf = ( new WikiController )->getPageContent( $defaults[ 'config-title' ] );
-		} catch ( MissingPageException ) {
+		} catch ( MissingPageException $e ) {
 			throw new ConfigException( 'Please create a config page.' );
 		}
 

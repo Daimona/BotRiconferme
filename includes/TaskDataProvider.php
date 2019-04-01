@@ -26,7 +26,7 @@ class TaskDataProvider extends ContextSource {
 					$date = strtotime( $groups['sysop'] );
 				}
 				if ( date( 'd/m', $date ) === $now ) {
-					$this->users[] = $user;
+					$this->users[ $user ] = $groups;
 				}
 			}
 		}

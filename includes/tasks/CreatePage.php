@@ -11,7 +11,7 @@ class CreatePage extends Task {
 		$users = $this->getDataProvider()->getUsersToProcess();
 
 		$created = [];
-		foreach ( $users as $user ) {
+		foreach ( $users as $user => $groups ) {
 			$num = $this->getLastPageNum( $user ) + 1;
 			$baseTitle = $this->getConfig()->get( 'ric-main-page' ) . "/$user";
 			$pageTitle = "$baseTitle/$num";
