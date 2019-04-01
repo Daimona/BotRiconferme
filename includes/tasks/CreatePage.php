@@ -13,8 +13,14 @@ class CreatePage extends Task {
 		$created = [];
 		foreach ( $users as $user ) {
 			$num = $this->getLastPageNum( $user ) + 1;
-			$pageTitle = $this->getConfig()->get( 'ric-page-prefix' ) . "/$user/$num";
+			$baseTitle = $this->getConfig()->get( 'ric-page-prefix' ) . "/$user";
+			$pageTitle = "$baseTitle/$num";
 			$this->doCreatePage( $pageTitle );
+			if ( $num === 1 ) {
+				$this->createBasePage( $baseTitle );
+			} else {
+				$this->updateBasePage( $baseTitle );
+			}
 			$created[] = $pageTitle;
 		}
 
@@ -29,11 +35,12 @@ class CreatePage extends Task {
 	 */
 	protected function getLastPageNum( string $user ) : int {
 		$this->getLogger()->debug( "Retrieving previous pages for $user" );
+		$baseTitle = explode( ':', $this->getConfig()->get( 'ric-page-prefix' ), 2 )[1];
 		$params = [
 			'action' => 'query',
 			'list' => 'allpages',
 			'apnamespace' => 4,
-			'apprefix' => $this->getConfig()->get( 'ric-page-prefix' ) . "/$user",
+			'apprefix' => "$baseTitle/$user",
 			'aplimit' => 'max'
 		];
 
@@ -87,6 +94,46 @@ class CreatePage extends Task {
 			'title' => $title,
 			'text' => $this->getConfig()->get( 'ric-page-text' ),
 			'summary' => $this->getConfig()->get( 'ric-page-summary' ),
+			'bot' => 1,
+			'token' => $this->getController()->getToken( 'csrf' )
+		];
+
+		$this->getController()->login();
+		$req = new Request( $params, true );
+		$req->execute();
+	}
+
+	/**
+	 * @param string $title
+	 */
+	protected function createBasePage( string $title ) {
+		$this->getLogger()->info( "Creating base page $title" );
+
+		$params = [
+			'action' => 'edit',
+			'title' => $title,
+			'text' => $this->getConfig()->get( 'ric-base-page-text' ),
+			'summary' => $this->getConfig()->get( 'ric-base-page-summary' ),
+			'bot' => 1,
+			'token' => $this->getController()->getToken( 'csrf' )
+		];
+
+		$this->getController()->login();
+		$req = new Request( $params, true );
+		$req->execute();
+	}
+
+	/**
+	 * @param string $title
+	 */
+	protected function updateBasePage( string $title ) {
+		$this->getLogger()->info( "Updating base page $title" );
+
+		$params = [
+			'action' => 'edit',
+			'title' => $title,
+			'appendtext' => $this->getConfig()->get( 'ric-base-page-text' ),
+			'summary' => $this->getConfig()->get( 'ric-base-page-summary-update' ),
 			'bot' => 1,
 			'token' => $this->getController()->getToken( 'csrf' )
 		];

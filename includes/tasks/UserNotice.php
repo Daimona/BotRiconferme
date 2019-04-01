@@ -9,8 +9,15 @@ class UserNotice extends Task {
 	public function run() : TaskResult {
 		$this->getLogger()->info( 'Starting task UserNotice' );
 
+		$ricNums = [];
+		foreach ( $this->getDataProvider()->getCreatedPages() as $page ) {
+			$bits = explode( '/', $page );
+			$num = intval( array_pop( $bits ) );
+			$ricNums[ array_pop( $bits ) ] = $num;
+		}
+		
 		foreach ( $this->getDataProvider()->getUsersToProcess() as $user ) {
-			$this->addMsg( $user );
+			$this->addMsg( $user, $ricNums[ $user ] );
 		}
 
 		$this->getLogger()->info( 'Task UserNotice completed successfully' );
@@ -19,15 +26,17 @@ class UserNotice extends Task {
 
 	/**
 	 * @param string $user
+	 * @param int $ricNum
 	 */
-	protected function addMsg( string $user ) {
+	protected function addMsg( string $user, int $ricNum ) {
 		$this->getLogger()->info( "Leaving msg to $user" );
+		$msg = str_replace( '$1', $ricNum, $this->getConfig()->get( 'user-notice-msg' ) );
 
 		$params = [
 			'action' => 'edit',
 			'title' => "User talk:$user",
 			'section' => 'new',
-			'text' => $this->getConfig()->get( 'user-notice-msg' ),
+			'text' => $msg,
 			'sectiontitle' => $this->getConfig()->get( 'user-notice-title' ),
 			'summary' => $this->getConfig()->get( 'user-notice-summary' ),
 			'bot' => 1,

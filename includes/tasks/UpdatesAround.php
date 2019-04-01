@@ -14,7 +14,7 @@ class UpdatesAround extends Task {
 			$this->addToMainPage( $page );
 			// WP:Wikipediano/Votazioni
 			$this->addVote( $page );
-			// {{VotazioniRCnews}}
+			// Template:VotazioniRCnews
 			$this->addNews( $page );
 		}
 
@@ -30,7 +30,7 @@ class UpdatesAround extends Task {
 
 		$params = [
 			'action' => 'edit',
-			'title' => $this->getConfig()->get( 'ric-page-main' ),
+			'title' => $this->getConfig()->get( 'ric-main-page' ),
 			'appendtext' => "{\{$page}}",
 			'summary' => $this->getConfig()->get( 'ric-main-page-summary' ),
 			'bot' => 1,
@@ -109,7 +109,7 @@ class UpdatesAround extends Task {
 
 		$params = [
 			'action' => 'edit',
-			'title' => $this->getConfig()->get( 'ric-news-page' ),
+			'title' => $newsPage,
 			'text' => $newContent,
 			'summary' => $this->getConfig()->get( 'ric-news-page-summary' ),
 			'bot' => 1,
