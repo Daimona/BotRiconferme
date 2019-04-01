@@ -99,7 +99,7 @@ class UpdateList extends Task {
 		$data = $req->execute();
 
 		$searchFor = [ 'sysop' ];
-		if ( array_intersect( $groups , [ 'checkuser', 'bureaucrat' ] ) ) {
+		if ( array_intersect( $groups, [ 'checkuser', 'bureaucrat' ] ) ) {
 			$searchFor = [ 'checkuser', 'bureaucrat' ];
 		}
 

@@ -19,6 +19,7 @@ return [
 		'UnreachableCodePlugin',
 		'PregRegexCheckerPlugin',
 		'UnusedSuppressionPlugin',
-		'DuplicateArrayKeyPlugin'
+		'DuplicateArrayKeyPlugin',
+		'DuplicateExpressionPlugin',
 	],
 ];
