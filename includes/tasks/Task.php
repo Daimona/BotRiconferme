@@ -7,22 +7,25 @@ abstract class Task extends ContextSource {
 	const STATUS_OK = 0;
 	const STATUS_ERROR = 1;
 
-	/** @var WikiController */
-	private $controller;
-
-	public function __construct() {
+	/** @var TaskDataProvider */
+	private $dataProvider;
+	
+	/**
+	 * @param TaskDataProvider $dataProvider
+	 */
+	public function __construct( TaskDataProvider $dataProvider ) {
 		set_exception_handler( [ $this, 'handleException' ] );
 		set_error_handler( [ $this, 'handleError' ] );
 		parent::__construct();
-		$this->controller = new WikiController;
+		$this->dataProvider = $dataProvider;
 	}
 
 	/**
 	 * Main routine
 	 *
-	 * @return int One of the STATUS_* constants
+	 * @return TaskResult
 	 */
-	abstract public function run() : int;
+	abstract public function run() : TaskResult;
 
 	/**
 	 * Exception handler
@@ -44,9 +47,9 @@ abstract class Task extends ContextSource {
 	abstract public function handleError( $errno, $errstr, $errfile, $errline );
 
 	/**
-	 * @return WikiController
+	 * @return TaskDataProvider
 	 */
-	protected function getController() : WikiController {
-		return $this->controller;
+	protected function getDataProvider() : TaskDataProvider {
+		return $this->dataProvider;
 	}
 }

@@ -6,7 +6,7 @@ class UpdateList extends Task {
 	/**
 	 * @inheritDoc
 	 */
-	public function run() : int {
+	public function run() : TaskResult {
 		$this->getLogger()->info( 'Starting task UpdateList' );
 		$actual = $this->getActualAdmins();
 		$list = $this->getList();
@@ -36,7 +36,7 @@ class UpdateList extends Task {
 		}
 
 		$this->getLogger()->info( 'Task UpdateList completed successfully' );
-		return self::STATUS_OK;
+		return new TaskResult( self::STATUS_OK, null );
 	}
 
 	/**

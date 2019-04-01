@@ -35,16 +35,22 @@ class WikiController extends ContextSource {
 	 * @return string
 	 */
 	public function getToken( string $type ) : string {
-		$params = [
-			'action' => 'query',
-			'meta'   => 'tokens',
-			'type'   => $type
-		];
+		static $tokens = [];
 
-		$req = new Request( $params );
-		$res = $req->execute()[0];
+		if ( !isset( $tokens[ $type ] ) ) {
+			$params = [
+				'action' => 'query',
+				'meta'   => 'tokens',
+				'type'   => $type
+			];
 
-		return $res->query->tokens->{ "{$type}token" };
+			$req = new Request( $params );
+			$res = $req->execute()[0];
+			
+			$tokens[ $type ] = $res->query->tokens->{ "{$type}token" };
+		}
+
+		return $tokens[ $type ];
 	}
 
 	/**

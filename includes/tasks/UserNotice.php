@@ -3,39 +3,18 @@
 namespace BotRiconferme;
 
 class UserNotice extends Task {
-	/** @var array */
-	private $usersList;
-
 	/**
 	 * @inheritDoc
 	 */
-	public function run() : int {
+	public function run() : TaskResult {
 		$this->getLogger()->info( 'Starting task UserNotice' );
 
-		foreach ( $this->getUsersList() as $user ) {
+		foreach ( $this->getDataProvider()->getUsersToProcess() as $user ) {
 			$this->addMsg( $user );
 		}
 
 		$this->getLogger()->info( 'Task UserNotice completed successfully' );
-		return self::STATUS_OK;
-	}
-
-	/**
-	 * @return array
-	 */
-	protected function getUsersList() : array {
-		$this->getLogger()->debug( 'Retrieving users list' );
-		$content = $this->getController()->getPageContent( $this->getConfig()->get( 'list-title' ) );
-		$users = json_decode( $content, true );
-		$now = date( "d/m" );
-
-		$ret = [];
-		foreach ( $users as $user => $date ) {
-			if ( $date === $now ) {
-				$ret[] = $user;
-			}
-		}
-		return $ret;
+		return new TaskResult( self::STATUS_OK, null );
 	}
 
 	/**

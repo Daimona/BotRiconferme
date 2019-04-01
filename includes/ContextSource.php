@@ -12,9 +12,13 @@ abstract class ContextSource implements LoggerAwareInterface {
 	/** @var Config */
 	private $config;
 
+	/** @var WikiController */
+	private $controller;
+
 	public function __construct() {
 		$this->setLogger( new Logger );
 		$this->setConfig( Config::getInstance() );
+		$this->setController( new WikiController );
 	}
 
 	/**
@@ -43,5 +47,19 @@ abstract class ContextSource implements LoggerAwareInterface {
 	 */
 	protected function setConfig( Config $cfg ) {
 		$this->config = $cfg;
+	}
+
+	/**
+	 * @return WikiController
+	 */
+	protected function getController() : WikiController {
+		return $this->controller;
+	}
+
+	/**
+	 * @param WikiController $controller
+	 */
+	protected function setConfig( WikiController $controller ) {
+		$this->controller = $controller;
 	}
 }
