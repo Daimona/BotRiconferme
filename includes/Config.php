@@ -8,15 +8,11 @@ class Config {
 
 	/** @var self */
 	private static $instance;
-	
-	const ALLOWED_CONFIGS = [
-		'itwiki' => ConfigItwiki::class
-	];
-	
+
 	/**
-	 * Use self::getInstanceFor() or self::getInstance()
+	 * Use self::getInstance()
 	 */
-	protected function __construct() {
+	private function __construct() {
 	}
 
 	/**
@@ -24,15 +20,21 @@ class Config {
 	 *
 	 * @param string $name
 	 */
-	public static function getInstanceFor( string $name ) {
+	public static function init( array $defaults ) {
 		if ( self::$instance ) {
-			throw new ConfigException( 'Can only have a config instance at a time' );
+			throw new ConfigException( 'Config was already initialized' );
 		}
-		if ( isset( self::ALLOWED_CONFIGS[ $name ] ) ) {
-			$class = self::ALLOWED_CONFIGS[ $name ];
-			self::$instance = new $class;
-		} else {
-			throw new ConfigException( "The requested config '$name' is not valid." );
+
+		$inst = new self;
+		$inst->set( 'url', $defaults['url'] );
+		$inst->set( 'list-title', $defaults['list-title'] );
+		self::$instance = $inst;
+
+		// On-wiki values
+		$conf = ( new WikiController )->getPageContent( $defaults[ 'config-title' ] );
+
+		foreach ( json_decode( $conf ) as $key => $val ) {
+			self::$instance->set( $key, $val );
 		}
 	}
 	
@@ -44,7 +46,7 @@ class Config {
 	 */
 	public static function getInstance() : self {
 		if ( !self::$instance ) {
-			self::$instance = new self;
+			throw new ConfigException( 'Config not yet initialized' );
 		}
 		return self::$instance;
 	}

@@ -15,10 +15,14 @@ class UpdateList extends Task {
 		$extra = [];
 		foreach ( $actual as $adm => $groups ) {
 			if ( !isset( $list[ $adm ] ) ) {
-				$date = $this->getFlagDate( $adm, $groups );
-				if ( $date !== null ) {
-					$missing[ $adm ] = $date;
+				$val = [];
+				foreach ( $groups as $group ) {
+					$date = $this->getFlagDate( $adm, $group );
+					if ( $date !== null ) {
+						$val[ $group ] = $date;
+					}
 				}
+				$missing[ $adm ] = $val;
 			}
 		}
 
@@ -49,7 +53,7 @@ class UpdateList extends Task {
 			'list' => 'allusers',
 			'augroup' => 'sysop',
 			'auprop' => 'groups',
-			'aulimit' => 'max'
+			'aulimit' => 'max',
 		];
 
 		$req = new Request( $params );
@@ -64,7 +68,8 @@ class UpdateList extends Task {
 		$ret = [];
 		foreach ( $data as $set ) {
 			foreach ( $set->query->allusers as $u ) {
-				$ret[ $u->name ] = $u->groups;
+				$interestingGroups = array_intersect( $u->groups, [ 'sysop', 'bureaucrat', 'checkuser' ] );
+				$ret[ $u->name ] = $interestingGroups;
 			}
 		}
 		return $ret;
@@ -98,16 +103,11 @@ class UpdateList extends Task {
 		$req = new Request( $params );
 		$data = $req->execute();
 
-		$searchFor = [ 'sysop' ];
-		if ( array_intersect( $groups, [ 'checkuser', 'bureaucrat' ] ) ) {
-			$searchFor = [ 'checkuser', 'bureaucrat' ];
-		}
-
 		$ts = null;
 		foreach ( $data as $set ) {
 			foreach ( $set->query->logevents as $entry ) {
-				if ( count( array_intersect( $entry->params->newgroups, $searchFor ) ) >
-					count( array_intersect( $entry->params->oldgroups, $searchFor ) )
+				if ( in_array( $group, $entry->params->newgroups ) &&
+					!in_array( $group, $entry->params->oldgroups )
 				) {
 					$ts = $entry->timestamp;
 					break;
@@ -115,12 +115,12 @@ class UpdateList extends Task {
 			}
 		}
 
-		if ( $ts === null ) {
+		if ( $ts === null ) {###############################################THROW?
 			$this->getLogger()->warning( "Flag date unavailable for $admin" );
 			return null;
 		}
 
-		return date( "d/m", strtotime( $ts ) );
+		return date( "d/m/Y", strtotime( $ts ) );
 	}
 
 	/**

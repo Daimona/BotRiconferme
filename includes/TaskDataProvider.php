@@ -20,8 +20,12 @@ class TaskDataProvider extends ContextSource {
 			$now = date( 'd/m' );
 
 			$this->users = [];
-			foreach ( $users as $user => $date ) {
-				if ( $date === $now ) {
+			foreach ( $users as $user => $groups ) {
+				$date = max( strtotime( $groups['checkuser'] ) ?? 0, strtotime( $groups['bureaucrat'] ) ?? 0 );
+				if ( $date === 0 ) {
+					$date = strtotime( $groups['sysop'] );
+				}
+				if ( date( 'd/m', $date ) === $now ) {
 					$this->users[] = $user;
 				}
 			}
