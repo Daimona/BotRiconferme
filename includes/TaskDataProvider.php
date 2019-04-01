@@ -3,7 +3,7 @@
 namespace BotRiconferme;
 
 class TaskDataProvider extends ContextSource {
-	/** @var string[] */
+	/** @var array[] */
 	private $users;
 
 	/** @var string[] */
