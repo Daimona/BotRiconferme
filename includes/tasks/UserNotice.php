@@ -14,7 +14,7 @@ class UserNotice extends Task {
 		}
 
 		$this->getLogger()->info( 'Task UserNotice completed successfully' );
-		return new TaskResult( self::STATUS_OK, null );
+		return new TaskResult( self::STATUS_OK );
 	}
 
 	/**

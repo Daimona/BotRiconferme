@@ -19,7 +19,8 @@ class CreatePage extends Task {
 		}
 
 		$this->getLogger()->info( 'Task CreatePage completed successfully' );
-		return new TaskResult( self::STATUS_OK, $created );
+		$this->getDataProvider()->setCreatedPages( $created );
+		return new TaskResult( self::STATUS_OK );
 	}
 
 	/**
@@ -40,7 +41,11 @@ class CreatePage extends Task {
 
 		$last = 0;
 		foreach ( $res as $set ) {
-			foreach ( $set->query->allpages as $page ) {################################################# - TODO FAIL IF ALREADY CREATED TODAY
+			foreach ( $set->query->allpages as $page ) {
+				$created = $this->getPageCreationTS( $page->title );
+				if ( date( 'z/Y' ) === date( 'z/Y', $created ) ) {
+					throw new TaskException( 'Page ' . $page->title . ' was already created.' );
+				}
 				$bits = explode( '/', $page->title );
 				$cur = end( $bits );
 				if ( is_numeric( $cur ) && $cur > $last ) {
@@ -51,6 +56,26 @@ class CreatePage extends Task {
 		return $last;
 	}
 
+	/**
+	 * @param string $title
+	 * @return int
+	 */
+	private function getPageCreationTS( string $title ) : int {
+		$params = [
+			'action' => 'query',
+			'prop' => 'revisions',
+			'titles' => $title,
+			'rvprop' => 'timestamp',
+			'rvslots' => 'main',
+			'rvlimit' => 1,
+			'rvdir' => 'newer'
+		];
+
+		$res = ( new Request( $params ) )->execute();
+		$data = $res[0]->query->pages;
+		return strtotime( reset( $data )->revisions->timestamp );
+	}
+	
 	/**
 	 * @param string $title
 	 */

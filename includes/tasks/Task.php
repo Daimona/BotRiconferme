@@ -20,6 +20,11 @@ abstract class Task extends ContextSource {
 		$this->dataProvider = $dataProvider;
 	}
 
+	public function __destruct() {
+		restore_error_handler();
+		restore_exception_handler();
+	}
+
 	/**
 	 * Main routine
 	 *

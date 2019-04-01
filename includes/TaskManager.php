@@ -21,22 +21,35 @@ class TaskManager {
 	/**
 	 * @param int $mode One of the MODE_ constants
 	 * @param string|null $taskName Only used in MODE_SINGLE
+	 * @return TaskResult
 	 */
-	public function run( int $mode, string $taskName = null ) {
+	public function run( int $mode, string $taskName = null ) : TaskResult {
 		$this->provider = new TaskDataProvider;
 		if ( $mode === self::MODE_COMPLETE ) {
-			$this->runAllTasks();
+			return $this->runAllTasks();
 		} else {
-			$this->runTask( $taskName );
+			return $this->runTask( $taskName );
 		}
 	}
 
-	protected function runAllTasks() {
-		$this->runTask( 'update-list' );
-		$createRes = $this->runTask( 'create-page' );
-		$this->provider->setCreatedPages( $createRes->getValue() );
-		$this->runTask( 'updates-around' );
-		$this->runTask( 'user-notice' );
+	/**
+	 * @return TaskResult
+	 */
+	protected function runAllTasks() : TaskResult {
+		// Order matters here
+		$list = [
+			'update-list',
+			'create-page',
+			'updates-around',
+			'user-notice'
+		];
+
+		$res = new TaskResult( TaskResult::STATUS_OK );
+		do {
+			$res->merge( $this->runTask( current( $list ) ) );
+		} while ( $res->isOK() && next( $list ) );
+
+		return $res;
 	}
 
 	/**

@@ -20,4 +20,4 @@ $cfg->set( 'user-notice-summary', 'Nuovo messaggio' );
 
 $bot = new Bot();
 
-$bot->ru();
+$bot->run();
