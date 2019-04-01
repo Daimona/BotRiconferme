@@ -17,7 +17,7 @@ class Bot {
 		if ( $res->isOK() ) {
 			$this->logger->info( 'Execution completed successfully.' );
 		} else {
-			$this->logger->warning( "Execution failed.\n$res"  );
+			$this->logger->warning( "Execution failed.\n$res" );
 		}
 	}
 }

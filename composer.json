@@ -6,7 +6,7 @@
     "require": {
         "php": "^7.1.0",
 		"ext-json": "*",
-		"psr/log": "dev-master"
+		"psr/log": "^1.1"
     },
 	"suggest": {
 		"ext-curl": "Faster requests"

@@ -63,7 +63,7 @@ class TaskResult {
 		} else {
 			$stat = 'ERROR';
 			$formattedErrs = [];
-			foreach( $this->errors as $err ) {
+			foreach ( $this->errors as $err ) {
 				$formattedErrs[] = "\t - $err";
 			}
 			$errs = implode( "\n", $formattedErrs );

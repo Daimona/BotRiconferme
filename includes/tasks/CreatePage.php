@@ -75,7 +75,7 @@ class CreatePage extends Task {
 		$data = $res[0]->query->pages;
 		return strtotime( reset( $data )->revisions->timestamp );
 	}
-	
+
 	/**
 	 * @param string $title
 	 */
