@@ -39,15 +39,14 @@ class Config {
 			throw new ConfigException( 'Please create a config page.' );
 		}
 
-		foreach ( json_decode( $conf ) as $key => $val ) {
+		foreach ( json_decode( $conf, true ) as $key => $val ) {
 			self::$instance->set( $key, $val );
 		}
 	}
-	
+
 	/**
 	 * Generic instance getter
 	 *
-	 * @param string $name
 	 * @return self
 	 */
 	public static function getInstance() : self {

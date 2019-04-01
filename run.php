@@ -5,7 +5,7 @@ require __DIR__ . '/vendor/autoload.php';
 use BotRiconferme\Config;
 use BotRiconferme\Bot;
 
-if ( php_sapi_name() !== 'cli' ) {
+if ( PHP_SAPI !== 'cli' ) {
 	exit( 1 );
 }
 

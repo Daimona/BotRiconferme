@@ -17,10 +17,7 @@ class UpdateList extends Task {
 			if ( !isset( $list[ $adm ] ) ) {
 				$val = [];
 				foreach ( $groups as $group ) {
-					$date = $this->getFlagDate( $adm, $group );
-					if ( $date !== null ) {
-						$val[ $group ] = $date;
-					}
+					$val[ $group ] = $this->getFlagDate( $adm, $group );
 				}
 				$missing[ $adm ] = $val;
 			}
@@ -91,10 +88,10 @@ class UpdateList extends Task {
 
 	/**
 	 * @param string $admin
-	 * @param array $groups
-	 * @return string|null
+	 * @param string $group
+	 * @return string
 	 */
-	protected function getFlagDate( string $admin, array $groups ) : ?string {
+	protected function getFlagDate( string $admin, string $group ) : string {
 		$this->getLogger()->info( "Retrieving flag date for $admin" );
 		$params = [
 			'action' => 'query',
@@ -119,9 +116,8 @@ class UpdateList extends Task {
 			}
 		}
 
-		if ( $ts === null ) {###############################################THROW?
-			$this->getLogger()->warning( "Flag date unavailable for $admin" );
-			return null;
+		if ( $ts === null ) {
+			throw new TaskException( "Flag date unavailable for $admin" );
 		}
 
 		return date( "d/m/Y", strtotime( $ts ) );
