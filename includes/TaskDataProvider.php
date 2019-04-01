@@ -10,7 +10,7 @@ class TaskDataProvider extends ContextSource {
 	private $createdPages = [];
 
 	/**
-	 * @return string[]
+	 * @return array[]
 	 */
 	public function getUsersToProcess() : array {
 		if ( $this->users === null ) {
