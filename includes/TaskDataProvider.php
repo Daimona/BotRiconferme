@@ -36,7 +36,7 @@ class TaskDataProvider extends ContextSource {
 	public function setCreatedPages( array $titles ) {
 		$this->createdPages = $titles;
 	}
-	
+
 	/**
 	 * @return string[]
 	 */

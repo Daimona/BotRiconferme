@@ -5,6 +5,8 @@ require __DIR__ . '/vendor/autoload.php';
 use BotRiconferme\Config;
 use BotRiconferme\Bot;
 
+############################## WRITE ME!
+
 $cfg = Config::getInstance();
 
 $cfg->set( 'url', 'localhost/pedia/api.php' );
@@ -18,5 +20,4 @@ $cfg->set( 'user-notice-summary', 'Nuovo messaggio' );
 
 $bot = new Bot();
 
-$bot->runTask( 'update-list' );
-$bot->runTask( 'user-notice' );
+$bot->ru();

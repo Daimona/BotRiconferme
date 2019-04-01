@@ -9,7 +9,7 @@ class TaskResult {
 
 	/** @var mixed */
 	private $value;
-	
+
 	/** @var int */
 	private $status;
 

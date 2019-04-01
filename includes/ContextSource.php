@@ -59,7 +59,7 @@ abstract class ContextSource implements LoggerAwareInterface {
 	/**
 	 * @param WikiController $controller
 	 */
-	protected function setConfig( WikiController $controller ) {
+	protected function setController( WikiController $controller ) {
 		$this->controller = $controller;
 	}
 }

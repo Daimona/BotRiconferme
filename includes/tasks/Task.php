@@ -9,7 +9,7 @@ abstract class Task extends ContextSource {
 
 	/** @var TaskDataProvider */
 	private $dataProvider;
-	
+
 	/**
 	 * @param TaskDataProvider $dataProvider
 	 */

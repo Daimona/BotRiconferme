@@ -46,7 +46,7 @@ class WikiController extends ContextSource {
 
 			$req = new Request( $params );
 			$res = $req->execute()[0];
-			
+
 			$tokens[ $type ] = $res->query->tokens->{ "{$type}token" };
 		}
 

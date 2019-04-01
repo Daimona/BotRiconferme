@@ -9,7 +9,7 @@ class TaskManager {
 
 	/** @var TaskDataProvider */
 	private $provider;
-	
+
 	/** @var string[] */
 	const TASKS_MAP = [
 		'create-page' => CreatePage::class,
@@ -17,7 +17,7 @@ class TaskManager {
 		'updates-around' => UpdatesAround::class,
 		'user-notice' => UserNotice::class,
 	];
-	
+
 	/**
 	 * @param int $mode One of the MODE_ constants
 	 * @param string|null $taskName Only used in MODE_SINGLE

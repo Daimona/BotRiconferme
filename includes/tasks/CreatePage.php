@@ -14,7 +14,7 @@ class CreatePage extends Task {
 		foreach ( $users as $user ) {
 			$num = $this->getLastPageNum( $user ) + 1;
 			$pageTitle = $this->getConfig()->get( 'ric-page-prefix' ) . "/$user/$num";
-			$this->createPage( $pageTitle );
+			$this->doCreatePage( $pageTitle );
 			$created[] = $pageTitle;
 		}
 
@@ -41,7 +41,8 @@ class CreatePage extends Task {
 		$last = 0;
 		foreach ( $res as $set ) {
 			foreach ( $set->query->allpages as $page ) {################################################# - TODO FAIL IF ALREADY CREATED TODAY
-				$cur = end( explode( '/', $page->title ) );
+				$bits = explode( '/', $page->title );
+				$cur = end( $bits );
 				if ( is_numeric( $cur ) && $cur > $last ) {
 					$last = intval( $cur );
 				}
@@ -53,7 +54,7 @@ class CreatePage extends Task {
 	/**
 	 * @param string $title
 	 */
-	protected function createPage( string $title ) {
+	protected function doCreatePage( string $title ) {
 		$this->getLogger()->info( "Creating page $title" );
 
 		$params = [

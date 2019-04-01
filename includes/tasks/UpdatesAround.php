@@ -106,7 +106,7 @@ class UpdatesAround extends Task {
 
 		$newNum = $matches[2] + 1;
 		$newContent = preg_replace( $reg, "$1$newNum", $content );
-		
+
 		$params = [
 			'action' => 'edit',
 			'title' => $this->getConfig()->get( 'ric-news-page' ),
@@ -120,7 +120,7 @@ class UpdatesAround extends Task {
 		$req = new Request( $params, true );
 		$req->execute();
 	}
-	
+
 	/**
 	 * @inheritDoc
 	 * Throw everything
