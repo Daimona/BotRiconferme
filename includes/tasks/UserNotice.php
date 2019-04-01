@@ -30,7 +30,7 @@ class UserNotice extends Task {
 	 */
 	protected function addMsg( string $user, int $ricNum ) {
 		$this->getLogger()->info( "Leaving msg to $user" );
-		$msg = str_replace( '$1', "$ricNum", $this->getConfig()->get( 'user-notice-msg' ) );
+		$msg = str_replace( '$num', "$ricNum", $this->getConfig()->get( 'user-notice-msg' ) );
 
 		$params = [
 			'action' => 'edit',

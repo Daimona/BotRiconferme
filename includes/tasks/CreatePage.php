@@ -15,11 +15,13 @@ class CreatePage extends Task {
 			$num = $this->getLastPageNum( $user ) + 1;
 			$baseTitle = $this->getConfig()->get( 'ric-main-page' ) . "/$user";
 			$pageTitle = "$baseTitle/$num";
-			$this->doCreatePage( $pageTitle );
+			$this->doCreatePage( $pageTitle, $user, $groups );
+
+			$newText = str_replace( '$title', $baseTitle, $this->getConfig()->get( 'ric-base-page-text' ) );
 			if ( $num === 1 ) {
-				$this->createBasePage( $baseTitle );
+				$this->createBasePage( $baseTitle, $newText );
 			} else {
-				$this->updateBasePage( $baseTitle );
+				$this->updateBasePage( $baseTitle, $newText );
 			}
 			$created[] = $pageTitle;
 		}
@@ -85,14 +87,23 @@ class CreatePage extends Task {
 
 	/**
 	 * @param string $title
+	 * @param string $user
+	 * @param array $groups
 	 */
-	protected function doCreatePage( string $title ) {
+	protected function doCreatePage( string $title, string $user, array $groups ) {
 		$this->getLogger()->info( "Creating page $title" );
+		$text = $this->getConfig()->get( 'ric-page-text' );
+		$textParams = [
+			'$user' => $user,
+			'$date' => $groups['sysop'],
+			'$quorum' => ''##################################################################Handle on-wiki
+		];
+		$text = strtr( $text, $textParams );
 
 		$params = [
 			'action' => 'edit',
 			'title' => $title,
-			'text' => $this->getConfig()->get( 'ric-page-text' ),
+			'text' => $text,
 			'summary' => $this->getConfig()->get( 'ric-page-summary' ),
 			'bot' => 1,
 			'token' => $this->getController()->getToken( 'csrf' )
@@ -105,14 +116,15 @@ class CreatePage extends Task {
 
 	/**
 	 * @param string $title
+	 * @param string $newText
 	 */
-	protected function createBasePage( string $title ) {
+	protected function createBasePage( string $title, string $newText ) {
 		$this->getLogger()->info( "Creating base page $title" );
 
 		$params = [
 			'action' => 'edit',
 			'title' => $title,
-			'text' => $this->getConfig()->get( 'ric-base-page-text' ),
+			'text' => $newText,
 			'summary' => $this->getConfig()->get( 'ric-base-page-summary' ),
 			'bot' => 1,
 			'token' => $this->getController()->getToken( 'csrf' )
@@ -125,14 +137,15 @@ class CreatePage extends Task {
 
 	/**
 	 * @param string $title
+	 * @param string $newText
 	 */
-	protected function updateBasePage( string $title ) {
+	protected function updateBasePage( string $title, string $newText ) {
 		$this->getLogger()->info( "Updating base page $title" );
 
 		$params = [
 			'action' => 'edit',
 			'title' => $title,
-			'appendtext' => $this->getConfig()->get( 'ric-base-page-text' ),
+			'appendtext' => $newText,
 			'summary' => $this->getConfig()->get( 'ric-base-page-summary-update' ),
 			'bot' => 1,
 			'token' => $this->getController()->getToken( 'csrf' )
