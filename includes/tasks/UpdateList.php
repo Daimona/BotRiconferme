@@ -66,8 +66,12 @@ class UpdateList extends Task {
 	 */
 	protected function extractAdmins( array $data ) : array {
 		$ret = [];
+		$blacklist = $this->getConfig()->get( 'exclude-admins' );
 		foreach ( $data as $set ) {
 			foreach ( $set->query->allusers as $u ) {
+				if ( in_array( $u->name, $blacklist ) ) {
+					continue;
+				}
 				$interestingGroups = array_intersect( $u->groups, [ 'sysop', 'bureaucrat', 'checkuser' ] );
 				$ret[ $u->name ] = $interestingGroups;
 			}

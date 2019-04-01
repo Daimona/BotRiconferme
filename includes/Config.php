@@ -28,10 +28,16 @@ class Config {
 		$inst = new self;
 		$inst->set( 'url', $defaults['url'] );
 		$inst->set( 'list-title', $defaults['list-title'] );
+		$inst->set( 'username', $defaults['username'] );
+		$inst->set( 'password', $defaults['password'] );
 		self::$instance = $inst;
 
 		// On-wiki values
-		$conf = ( new WikiController )->getPageContent( $defaults[ 'config-title' ] );
+		try {
+			$conf = ( new WikiController )->getPageContent( $defaults[ 'config-title' ] );
+		} catch ( MissingPageException ) {
+			throw new ConfigException( 'Please create a config page.' );
+		}
 
 		foreach ( json_decode( $conf ) as $key => $val ) {
 			self::$instance->set( $key, $val );
@@ -53,11 +59,13 @@ class Config {
 
 	/**
 	 * @param string $opt
-	 * @param mixed|null $default
 	 * @return mixed
 	 */
-	public function get( string $opt, $default = null ) {
-		return $this->opts[ $opt ] ?? $default;
+	public function get( string $opt ) {
+		if ( !isset( $this->opts[ $opt ] ) ) {
+			throw new ConfigException( "Config option '$opt' not set." );
+		}
+		return $this->opts[ $opt ];
 	}
 
 	/**

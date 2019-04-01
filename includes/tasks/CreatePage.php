@@ -13,7 +13,7 @@ class CreatePage extends Task {
 		$created = [];
 		foreach ( $users as $user ) {
 			$num = $this->getLastPageNum( $user ) + 1;
-			$baseTitle = $this->getConfig()->get( 'ric-page-prefix' ) . "/$user";
+			$baseTitle = $this->getConfig()->get( 'ric-main-page' ) . "/$user";
 			$pageTitle = "$baseTitle/$num";
 			$this->doCreatePage( $pageTitle );
 			if ( $num === 1 ) {
@@ -35,7 +35,7 @@ class CreatePage extends Task {
 	 */
 	protected function getLastPageNum( string $user ) : int {
 		$this->getLogger()->debug( "Retrieving previous pages for $user" );
-		$baseTitle = explode( ':', $this->getConfig()->get( 'ric-page-prefix' ), 2 )[1];
+		$baseTitle = explode( ':', $this->getConfig()->get( 'ric-main-page' ), 2 )[1];
 		$params = [
 			'action' => 'query',
 			'list' => 'allpages',
