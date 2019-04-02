@@ -6,7 +6,7 @@ use BotRiconferme\Config;
 use BotRiconferme\Bot;
 
 if ( PHP_SAPI !== 'cli' ) {
-	exit( 1 );
+	exit( 'CLI only!' );
 }
 
 /*
@@ -29,7 +29,7 @@ $required = [
 
 $vals = getopt( '', $required );
 if ( count( $vals ) !== count( $required ) ) {
-	exit( 1 );
+	exit( 'Not enough params!' );
 }
 Config::init( $vals );
 

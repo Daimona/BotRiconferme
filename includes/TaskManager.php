@@ -2,6 +2,12 @@
 
 namespace BotRiconferme;
 
+use BotRiconferme\Tasks\Task;
+use BotRiconferme\Tasks\CreatePage;
+use BotRiconferme\Tasks\UpdateList;
+use BotRiconferme\Tasks\UpdatesAround;
+use BotRiconferme\Tasks\UserNotice;
+
 class TaskManager {
 	// Run modes
 	const MODE_COMPLETE = 0;

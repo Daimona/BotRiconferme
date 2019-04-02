@@ -1,6 +1,10 @@
 <?php
 
-namespace BotRiconferme;
+namespace BotRiconferme\Tasks;
+
+use BotRiconferme\TaskResult;
+use BotRiconferme\ContextSource;
+use BotRiconferme\TaskDataProvider;
 
 abstract class Task extends ContextSource {
 	// Status codes

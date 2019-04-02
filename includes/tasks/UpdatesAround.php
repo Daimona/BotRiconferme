@@ -1,6 +1,10 @@
 <?php
 
-namespace BotRiconferme;
+namespace BotRiconferme\Tasks;
+
+use BotRiconferme\TaskResult;
+use BotRiconferme\Request;
+use BotRiconferme\Exceptions\TaskException;
 
 class UpdatesAround extends Task {
 	/**

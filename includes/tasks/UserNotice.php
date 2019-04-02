@@ -1,6 +1,9 @@
 <?php
 
-namespace BotRiconferme;
+namespace BotRiconferme\Tasks;
+
+use BotRiconferme\TaskResult;
+use BotRiconferme\Request;
 
 class UserNotice extends Task {
 	/**

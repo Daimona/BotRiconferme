@@ -2,6 +2,9 @@
 
 namespace BotRiconferme;
 
+use BotRiconferme\Exceptions\ConfigException;
+use BotRiconferme\Exceptions\MissingPageException;
+
 class Config {
 	/** @var array */
 	private $opts = [];

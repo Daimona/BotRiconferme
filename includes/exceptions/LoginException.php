@@ -1,6 +1,6 @@
 <?php
 
-namespace BotRiconferme;
+namespace BotRiconferme\Exceptions;
 
 class LoginException extends \Exception {
 }

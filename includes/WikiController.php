@@ -2,17 +2,27 @@
 
 namespace BotRiconferme;
 
-class WikiController extends ContextSource {
+use BotRiconferme\Exceptions\LoginException;
+use BotRiconferme\Exceptions\APIRequestException;
+use BotRiconferme\Exceptions\MissingPageException;
+
+class WikiController {
+	/** @var Logger */
+	private $logger;
+
+	public function __construct() {
+		$this->logger = new Logger;
+	}
 	/**
 	 * @throws LoginException
 	 */
 	public function login() {
-		$this->getLogger()->debug( 'Logging in' );
+		$this->logger->debug( 'Logging in' );
 
 		$params = [
 			'action' => 'login',
-			'lgname' => $this->getConfig()->get( 'username' ),
-			'lgpassword' => $this->getConfig()->get( 'password' ),
+			'lgname' => Config::getInstance()->get( 'username' ),
+			'lgpassword' => Config::getInstance()->get( 'password' ),
 			'lgtoken' => $this->getToken( 'login' )
 		];
 
@@ -27,7 +37,7 @@ class WikiController extends ContextSource {
 			throw new LoginException( 'Unknown error' );
 		}
 
-		$this->getLogger()->debug( 'Login succeeded' );
+		$this->logger->debug( 'Login succeeded' );
 	}
 
 	/**
@@ -59,7 +69,7 @@ class WikiController extends ContextSource {
 	 * @throws MissingPageException
 	 */
 	public function getPageContent( string $title ) : string {
-		$this->getLogger()->debug( "Retrieving page $title" );
+		$this->logger->debug( "Retrieving page $title" );
 		$params = [
 			'action' => 'query',
 			'titles' => $title,
