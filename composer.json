@@ -1,13 +1,13 @@
 {
 	"name": "daimona/bot-riconferme",
-    "description": "Bot per le riconferme di itwiki",
-    "type": "project",
-    "license": "AGPL-3.0-or-later",
-    "require": {
-        "php": "^7.1.0",
+	"description": "Bot per le riconferme di itwiki",
+	"type": "project",
+	"license": "AGPL-3.0-or-later",
+	"require": {
+		"php": "^7.1.0",
 		"ext-json": "*",
 		"psr/log": "^1.1"
-    },
+	},
 	"suggest": {
 		"ext-curl": "Faster requests"
 	},
@@ -17,7 +17,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-            "BotRiconferme\\": "includes/"
+			"BotRiconferme\\": "includes/"
 		}
 	},
 	"scripts": {
