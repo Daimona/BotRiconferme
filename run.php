@@ -36,12 +36,12 @@ Config::init( $vals );
 $bot = new Bot();
 
 /*
- * E.g. --task update-list
+ * E.g. --task=update-list
  */
-$task = getopt( '', [ 'task:' ] );
+$taskOpts = getopt( '', [ 'task:' ] );
 
-if ( $task ) {
-	$bot->runSingle( $task );
+if ( $taskOpts ) {
+	$bot->runSingle( $taskOpts[ 'task' ] );
 } else {
 	$bot->run();
 }

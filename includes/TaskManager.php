@@ -78,11 +78,18 @@ class TaskManager {
 		}
 
 		$class = self::TASKS_MAP[ $task ];
-		/** @var Task $task */
-		$task = new $class( $this->provider );
-		return $task->run();
+		return $this->getTaskInstance( $class )->run();
 	}
 
+	/**
+	 * Helper to make type inferencing easier
+	 *
+	 * @param string $class
+	 * @return Task
+	 */
+	private function getTaskInstance( string $class ) : Task {
+		return new $class( $this->provider );
+	}
 	/**
 	 * @return string|null d/m/Y or null if no last run registered
 	 */

@@ -21,15 +21,16 @@ class TaskDataProvider extends ContextSource {
 			$this->users = [];
 			foreach ( $users as $user => $groups ) {
 				$c = isset( $groups[ 'checkuser' ] ) ?
-					\DateTime::createFromFormat('d/m/Y', $groups[ 'checkuser' ] )->getTimestamp() :
+					\DateTime::createFromFormat( 'd/m/Y', $groups[ 'checkuser' ] )->getTimestamp() :
 					0;
 				$b = isset( $groups[ 'bureaucrat' ] ) ?
-					\DateTime::createFromFormat('d/m/Y', $groups[ 'bureaucrat' ] )->getTimestamp() :
+					\DateTime::createFromFormat( 'd/m/Y', $groups[ 'bureaucrat' ] )->getTimestamp() :
 					0;
 
 				$timestamp = max( $b, $c );
 				if ( $timestamp === 0 ) {
-					$timestamp = \DateTime::createFromFormat('d/m/Y', $groups[ 'sysop' ] )->getTimestamp();
+					// @phan-suppress-next-line PhanTypeArraySuspicious Phan cannot know...
+					$timestamp = \DateTime::createFromFormat( 'd/m/Y', $groups[ 'sysop' ] )->getTimestamp();
 				}
 
 				if ( date( 'd/m', $timestamp ) === date( 'd/m' ) &&
