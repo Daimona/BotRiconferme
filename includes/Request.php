@@ -12,6 +12,9 @@ class Request {
 		'User-Agent: ' . self::USER_AGENT
 	];
 
+	// In seconds
+	const MAXLAG = 5;
+
 	/** @var array */
 	private $params;
 
@@ -83,6 +86,7 @@ class Request {
 			if ( $this->method === 'POST' ) {
 				curl_setopt( $curl, CURLOPT_URL, $url );
 				curl_setopt( $curl, CURLOPT_POST, true );
+				$params['maxlag'] = self::MAXLAG;
 				curl_setopt( $curl, CURLOPT_POSTFIELDS, http_build_query( $params ) );
 			} else {
 				curl_setopt( $curl, CURLOPT_URL, "$url?" . http_build_query( $params ) );
