@@ -3,7 +3,6 @@
 namespace BotRiconferme\Tasks;
 
 use BotRiconferme\TaskResult;
-use BotRiconferme\Request;
 use BotRiconferme\Exceptions\TaskException;
 
 class UpdatesAround extends Task {
@@ -33,7 +32,6 @@ class UpdatesAround extends Task {
 		$this->getLogger()->info( "Adding $page to main" );
 
 		$params = [
-			'action' => 'edit',
 			'title' => $this->getConfig()->get( 'ric-main-page' ),
 			'appendtext' => "{\{$page}}",
 			'summary' => $this->getConfig()->get( 'ric-main-page-summary' ),
@@ -41,9 +39,7 @@ class UpdatesAround extends Task {
 			'token' => $this->getController()->getToken( 'csrf' )
 		];
 
-		$this->getController()->login();
-		$req = new Request( $params, true );
-		$req->execute();
+		$this->getController()->editPage( $params );
 	}
 
 	/**
@@ -80,7 +76,6 @@ class UpdatesAround extends Task {
 		}
 
 		$params = [
-			'action' => 'edit',
 			'title' => $votePage,
 			'text' => $newContent,
 			'summary' => $this->getConfig()->get( 'ric-vote-page-summary' ),
@@ -88,9 +83,7 @@ class UpdatesAround extends Task {
 			'token' => $this->getController()->getToken( 'csrf' )
 		];
 
-		$this->getController()->login();
-		$req = new Request( $params, true );
-		$req->execute();
+		$this->getController()->editPage( $params );
 	}
 
 	/**
@@ -112,7 +105,6 @@ class UpdatesAround extends Task {
 		$newContent = preg_replace( $reg, "$1$newNum", $content );
 
 		$params = [
-			'action' => 'edit',
 			'title' => $newsPage,
 			'text' => $newContent,
 			'summary' => $this->getConfig()->get( 'ric-news-page-summary' ),
@@ -120,9 +112,7 @@ class UpdatesAround extends Task {
 			'token' => $this->getController()->getToken( 'csrf' )
 		];
 
-		$this->getController()->login();
-		$req = new Request( $params, true );
-		$req->execute();
+		$this->getController()->editPage( $params );
 	}
 
 	/**

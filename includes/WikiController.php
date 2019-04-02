@@ -87,4 +87,17 @@ class WikiController {
 
 		return $page->revisions[0]->slots->main->{ '*' };
 	}
+
+	/**
+	 * Basically a wrapper for action=edit
+	 *
+	 * @param array $params
+	 */
+	public function editPage( array $params ) {
+		$params = [ 'action' => 'edit' ] + $params;
+
+		$this->login();
+		$req = new Request( $params, true );
+		$req->execute();
+	}
 }

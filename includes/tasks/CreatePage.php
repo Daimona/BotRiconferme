@@ -105,7 +105,6 @@ class CreatePage extends Task {
 		$text = strtr( $text, $textParams );
 
 		$params = [
-			'action' => 'edit',
 			'title' => $title,
 			'text' => $text,
 			'summary' => $this->getConfig()->get( 'ric-page-summary' ),
@@ -113,9 +112,7 @@ class CreatePage extends Task {
 			'token' => $this->getController()->getToken( 'csrf' )
 		];
 
-		$this->getController()->login();
-		$req = new Request( $params, true );
-		$req->execute();
+		$this->getController()->editPage( $params );
 	}
 
 	/**
@@ -126,7 +123,6 @@ class CreatePage extends Task {
 		$this->getLogger()->info( "Creating base page $title" );
 
 		$params = [
-			'action' => 'edit',
 			'title' => $title,
 			'text' => $newText,
 			'summary' => $this->getConfig()->get( 'ric-base-page-summary' ),
@@ -134,9 +130,7 @@ class CreatePage extends Task {
 			'token' => $this->getController()->getToken( 'csrf' )
 		];
 
-		$this->getController()->login();
-		$req = new Request( $params, true );
-		$req->execute();
+		$this->getController()->editPage( $params );
 	}
 
 	/**
@@ -147,7 +141,6 @@ class CreatePage extends Task {
 		$this->getLogger()->info( "Updating base page $title" );
 
 		$params = [
-			'action' => 'edit',
 			'title' => $title,
 			'appendtext' => $newText,
 			'summary' => $this->getConfig()->get( 'ric-base-page-summary-update' ),
@@ -155,9 +148,7 @@ class CreatePage extends Task {
 			'token' => $this->getController()->getToken( 'csrf' )
 		];
 
-		$this->getController()->login();
-		$req = new Request( $params, true );
-		$req->execute();
+		$this->getController()->editPage( $params );
 	}
 
 	/**

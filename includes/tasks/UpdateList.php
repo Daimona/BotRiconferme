@@ -136,7 +136,6 @@ class UpdateList extends Task {
 		$stringified = json_encode( $newContent );
 
 		$params = [
-			'action' => 'edit',
 			'title' => $this->getConfig()->get( 'list-title' ),
 			'text' => $stringified,
 			'summary' => $this->getConfig()->get( 'list-update-summary' ),
@@ -144,9 +143,7 @@ class UpdateList extends Task {
 			'token' => $this->getController()->getToken( 'csrf' )
 		];
 
-		$this->getController()->login();
-		$req = new Request( $params, true );
-		$req->execute();
+		$this->getController()->editPage( $params );
 	}
 
 	/**

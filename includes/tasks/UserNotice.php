@@ -3,7 +3,6 @@
 namespace BotRiconferme\Tasks;
 
 use BotRiconferme\TaskResult;
-use BotRiconferme\Request;
 
 class UserNotice extends Task {
 	/**
@@ -36,7 +35,6 @@ class UserNotice extends Task {
 		$msg = str_replace( '$num', "$ricNum", $this->getConfig()->get( 'user-notice-msg' ) );
 
 		$params = [
-			'action' => 'edit',
 			'title' => "User talk:$user",
 			'section' => 'new',
 			'text' => $msg,
@@ -46,9 +44,7 @@ class UserNotice extends Task {
 			'token' => $this->getController()->getToken( 'csrf' )
 		];
 
-		$this->getController()->login();
-		$req = new Request( $params, true );
-		$req->execute();
+		$this->getController()->editPage( $params );
 	}
 
 	/**
