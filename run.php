@@ -34,4 +34,14 @@ if ( count( $vals ) !== count( $required ) ) {
 Config::init( $vals );
 
 $bot = new Bot();
-$bot->run();
+
+/*
+ * E.g. --task update-list
+ */
+$task = getopt( '', [ 'task:' ] );
+
+if ( $task ) {
+	$bot->runSingle( $task );
+} else {
+	$bot->run();
+}

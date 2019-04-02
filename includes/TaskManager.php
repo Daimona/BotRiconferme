@@ -7,6 +7,9 @@ class TaskManager {
 	const MODE_COMPLETE = 0;
 	const MODE_SINGLE = 1;
 
+	// File where the date of the last full run is stored
+	const LOG_FILE = './../lastrun.log';
+
 	/** @var TaskDataProvider */
 	private $provider;
 
@@ -36,6 +39,11 @@ class TaskManager {
 	 * @return TaskResult
 	 */
 	protected function runAllTasks() : TaskResult {
+		if ( self::getLastFullRunDate() === date( 'd/m/Y' ) ) {
+			// Really avoid executing twice the same day
+			return new TaskResult( TaskResult::STATUS_ERROR, [ 'A full run was already executed today.' ] );
+		}
+
 		// Order matters here
 		$list = [
 			'update-list',
@@ -48,6 +56,8 @@ class TaskManager {
 		do {
 			$res->merge( $this->runTask( current( $list ) ) );
 		} while ( $res->isOK() && next( $list ) );
+
+		self::setLastFullRunDate();
 
 		return $res;
 	}
@@ -65,5 +75,27 @@ class TaskManager {
 		/** @var Task $task */
 		$task = new $class( $this->provider );
 		return $task->run();
+	}
+
+	/**
+	 * @return string|null d/m/Y or null if no last run registered
+	 */
+	public static function getLastFullRunDate() : ?string {
+		if ( file_exists( self::LOG_FILE ) ) {
+			return file_get_contents( self::LOG_FILE ) ?: null;
+		} else {
+			return null;
+		}
+	}
+
+	public static function setLastFullRunDate() {
+		file_put_contents( self::LOG_FILE, date( 'd/m/Y' ) );
+	}
+
+	/**
+	 * Should only be used for debugging purpose.
+	 */
+	public static function resetLastRunDate() {
+		file_put_contents( self::LOG_FILE, '' );
 	}
 }

@@ -17,7 +17,6 @@ class TaskDataProvider extends ContextSource {
 			$this->getLogger()->debug( 'Retrieving users list' );
 			$content = $this->getController()->getPageContent( $this->getConfig()->get( 'list-title' ) );
 			$users = json_decode( $content, true );
-			$now = date( 'd/m' );
 
 			$this->users = [];
 			foreach ( $users as $user => $groups ) {
@@ -25,7 +24,8 @@ class TaskDataProvider extends ContextSource {
 				if ( $date === 0 ) {
 					$date = strtotime( $groups['sysop'] );
 				}
-				if ( date( 'd/m', $date ) === $now ) {
+				// Don't trigger if the date is actually today
+				if ( date( 'd/m', $date ) === date( 'd/m' ) && date( 'd/m/Y', $date ) !== date( 'd/m/Y' ) ) {
 					$this->users[ $user ] = $groups;
 				}
 			}
