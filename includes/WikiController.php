@@ -10,6 +10,9 @@ class WikiController {
 	/** @var Logger */
 	private $logger;
 
+	/** @var bool */
+	private $loggedIn = false;
+
 	public function __construct() {
 		$this->logger = new Logger;
 	}
@@ -17,6 +20,11 @@ class WikiController {
 	 * @throws LoginException
 	 */
 	public function login() {
+		if ( $this->loggedIn ) {
+			$this->logger->debug( 'Already logged in' );
+			return;
+		}
+
 		$this->logger->debug( 'Logging in' );
 
 		$params = [
@@ -37,6 +45,7 @@ class WikiController {
 			throw new LoginException( 'Unknown error' );
 		}
 
+		$this->loggedIn = true;
 		$this->logger->debug( 'Login succeeded' );
 	}
 
@@ -94,7 +103,11 @@ class WikiController {
 	 * @param array $params
 	 */
 	public function editPage( array $params ) {
-		$params = [ 'action' => 'edit' ] + $params;
+		$params = [
+			'action' => 'edit',
+			'token' => $this->getToken( 'csrf' ),
+			'bot' => Config::getInstance()->get( 'bot-edits' )
+		] + $params;
 
 		$this->login();
 		$req = new Request( $params, true );

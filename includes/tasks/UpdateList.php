@@ -96,7 +96,7 @@ class UpdateList extends Task {
 	 * @return string
 	 */
 	protected function getFlagDate( string $admin, string $group ) : string {
-		$this->getLogger()->info( "Retrieving flag date for $admin" );
+		$this->getLogger()->info( "Retrieving $group flag date for $admin" );
 		$params = [
 			'action' => 'query',
 			'list' => 'logevents',
@@ -138,9 +138,7 @@ class UpdateList extends Task {
 		$params = [
 			'title' => $this->getConfig()->get( 'list-title' ),
 			'text' => $stringified,
-			'summary' => $this->getConfig()->get( 'list-update-summary' ),
-			'bot' => 1,
-			'token' => $this->getController()->getToken( 'csrf' )
+			'summary' => $this->getConfig()->get( 'list-update-summary' )
 		];
 
 		$this->getController()->editPage( $params );
@@ -151,7 +149,11 @@ class UpdateList extends Task {
 	 * Throw everything
 	 */
 	public function handleException( \Throwable $ex ) {
-		$this->getLogger()->error( $ex->getMessage() );
+		$this->getLogger()->error(
+			get_class( $ex ) . ': ' .
+			$ex->getMessage() . "\nTrace:\n" .
+			$ex->getTraceAsString()
+		);
 	}
 
 	/**

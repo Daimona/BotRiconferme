@@ -20,12 +20,22 @@ class TaskDataProvider extends ContextSource {
 
 			$this->users = [];
 			foreach ( $users as $user => $groups ) {
-				$date = max( strtotime( $groups['checkuser'] ) ?? 0, strtotime( $groups['bureaucrat'] ) ?? 0 );
-				if ( $date === 0 ) {
-					$date = strtotime( $groups['sysop'] );
+				$c = isset( $groups[ 'checkuser' ] ) ?
+					\DateTime::createFromFormat('d/m/Y', $groups[ 'checkuser' ] )->getTimestamp() :
+					0;
+				$b = isset( $groups[ 'bureaucrat' ] ) ?
+					\DateTime::createFromFormat('d/m/Y', $groups[ 'bureaucrat' ] )->getTimestamp() :
+					0;
+
+				$timestamp = max( $b, $c );
+				if ( $timestamp === 0 ) {
+					$timestamp = \DateTime::createFromFormat('d/m/Y', $groups[ 'sysop' ] )->getTimestamp();
 				}
-				// Don't trigger if the date is actually today
-				if ( date( 'd/m', $date ) === date( 'd/m' ) && date( 'd/m/Y', $date ) !== date( 'd/m/Y' ) ) {
+
+				if ( date( 'd/m', $timestamp ) === date( 'd/m' ) &&
+					// Don't trigger if the date is actually today
+					date( 'd/m/Y', $timestamp ) !== date( 'd/m/Y' )
+				) {
 					$this->users[ $user ] = $groups;
 				}
 			}

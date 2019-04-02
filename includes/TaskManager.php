@@ -14,7 +14,7 @@ class TaskManager {
 	const MODE_SINGLE = 1;
 
 	// File where the date of the last full run is stored
-	const LOG_FILE = './../lastrun.log';
+	const LOG_FILE = './lastrun.log';
 
 	/** @var TaskDataProvider */
 	private $provider;

@@ -20,7 +20,7 @@ class Bot {
 		if ( $res->isOK() ) {
 			$this->logger->info( 'Execution completed successfully.' );
 		} else {
-			$this->logger->warning( "Execution failed.\n$res" );
+			$this->logger->error( "Execution failed.\n$res" );
 		}
 	}
 
@@ -36,7 +36,7 @@ class Bot {
 		if ( $res->isOK() ) {
 			$this->logger->info( "Execution of $task completed successfully." );
 		} else {
-			$this->logger->warning( "Execution of $task failed.\n$res" );
+			$this->logger->error( "Execution of $task failed.\n$res" );
 		}
 	}
 }

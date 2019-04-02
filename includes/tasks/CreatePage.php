@@ -21,7 +21,7 @@ class CreatePage extends Task {
 			$pageTitle = "$baseTitle/$num";
 			$this->doCreatePage( $pageTitle, $user, $groups );
 
-			$newText = str_replace( '$title', $baseTitle, $this->getConfig()->get( 'ric-base-page-text' ) );
+			$newText = str_replace( '$title', $pageTitle, $this->getConfig()->get( 'ric-base-page-text' ) );
 			if ( $num === 1 ) {
 				$this->createBasePage( $baseTitle, $newText );
 			} else {
@@ -107,9 +107,7 @@ class CreatePage extends Task {
 		$params = [
 			'title' => $title,
 			'text' => $text,
-			'summary' => $this->getConfig()->get( 'ric-page-summary' ),
-			'bot' => 1,
-			'token' => $this->getController()->getToken( 'csrf' )
+			'summary' => $this->getConfig()->get( 'ric-page-summary' )
 		];
 
 		$this->getController()->editPage( $params );
@@ -125,9 +123,7 @@ class CreatePage extends Task {
 		$params = [
 			'title' => $title,
 			'text' => $newText,
-			'summary' => $this->getConfig()->get( 'ric-base-page-summary' ),
-			'bot' => 1,
-			'token' => $this->getController()->getToken( 'csrf' )
+			'summary' => $this->getConfig()->get( 'ric-base-page-summary' )
 		];
 
 		$this->getController()->editPage( $params );
@@ -143,9 +139,7 @@ class CreatePage extends Task {
 		$params = [
 			'title' => $title,
 			'appendtext' => $newText,
-			'summary' => $this->getConfig()->get( 'ric-base-page-summary-update' ),
-			'bot' => 1,
-			'token' => $this->getController()->getToken( 'csrf' )
+			'summary' => $this->getConfig()->get( 'ric-base-page-summary-update' )
 		];
 
 		$this->getController()->editPage( $params );
@@ -156,7 +150,11 @@ class CreatePage extends Task {
 	 * Throw everything
 	 */
 	public function handleException( \Throwable $ex ) {
-		$this->getLogger()->error( $ex->getMessage() );
+		$this->getLogger()->error(
+			get_class( $ex ) . ': ' .
+			$ex->getMessage() . "\nTrace:\n" .
+			$ex->getTraceAsString()
+		);
 	}
 
 	/**

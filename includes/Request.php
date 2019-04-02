@@ -42,8 +42,15 @@ class Request {
 			if ( isset( $res->error ) ) {
 				throw new APIRequestException( $res->error->info );
 			} elseif ( isset( $res->warnings ) ) {
-				$warnings = reset( $res->warnings );
-				throw new APIRequestException( reset( $warnings ) );
+				$act = $params[ 'action' ];
+				if ( is_string( $act ) ) {
+					$warning = $res->warnings->$act;
+				} elseif ( is_array( $act ) ) {
+					$warning = $res->warnings->{ $act[0] };
+				} else {
+					$warning = reset( $res->warnings );
+				}
+				throw new APIRequestException( reset( $warning ) );
 			}
 
 			$sets[] = $res;

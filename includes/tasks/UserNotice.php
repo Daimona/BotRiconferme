@@ -39,9 +39,7 @@ class UserNotice extends Task {
 			'section' => 'new',
 			'text' => $msg,
 			'sectiontitle' => $this->getConfig()->get( 'user-notice-title' ),
-			'summary' => $this->getConfig()->get( 'user-notice-summary' ),
-			'bot' => 1,
-			'token' => $this->getController()->getToken( 'csrf' )
+			'summary' => $this->getConfig()->get( 'user-notice-summary' )
 		];
 
 		$this->getController()->editPage( $params );
@@ -52,7 +50,11 @@ class UserNotice extends Task {
 	 * Throw everything
 	 */
 	public function handleException( \Throwable $ex ) {
-		$this->getLogger()->error( $ex->getMessage() );
+		$this->getLogger()->error(
+			get_class( $ex ) . ': ' .
+			$ex->getMessage() . "\nTrace:\n" .
+			$ex->getTraceAsString()
+		);
 	}
 
 	/**

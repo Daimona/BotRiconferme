@@ -33,10 +33,8 @@ class UpdatesAround extends Task {
 
 		$params = [
 			'title' => $this->getConfig()->get( 'ric-main-page' ),
-			'appendtext' => "{\{$page}}",
-			'summary' => $this->getConfig()->get( 'ric-main-page-summary' ),
-			'bot' => 1,
-			'token' => $this->getController()->getToken( 'csrf' )
+			'appendtext' => '{{' . $page . '}}',
+			'summary' => $this->getConfig()->get( 'ric-main-page-summary' )
 		];
 
 		$this->getController()->editPage( $params );
@@ -54,9 +52,11 @@ class UpdatesAround extends Task {
 		$visibleContent = strip_tags( $content );
 		$user = explode( '/', $page )[2];
 
-		$oldLoc = setlocale( LC_TIME, 'it_IT' );
+		$oldLoc = setlocale( LC_TIME, 'it_IT', 'Italian_Italy', 'Italian' );
 		$endTS = time() + ( 60 * 60 * 24 * 7 );
 		$endTime = strftime( '%e %B alle %R', $endTS );
+		// Remove the left space if day has a single digit
+		$endTime = ltrim( $endTime );
 		$artic = in_array( date( 'j', $endTS ), [ 8, 11 ] ) ? "l'" : "il ";
 		setlocale( LC_TIME, $oldLoc );
 
@@ -78,9 +78,7 @@ class UpdatesAround extends Task {
 		$params = [
 			'title' => $votePage,
 			'text' => $newContent,
-			'summary' => $this->getConfig()->get( 'ric-vote-page-summary' ),
-			'bot' => 1,
-			'token' => $this->getController()->getToken( 'csrf' )
+			'summary' => $this->getConfig()->get( 'ric-vote-page-summary' )
 		];
 
 		$this->getController()->editPage( $params );
@@ -101,15 +99,13 @@ class UpdatesAround extends Task {
 			throw new TaskException( 'Param not found in news page' );
 		}
 
-		$newNum = $matches[2] + 1;
-		$newContent = preg_replace( $reg, "$1$newNum", $content );
+		$newNum = (int)$matches[2] + 1;
+		$newContent = preg_replace( $reg, '${1}' . $newNum, $content );
 
 		$params = [
 			'title' => $newsPage,
 			'text' => $newContent,
-			'summary' => $this->getConfig()->get( 'ric-news-page-summary' ),
-			'bot' => 1,
-			'token' => $this->getController()->getToken( 'csrf' )
+			'summary' => $this->getConfig()->get( 'ric-news-page-summary' )
 		];
 
 		$this->getController()->editPage( $params );
@@ -120,7 +116,11 @@ class UpdatesAround extends Task {
 	 * Throw everything
 	 */
 	public function handleException( \Throwable $ex ) {
-		$this->getLogger()->error( $ex->getMessage() );
+		$this->getLogger()->error(
+			get_class( $ex ) . ': ' .
+			$ex->getMessage() . "\nTrace:\n" .
+			$ex->getTraceAsString()
+		);
 	}
 
 	/**
