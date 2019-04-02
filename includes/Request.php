@@ -21,6 +21,9 @@ class Request {
 	/** @var string */
 	private $method;
 
+	/** @var array */
+	private static $cookies;
+
 	/**
 	 * @param array $params
 	 * @param bool $isPOST
@@ -69,6 +72,31 @@ class Request {
 	}
 
 	/**
+	 * @param array $cookies
+	 */
+	private function setCookies( array $cookies ) {
+		foreach ( $cookies as $cookie ) {
+			$bits = explode( ';', $cookie );
+			list( $name, $value ) = explode( '=', $bits[0] );
+			self::$cookies[ $name ] = $value;
+		}
+	}
+
+	/**
+	 * @return array
+	 */
+	private function getHeaders() :array {
+		$ret = self::HEADERS;
+		if ( self::$cookies ) {
+			$cookies = [];
+			foreach ( self::$cookies as $cname => $cval ) {
+				$cookies[] = trim( "$cname=$cval" );
+			}
+			$ret[] = 'Cookie: ' . implode( '; ', $cookies );
+		}
+		return $ret;
+	}
+	/**
 	 * Perform an API request, either via cURL (if available) or file_get_contents
 	 *
 	 * @param array $params
@@ -76,12 +104,24 @@ class Request {
 	 */
 	private function reallyMakeRequest( array $params ) {
 		$url = Config::getInstance()->get( 'url' );
+		$headers = $this->getHeaders();
+
+		$cookies = [];
 
 		if ( extension_loaded( 'curl' ) ) {
+			$headersHandler = function ( $ch, $header ) use ( &$cookies ) {
+				$bits = explode( ':', $header, 2 );
+				if ( trim( $bits[0] ) === 'Set-Cookie' ) {
+					$cookies[] = $bits[1];
+				}
+				return strlen( $header );
+			};
+
 			$curl = curl_init();
 			curl_setopt( $curl, CURLOPT_RETURNTRANSFER, true );
-			curl_setopt( $curl, CURLOPT_HEADER, false );
-			curl_setopt( $curl, CURLOPT_HTTPHEADER, self::HEADERS );
+			curl_setopt( $curl, CURLOPT_HEADER, true );
+			curl_setopt( $curl, CURLOPT_HEADERFUNCTION, $headersHandler );
+			curl_setopt( $curl, CURLOPT_HTTPHEADER, $headers );
 
 			if ( $this->method === 'POST' ) {
 				curl_setopt( $curl, CURLOPT_URL, $url );
@@ -93,30 +133,45 @@ class Request {
 			}
 
 			$result = curl_exec( $curl );
+
 			if ( $result === false ) {
 				throw new APIRequestException( curl_error( $curl ) );
 			}
+
+			// Extract response body
+			$headerSize = curl_getinfo( $curl, CURLINFO_HEADER_SIZE );
+			$body = substr( $result, $headerSize );
 			curl_close( $curl );
-			return json_decode( $result );
 		} else {
 			$query = "$url?" . http_build_query( $params );
 			$context = [
 				'http' => [
 					'method' => $this->method,
-					'header' => $this->buildHeaders()
+					'header' => $this->buildHeadersString( $headers )
 				]
 			];
 			$context = stream_context_create( $context );
-			return json_decode( file_get_contents( $query, false, $context ) );
+			$body = file_get_contents( $query, false, $context );
+
+			foreach ( $http_response_header as $header ) {
+				$bits = explode( ':', $header, 2 );
+				if ( trim( $bits[0] ) === 'Set-Cookie' ) {
+					$cookies[] = $bits[1];
+				}
+			}
 		}
+
+		$this->setCookies( $cookies );
+		return json_decode( $body );
 	}
 
 	/**
+	 * @param array $headers
 	 * @return string
 	 */
-	private function buildHeaders() : string {
+	private function buildHeadersString( array $headers ) : string {
 		$ret = '';
-		foreach ( self::HEADERS as $header ) {
+		foreach ( $headers as $header ) {
 			$ret .= "$header\r\n";
 		}
 		return $ret;

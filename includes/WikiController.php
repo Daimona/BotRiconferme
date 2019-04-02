@@ -10,8 +10,11 @@ class WikiController {
 	/** @var Logger */
 	private $logger;
 
+	/** @var string[] */
+	private $tokens;
+
 	/** @var bool */
-	private $loggedIn = false;
+	private static $loggedIn = false;
 
 	public function __construct() {
 		$this->logger = new Logger;
@@ -20,7 +23,7 @@ class WikiController {
 	 * @throws LoginException
 	 */
 	public function login() {
-		if ( $this->loggedIn ) {
+		if ( self::$loggedIn ) {
 			$this->logger->debug( 'Already logged in' );
 			return;
 		}
@@ -45,7 +48,9 @@ class WikiController {
 			throw new LoginException( 'Unknown error' );
 		}
 
-		$this->loggedIn = true;
+		self::$loggedIn = true;
+		// Clear tokens cache
+		$this->tokens = [];
 		$this->logger->debug( 'Login succeeded' );
 	}
 
@@ -54,9 +59,7 @@ class WikiController {
 	 * @return string
 	 */
 	public function getToken( string $type ) : string {
-		static $tokens = [];
-
-		if ( !isset( $tokens[ $type ] ) ) {
+		if ( !isset( $this->tokens[ $type ] ) ) {
 			$params = [
 				'action' => 'query',
 				'meta'   => 'tokens',
@@ -66,10 +69,10 @@ class WikiController {
 			$req = new Request( $params );
 			$res = $req->execute()[0];
 
-			$tokens[ $type ] = $res->query->tokens->{ "{$type}token" };
+			$this->tokens[ $type ] = $res->query->tokens->{ "{$type}token" };
 		}
 
-		return $tokens[ $type ];
+		return $this->tokens[ $type ];
 	}
 
 	/**
@@ -103,13 +106,14 @@ class WikiController {
 	 * @param array $params
 	 */
 	public function editPage( array $params ) {
+		$this->login();
+
 		$params = [
 			'action' => 'edit',
 			'token' => $this->getToken( 'csrf' ),
 			'bot' => Config::getInstance()->get( 'bot-edits' )
 		] + $params;
 
-		$this->login();
 		$req = new Request( $params, true );
 		$req->execute();
 	}

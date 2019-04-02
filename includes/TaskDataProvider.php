@@ -45,6 +45,13 @@ class TaskDataProvider extends ContextSource {
 	}
 
 	/**
+	 * @param string $name
+	 */
+	public function removeUser( string $name ) {
+		unset( $this->users[ $name ] );
+	}
+
+	/**
 	 * @param string[] $titles
 	 */
 	public function setCreatedPages( array $titles ) {

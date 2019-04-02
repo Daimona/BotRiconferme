@@ -16,7 +16,14 @@ class CreatePage extends Task {
 
 		$created = [];
 		foreach ( $users as $user => $groups ) {
-			$num = $this->getLastPageNum( $user ) + 1;
+			try {
+				$num = $this->getLastPageNum( $user ) + 1;
+			} catch ( TaskException $e ) {
+				// The page was already created.
+				$this->getDataProvider()->removeUser( $user );
+				$this->getLogger()->warning( $e->getMessage() . "\nRemoving $user." );
+				continue;
+			}
 			$baseTitle = $this->getConfig()->get( 'ric-main-page' ) . "/$user";
 			$pageTitle = "$baseTitle/$num";
 			$this->doCreatePage( $pageTitle, $user, $groups );
@@ -38,6 +45,7 @@ class CreatePage extends Task {
 	/**
 	 * @param string $user
 	 * @return int
+	 * @throws TaskException
 	 */
 	protected function getLastPageNum( string $user ) : int {
 		$this->getLogger()->debug( "Retrieving previous pages for $user" );
@@ -86,7 +94,7 @@ class CreatePage extends Task {
 
 		$res = ( new Request( $params ) )->execute();
 		$data = $res[0]->query->pages;
-		return strtotime( reset( $data )->revisions->timestamp );
+		return strtotime( reset( $data )->revisions[0]->timestamp );
 	}
 
 	/**
