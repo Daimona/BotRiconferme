@@ -74,7 +74,7 @@ class Request {
 			$sets[] = $res;
 
 			$finished = true;
-			if ( !isset( $res->batchcomplete ) && isset( $res->continue ) ) {
+			if ( isset( $res->continue ) ) {
 				$params = array_merge( $params, get_object_vars( $res->continue ) );
 				$finished = false;
 			}
