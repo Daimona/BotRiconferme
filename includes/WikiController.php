@@ -87,7 +87,8 @@ class WikiController {
 			'titles' => $title,
 			'prop' => 'revisions',
 			'rvslots' => 'main',
-			'rvprop' => 'content'
+			'rvprop' => 'content',
+			'rvlimit' => 1
 		];
 
 		$req = new Request( $params );

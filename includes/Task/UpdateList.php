@@ -150,7 +150,8 @@ class UpdateList extends Task {
 			'list' => 'logevents',
 			'leprop' => 'timestamp|details',
 			'leaction' => 'rights/rights',
-			'letitle' => "User:$admin"
+			'letitle' => "User:$admin",
+			'lelimit' => 'max'
 		];
 
 		$req = new Request( $params );
@@ -196,7 +197,8 @@ class UpdateList extends Task {
 			'list' => 'logevents',
 			'leprop' => 'timestamp|details',
 			'leaction' => 'rights/rights',
-			'letitle' => "User:$admin@itwiki"
+			'letitle' => "User:$admin@itwiki",
+			'lelimit' => 'max'
 		];
 
 		$req = new Request( $params );
