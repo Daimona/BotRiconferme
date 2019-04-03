@@ -194,6 +194,7 @@ class UpdateList extends Task {
 
 		if ( $newContent !== $this->botList ) {
 			$this->getLogger()->info( 'Updating admin list' );
+			return;
 		} else {
 			$this->getLogger()->info( 'Admin list already up-to-date' );
 		}
