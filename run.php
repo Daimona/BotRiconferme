@@ -51,7 +51,7 @@ if ( isset( $pwParams[ 'password' ] ) ) {
 	$pw = $pwParams[ 'password' ];
 } elseif ( isset( $pwParams[ 'use-password-file' ] ) ) {
 	if ( file_exists( $PWFILE ) ) {
-		$pw = file_get_contents( $PWFILE );
+		$pw = trim( file_get_contents( $PWFILE ) );
 	} else {
 		exit( 'Please create a password.txt file to use with use-password-file' );
 	}
