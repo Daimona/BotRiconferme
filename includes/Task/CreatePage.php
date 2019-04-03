@@ -14,32 +14,39 @@ class CreatePage extends Task {
 		$this->getLogger()->info( 'Starting task CreatePage' );
 		$users = $this->getDataProvider()->getUsersToProcess();
 
-		$created = [];
 		foreach ( $users as $user => $groups ) {
-			try {
-				$num = $this->getLastPageNum( $user ) + 1;
-			} catch ( TaskException $e ) {
-				// The page was already created.
-				$this->getDataProvider()->removeUser( $user );
-				$this->getLogger()->warning( $e->getMessage() . "\nRemoving $user." );
-				continue;
-			}
-			$baseTitle = $this->getConfig()->get( 'ric-main-page' ) . "/$user";
-			$pageTitle = "$baseTitle/$num";
-			$this->doCreatePage( $pageTitle, $user, $groups );
-
-			$newText = str_replace( '$title', $pageTitle, $this->getConfig()->get( 'ric-base-page-text' ) );
-			if ( $num === 1 ) {
-				$this->createBasePage( $baseTitle, $newText );
-			} else {
-				$this->updateBasePage( $baseTitle, $newText );
-			}
-			$created[] = $pageTitle;
+			$this->processUser( $user, $groups );
 		}
 
 		$this->getLogger()->info( 'Task CreatePage completed successfully' );
-		$this->getDataProvider()->setCreatedPages( $created );
 		return new TaskResult( self::STATUS_OK );
+	}
+
+	/**
+	 * @param string $user
+	 * @param array $groups
+	 */
+	protected function processUser( string $user, array $groups ) {
+		try {
+			$num = $this->getLastPageNum( $user ) + 1;
+		} catch ( TaskException $e ) {
+			// The page was already created.
+			$this->getDataProvider()->removeUser( $user );
+			$this->getLogger()->warning( $e->getMessage() . "\nRemoving $user." );
+			return;
+		}
+
+		$baseTitle = $this->getConfig()->get( 'ric-main-page' ) . "/$user";
+		$pageTitle = "$baseTitle/$num";
+		$this->doCreatePage( $pageTitle, $user, $groups );
+
+		$newText = str_replace( '$title', $pageTitle, $this->getConfig()->get( 'ric-base-page-text' ) );
+		if ( $num === 1 ) {
+			$this->createBasePage( $baseTitle, $newText );
+		} else {
+			$this->updateBasePage( $baseTitle, $newText );
+		}
+		$this->getDataProvider()->addCreatedPages( $pageTitle );
 	}
 
 	/**
