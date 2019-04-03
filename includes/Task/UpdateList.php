@@ -99,17 +99,12 @@ class UpdateList extends Task {
 				continue;
 			}
 
-			$val = [];
 			foreach ( $groupsList as $group ) {
 				try {
-					$val[ $group ] = $this->getFlagDate( $adm, $group );
+					$missing[ $adm ][ $group ] = $this->getFlagDate( $adm, $group );
 				} catch ( TaskException $e ) {
 					$this->errors[] = $e->getMessage();
 				}
-			}
-			if ( $val ) {
-				// Only add it if we managed to retrieve at least a date
-				$missing[ $adm ] = $val;
 			}
 		}
 		return $missing;

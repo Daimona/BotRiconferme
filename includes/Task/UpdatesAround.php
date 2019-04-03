@@ -51,16 +51,9 @@ class UpdatesAround extends Task {
 		// Remove comments etc.
 		$visibleContent = strip_tags( $content );
 		$user = explode( '/', $page )[2];
+		$time = $this->getTimeWithArticle();
 
-		$oldLoc = setlocale( LC_TIME, 'it_IT', 'Italian_Italy', 'Italian' );
-		$endTS = time() + ( 60 * 60 * 24 * 7 );
-		$endTime = strftime( '%e %B alle %R', $endTS );
-		// Remove the left space if day has a single digit
-		$endTime = ltrim( $endTime );
-		$artic = in_array( date( 'j', $endTS ), [ 8, 11 ] ) ? "l'" : "il ";
-		setlocale( LC_TIME, $oldLoc );
-
-		$newLine = "*[[Utente:$user|]]. La [[$page|procedura]] termina {$artic}{$endTime}";
+		$newLine = "*[[Utente:$user|]]. La [[$page|procedura]] termina $time";
 
 		$introReg = '!^;È in corso la .*riconferma tacita.* degli .*amministratori.+!m';
 		if ( preg_match( $introReg, $visibleContent ) ) {
@@ -70,9 +63,8 @@ class UpdatesAround extends Task {
 			if ( preg_match( $introReg, $content, $matches ) === false ) {
 				throw new TaskException( 'Intro not found in vote page' );
 			}
-			$stdIntro = $matches[0];
 			$beforeReg = '!INSERIRE LA NOTIZIA PIÙ NUOVA IN CIMA.+!m';
-			$newContent = preg_replace( $beforeReg, "$0\n$stdIntro\n$newLine.", $content, 1 );
+			$newContent = preg_replace( $beforeReg, "$0\n{$matches[0]}\n$newLine.", $content, 1 );
 		}
 
 		$params = [
@@ -82,6 +74,21 @@ class UpdatesAround extends Task {
 		];
 
 		$this->getController()->editPage( $params );
+	}
+
+	/**
+	 * @return string
+	 */
+	private function getTimeWithArticle() : string {
+		$oldLoc = setlocale( LC_TIME, 'it_IT', 'Italian_Italy', 'Italian' );
+		$endTS = time() + ( 60 * 60 * 24 * 7 );
+		$endTime = strftime( '%e %B alle %R', $endTS );
+		// Remove the left space if day has a single digit
+		$endTime = ltrim( $endTime );
+		$artic = in_array( date( 'j', $endTS ), [ 8, 11 ] ) ? "l'" : "il ";
+		setlocale( LC_TIME, $oldLoc );
+
+		return $artic . $endTime;
 	}
 
 	/**

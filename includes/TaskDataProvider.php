@@ -20,18 +20,7 @@ class TaskDataProvider extends ContextSource {
 
 			$this->users = [];
 			foreach ( $users as $user => $groups ) {
-				$c = isset( $groups[ 'checkuser' ] ) ?
-					\DateTime::createFromFormat( 'd/m/Y', $groups[ 'checkuser' ] )->getTimestamp() :
-					0;
-				$b = isset( $groups[ 'bureaucrat' ] ) ?
-					\DateTime::createFromFormat( 'd/m/Y', $groups[ 'bureaucrat' ] )->getTimestamp() :
-					0;
-
-				$timestamp = max( $b, $c );
-				if ( $timestamp === 0 ) {
-					// @phan-suppress-next-line PhanTypeArraySuspicious Phan cannot know...
-					$timestamp = \DateTime::createFromFormat( 'd/m/Y', $groups[ 'sysop' ] )->getTimestamp();
-				}
+				$timestamp = $this->getValidTimestamp( $groups );
 
 				if ( date( 'd/m', $timestamp ) === date( 'd/m' ) &&
 					// Don't trigger if the date is actually today
@@ -43,6 +32,28 @@ class TaskDataProvider extends ContextSource {
 		}
 
 		return $this->users;
+	}
+
+	/**
+	 * Get the valid timestamp for the given groups
+	 *
+	 * @param array $groups
+	 * @return int
+	 */
+	private function getValidTimestamp( array $groups ) : int {
+		$c = isset( $groups[ 'checkuser' ] ) ?
+			\DateTime::createFromFormat( 'd/m/Y', $groups[ 'checkuser' ] )->getTimestamp() :
+			0;
+		$b = isset( $groups[ 'bureaucrat' ] ) ?
+			\DateTime::createFromFormat( 'd/m/Y', $groups[ 'bureaucrat' ] )->getTimestamp() :
+			0;
+
+		$timestamp = max( $b, $c );
+		if ( $timestamp === 0 ) {
+			// @phan-suppress-next-line PhanTypeArraySuspicious Phan cannot know...
+			$timestamp = \DateTime::createFromFormat( 'd/m/Y', $groups[ 'sysop' ] )->getTimestamp();
+		}
+		return $timestamp;
 	}
 
 	/**

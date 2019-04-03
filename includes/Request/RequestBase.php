@@ -98,7 +98,7 @@ abstract class RequestBase {
 	}
 
 	/**
-	 * Taken by MediaWikis' wfObjectToArray https://gerrit.wikimedia.org/g/mediawiki/core/+/
+	 * Taken by MediaWiki's wfObjectToArray https://gerrit.wikimedia.org/g/mediawiki/core/+/
 	 *    846d970e6e02ebc0a284f32968e1681201706270/includes/GlobalFunctions.php#254
 	 *
 	 * @param \stdClass|array $objOrArray
