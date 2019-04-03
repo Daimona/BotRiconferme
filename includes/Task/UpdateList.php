@@ -92,15 +92,12 @@ class UpdateList extends Task {
 	protected function getMissingGroups() : array {
 		$missing = [];
 		foreach ( $this->actualList as $adm => $groups ) {
-			$groupsList = [];
 			if ( !isset( $this->botList[ $adm ] ) ) {
 				$groupsList = $groups;
 			} elseif ( count( $groups ) > count( $this->botList[$adm] ) ) {
 				// Only some groups are missing
 				$groupsList = array_diff_key( $groups, $this->botList[$adm] );
-			}
-
-			if ( !$groupsList ) {
+			} else {
 				continue;
 			}
 
@@ -184,13 +181,13 @@ class UpdateList extends Task {
 		return $ts;
 	}
 	/**
-	 * @return array[]|bool[]
+	 * @return array[]
 	 */
 	protected function getExtraGroups() : array {
 		$extra = [];
 		foreach ( $this->botList as $name => $groups ) {
 			if ( !isset( $this->actualList[ $name ] ) ) {
-				$extra[ $name ] = true;
+				$extra[ $name ] = $groups;
 			} elseif ( count( $groups ) > count( $this->actualList[ $name ] ) ) {
 				$extra[ $name ] = array_diff_key( $groups, $this->actualList[ $name ] );
 			}
@@ -217,7 +214,7 @@ class UpdateList extends Task {
 
 	/**
 	 * @param array[] $missing
-	 * @param array[]|bool[] $extra
+	 * @param array[] $extra
 	 * @return array[]
 	 */
 	protected function getNewContent( array $missing, array $extra ) : array {
@@ -227,14 +224,12 @@ class UpdateList extends Task {
 				$newContent[ $user ] = array_merge( $groups, $missing[ $user ] );
 				unset( $missing[ $user ] );
 			} elseif ( isset( $extra[ $user ] ) ) {
-				if ( $extra[ $user ] === true ) {
-					unset( $newContent[ $user ] );
-				} else {
-					$newContent[ $user ] = array_diff_key( $groups, $extra[ $user ] );
-				}
+				$newContent[ $user ] = array_diff_key( $groups, $extra[ $user ] );
 			}
 		}
 		// Add users which don't have an entry at all
-		return array_merge( $newContent, $missing );
+		$newContent = array_merge( $newContent, $missing );
+		// And remove empty users
+		return array_filter( $newContent );
 	}
 }
