@@ -176,7 +176,7 @@ class UpdateList extends Task {
 	}
 
 	/**
-	 * @return array[]
+	 * @return array[]|bool[]
 	 */
 	protected function getExtraGroups() : array {
 		$extra = [];
@@ -209,7 +209,7 @@ class UpdateList extends Task {
 
 	/**
 	 * @param array[] $missing
-	 * @param array[] $extra
+	 * @param array[]|bool[] $extra
 	 * @return array[]
 	 */
 	protected function getNewContent( array $missing, array $extra ) : array {
