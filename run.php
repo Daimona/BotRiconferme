@@ -19,7 +19,7 @@ if ( PHP_SAPI !== 'cli' ) {
 	'config-title' => 'Utente:BotRiconferme/Config.json',
 */
 
-$required = [
+$params = [
 	'url:',
 	'username:',
 	'password:',
@@ -27,8 +27,8 @@ $required = [
 	'config-title:'
 ];
 
-$vals = getopt( '', $required );
-if ( count( $vals ) !== count( $required ) ) {
+$vals = getopt( '', $params );
+if ( count( $vals ) !== count( $params ) ) {
 	exit( 'Not enough params!' );
 }
 Config::init( $vals );
