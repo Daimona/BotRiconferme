@@ -23,6 +23,8 @@ abstract class RequestBase {
 	protected $params;
 	/** @var string */
 	protected $method;
+	/** @var string[] */
+	protected $newCookies = [];
 
 	/**
 	 * Use self::newFromParams, which will provide the right class to use
@@ -55,7 +57,6 @@ abstract class RequestBase {
 	 * Make an API request
 	 *
 	 * @return array
-	 * @throws APIRequestException
 	 */
 	public function execute() : array {
 		$params = $this->params;
@@ -63,30 +64,7 @@ abstract class RequestBase {
 		do {
 			$res = $this->makeRequestInternal( $params );
 
-			if ( isset( $res->error ) ) {
-				switch ( $res->error->code ) {
-					case 'missingtitle':
-						$ex = new MissingPageException;
-						break;
-					case 'protectedpage':
-						$ex = new ProtectedPageException;
-						break;
-					default:
-						$ex = new APIRequestException( $res->error->code . ' - ' . $res->error->info );
-				}
-				throw $ex;
-			} elseif ( isset( $res->warnings ) ) {
-				$act = $params[ 'action' ];
-				if ( is_string( $act ) ) {
-					$warning = $res->warnings->$act;
-				} elseif ( is_array( $act ) ) {
-					$warning = $res->warnings->{ $act[0] };
-				} else {
-					$warning = reset( $res->warnings );
-				}
-				throw new APIRequestException( reset( $warning ) );
-			}
-
+			$this->handleErrorAndWarnings( $res );
 			$sets[] = $res;
 
 			$finished = true;
@@ -103,12 +81,10 @@ abstract class RequestBase {
 	 * Perform an API request, either via cURL (if available) or file_get_contents
 	 *
 	 * @param array $params
-	 * @return mixed
+	 * @return \stdClass
 	 */
-	private function makeRequestInternal( array $params ) {
+	private function makeRequestInternal( array $params ) : \stdClass {
 		$url = Config::getInstance()->get( 'url' );
-
-		$cookies = [];
 
 		if ( $this->method === 'POST' ) {
 			$params['maxlag'] = self::MAXLAG;
@@ -117,7 +93,7 @@ abstract class RequestBase {
 
 		$body = $this->reallyMakeRequest( $url, $params );
 
-		$this->setCookies( $cookies );
+		$this->setCookies( $this->newCookies );
 		return json_decode( $body );
 	}
 
@@ -138,6 +114,36 @@ abstract class RequestBase {
 			$bits = explode( ';', $cookie );
 			list( $name, $value ) = explode( '=', $bits[0] );
 			self::$cookies[ $name ] = $value;
+		}
+	}
+
+	/**
+	 * @param \stdClass $res
+	 * @throws APIRequestException
+	 */
+	protected function handleErrorAndWarnings( $res ) {
+		if ( isset( $res->error ) ) {
+			switch ( $res->error->code ) {
+				case 'missingtitle':
+					$ex = new MissingPageException;
+					break;
+				case 'protectedpage':
+					$ex = new ProtectedPageException;
+					break;
+				default:
+					$ex = new APIRequestException( $res->error->code . ' - ' . $res->error->info );
+			}
+			throw $ex;
+		} elseif ( isset( $res->warnings ) ) {
+			$act = $this->params[ 'action' ];
+			if ( is_string( $act ) ) {
+				$warning = $res->warnings->$act;
+			} elseif ( is_array( $act ) ) {
+				$warning = $res->warnings->{ $act[0] };
+			} else {
+				$warning = reset( $res->warnings );
+			}
+			throw new APIRequestException( reset( $warning ) );
 		}
 	}
 

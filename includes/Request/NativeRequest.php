@@ -24,14 +24,13 @@ class NativeRequest extends RequestBase {
 		$context = stream_context_create( $context );
 		$body = file_get_contents( $url, false, $context );
 
-		$cookies = [];
 		foreach ( $http_response_header as $header ) {
 			$bits = explode( ':', $header, 2 );
 			if ( trim( $bits[0] ) === 'Set-Cookie' ) {
-				$cookies[] = $bits[1];
+				$this->newCookies[] = $bits[1];
 			}
 		}
-		$this->setCookies( $cookies );
+
 		return $body;
 	}
 }
