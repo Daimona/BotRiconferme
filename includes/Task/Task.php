@@ -40,23 +40,31 @@ abstract class Task extends ContextSource {
 	abstract public function run() : TaskResult;
 
 	/**
-	 * Exception handler
+	 * Exception handler.
 	 *
 	 * @param \Throwable $ex
-	 * @internal To be used as exception handler only
+	 * @protected
 	 */
-	abstract public function handleException( \Throwable $ex );
+	public function handleException( \Throwable $ex ) {
+		$this->getLogger()->error(
+			get_class( $ex ) . ': ' .
+			$ex->getMessage() . "\nTrace:\n" .
+			$ex->getTraceAsString()
+		);
+	}
 
 	/**
-	 * Error handler
+	 * Error handler. As default, always throw
 	 *
 	 * @param int $errno
 	 * @param string $errstr
 	 * @param string $errfile
 	 * @param int $errline
-	 * @internal To be used as error handler only
+	 * @protected
 	 */
-	abstract public function handleError( $errno, $errstr, $errfile, $errline );
+	public function handleError( $errno, $errstr, $errfile, $errline ) {
+		throw new \ErrorException( $errstr, 0, $errno, $errfile, $errline );
+	}
 
 	/**
 	 * @return TaskDataProvider

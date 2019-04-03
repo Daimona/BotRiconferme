@@ -110,24 +110,4 @@ class UpdatesAround extends Task {
 
 		$this->getController()->editPage( $params );
 	}
-
-	/**
-	 * @inheritDoc
-	 * Throw everything
-	 */
-	public function handleException( \Throwable $ex ) {
-		$this->getLogger()->error(
-			get_class( $ex ) . ': ' .
-			$ex->getMessage() . "\nTrace:\n" .
-			$ex->getTraceAsString()
-		);
-	}
-
-	/**
-	 * @inheritDoc
-	 * Abort on anything
-	 */
-	public function handleError( $errno, $errstr, $errfile, $errline ) {
-		throw new \ErrorException( $errstr, 0, $errno, $errfile, $errline );
-	}
 }
