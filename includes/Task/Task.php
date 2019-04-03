@@ -14,6 +14,9 @@ abstract class Task extends ContextSource {
 	/** @var TaskDataProvider */
 	private $dataProvider;
 
+	/** @var string[] */
+	protected $errors;
+
 	/**
 	 * @param TaskDataProvider $dataProvider
 	 */

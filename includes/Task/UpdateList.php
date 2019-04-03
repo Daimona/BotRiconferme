@@ -7,24 +7,89 @@ use BotRiconferme\Request;
 use BotRiconferme\Exception\TaskException;
 
 class UpdateList extends Task {
+	/** @var array[] */
+	private $botList;
+	/** @var array[] */
+	private $actualList;
+
 	/**
 	 * @inheritDoc
 	 */
 	public function run() : TaskResult {
 		$this->getLogger()->info( 'Starting task UpdateList' );
-		$actual = $this->getActualAdmins();
-		$list = $this->getList();
+		$this->actualList = $this->getActualAdmins();
+		$this->botList = $this->getList();
 
-		$errors = [];
+		$missing = $this->getMissingGroups();
+		$extra = $this->getExtraGroups();
 
+		if ( $missing || $extra ) {
+			$this->doUpdateList( $this->getNewContent( $missing, $extra ) );
+		}
+
+		if ( $this->errors ) {
+			// We're fine with it, but don't run other tasks
+			$msg = 'Task UpdateList completed with warnings.';
+			$status = self::STATUS_ERROR;
+		} else {
+			$msg = 'Task UpdateList completed successfully';
+			$status = self::STATUS_OK;
+		}
+
+		$this->getLogger()->info( $msg );
+		return new TaskResult( $status, $this->errors );
+	}
+
+	/**
+	 * @param array[] $missing
+	 * @param array[] $extra
+	 * @return array[]
+	 */
+	protected function getNewContent( array $missing, array $extra ) : array {
+		$newContent = $this->botList;
+		foreach ( $newContent as $user => $groups ) {
+			if ( isset( $missing[ $user ] ) ) {
+				$newContent[ $user ] = array_merge( $groups, $missing[ $user ] );
+				unset( $missing[ $user ] );
+			} elseif ( isset( $extra[ $user ] ) ) {
+				if ( $extra[ $user ] === true ) {
+					unset( $newContent[ $user ] );
+				} else {
+					$newContent[ $user ] = array_diff_key( $groups, $extra[ $user ] );
+				}
+			}
+		}
+		// Add users which don't have an entry at all
+		return array_merge( $newContent, $missing );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	protected function getExtraGroups() : array {
+		$extra = [];
+		foreach ( $this->botList as $name => $groups ) {
+			if ( !isset( $this->actualList[ $name ] ) ) {
+				$extra[ $name ] = true;
+			} elseif ( count( $groups ) > count( $this->actualList[ $name ] ) ) {
+				$extra[ $name ] = array_diff_key( $groups, $this->actualList[ $name ] );
+			}
+		}
+		return $extra;
+	}
+
+	/**
+	 * @return array[]
+	 */
+	protected function getMissingGroups() : array {
 		$missing = [];
-		foreach ( $actual as $adm => $groups ) {
+		foreach ( $this->actualList as $adm => $groups ) {
 			$groupsList = [];
-			if ( !isset( $list[ $adm ] ) ) {
+			if ( !isset( $this->botList[ $adm ] ) ) {
 				$groupsList = $groups;
-			} elseif ( count( $groups ) > count( $list[$adm] ) ) {
+			} elseif ( count( $groups ) > count( $this->botList[$adm] ) ) {
 				// Only some groups are missing
-				$groupsList = array_diff_key( $groups, $list[$adm] );
+				$groupsList = array_diff_key( $groups, $this->botList[$adm] );
 			}
 
 			if ( !$groupsList ) {
@@ -40,7 +105,7 @@ class UpdateList extends Task {
 						$val[ $group ] = $this->getFlagDate( $adm, $group );
 					}
 				} catch ( TaskException $e ) {
-					$errors[] = $e->getMessage();
+					$this->errors[] = $e->getMessage();
 				}
 			}
 			if ( $val ) {
@@ -48,46 +113,7 @@ class UpdateList extends Task {
 				$missing[ $adm ] = $val;
 			}
 		}
-
-		$extra = [];
-		foreach ( $list as $name => $groups ) {
-			if ( !isset( $actual[ $name ] ) ) {
-				$extra[ $name ] = true;
-			} elseif ( count( $groups ) > count( $actual[ $name ] ) ) {
-				$extra[ $name ] = array_diff_key( $groups, $actual[ $name ] );
-			}
-		}
-
-		if ( $missing || $extra ) {
-			$newContent = $list;
-			foreach ( $newContent as $user => $groups ) {
-				if ( isset( $missing[ $user ] ) ) {
-					$newContent[ $user ] = array_merge( $groups, $missing[ $user ] );
-					unset( $missing[ $user ] );
-				} elseif ( isset( $extra[ $user ] ) ) {
-					if ( $extra[ $user ] === true ) {
-						unset( $newContent[ $user ] );
-					} else {
-						$newContent[ $user ] = array_diff_key( $groups, $extra[ $user ] );
-					}
-				}
-			}
-			// Add users which don't have an entry at all
-			$newContent = array_merge( $newContent, $missing );
-			$this->doUpdateList( $newContent );
-		}
-
-		if ( $errors ) {
-			// We're fine with it, but don't run other tasks
-			$msg = 'Task UpdateList completed with warnings.';
-			$status = self::STATUS_ERROR;
-		} else {
-			$msg = 'Task UpdateList completed successfully';
-			$status = self::STATUS_OK;
-		}
-
-		$this->getLogger()->info( $msg );
-		return new TaskResult( $status, $errors );
+		return $missing;
 	}
 
 	/**
