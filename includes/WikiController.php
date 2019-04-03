@@ -5,6 +5,7 @@ namespace BotRiconferme;
 use BotRiconferme\Exception\LoginException;
 use BotRiconferme\Exception\APIRequestException;
 use BotRiconferme\Exception\MissingPageException;
+use BotRiconferme\Request\RequestBase;
 
 class WikiController {
 	/** @var bool */
@@ -34,7 +35,7 @@ class WikiController {
 			'rvlimit' => 1
 		];
 
-		$req = new Request( $params );
+		$req = RequestBase::newFromParams( $params );
 		$data = $req->execute()[0];
 		$page = reset( $data->query->pages );
 		if ( isset( $page->missing ) ) {
@@ -58,7 +59,7 @@ class WikiController {
 			'bot' => Config::getInstance()->get( 'bot-edits' )
 		] + $params;
 
-		$req = new Request( $params, true );
+		$req = RequestBase::newFromParams( $params, true );
 		$req->execute();
 	}
 
@@ -81,7 +82,7 @@ class WikiController {
 		];
 
 		try {
-			$req = new Request( $params, true );
+			$req = RequestBase::newFromParams( $params, true );
 			$res = $req->execute()[0];
 		} catch ( APIRequestException $e ) {
 			throw new LoginException( $e->getMessage() );
@@ -109,7 +110,7 @@ class WikiController {
 				'type'   => $type
 			];
 
-			$req = new Request( $params );
+			$req = RequestBase::newFromParams( $params );
 			$res = $req->execute()[0];
 
 			$this->tokens[ $type ] = $res->query->tokens->{ "{$type}token" };

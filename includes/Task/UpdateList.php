@@ -3,7 +3,7 @@
 namespace BotRiconferme\Task;
 
 use BotRiconferme\TaskResult;
-use BotRiconferme\Request;
+use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Exception\TaskException;
 
 class UpdateList extends Task {
@@ -53,7 +53,7 @@ class UpdateList extends Task {
 			'aulimit' => 'max',
 		];
 
-		$req = new Request( $params );
+		$req = RequestBase::newFromParams( $params );
 		return $this->extractAdmins( $req->execute() );
 	}
 
@@ -145,7 +145,7 @@ class UpdateList extends Task {
 			'lelimit' => 'max'
 		];
 
-		$req = new Request( $params );
+		$req = RequestBase::newFromParams( $params );
 		$data = $req->execute();
 
 		$ts = null;
@@ -191,7 +191,7 @@ class UpdateList extends Task {
 			'lelimit' => 'max'
 		];
 
-		$req = new Request( $params );
+		$req = RequestBase::newFromParams( $params );
 		$data = $req->execute();
 
 		$ts = null;

@@ -1,12 +1,13 @@
 <?php
 
-namespace BotRiconferme;
+namespace BotRiconferme\Request;
 
+use BotRiconferme\Config;
 use BotRiconferme\Exception\APIRequestException;
 use BotRiconferme\Exception\MissingPageException;
 use BotRiconferme\Exception\ProtectedPageException;
 
-class Request {
+abstract class RequestBase {
 	const USER_AGENT = 'Daimona - BotRiconferme 1.0 (https://github.com/Daimona/BotRiconferme)';
 
 	const HEADERS = [
@@ -17,19 +18,37 @@ class Request {
 	// In seconds
 	const MAXLAG = 5;
 	/** @var array */
-	private static $cookies;
+	protected static $cookies;
 	/** @var array */
-	private $params;
+	protected $params;
 	/** @var string */
-	private $method;
+	protected $method;
 
 	/**
+	 * Use self::newFromParams, which will provide the right class to use
+	 *
 	 * @param array $params
 	 * @param bool $isPOST
 	 */
-	public function __construct( array $params, $isPOST = false ) {
+	protected function __construct( array $params, bool $isPOST = false ) {
 		$this->params = [ 'format' => 'json' ] + $params;
 		$this->method = $isPOST ? 'POST' : 'GET';
+	}
+
+	/**
+	 * Instance getter, will instantiate the proper subclass
+	 *
+	 * @param array $params
+	 * @param bool $isPOST
+	 * @return self
+	 */
+	public static function newFromParams( array $params, bool $isPOST = false ) : self {
+		if ( extension_loaded( 'curl' ) ) {
+			$ret = new CurlRequest( $params, $isPOST );
+		} else {
+			$ret = new NativeRequest( $params, $isPOST );
+		}
+		return $ret;
 	}
 
 	/**
@@ -42,7 +61,7 @@ class Request {
 		$params = $this->params;
 		$sets = [];
 		do {
-			$res = $this->reallyMakeRequest( $params );
+			$res = $this->makeRequestInternal( $params );
 
 			if ( isset( $res->error ) ) {
 				switch ( $res->error->code ) {
@@ -86,9 +105,8 @@ class Request {
 	 * @param array $params
 	 * @return mixed
 	 */
-	private function reallyMakeRequest( array $params ) {
+	private function makeRequestInternal( array $params ) {
 		$url = Config::getInstance()->get( 'url' );
-		$headers = $this->getHeaders();
 
 		$cookies = [];
 
@@ -97,70 +115,36 @@ class Request {
 		}
 		$params = http_build_query( $params );
 
-		if ( extension_loaded( 'curl' ) ) {
-			$headersHandler = function ( $ch, $header ) use ( &$cookies ) {
-				$bits = explode( ':', $header, 2 );
-				if ( trim( $bits[0] ) === 'Set-Cookie' ) {
-					$cookies[] = $bits[1];
-				}
-				return strlen( $header );
-			};
-
-			$curl = curl_init();
-			curl_setopt( $curl, CURLOPT_RETURNTRANSFER, true );
-			curl_setopt( $curl, CURLOPT_HEADER, true );
-			curl_setopt( $curl, CURLOPT_HEADERFUNCTION, $headersHandler );
-			curl_setopt( $curl, CURLOPT_HTTPHEADER, $headers );
-
-			if ( $this->method === 'POST' ) {
-				curl_setopt( $curl, CURLOPT_URL, $url );
-				curl_setopt( $curl, CURLOPT_POST, true );
-				curl_setopt( $curl, CURLOPT_POSTFIELDS, $params );
-			} else {
-				curl_setopt( $curl, CURLOPT_URL, "$url?$params" );
-			}
-
-			$result = curl_exec( $curl );
-
-			if ( $result === false ) {
-				throw new APIRequestException( curl_error( $curl ) );
-			}
-
-			// Extract response body
-			$headerSize = curl_getinfo( $curl, CURLINFO_HEADER_SIZE );
-			$body = substr( $result, $headerSize );
-			curl_close( $curl );
-		} else {
-			$context = [
-				'http' => [
-					'method' => $this->method,
-					'header' => $this->buildHeadersString( $headers )
-				]
-			];
-			if ( $this->method === 'POST' ) {
-				$context['http']['content'] = $params;
-			} else {
-				$url = "$url?$params";
-			}
-			$context = stream_context_create( $context );
-			$body = file_get_contents( $url, false, $context );
-
-			foreach ( $http_response_header as $header ) {
-				$bits = explode( ':', $header, 2 );
-				if ( trim( $bits[0] ) === 'Set-Cookie' ) {
-					$cookies[] = $bits[1];
-				}
-			}
-		}
+		$body = $this->reallyMakeRequest( $url, $params );
 
 		$this->setCookies( $cookies );
 		return json_decode( $body );
 	}
 
 	/**
+	 * Actual method which will make the request
+	 *
+	 * @param string $url
+	 * @param string $params
+	 * @return string
+	 */
+	abstract protected function reallyMakeRequest( string $url, string $params ) : string;
+
+	/**
+	 * @param array $cookies
+	 */
+	protected function setCookies( array $cookies ) {
+		foreach ( $cookies as $cookie ) {
+			$bits = explode( ';', $cookie );
+			list( $name, $value ) = explode( '=', $bits[0] );
+			self::$cookies[ $name ] = $value;
+		}
+	}
+
+	/**
 	 * @return array
 	 */
-	private function getHeaders() :array {
+	protected function getHeaders() :array {
 		$ret = self::HEADERS;
 		if ( self::$cookies ) {
 			$cookies = [];
@@ -176,22 +160,11 @@ class Request {
 	 * @param array $headers
 	 * @return string
 	 */
-	private function buildHeadersString( array $headers ) : string {
+	protected function buildHeadersString( array $headers ) : string {
 		$ret = '';
 		foreach ( $headers as $header ) {
 			$ret .= "$header\r\n";
 		}
 		return $ret;
-	}
-
-	/**
-	 * @param array $cookies
-	 */
-	private function setCookies( array $cookies ) {
-		foreach ( $cookies as $cookie ) {
-			$bits = explode( ';', $cookie );
-			list( $name, $value ) = explode( '=', $bits[0] );
-			self::$cookies[ $name ] = $value;
-		}
 	}
 }

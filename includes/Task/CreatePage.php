@@ -3,7 +3,7 @@
 namespace BotRiconferme\Task;
 
 use BotRiconferme\TaskResult;
-use BotRiconferme\Request;
+use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Exception\TaskException;
 
 class CreatePage extends Task {
@@ -58,7 +58,7 @@ class CreatePage extends Task {
 			'aplimit' => 'max'
 		];
 
-		$res = ( new Request( $params ) )->execute();
+		$res = ( RequestBase::newFromParams( $params ) )->execute();
 
 		$last = 0;
 		foreach ( $res as $set ) {
@@ -92,7 +92,7 @@ class CreatePage extends Task {
 			'rvdir' => 'newer'
 		];
 
-		$res = ( new Request( $params ) )->execute();
+		$res = ( RequestBase::newFromParams( $params ) )->execute();
 		$data = $res[0]->query->pages;
 		return strtotime( reset( $data )->revisions[0]->timestamp );
 	}
