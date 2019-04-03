@@ -147,7 +147,25 @@ class UpdateList extends Task {
 
 		$req = RequestBase::newFromParams( $params );
 		$data = $req->execute();
+		$ts = $this->extractTimestamp( $data, $group );
 
+		if ( isset( $oldUrl ) ) {
+			$this->getConfig()->set( 'url', $oldUrl );
+		}
+
+		if ( $ts === null ) {
+			throw new TaskException( "$group flag date unavailable for $admin" );
+		}
+
+		return date( "d/m/Y", strtotime( $ts ) );
+	}
+
+	/**
+	 * @param array $data
+	 * @param string $group
+	 * @return string|null
+	 */
+	private function extractTimestamp( array $data, string $group ) : ?string {
 		$ts = null;
 		foreach ( $data as $set ) {
 			foreach ( $set->query->logevents as $entry ) {
@@ -163,18 +181,8 @@ class UpdateList extends Task {
 				}
 			}
 		}
-
-		if ( isset( $oldUrl ) ) {
-			$this->getConfig()->set( 'url', $oldUrl );
-		}
-
-		if ( $ts === null ) {
-			throw new TaskException( "$group flag date unavailable for $admin" );
-		}
-
-		return date( "d/m/Y", strtotime( $ts ) );
+		return $ts;
 	}
-
 	/**
 	 * @return array[]|bool[]
 	 */
