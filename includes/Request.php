@@ -2,7 +2,7 @@
 
 namespace BotRiconferme;
 
-use BotRiconferme\Exceptions\APIRequestException;
+use BotRiconferme\Exception\APIRequestException;
 
 class Request {
 	const USER_AGENT = 'Daimona - BotRiconferme 1.0 (https://github.com/Daimona/BotRiconferme)';

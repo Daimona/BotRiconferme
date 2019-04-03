@@ -2,8 +2,8 @@
 
 namespace BotRiconferme;
 
-use BotRiconferme\Exceptions\ConfigException;
-use BotRiconferme\Exceptions\MissingPageException;
+use BotRiconferme\Exception\ConfigException;
+use BotRiconferme\Exception\MissingPageException;
 
 class Config {
 	/** @var array */

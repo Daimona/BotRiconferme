@@ -2,9 +2,9 @@
 
 namespace BotRiconferme;
 
-use BotRiconferme\Exceptions\LoginException;
-use BotRiconferme\Exceptions\APIRequestException;
-use BotRiconferme\Exceptions\MissingPageException;
+use BotRiconferme\Exception\LoginException;
+use BotRiconferme\Exception\APIRequestException;
+use BotRiconferme\Exception\MissingPageException;
 
 class WikiController {
 	/** @var Logger */

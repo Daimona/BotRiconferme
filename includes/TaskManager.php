@@ -2,11 +2,11 @@
 
 namespace BotRiconferme;
 
-use BotRiconferme\Tasks\Task;
-use BotRiconferme\Tasks\CreatePage;
-use BotRiconferme\Tasks\UpdateList;
-use BotRiconferme\Tasks\UpdatesAround;
-use BotRiconferme\Tasks\UserNotice;
+use BotRiconferme\Task\Task;
+use BotRiconferme\Task\CreatePage;
+use BotRiconferme\Task\UpdateList;
+use BotRiconferme\Task\UpdatesAround;
+use BotRiconferme\Task\UserNotice;
 
 class TaskManager {
 	// Run modes
