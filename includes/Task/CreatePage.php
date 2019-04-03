@@ -49,29 +49,27 @@ class CreatePage extends Task {
 	 */
 	protected function getLastPageNum( string $user ) : int {
 		$this->getLogger()->debug( "Retrieving previous pages for $user" );
-		$baseTitle = explode( ':', $this->getConfig()->get( 'ric-main-page' ), 2 )[1];
+		$unprefixedTitle = explode( ':', $this->getConfig()->get( 'ric-main-page' ), 2 )[1];
 		$params = [
 			'action' => 'query',
 			'list' => 'allpages',
 			'apnamespace' => 4,
-			'apprefix' => "$baseTitle/$user",
+			'apprefix' => "$unprefixedTitle/$user",
 			'aplimit' => 'max'
 		];
 
 		$res = ( RequestBase::newFromParams( $params ) )->execute();
 
 		$last = 0;
-		foreach ( $res as $set ) {
-			foreach ( $set->query->allpages as $page ) {
-				$created = $this->getPageCreationTS( $page->title );
-				if ( date( 'z/Y' ) === date( 'z/Y', $created ) ) {
-					throw new TaskException( 'Page ' . $page->title . ' was already created.' );
-				}
-				$bits = explode( '/', $page->title );
-				$cur = end( $bits );
-				if ( is_numeric( $cur ) && $cur > $last ) {
-					$last = intval( $cur );
-				}
+		foreach ( $res->query->allpages as $page ) {
+			$created = $this->getPageCreationTS( $page->title );
+			if ( date( 'z/Y' ) === date( 'z/Y', $created ) ) {
+				throw new TaskException( 'Page ' . $page->title . ' was already created.' );
+			}
+			$bits = explode( '/', $page->title );
+			$cur = end( $bits );
+			if ( is_numeric( $cur ) && $cur > $last ) {
+				$last = intval( $cur );
 			}
 		}
 		return $last;
@@ -93,7 +91,7 @@ class CreatePage extends Task {
 		];
 
 		$res = ( RequestBase::newFromParams( $params ) )->execute();
-		$data = $res[0]->query->pages;
+		$data = $res->query->pages;
 		return strtotime( reset( $data )->revisions[0]->timestamp );
 	}
 

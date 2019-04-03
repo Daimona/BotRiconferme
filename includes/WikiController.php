@@ -36,7 +36,7 @@ class WikiController {
 		];
 
 		$req = RequestBase::newFromParams( $params );
-		$data = $req->execute()[0];
+		$data = $req->execute();
 		$page = reset( $data->query->pages );
 		if ( isset( $page->missing ) ) {
 			throw new MissingPageException( $title );
@@ -83,7 +83,7 @@ class WikiController {
 
 		try {
 			$req = RequestBase::newFromParams( $params, true );
-			$res = $req->execute()[0];
+			$res = $req->execute();
 		} catch ( APIRequestException $e ) {
 			throw new LoginException( $e->getMessage() );
 		}
@@ -111,7 +111,7 @@ class WikiController {
 			];
 
 			$req = RequestBase::newFromParams( $params );
-			$res = $req->execute()[0];
+			$res = $req->execute();
 
 			$this->tokens[ $type ] = $res->query->tokens->{ "{$type}token" };
 		}

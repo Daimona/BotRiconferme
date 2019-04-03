@@ -56,9 +56,9 @@ abstract class RequestBase {
 	/**
 	 * Make an API request
 	 *
-	 * @return array
+	 * @return \stdClass
 	 */
-	public function execute() : array {
+	public function execute() : \stdClass {
 		$params = $this->params;
 		$sets = [];
 		do {
@@ -74,7 +74,48 @@ abstract class RequestBase {
 			}
 		} while ( !$finished );
 
-		return $sets;
+		return $this->mergeSets( $sets );
+	}
+
+	/**
+	 * Merge results from multiple requests in a single object
+	 *
+	 * @param \stdClass[] $sets
+	 * @return \stdClass
+	 */
+	private function mergeSets( array $sets ) : \stdClass {
+		// Use the first set as template
+		$ret = array_shift( $sets );
+		$act = $this->params['action'];
+
+		foreach ( $sets as $set ) {
+			$ret->$act = (object)array_merge_recursive(
+				$this->objectToArray( $ret->$act ),
+				$this->objectToArray( $set->$act )
+			);
+		}
+		return $ret;
+	}
+
+	/**
+	 * Taken by MediaWikis' wfObjectToArray https://gerrit.wikimedia.org/g/mediawiki/core/+/
+	 *    846d970e6e02ebc0a284f32968e1681201706270/includes/GlobalFunctions.php#254
+	 *
+	 * @param \stdClass|array $objOrArray
+	 * @return array
+	 */
+	private function objectToArray( $objOrArray ) : array {
+		$array = [];
+		if ( is_object( $objOrArray ) ) {
+			$objOrArray = get_object_vars( $objOrArray );
+		}
+		foreach ( $objOrArray as $key => $value ) {
+			if ( is_object( $value ) || is_array( $value ) ) {
+				$value = $this->objectToArray( $value );
+			}
+			$array[$key] = $value;
+		}
+		return $array;
 	}
 
 	/**
@@ -136,13 +177,7 @@ abstract class RequestBase {
 			throw $ex;
 		} elseif ( isset( $res->warnings ) ) {
 			$act = $this->params[ 'action' ];
-			if ( is_string( $act ) ) {
-				$warning = $res->warnings->$act;
-			} elseif ( is_array( $act ) ) {
-				$warning = $res->warnings->{ $act[0] };
-			} else {
-				$warning = reset( $res->warnings );
-			}
+			$warning = $res->warnings->$act;
 			throw new APIRequestException( reset( $warning ) );
 		}
 	}

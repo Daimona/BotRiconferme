@@ -2,6 +2,13 @@
 	"name": "daimona/bot-riconferme",
 	"description": "Bot per le riconferme di itwiki",
 	"type": "project",
+	"authors": [
+		{
+			"name": "Daimona",
+			"homepage": "https://it.wikipedia.org/wiki/User:Daimona_Eaytoy",
+			"role": "Developer"
+		}
+	],
 	"license": "AGPL-3.0-or-later",
 	"require": {
 		"php": "^7.1.0",
