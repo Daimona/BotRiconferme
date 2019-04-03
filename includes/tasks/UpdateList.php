@@ -21,7 +21,7 @@ class UpdateList extends Task {
 		foreach ( $actual as $adm => $groups ) {
 			if ( !isset( $list[ $adm ] ) ) {
 				$list = $groups;
-			} elseif( count( $groups ) > count( $list[$adm] ) ) {
+			} elseif ( count( $groups ) > count( $list[$adm] ) ) {
 				// Only some groups are missing
 				$list = array_diff_key( $groups, $list[$adm] );
 			}
@@ -48,7 +48,7 @@ class UpdateList extends Task {
 		foreach ( $list as $name => $groups ) {
 			if ( !isset( $actual[ $name ] ) ) {
 				$extra[ $name ] = true;
-			} elseif( count( $groups ) > count( $actual[ $name ] ) ) {
+			} elseif ( count( $groups ) > count( $actual[ $name ] ) ) {
 				$extra[ $name ] = array_diff_key( $groups, $actual[ $name ] );
 			}
 		}
@@ -57,15 +57,18 @@ class UpdateList extends Task {
 			$newContent = $list;
 			foreach ( $newContent as $user => $groups ) {
 				if ( isset( $missing[ $user ] ) ) {
-					$newContent[ $user ] = array_merge( $newContent[ $user ] ?? [], $missing[ $user ] );
+					$newContent[ $user ] = array_merge( $groups, $missing[ $user ] );
+					unset( $missing[ $user ] );
 				} elseif ( isset( $extra[ $user ] ) ) {
 					if ( $extra[ $user ] === true ) {
 						unset( $newContent[ $user ] );
 					} else {
-						$newContent[ $user ] = array_diff_key( $newContent[ $user ], $extra[ $user ] );
+						$newContent[ $user ] = array_diff_key( $groups, $extra[ $user ] );
 					}
 				}
 			}
+			// Add users which don't have an entry at all
+			$newContent = array_merge( $newContent, $missing );
 			$this->doUpdateList( $newContent );
 		}
 

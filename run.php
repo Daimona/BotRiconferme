@@ -9,6 +9,8 @@ if ( PHP_SAPI !== 'cli' ) {
 	exit( 'CLI only!' );
 }
 
+/** MAIN PARAMS */
+
 /*
 	Example
 
@@ -30,6 +32,7 @@ if ( count( $vals ) !== count( $params ) ) {
 	exit( 'Not enough params!' );
 }
 
+/* PASSWORD */
 
 $PWFILE = './password.txt';
 /*
@@ -57,6 +60,9 @@ if ( isset( $pwParams[ 'password' ] ) ) {
 }
 
 $vals[ 'password' ] = $pw;
+
+/* START */
+
 Config::init( $vals );
 
 $bot = new Bot();
