@@ -62,14 +62,13 @@ class CreatePage extends Task {
 
 		$last = 0;
 		foreach ( $res->query->allpages as $page ) {
-			$created = $this->getPageCreationTS( $page->title );
-			if ( date( 'z/Y' ) === date( 'z/Y', $created ) ) {
+			if ( $this->pageWasCreatedToday( $page->title ) ) {
 				throw new TaskException( 'Page ' . $page->title . ' was already created.' );
 			}
 			$bits = explode( '/', $page->title );
-			$cur = end( $bits );
+			$cur = intval( end( $bits ) );
 			if ( is_numeric( $cur ) && $cur > $last ) {
-				$last = intval( $cur );
+				$last = $cur;
 			}
 		}
 		return $last;
@@ -77,9 +76,9 @@ class CreatePage extends Task {
 
 	/**
 	 * @param string $title
-	 * @return int
+	 * @return bool
 	 */
-	private function getPageCreationTS( string $title ) : int {
+	private function pageWasCreatedToday( string $title ) : bool {
 		$params = [
 			'action' => 'query',
 			'prop' => 'revisions',
@@ -92,7 +91,8 @@ class CreatePage extends Task {
 
 		$res = ( RequestBase::newFromParams( $params ) )->execute();
 		$data = $res->query->pages;
-		return strtotime( reset( $data )->revisions[0]->timestamp );
+		$time = strtotime( reset( $data )->revisions[0]->timestamp );
+		return date( 'z/Y' ) === date( 'z/Y', $time );
 	}
 
 	/**
