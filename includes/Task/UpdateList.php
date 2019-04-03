@@ -158,11 +158,15 @@ class UpdateList extends Task {
 		$ts = null;
 		foreach ( $data as $set ) {
 			foreach ( $set->query->logevents as $entry ) {
+				if ( !isset( $entry->params ) ) {
+					// Old entries
+					continue;
+				}
 				if ( in_array( $group, $entry->params->newgroups ) &&
 					!in_array( $group, $entry->params->oldgroups )
 				) {
 					$ts = $entry->timestamp;
-					break;
+					break 2;
 				}
 			}
 		}
@@ -198,11 +202,15 @@ class UpdateList extends Task {
 		$ts = null;
 		foreach ( $data as $set ) {
 			foreach ( $set->query->logevents as $entry ) {
+				if ( !isset( $entry->params ) ) {
+					// Old entries
+					continue;
+				}
 				if ( in_array( 'checkuser', $entry->params->newgroups ) &&
 					!in_array( 'checkuser', $entry->params->oldgroups )
 				) {
 					$ts = $entry->timestamp;
-					break;
+					break 2;
 				}
 			}
 		}
