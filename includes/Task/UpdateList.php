@@ -19,6 +19,7 @@ class UpdateList extends Task {
 
 		$missing = [];
 		foreach ( $actual as $adm => $groups ) {
+			$groupsList = [];
 			if ( !isset( $list[ $adm ] ) ) {
 				$groupsList = $groups;
 			} elseif ( count( $groups ) > count( $list[$adm] ) ) {
@@ -26,7 +27,7 @@ class UpdateList extends Task {
 				$groupsList = array_diff_key( $groups, $list[$adm] );
 			}
 
-			if ( !isset( $groupsList ) ) {
+			if ( !$groupsList ) {
 				continue;
 			}
 
