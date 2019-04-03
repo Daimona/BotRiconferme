@@ -191,13 +191,14 @@ class UpdateList extends Task {
 	 */
 	protected function doUpdateList( array $newContent ) {
 		ksort( $newContent );
-		$stringified = json_encode( $newContent );
 
-		if ( $stringified !== $this->botList ) {
+		if ( $newContent !== $this->botList ) {
 			$this->getLogger()->info( 'Updating admin list' );
 		} else {
 			$this->getLogger()->info( 'Admin list already up-to-date' );
 		}
+
+		$stringified = json_encode( $newContent );
 
 		$params = [
 			'title' => $this->getConfig()->get( 'list-title' ),
