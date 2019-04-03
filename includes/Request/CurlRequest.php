@@ -46,8 +46,9 @@ class CurlRequest extends RequestBase {
 	 * @param Resource $ch
 	 * @param string $header
 	 * @return int
+	 * @internal Only used as CB for cURL
 	 */
-	private function headersHandler( $ch, string $header ) {
+	public function headersHandler( $ch, string $header ) : int {
 		$bits = explode( ':', $header, 2 );
 		if ( trim( $bits[0] ) === 'Set-Cookie' ) {
 			$this->newCookies[] = $bits[1];

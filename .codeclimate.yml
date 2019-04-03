@@ -8,3 +8,9 @@ plugins:
       # Disable string literals reporting
       php:S1192:
         enabled: false
+      # Disable unused parameter triggering for cURL callback. Already handled by phan.
+      php:S1172:
+        enabled: false
+      # Throwing ErrorException
+      php:S112:
+        enabled: false

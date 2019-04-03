@@ -50,7 +50,6 @@ class TaskDataProvider extends ContextSource {
 
 		$timestamp = max( $bureaucrat, $checkuser );
 		if ( $timestamp === 0 ) {
-			// @phan-suppress-next-line PhanTypeArraySuspicious Phan cannot know...
 			$timestamp = \DateTime::createFromFormat( 'd/m/Y', $groups[ 'sysop' ] )->getTimestamp();
 		}
 		return $timestamp;
