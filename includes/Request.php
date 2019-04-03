@@ -16,15 +16,12 @@ class Request {
 
 	// In seconds
 	const MAXLAG = 5;
-
-	/** @var array */
-	private $params;
-
-	/** @var string */
-	private $method;
-
 	/** @var array */
 	private static $cookies;
+	/** @var array */
+	private $params;
+	/** @var string */
+	private $method;
 
 	/**
 	 * @param array $params
@@ -83,31 +80,6 @@ class Request {
 		return $sets;
 	}
 
-	/**
-	 * @param array $cookies
-	 */
-	private function setCookies( array $cookies ) {
-		foreach ( $cookies as $cookie ) {
-			$bits = explode( ';', $cookie );
-			list( $name, $value ) = explode( '=', $bits[0] );
-			self::$cookies[ $name ] = $value;
-		}
-	}
-
-	/**
-	 * @return array
-	 */
-	private function getHeaders() :array {
-		$ret = self::HEADERS;
-		if ( self::$cookies ) {
-			$cookies = [];
-			foreach ( self::$cookies as $cname => $cval ) {
-				$cookies[] = trim( "$cname=$cval" );
-			}
-			$ret[] = 'Cookie: ' . implode( '; ', $cookies );
-		}
-		return $ret;
-	}
 	/**
 	 * Perform an API request, either via cURL (if available) or file_get_contents
 	 *
@@ -186,6 +158,21 @@ class Request {
 	}
 
 	/**
+	 * @return array
+	 */
+	private function getHeaders() :array {
+		$ret = self::HEADERS;
+		if ( self::$cookies ) {
+			$cookies = [];
+			foreach ( self::$cookies as $cname => $cval ) {
+				$cookies[] = trim( "$cname=$cval" );
+			}
+			$ret[] = 'Cookie: ' . implode( '; ', $cookies );
+		}
+		return $ret;
+	}
+
+	/**
 	 * @param array $headers
 	 * @return string
 	 */
@@ -195,5 +182,16 @@ class Request {
 			$ret .= "$header\r\n";
 		}
 		return $ret;
+	}
+
+	/**
+	 * @param array $cookies
+	 */
+	private function setCookies( array $cookies ) {
+		foreach ( $cookies as $cookie ) {
+			$bits = explode( ';', $cookie );
+			list( $name, $value ) = explode( '=', $bits[0] );
+			self::$cookies[ $name ] = $value;
+		}
 	}
 }

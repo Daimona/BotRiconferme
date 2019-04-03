@@ -15,10 +15,6 @@ class TaskManager {
 
 	// File where the date of the last full run is stored
 	const LOG_FILE = './lastrun.log';
-
-	/** @var TaskDataProvider */
-	private $provider;
-
 	/** @var string[] */
 	const TASKS_MAP = [
 		'create-page' => CreatePage::class,
@@ -26,6 +22,15 @@ class TaskManager {
 		'updates-around' => UpdatesAround::class,
 		'user-notice' => UserNotice::class,
 	];
+	/** @var TaskDataProvider */
+	private $provider;
+
+	/**
+	 * Should only be used for debugging purpose.
+	 */
+	public static function resetLastRunDate() {
+		file_put_contents( self::LOG_FILE, '' );
+	}
 
 	/**
 	 * @param int $mode One of the MODE_ constants
@@ -69,6 +74,17 @@ class TaskManager {
 	}
 
 	/**
+	 * @return string|null d/m/Y or null if no last run registered
+	 */
+	public static function getLastFullRunDate() : ?string {
+		if ( file_exists( self::LOG_FILE ) ) {
+			return file_get_contents( self::LOG_FILE ) ?: null;
+		} else {
+			return null;
+		}
+	}
+
+	/**
 	 * @param string $task Defined in self::TASKS_MAP
 	 * @return TaskResult
 	 */
@@ -90,25 +106,8 @@ class TaskManager {
 	private function getTaskInstance( string $class ) : Task {
 		return new $class( $this->provider );
 	}
-	/**
-	 * @return string|null d/m/Y or null if no last run registered
-	 */
-	public static function getLastFullRunDate() : ?string {
-		if ( file_exists( self::LOG_FILE ) ) {
-			return file_get_contents( self::LOG_FILE ) ?: null;
-		} else {
-			return null;
-		}
-	}
 
 	public static function setLastFullRunDate() {
 		file_put_contents( self::LOG_FILE, date( 'd/m/Y' ) );
-	}
-
-	/**
-	 * Should only be used for debugging purpose.
-	 */
-	public static function resetLastRunDate() {
-		file_put_contents( self::LOG_FILE, '' );
 	}
 }

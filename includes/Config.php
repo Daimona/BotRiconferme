@@ -6,11 +6,10 @@ use BotRiconferme\Exception\ConfigException;
 use BotRiconferme\Exception\MissingPageException;
 
 class Config {
-	/** @var array */
-	private $opts = [];
-
 	/** @var self */
 	private static $instance;
+	/** @var array */
+	private $opts = [];
 
 	/**
 	 * Use self::getInstance()
@@ -48,6 +47,14 @@ class Config {
 	}
 
 	/**
+	 * @param string $key
+	 * @param mixed $value
+	 */
+	public function set( string $key, $value ) {
+		$this->opts[ $key ] = $value;
+	}
+
+	/**
 	 * Generic instance getter
 	 *
 	 * @return self
@@ -68,13 +75,5 @@ class Config {
 			throw new ConfigException( "Config option '$opt' not set." );
 		}
 		return $this->opts[ $opt ];
-	}
-
-	/**
-	 * @param string $key
-	 * @param mixed $value
-	 */
-	public function set( string $key, $value ) {
-		$this->opts[ $key ] = $value;
 	}
 }

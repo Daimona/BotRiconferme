@@ -41,82 +41,6 @@ class UpdateList extends Task {
 	}
 
 	/**
-	 * @param array[] $missing
-	 * @param array[] $extra
-	 * @return array[]
-	 */
-	protected function getNewContent( array $missing, array $extra ) : array {
-		$newContent = $this->botList;
-		foreach ( $newContent as $user => $groups ) {
-			if ( isset( $missing[ $user ] ) ) {
-				$newContent[ $user ] = array_merge( $groups, $missing[ $user ] );
-				unset( $missing[ $user ] );
-			} elseif ( isset( $extra[ $user ] ) ) {
-				if ( $extra[ $user ] === true ) {
-					unset( $newContent[ $user ] );
-				} else {
-					$newContent[ $user ] = array_diff_key( $groups, $extra[ $user ] );
-				}
-			}
-		}
-		// Add users which don't have an entry at all
-		return array_merge( $newContent, $missing );
-	}
-
-	/**
-	 * @return array[]
-	 */
-	protected function getExtraGroups() : array {
-		$extra = [];
-		foreach ( $this->botList as $name => $groups ) {
-			if ( !isset( $this->actualList[ $name ] ) ) {
-				$extra[ $name ] = true;
-			} elseif ( count( $groups ) > count( $this->actualList[ $name ] ) ) {
-				$extra[ $name ] = array_diff_key( $groups, $this->actualList[ $name ] );
-			}
-		}
-		return $extra;
-	}
-
-	/**
-	 * @return array[]
-	 */
-	protected function getMissingGroups() : array {
-		$missing = [];
-		foreach ( $this->actualList as $adm => $groups ) {
-			$groupsList = [];
-			if ( !isset( $this->botList[ $adm ] ) ) {
-				$groupsList = $groups;
-			} elseif ( count( $groups ) > count( $this->botList[$adm] ) ) {
-				// Only some groups are missing
-				$groupsList = array_diff_key( $groups, $this->botList[$adm] );
-			}
-
-			if ( !$groupsList ) {
-				continue;
-			}
-
-			$val = [];
-			foreach ( $groupsList as $group ) {
-				try {
-					if ( $group === 'checkuser' ) {
-						$val[ $group ] = $this->getCUFlagDate( $adm );
-					} else {
-						$val[ $group ] = $this->getFlagDate( $adm, $group );
-					}
-				} catch ( TaskException $e ) {
-					$this->errors[] = $e->getMessage();
-				}
-			}
-			if ( $val ) {
-				// Only add it if we managed to retrieve at least a date
-				$missing[ $adm ] = $val;
-			}
-		}
-		return $missing;
-	}
-
-	/**
 	 * @return array
 	 */
 	protected function getActualAdmins() : array {
@@ -163,47 +87,41 @@ class UpdateList extends Task {
 	}
 
 	/**
-	 * @param string $admin
-	 * @param string $group
-	 * @return string
-	 * @throws TaskException
+	 * @return array[]
 	 */
-	protected function getFlagDate( string $admin, string $group ) : string {
-		$this->getLogger()->info( "Retrieving $group flag date for $admin" );
+	protected function getMissingGroups() : array {
+		$missing = [];
+		foreach ( $this->actualList as $adm => $groups ) {
+			$groupsList = [];
+			if ( !isset( $this->botList[ $adm ] ) ) {
+				$groupsList = $groups;
+			} elseif ( count( $groups ) > count( $this->botList[$adm] ) ) {
+				// Only some groups are missing
+				$groupsList = array_diff_key( $groups, $this->botList[$adm] );
+			}
 
-		$params = [
-			'action' => 'query',
-			'list' => 'logevents',
-			'leprop' => 'timestamp|details',
-			'leaction' => 'rights/rights',
-			'letitle' => "User:$admin",
-			'lelimit' => 'max'
-		];
+			if ( !$groupsList ) {
+				continue;
+			}
 
-		$req = new Request( $params );
-		$data = $req->execute();
-
-		$ts = null;
-		foreach ( $data as $set ) {
-			foreach ( $set->query->logevents as $entry ) {
-				if ( !isset( $entry->params ) ) {
-					// Old entries
-					continue;
-				}
-				if ( in_array( $group, $entry->params->newgroups ) &&
-					!in_array( $group, $entry->params->oldgroups )
-				) {
-					$ts = $entry->timestamp;
-					break 2;
+			$val = [];
+			foreach ( $groupsList as $group ) {
+				try {
+					if ( $group === 'checkuser' ) {
+						$val[ $group ] = $this->getCUFlagDate( $adm );
+					} else {
+						$val[ $group ] = $this->getFlagDate( $adm, $group );
+					}
+				} catch ( TaskException $e ) {
+					$this->errors[] = $e->getMessage();
 				}
 			}
+			if ( $val ) {
+				// Only add it if we managed to retrieve at least a date
+				$missing[ $adm ] = $val;
+			}
 		}
-
-		if ( $ts === null ) {
-			throw new TaskException( "$group flag date unavailable for $admin" );
-		}
-
-		return date( "d/m/Y", strtotime( $ts ) );
+		return $missing;
 	}
 
 	/**
@@ -254,6 +172,66 @@ class UpdateList extends Task {
 
 		return date( "d/m/Y", strtotime( $ts ) );
 	}
+
+	/**
+	 * @param string $admin
+	 * @param string $group
+	 * @return string
+	 * @throws TaskException
+	 */
+	protected function getFlagDate( string $admin, string $group ) : string {
+		$this->getLogger()->info( "Retrieving $group flag date for $admin" );
+
+		$params = [
+			'action' => 'query',
+			'list' => 'logevents',
+			'leprop' => 'timestamp|details',
+			'leaction' => 'rights/rights',
+			'letitle' => "User:$admin",
+			'lelimit' => 'max'
+		];
+
+		$req = new Request( $params );
+		$data = $req->execute();
+
+		$ts = null;
+		foreach ( $data as $set ) {
+			foreach ( $set->query->logevents as $entry ) {
+				if ( !isset( $entry->params ) ) {
+					// Old entries
+					continue;
+				}
+				if ( in_array( $group, $entry->params->newgroups ) &&
+					!in_array( $group, $entry->params->oldgroups )
+				) {
+					$ts = $entry->timestamp;
+					break 2;
+				}
+			}
+		}
+
+		if ( $ts === null ) {
+			throw new TaskException( "$group flag date unavailable for $admin" );
+		}
+
+		return date( "d/m/Y", strtotime( $ts ) );
+	}
+
+	/**
+	 * @return array[]
+	 */
+	protected function getExtraGroups() : array {
+		$extra = [];
+		foreach ( $this->botList as $name => $groups ) {
+			if ( !isset( $this->actualList[ $name ] ) ) {
+				$extra[ $name ] = true;
+			} elseif ( count( $groups ) > count( $this->actualList[ $name ] ) ) {
+				$extra[ $name ] = array_diff_key( $groups, $this->actualList[ $name ] );
+			}
+		}
+		return $extra;
+	}
+
 	/**
 	 * @param array $newContent
 	 */
@@ -269,5 +247,28 @@ class UpdateList extends Task {
 		];
 
 		$this->getController()->editPage( $params );
+	}
+
+	/**
+	 * @param array[] $missing
+	 * @param array[] $extra
+	 * @return array[]
+	 */
+	protected function getNewContent( array $missing, array $extra ) : array {
+		$newContent = $this->botList;
+		foreach ( $newContent as $user => $groups ) {
+			if ( isset( $missing[ $user ] ) ) {
+				$newContent[ $user ] = array_merge( $groups, $missing[ $user ] );
+				unset( $missing[ $user ] );
+			} elseif ( isset( $extra[ $user ] ) ) {
+				if ( $extra[ $user ] === true ) {
+					unset( $newContent[ $user ] );
+				} else {
+					$newContent[ $user ] = array_diff_key( $groups, $extra[ $user ] );
+				}
+			}
+		}
+		// Add users which don't have an entry at all
+		return array_merge( $newContent, $missing );
 	}
 }

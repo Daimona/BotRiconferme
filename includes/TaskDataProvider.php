@@ -53,16 +53,16 @@ class TaskDataProvider extends ContextSource {
 	}
 
 	/**
-	 * @param string[] $titles
-	 */
-	public function setCreatedPages( array $titles ) {
-		$this->createdPages = $titles;
-	}
-
-	/**
 	 * @return string[]
 	 */
 	public function getCreatedPages() : array {
 		return $this->createdPages;
+	}
+
+	/**
+	 * @param string[] $titles
+	 */
+	public function setCreatedPages( array $titles ) {
+		$this->createdPages = $titles;
 	}
 }

@@ -30,15 +30,6 @@ class TaskResult {
 	}
 
 	/**
-	 * Shorthand
-	 *
-	 * @return bool
-	 */
-	public function isOK() : bool {
-		return $this->status === self::STATUS_OK;
-	}
-
-	/**
 	 * @return string[]
 	 */
 	public function getErrors() {
@@ -69,5 +60,14 @@ class TaskResult {
 			$errs = implode( "\n", $formattedErrs );
 		}
 		return "=== RESULT ===\n - Status: $stat\n - Errors:\n$errs\n";
+	}
+
+	/**
+	 * Shorthand
+	 *
+	 * @return bool
+	 */
+	public function isOK() : bool {
+		return $this->status === self::STATUS_OK;
 	}
 }

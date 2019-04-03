@@ -7,18 +7,61 @@ use BotRiconferme\Exception\APIRequestException;
 use BotRiconferme\Exception\MissingPageException;
 
 class WikiController {
-	/** @var Logger */
-	private $logger;
-
-	/** @var string[] */
-	private $tokens;
-
 	/** @var bool */
 	private static $loggedIn = false;
+	/** @var Logger */
+	private $logger;
+	/** @var string[] */
+	private $tokens;
 
 	public function __construct() {
 		$this->logger = new Logger;
 	}
+
+	/**
+	 * @param string $title
+	 * @return string
+	 * @throws MissingPageException
+	 */
+	public function getPageContent( string $title ) : string {
+		$this->logger->debug( "Retrieving page $title" );
+		$params = [
+			'action' => 'query',
+			'titles' => $title,
+			'prop' => 'revisions',
+			'rvslots' => 'main',
+			'rvprop' => 'content',
+			'rvlimit' => 1
+		];
+
+		$req = new Request( $params );
+		$data = $req->execute()[0];
+		$page = reset( $data->query->pages );
+		if ( isset( $page->missing ) ) {
+			throw new MissingPageException( $title );
+		}
+
+		return $page->revisions[0]->slots->main->{ '*' };
+	}
+
+	/**
+	 * Basically a wrapper for action=edit
+	 *
+	 * @param array $params
+	 */
+	public function editPage( array $params ) {
+		$this->login();
+
+		$params = [
+			'action' => 'edit',
+			'token' => $this->getToken( 'csrf' ),
+			'bot' => Config::getInstance()->get( 'bot-edits' )
+		] + $params;
+
+		$req = new Request( $params, true );
+		$req->execute();
+	}
+
 	/**
 	 * @throws LoginException
 	 */
@@ -73,49 +116,5 @@ class WikiController {
 		}
 
 		return $this->tokens[ $type ];
-	}
-
-	/**
-	 * @param string $title
-	 * @return string
-	 * @throws MissingPageException
-	 */
-	public function getPageContent( string $title ) : string {
-		$this->logger->debug( "Retrieving page $title" );
-		$params = [
-			'action' => 'query',
-			'titles' => $title,
-			'prop' => 'revisions',
-			'rvslots' => 'main',
-			'rvprop' => 'content',
-			'rvlimit' => 1
-		];
-
-		$req = new Request( $params );
-		$data = $req->execute()[0];
-		$page = reset( $data->query->pages );
-		if ( isset( $page->missing ) ) {
-			throw new MissingPageException( $title );
-		}
-
-		return $page->revisions[0]->slots->main->{ '*' };
-	}
-
-	/**
-	 * Basically a wrapper for action=edit
-	 *
-	 * @param array $params
-	 */
-	public function editPage( array $params ) {
-		$this->login();
-
-		$params = [
-			'action' => 'edit',
-			'token' => $this->getToken( 'csrf' ),
-			'bot' => Config::getInstance()->get( 'bot-edits' )
-		] + $params;
-
-		$req = new Request( $params, true );
-		$req->execute();
 	}
 }
