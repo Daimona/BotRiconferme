@@ -20,14 +20,18 @@ class UpdateList extends Task {
 		$missing = [];
 		foreach ( $actual as $adm => $groups ) {
 			if ( !isset( $list[ $adm ] ) ) {
-				$list = $groups;
+				$groupsList = $groups;
 			} elseif ( count( $groups ) > count( $list[$adm] ) ) {
 				// Only some groups are missing
-				$list = array_diff_key( $groups, $list[$adm] );
+				$groupsList = array_diff_key( $groups, $list[$adm] );
+			}
+
+			if ( !isset( $groupsList ) ) {
+				continue;
 			}
 
 			$val = [];
-			foreach ( $list as $group ) {
+			foreach ( $groupsList as $group ) {
 				try {
 					if ( $group === 'checkuser' ) {
 						$val[ $group ] = $this->getCUFlagDate( $adm );

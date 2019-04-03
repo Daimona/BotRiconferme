@@ -108,6 +108,11 @@ class Request {
 
 		$cookies = [];
 
+		if ( $this->method === 'POST' ) {
+			$params['maxlag'] = self::MAXLAG;
+		}
+		$params = http_build_query( $params );
+
 		if ( extension_loaded( 'curl' ) ) {
 			$headersHandler = function ( $ch, $header ) use ( &$cookies ) {
 				$bits = explode( ':', $header, 2 );
@@ -126,10 +131,9 @@ class Request {
 			if ( $this->method === 'POST' ) {
 				curl_setopt( $curl, CURLOPT_URL, $url );
 				curl_setopt( $curl, CURLOPT_POST, true );
-				$params['maxlag'] = self::MAXLAG;
-				curl_setopt( $curl, CURLOPT_POSTFIELDS, http_build_query( $params ) );
+				curl_setopt( $curl, CURLOPT_POSTFIELDS, $params );
 			} else {
-				curl_setopt( $curl, CURLOPT_URL, "$url?" . http_build_query( $params ) );
+				curl_setopt( $curl, CURLOPT_URL, "$url?$params" );
 			}
 
 			$result = curl_exec( $curl );
@@ -143,15 +147,19 @@ class Request {
 			$body = substr( $result, $headerSize );
 			curl_close( $curl );
 		} else {
-			$query = "$url?" . http_build_query( $params );
 			$context = [
 				'http' => [
 					'method' => $this->method,
 					'header' => $this->buildHeadersString( $headers )
 				]
 			];
+			if ( $this->method === 'POST' ) {
+				$context['http']['content'] = $params;
+			} else {
+				$url = "$url?$params";
+			}
 			$context = stream_context_create( $context );
-			$body = file_get_contents( $query, false, $context );
+			$body = file_get_contents( $url, false, $context );
 
 			foreach ( $http_response_header as $header ) {
 				$bits = explode( ':', $header, 2 );
