@@ -16,10 +16,10 @@ class TaskDataProvider extends ContextSource {
 		if ( $this->users === null ) {
 			$this->getLogger()->debug( 'Retrieving users list' );
 			$content = $this->getController()->getPageContent( $this->getConfig()->get( 'list-title' ) );
-			$users = json_decode( $content, true );
+			$listUsers = json_decode( $content, true );
 
 			$this->users = [];
-			foreach ( $users as $user => $groups ) {
+			foreach ( $listUsers as $user => $groups ) {
 				$timestamp = $this->getValidTimestamp( $groups );
 
 				if ( date( 'd/m', $timestamp ) === date( 'd/m' ) &&

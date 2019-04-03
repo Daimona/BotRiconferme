@@ -18,7 +18,7 @@ abstract class RequestBase {
 	// In seconds
 	const MAXLAG = 5;
 	/** @var array */
-	protected static $cookies;
+	protected static $cookiesToSet;
 	/** @var array */
 	protected $params;
 	/** @var string */
@@ -59,17 +59,17 @@ abstract class RequestBase {
 	 * @return \stdClass
 	 */
 	public function execute() : \stdClass {
-		$params = $this->params;
+		$curParams = $this->params;
 		$sets = [];
 		do {
-			$res = $this->makeRequestInternal( $params );
+			$res = $this->makeRequestInternal( $curParams );
 
 			$this->handleErrorAndWarnings( $res );
 			$sets[] = $res;
 
 			$finished = true;
 			if ( isset( $res->continue ) ) {
-				$params = array_merge( $params, get_object_vars( $res->continue ) );
+				$curParams = array_merge( $curParams, get_object_vars( $res->continue ) );
 				$finished = false;
 			}
 		} while ( !$finished );
@@ -154,7 +154,7 @@ abstract class RequestBase {
 		foreach ( $cookies as $cookie ) {
 			$bits = explode( ';', $cookie );
 			list( $name, $value ) = explode( '=', $bits[0] );
-			self::$cookies[ $name ] = $value;
+			self::$cookiesToSet[ $name ] = $value;
 		}
 	}
 
@@ -187,9 +187,9 @@ abstract class RequestBase {
 	 */
 	protected function getHeaders() :array {
 		$ret = self::HEADERS;
-		if ( self::$cookies ) {
+		if ( self::$cookiesToSet ) {
 			$cookies = [];
-			foreach ( self::$cookies as $cname => $cval ) {
+			foreach ( self::$cookiesToSet as $cname => $cval ) {
 				$cookies[] = trim( "$cname=$cval" );
 			}
 			$ret[] = 'Cookie: ' . implode( '; ', $cookies );

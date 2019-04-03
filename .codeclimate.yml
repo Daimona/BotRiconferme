@@ -4,3 +4,7 @@ plugins:
     enabled: true
   sonar-php:
     enabled: true
+    checks:
+      # Disable string literals reporting
+      php:S1192:
+        enabled: false
