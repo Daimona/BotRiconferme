@@ -41,14 +41,14 @@ class TaskDataProvider extends ContextSource {
 	 * @return int
 	 */
 	private function getValidTimestamp( array $groups ) : int {
-		$c = isset( $groups[ 'checkuser' ] ) ?
+		$checkuser = isset( $groups[ 'checkuser' ] ) ?
 			\DateTime::createFromFormat( 'd/m/Y', $groups[ 'checkuser' ] )->getTimestamp() :
 			0;
-		$b = isset( $groups[ 'bureaucrat' ] ) ?
+		$bureaucrat = isset( $groups[ 'bureaucrat' ] ) ?
 			\DateTime::createFromFormat( 'd/m/Y', $groups[ 'bureaucrat' ] )->getTimestamp() :
 			0;
 
-		$timestamp = max( $b, $c );
+		$timestamp = max( $bureaucrat, $checkuser );
 		if ( $timestamp === 0 ) {
 			// @phan-suppress-next-line PhanTypeArraySuspicious Phan cannot know...
 			$timestamp = \DateTime::createFromFormat( 'd/m/Y', $groups[ 'sysop' ] )->getTimestamp();
