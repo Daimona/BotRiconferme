@@ -68,7 +68,9 @@ class TaskManager {
 			$res->merge( $this->runTask( current( $list ) ) );
 		} while ( $res->isOK() && next( $list ) );
 
-		self::setLastFullRunDate();
+		if ( $res->isOK() ) {
+			self::setLastFullRunDate();
+		}
 
 		return $res;
 	}
