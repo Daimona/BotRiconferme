@@ -107,11 +107,7 @@ class UpdateList extends Task {
 			$val = [];
 			foreach ( $groupsList as $group ) {
 				try {
-					if ( $group === 'checkuser' ) {
-						$val[ $group ] = $this->getCUFlagDate( $adm );
-					} else {
-						$val[ $group ] = $this->getFlagDate( $adm, $group );
-					}
+					$val[ $group ] = $this->getFlagDate( $adm, $group );
 				} catch ( TaskException $e ) {
 					$this->errors[] = $e->getMessage();
 				}
@@ -126,61 +122,19 @@ class UpdateList extends Task {
 
 	/**
 	 * @param string $admin
-	 * @return string
-	 * @throws TaskException
-	 * @todo This is hacky... At least, merge it with getFlagDate
-	 */
-	private function getCUFlagDate( string $admin ) : string {
-		$this->getLogger()->info( "Retrieving checkuser flag date for $admin" );
-
-		$oldUrl = $this->getConfig()->get( 'url' );
-		$this->getConfig()->set( 'url', 'https://meta.wikimedia.org/w/api.php' );
-
-		$params = [
-			'action' => 'query',
-			'list' => 'logevents',
-			'leprop' => 'timestamp|details',
-			'leaction' => 'rights/rights',
-			'letitle' => "User:$admin@itwiki",
-			'lelimit' => 'max'
-		];
-
-		$req = RequestBase::newFromParams( $params );
-		$data = $req->execute();
-
-		$ts = null;
-		foreach ( $data as $set ) {
-			foreach ( $set->query->logevents as $entry ) {
-				if ( !isset( $entry->params ) ) {
-					// Old entries
-					continue;
-				}
-				if ( in_array( 'checkuser', $entry->params->newgroups ) &&
-					!in_array( 'checkuser', $entry->params->oldgroups )
-				) {
-					$ts = $entry->timestamp;
-					break 2;
-				}
-			}
-		}
-
-		$this->getConfig()->set( 'url', $oldUrl );
-
-		if ( $ts === null ) {
-			throw new TaskException( "Checkuser flag date unavailable for $admin" );
-		}
-
-		return date( "d/m/Y", strtotime( $ts ) );
-	}
-
-	/**
-	 * @param string $admin
 	 * @param string $group
 	 * @return string
 	 * @throws TaskException
 	 */
 	protected function getFlagDate( string $admin, string $group ) : string {
 		$this->getLogger()->info( "Retrieving $group flag date for $admin" );
+
+		if ( $group === 'checkuser' ) {
+			// Little hack
+			$oldUrl = $this->getConfig()->get( 'url' );
+			$this->getConfig()->set( 'url', 'https://meta.wikimedia.org/w/api.php' );
+			$admin .= '@itwiki';
+		}
 
 		$params = [
 			'action' => 'query',
@@ -208,6 +162,10 @@ class UpdateList extends Task {
 					break 2;
 				}
 			}
+		}
+
+		if ( isset( $oldUrl ) ) {
+			$this->getConfig()->set( 'url', $oldUrl );
 		}
 
 		if ( $ts === null ) {
