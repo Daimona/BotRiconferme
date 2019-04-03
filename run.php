@@ -14,7 +14,6 @@ if ( PHP_SAPI !== 'cli' ) {
 
 	'url' => 'https://it.wikipedia.org/w/api.php',
 	'username' => 'BotRiconferme'
-	'password' => ...BotPassword...,
 	'list-title' => 'Utente:BotRiconferme/List.json',
 	'config-title' => 'Utente:BotRiconferme/Config.json',
 */
@@ -22,7 +21,6 @@ if ( PHP_SAPI !== 'cli' ) {
 $params = [
 	'url:',
 	'username:',
-	'password:',
 	'list-title:',
 	'config-title:'
 ];
@@ -31,6 +29,34 @@ $vals = getopt( '', $params );
 if ( count( $vals ) !== count( $params ) ) {
 	exit( 'Not enough params!' );
 }
+
+
+$PWFILE = './password.txt';
+/*
+ * Either
+ * --password=(BotPassword)
+ * or
+ * --use-password-file
+ * which will look for a $PWFILE file in the current directory containing only the plain password
+ */
+$pwParams = getopt( '', [
+	'password:',
+	'use-password-file'
+] );
+
+if ( isset( $pwParams[ 'password' ] ) ) {
+	$pw = $pwParams[ 'password' ];
+} elseif ( isset( $pwParams[ 'use-password-file' ] ) ) {
+	if ( file_exists( $PWFILE ) ) {
+		$pw = file_get_contents( $PWFILE );
+	} else {
+		exit( 'Please create a password.txt file to use with use-password-file' );
+	}
+} else {
+	exit( 'Please provide a password or use a password file' );
+}
+
+$vals[ 'password' ] = $pw;
 Config::init( $vals );
 
 $bot = new Bot();
