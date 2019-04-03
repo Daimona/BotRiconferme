@@ -11,7 +11,7 @@ abstract class Task extends ContextSource {
 	const STATUS_OK = 0;
 	const STATUS_ERROR = 1;
 	/** @var string[] */
-	protected $errors;
+	protected $errors = [];
 	/** @var TaskDataProvider */
 	private $dataProvider;
 
