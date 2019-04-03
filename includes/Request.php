@@ -3,6 +3,8 @@
 namespace BotRiconferme;
 
 use BotRiconferme\Exception\APIRequestException;
+use BotRiconferme\Exception\MissingPageException;
+use BotRiconferme\Exception\ProtectedPageException;
 
 class Request {
 	const USER_AGENT = 'Daimona - BotRiconferme 1.0 (https://github.com/Daimona/BotRiconferme)';
@@ -46,7 +48,17 @@ class Request {
 			$res = $this->reallyMakeRequest( $params );
 
 			if ( isset( $res->error ) ) {
-				throw new APIRequestException( $res->error->info );
+				switch ( $res->error->code ) {
+					case 'missingtitle':
+						$ex = new MissingPageException;
+						break;
+					case 'protectedpage':
+						$ex = new ProtectedPageException;
+						break;
+					default:
+						$ex = new APIRequestException( $res->error->code . ' - ' . $res->error->info );
+				}
+				throw $ex;
 			} elseif ( isset( $res->warnings ) ) {
 				$act = $params[ 'action' ];
 				if ( is_string( $act ) ) {

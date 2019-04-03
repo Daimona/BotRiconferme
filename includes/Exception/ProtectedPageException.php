@@ -2,13 +2,13 @@
 
 namespace BotRiconferme\Exception;
 
-class MissingPageException extends APIRequestException {
+class ProtectedPageException extends APIRequestException {
 	/**
 	 * @param string|null $title
 	 */
 	public function __construct( string $title = null ) {
 		if ( $title ) {
-			parent::__construct( "The specified page doesn't exist: $title" );
+			parent::__construct( "The specified page is protected: $title" );
 		} else {
 			parent::__construct();
 		}

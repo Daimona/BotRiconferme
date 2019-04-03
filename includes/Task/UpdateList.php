@@ -185,6 +185,8 @@ class UpdateList extends Task {
 	 * @todo This is hacky... At least, merge it with getFlagDate
 	 */
 	private function getCUFlagDate( string $admin ) : string {
+		$this->getLogger()->info( "Retrieving checkuser flag date for $admin" );
+
 		$oldUrl = $this->getConfig()->get( 'url' );
 		$this->getConfig()->set( 'url', 'https://meta.wikimedia.org/w/api.php' );
 
