@@ -37,12 +37,12 @@ class WikiController {
 
 		$req = RequestBase::newFromParams( $params );
 		$data = $req->execute();
-		$page = reset( $data->query->pages );
-		if ( isset( $page->missing ) ) {
+		$page = reset( $data['query']['pages'] );
+		if ( isset( $page['missing'] ) ) {
 			throw new MissingPageException( $title );
 		}
 
-		return $page->revisions[0]->slots->main->{ '*' };
+		return $page['revisions'][0]['slots']['main']['*'];
 	}
 
 	/**
@@ -88,7 +88,7 @@ class WikiController {
 			throw new LoginException( $e->getMessage() );
 		}
 
-		if ( !isset( $res->login->result ) || $res->login->result !== 'Success' ) {
+		if ( !isset( $res['login']['result'] ) || $res['login']['result'] !== 'Success' ) {
 			throw new LoginException( 'Unknown error' );
 		}
 
@@ -113,7 +113,7 @@ class WikiController {
 			$req = RequestBase::newFromParams( $params );
 			$res = $req->execute();
 
-			$this->tokens[ $type ] = $res->query->tokens->{ "{$type}token" };
+			$this->tokens[ $type ] = $res['query']['tokens']["{$type}token"];
 		}
 
 		return $this->tokens[ $type ];

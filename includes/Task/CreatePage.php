@@ -68,11 +68,11 @@ class CreatePage extends Task {
 		$res = ( RequestBase::newFromParams( $params ) )->execute();
 
 		$last = 0;
-		foreach ( $res->query->allpages as $page ) {
-			if ( $this->pageWasCreatedToday( $page->title ) ) {
-				throw new TaskException( 'Page ' . $page->title . ' was already created.' );
+		foreach ( $res['query']['allpages'] as $page ) {
+			if ( $this->pageWasCreatedToday( $page['title'] ) ) {
+				throw new TaskException( 'Page ' . $page['title'] . ' was already created.' );
 			}
-			$bits = explode( '/', $page->title );
+			$bits = explode( '/', $page['title'] );
 			$cur = intval( end( $bits ) );
 			if ( is_numeric( $cur ) && $cur > $last ) {
 				$last = $cur;
@@ -97,8 +97,8 @@ class CreatePage extends Task {
 		];
 
 		$res = ( RequestBase::newFromParams( $params ) )->execute();
-		$data = $res->query->pages;
-		$time = strtotime( reset( $data )->revisions[0]->timestamp );
+		$data = $res['query']['pages'];
+		$time = strtotime( reset( $data )['revisions'][0]['timestamp'] );
 		return date( 'z/Y' ) === date( 'z/Y', $time );
 	}
 

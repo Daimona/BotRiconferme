@@ -58,18 +58,18 @@ class UpdateList extends Task {
 	}
 
 	/**
-	 * @param \stdClass $data
+	 * @param array $data
 	 * @return array
 	 */
-	protected function extractAdmins( \stdClass $data ) : array {
+	protected function extractAdmins( array $data ) : array {
 		$ret = [];
 		$blacklist = $this->getConfig()->get( 'exclude-admins' );
-		foreach ( $data->query->allusers as $u ) {
-			if ( in_array( $u->name, $blacklist ) ) {
+		foreach ( $data['query']['allusers'] as $u ) {
+			if ( in_array( $u['name'], $blacklist ) ) {
 				continue;
 			}
-			$interestingGroups = array_intersect( $u->groups, [ 'sysop', 'bureaucrat', 'checkuser' ] );
-			$ret[ $u->name ] = $interestingGroups;
+			$interestingGroups = array_intersect( $u['groups'], [ 'sysop', 'bureaucrat', 'checkuser' ] );
+			$ret[ $u['name'] ] = $interestingGroups;
 		}
 		return $ret;
 	}
@@ -151,21 +151,21 @@ class UpdateList extends Task {
 	}
 
 	/**
-	 * @param \stdClass $data
+	 * @param array $data
 	 * @param string $group
 	 * @return string|null
 	 */
-	private function extractTimestamp( \stdClass $data, string $group ) : ?string {
+	private function extractTimestamp( array $data, string $group ) : ?string {
 		$ts = null;
-		foreach ( $data->query->logevents as $entry ) {
-			if ( !isset( $entry->params ) ) {
+		foreach ( $data['query']['logevents'] as $entry ) {
+			if ( !isset( $entry['params'] ) ) {
 				// Old entries
 				continue;
 			}
-			if ( in_array( $group, $entry->params->newgroups ) &&
-				!in_array( $group, $entry->params->oldgroups )
+			if ( in_array( $group, $entry['params']['newgroups'] ) &&
+				!in_array( $group, $entry['params']['oldgroups'] )
 			) {
-				$ts = $entry->timestamp;
+				$ts = $entry['timestamp'];
 				break;
 			}
 		}

@@ -56,9 +56,9 @@ abstract class RequestBase {
 	/**
 	 * Make an API request
 	 *
-	 * @return \stdClass
+	 * @return array
 	 */
-	public function execute() : \stdClass {
+	public function execute() : array {
 		$curParams = $this->params;
 		$sets = [];
 		do {
@@ -81,17 +81,18 @@ abstract class RequestBase {
 	 * Merge results from multiple requests in a single object
 	 *
 	 * @param \stdClass[] $sets
-	 * @return \stdClass
+	 * @return array
 	 */
-	private function mergeSets( array $sets ) : \stdClass {
+	private function mergeSets( array $sets ) : array {
+		$sets = $this->objectToArray( $sets );
 		// Use the first set as template
 		$ret = array_shift( $sets );
 		$act = $this->params['action'];
 
 		foreach ( $sets as $set ) {
-			$ret->$act = (object)array_merge_recursive(
-				$this->objectToArray( $ret->$act ),
-				$this->objectToArray( $set->$act )
+			$ret[$act] = array_merge_recursive(
+				$this->objectToArray( $ret[$act] ),
+				$this->objectToArray( $set[$act] )
 			);
 		}
 		return $ret;
