@@ -3,7 +3,6 @@
 namespace BotRiconferme\Request;
 
 use BotRiconferme\Bot;
-use BotRiconferme\Config;
 use BotRiconferme\Exception\APIRequestException;
 use BotRiconferme\Exception\MissingPageException;
 use BotRiconferme\Exception\ProtectedPageException;

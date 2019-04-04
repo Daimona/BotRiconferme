@@ -113,7 +113,6 @@ class CreatePage extends Task {
 		$textParams = [
 			'$user' => $user,
 			'$date' => $groups['sysop'],
-			'$quorum' => '',##################################################################Handle on-wiki
 			'$burocrate' => $groups['bureaucrat'] ?? '',
 			'$checkuser' => $groups['checkuser'] ?? ''
 		];
