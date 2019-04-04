@@ -5,7 +5,7 @@ namespace BotRiconferme\Exception;
 /**
  * Error thrown when trying to write a protected page
  */
-class ProtectedPageException extends APIRequestException {
+class ProtectedPageException extends EditException {
 	/**
 	 * @param string|null $title If available
 	 */

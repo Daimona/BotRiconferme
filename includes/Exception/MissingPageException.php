@@ -3,7 +3,7 @@
 namespace BotRiconferme\Exception;
 
 /**
- * Error thrown when trying to read a non-existent page
+ * Error thrown when trying to read a non-existent page, or write it when nocreate is specified
  */
 class MissingPageException extends APIRequestException {
 	/**

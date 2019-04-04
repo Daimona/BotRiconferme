@@ -2,6 +2,7 @@
 
 namespace BotRiconferme;
 
+use BotRiconferme\Exception\EditException;
 use BotRiconferme\Exception\LoginException;
 use BotRiconferme\Exception\APIRequestException;
 use BotRiconferme\Exception\MissingPageException;
@@ -54,7 +55,7 @@ class WikiController {
 	 * Basically a wrapper for action=edit
 	 *
 	 * @param array $params
-	 * @throws APIRequestException
+	 * @throws EditException
 	 */
 	public function editPage( array $params ) {
 		$this->login();
@@ -67,7 +68,7 @@ class WikiController {
 
 		$res = RequestBase::newFromParams( $params, true )->execute();
 		if ( $res->edit->result !== 'Success' ) {
-			throw new APIRequestException( $res->edit->info );
+			throw new EditException( $res->edit->info );
 		}
 	}
 
