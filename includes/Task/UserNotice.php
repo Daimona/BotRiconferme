@@ -14,15 +14,21 @@ class UserNotice extends Task {
 	public function run() : TaskResult {
 		$this->getLogger()->info( 'Starting task UserNotice' );
 
-		$ricNums = [];
-		foreach ( $this->getDataProvider()->getCreatedPages() as $page ) {
-			$bits = explode( '/', $page );
-			$num = intval( array_pop( $bits ) );
-			$ricNums[ array_pop( $bits ) ] = $num;
-		}
+		$pages = $this->getDataProvider()->getCreatedPages();
+		$users = $this->getDataProvider()->getUsersToProcess();
+		if ( $pages && $users ) {
+			$ricNums = [];
+			foreach ( $pages as $page ) {
+				$bits = explode( '/', $page );
+				$num = intval( array_pop( $bits ) );
+				$ricNums[ array_pop( $bits ) ] = $num;
+			}
 
-		foreach ( $this->getDataProvider()->getUsersToProcess() as $user => $_ ) {
-			$this->addMsg( $user, $ricNums[ $user ] );
+			foreach ( $users as $user => $_ ) {
+				$this->addMsg( $user, $ricNums[ $user ] );
+			}
+		} else {
+			$this->getLogger()->info( 'No messages to leave.' );
 		}
 
 		$this->getLogger()->info( 'Task UserNotice completed successfully' );
