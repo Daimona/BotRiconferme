@@ -9,6 +9,7 @@ use BotRiconferme\Exception\TaskException;
 /**
  * For each open page, close it if the time's up and no more than 15 opposing votes were added
  * @fixme Avoid duplication with UpdatesAround etc.
+ * @todo Handle votes
  */
 class ClosePages extends Task {
 	/**
@@ -18,8 +19,9 @@ class ClosePages extends Task {
 		$this->getLogger()->info( 'Starting task ClosePages' );
 
 		$titles = $this->getPagesList();
+		$protectReason = $this->getConfig()->get( 'close-protect-summary' );
 		foreach ( $titles as $title ) {
-			$this->getController()->protectPage( $title, $this->getConfig()->get( 'close-protect-summary' ) );
+			$this->getController()->protectPage( $title, $protectReason );
 			$this->updateBasePage( $title );
 		}
 
@@ -89,7 +91,9 @@ class ClosePages extends Task {
 			'rvslots' => 'main',
 			'rvsection' => 4
 		];
-		$content = RequestBase::newFromParams( $params )->execute();
+		$res = RequestBase::newFromParams( $params )->execute();
+		$page = reset( $res->query->pages );
+		$content = $page->revisions[0]->slots->main->{ '*' };
 		// Let's hope that this is good enough...
 		$votes = substr_count( $content, "\n\# *(?![#*])" );
 		return $votes >= 15;
@@ -150,6 +154,7 @@ class ClosePages extends Task {
 	protected function updateBasePage( string $title ) {
 		$this->getLogger()->info( "Updating base page $title" );
 
+		// @phan-suppress-next-line PhanTypeMismatchArgumentInternal WTF Phan what's wrong w/ u?
 		$baseTitle = substr( $title, 0, strrpos( $title, '/' ) );
 		$current = $this->getController()->getPageContent( $baseTitle );
 
