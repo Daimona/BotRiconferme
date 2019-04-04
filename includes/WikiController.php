@@ -49,6 +49,7 @@ class WikiController {
 	 * Basically a wrapper for action=edit
 	 *
 	 * @param array $params
+	 * @throws APIRequestException
 	 */
 	public function editPage( array $params ) {
 		$this->login();
@@ -60,7 +61,10 @@ class WikiController {
 		] + $params;
 
 		$req = RequestBase::newFromParams( $params, true );
-		$req->execute();
+		$res = $req->execute();
+		if ( $res['edit']['result'] !== 'Success' ) {
+			throw new APIRequestException( $res['edit']['info'] );
+		}
 	}
 
 	/**
