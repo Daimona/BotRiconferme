@@ -134,14 +134,28 @@ class ClosePages extends Task {
 		$archiveTitle = "$archiveTitle/" . date( 'Y' );
 
 		$append = '';
+		$archivedList = [];
 		foreach ( $titles as $page ) {
 			$append .= '{{' . $page . "}}\n";
+			$archivedList[] = explode( '/', $page, 3 )[2];
 		}
+
+		if ( count( $archivedList ) > 1 ) {
+			$last = array_pop( $archivedList );
+			$userNums = implode( ', ', $archivedList ) . " e $last";
+		} else {
+			$userNums = $archivedList[0];
+		}
+
+		$summary = strtr(
+			$this->getConfig()->get( 'close-archive-summary' ),
+			[ '$usernums' => $userNums ]
+		);
 
 		$params = [
 			'title' => $archiveTitle,
 			'appendtext' => $append,
-			'summary' => $this->getConfig()->get( 'close-archive-summary' )
+			'summary' => $summary
 		];
 
 		$this->getController()->editPage( $params );
@@ -231,16 +245,31 @@ class ClosePages extends Task {
 		$listTitle = $this->getConfig()->get( 'admins-list' );
 		$content = $this->getController()->getPageContent( $listTitle );
 		$newDate = date( 'Ymd', strtotime( '+1 year' ) );
+
+		$names = [];
 		foreach ( $titles as $title ) {
 			$user = explode( '/', $title )[2];
+			$names[] = $user;
 			$reg = "!(\{\{Amministratore\/riga\|$user.+\| *)\d+(?= *\|(?: *pausa)? *\}\})!";
 			$content = preg_replace( $reg, '$1' . $newDate, $content );
 		}
 
+		if ( count( $names ) > 1 ) {
+			$lastUser = array_pop( $names );
+			$usersList = implode( ', ', $names ) . " e $lastUser";
+		} else {
+			$usersList = $names[0];
+		}
+
+		$summary = strtr(
+			$this->getConfig()->get( 'close-update-list-summary' ),
+			[ '$names' => $usersList ]
+		);
+
 		$params = [
 			'title' => $listTitle,
 			'text' => $content,
-			'summary' => $this->getConfig()->get( 'close-update-list-summary' )
+			'summary' => $summary
 		];
 
 		$this->getController()->editPage( $params );
