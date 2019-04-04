@@ -14,14 +14,12 @@ if ( PHP_SAPI !== 'cli' ) {
 /*
 	Example
 
-	'url' => 'https://it.wikipedia.org/w/api.php',
 	'username' => 'BotRiconferme'
 	'list-title' => 'Utente:BotRiconferme/List.json',
 	'config-title' => 'Utente:BotRiconferme/Config.json',
 */
 
 $params = [
-	'url:',
 	'username:',
 	'list-title:',
 	'config-title:'

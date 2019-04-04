@@ -28,7 +28,6 @@ class Config {
 		}
 
 		$inst = new self;
-		$inst->set( 'url', $defaults['url'] );
 		$inst->set( 'list-title', $defaults['list-title'] );
 		$inst->set( 'username', $defaults['username'] );
 		$inst->set( 'password', $defaults['password'] );

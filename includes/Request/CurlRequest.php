@@ -11,13 +11,14 @@ class CurlRequest extends RequestBase {
 	/**
 	 * @inheritDoc
 	 */
-	protected function reallyMakeRequest( string $url, string $params ) : string {
+	protected function reallyMakeRequest( string $params ) : string {
 		$curl = curl_init();
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, true );
 		curl_setopt( $curl, CURLOPT_HEADER, true );
 		curl_setopt( $curl, CURLOPT_HEADERFUNCTION, [ $this, 'headersHandler' ] );
 		curl_setopt( $curl, CURLOPT_HTTPHEADER, $this->getHeaders() );
 
+		$url = self::$url;
 		if ( $this->method === 'POST' ) {
 			curl_setopt( $curl, CURLOPT_URL, $url );
 			curl_setopt( $curl, CURLOPT_POST, true );

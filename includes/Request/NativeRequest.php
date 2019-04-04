@@ -9,13 +9,14 @@ class NativeRequest extends RequestBase {
 	/**
 	 * @inheritDoc
 	 */
-	protected function reallyMakeRequest( string $url, string $params ) : string {
+	protected function reallyMakeRequest( string $params ) : string {
 		$context = [
 			'http' => [
 				'method' => $this->method,
 				'header' => $this->buildHeadersString( $this->getHeaders() )
 			]
 		];
+		$url = self::$url;
 		if ( $this->method === 'POST' ) {
 			$context['http']['content'] = $params;
 		} else {

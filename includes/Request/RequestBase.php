@@ -2,21 +2,24 @@
 
 namespace BotRiconferme\Request;
 
+use BotRiconferme\Bot;
 use BotRiconferme\Config;
 use BotRiconferme\Exception\APIRequestException;
 use BotRiconferme\Exception\MissingPageException;
 use BotRiconferme\Exception\ProtectedPageException;
 
 abstract class RequestBase {
-	const USER_AGENT = 'Daimona - BotRiconferme 1.0 (https://github.com/Daimona/BotRiconferme)';
-
+	const USER_AGENT = 'Daimona - BotRiconferme ' . Bot::VERSION .
+		' (https://github.com/Daimona/BotRiconferme)';
 	const HEADERS = [
 		'Content-Type: application/x-www-form-urlencoded',
 		'User-Agent: ' . self::USER_AGENT
 	];
-
 	// In seconds
 	const MAXLAG = 5;
+
+	/** @var string  */
+	public static $url = 'https://it.wikipedia.org/w/api.php';
 	/** @var array */
 	protected static $cookiesToSet;
 	/** @var array */
@@ -78,6 +81,67 @@ abstract class RequestBase {
 	}
 
 	/**
+	 * Perform an API request, either via cURL (if available) or file_get_contents
+	 *
+	 * @param array $params
+	 * @return \stdClass
+	 */
+	private function makeRequestInternal( array $params ) : \stdClass {
+		if ( $this->method === 'POST' ) {
+			$params['maxlag'] = self::MAXLAG;
+		}
+		$params = http_build_query( $params );
+
+		$body = $this->reallyMakeRequest( $params );
+
+		$this->setCookies( $this->newCookies );
+		return json_decode( $body );
+	}
+
+	/**
+	 * Actual method which will make the request
+	 *
+	 * @param string $params
+	 * @return string
+	 */
+	abstract protected function reallyMakeRequest( string $params ) : string;
+
+	/**
+	 * @param array $cookies
+	 */
+	protected function setCookies( array $cookies ) {
+		foreach ( $cookies as $cookie ) {
+			$bits = explode( ';', $cookie );
+			list( $name, $value ) = explode( '=', $bits[0] );
+			self::$cookiesToSet[ $name ] = $value;
+		}
+	}
+
+	/**
+	 * @param \stdClass $res
+	 * @throws APIRequestException
+	 */
+	protected function handleErrorAndWarnings( $res ) {
+		if ( isset( $res->error ) ) {
+			switch ( $res->error->code ) {
+				case 'missingtitle':
+					$ex = new MissingPageException;
+					break;
+				case 'protectedpage':
+					$ex = new ProtectedPageException;
+					break;
+				default:
+					$ex = new APIRequestException( $res->error->code . ' - ' . $res->error->info );
+			}
+			throw $ex;
+		} elseif ( isset( $res->warnings ) ) {
+			$act = $this->params[ 'action' ];
+			$warning = $res->warnings->$act;
+			throw new APIRequestException( reset( $warning ) );
+		}
+	}
+
+	/**
 	 * Merge results from multiple requests in a single object
 	 *
 	 * @param \stdClass[] $sets
@@ -117,70 +181,6 @@ abstract class RequestBase {
 			$array[$key] = $value;
 		}
 		return $array;
-	}
-
-	/**
-	 * Perform an API request, either via cURL (if available) or file_get_contents
-	 *
-	 * @param array $params
-	 * @return \stdClass
-	 */
-	private function makeRequestInternal( array $params ) : \stdClass {
-		$url = Config::getInstance()->get( 'url' );
-
-		if ( $this->method === 'POST' ) {
-			$params['maxlag'] = self::MAXLAG;
-		}
-		$params = http_build_query( $params );
-
-		$body = $this->reallyMakeRequest( $url, $params );
-
-		$this->setCookies( $this->newCookies );
-		return json_decode( $body );
-	}
-
-	/**
-	 * Actual method which will make the request
-	 *
-	 * @param string $url
-	 * @param string $params
-	 * @return string
-	 */
-	abstract protected function reallyMakeRequest( string $url, string $params ) : string;
-
-	/**
-	 * @param array $cookies
-	 */
-	protected function setCookies( array $cookies ) {
-		foreach ( $cookies as $cookie ) {
-			$bits = explode( ';', $cookie );
-			list( $name, $value ) = explode( '=', $bits[0] );
-			self::$cookiesToSet[ $name ] = $value;
-		}
-	}
-
-	/**
-	 * @param \stdClass $res
-	 * @throws APIRequestException
-	 */
-	protected function handleErrorAndWarnings( $res ) {
-		if ( isset( $res->error ) ) {
-			switch ( $res->error->code ) {
-				case 'missingtitle':
-					$ex = new MissingPageException;
-					break;
-				case 'protectedpage':
-					$ex = new ProtectedPageException;
-					break;
-				default:
-					$ex = new APIRequestException( $res->error->code . ' - ' . $res->error->info );
-			}
-			throw $ex;
-		} elseif ( isset( $res->warnings ) ) {
-			$act = $this->params[ 'action' ];
-			$warning = $res->warnings->$act;
-			throw new APIRequestException( reset( $warning ) );
-		}
 	}
 
 	/**

@@ -121,8 +121,8 @@ class UpdateList extends Task {
 
 		if ( $group === 'checkuser' ) {
 			// Little hack
-			$oldUrl = $this->getConfig()->get( 'url' );
-			$this->getConfig()->set( 'url', 'https://meta.wikimedia.org/w/api.php' );
+			$oldUrl = RequestBase::$url;
+			RequestBase::$url = 'https://meta.wikimedia.org/w/api.php';
 			$admin .= '@itwiki';
 		}
 
@@ -140,7 +140,7 @@ class UpdateList extends Task {
 		$ts = $this->extractTimestamp( $data, $group );
 
 		if ( isset( $oldUrl ) ) {
-			$this->getConfig()->set( 'url', $oldUrl );
+			RequestBase::$url = $oldUrl;
 		}
 
 		if ( $ts === null ) {
