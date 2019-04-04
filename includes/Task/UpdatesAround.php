@@ -63,8 +63,6 @@ class UpdatesAround extends Task {
 		$votePage = $this->getConfig()->get( 'ric-vote-page' );
 
 		$content = $this->getController()->getPageContent( $votePage );
-		// Remove comments etc.
-		$visibleContent = strip_tags( $content );
 
 		$time = $this->getTimeWithArticle();
 		$newLines = '';
@@ -74,8 +72,8 @@ class UpdatesAround extends Task {
 		}
 
 		$introReg = '!^;È in corso la .*riconferma tacita.* degli .*amministratori.+!m';
-		if ( preg_match( $introReg, $visibleContent ) ) {
-			// Put before the existing ones
+		if ( preg_match( $introReg, strip_tags( $content ) ) ) {
+			// Put before the existing ones, if they're found outside comments
 			$newContent = preg_replace( $introReg, '$0' . "\n$newLines", $content, 1 );
 		} else {
 			// Start section

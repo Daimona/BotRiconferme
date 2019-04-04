@@ -65,8 +65,7 @@ class WikiController {
 			'bot' => Config::getInstance()->get( 'bot-edits' )
 		] + $params;
 
-		$req = RequestBase::newFromParams( $params, true );
-		$res = $req->execute();
+		$res = RequestBase::newFromParams( $params, true )->execute();
 		if ( $res->edit->result !== 'Success' ) {
 			throw new APIRequestException( $res->edit->info );
 		}
@@ -82,7 +81,7 @@ class WikiController {
 			return;
 		}
 
-		$this->logger->debug( 'Logging in' );
+		$this->logger->info( 'Logging in' );
 
 		$params = [
 			'action' => 'login',
@@ -92,8 +91,7 @@ class WikiController {
 		];
 
 		try {
-			$req = RequestBase::newFromParams( $params, true );
-			$res = $req->execute();
+			$res = RequestBase::newFromParams( $params, true )->execute();
 		} catch ( APIRequestException $e ) {
 			throw new LoginException( $e->getMessage() );
 		}
@@ -105,7 +103,7 @@ class WikiController {
 		self::$loggedIn = true;
 		// Clear tokens cache
 		$this->tokens = [];
-		$this->logger->debug( 'Login succeeded' );
+		$this->logger->info( 'Login succeeded' );
 	}
 
 	/**

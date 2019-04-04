@@ -95,13 +95,12 @@ class UpdateList extends Task {
 	protected function getMissingGroups() : array {
 		$missing = [];
 		foreach ( $this->actualList as $adm => $groups ) {
+			$groupsList = [];
 			if ( !isset( $this->botList[ $adm ] ) ) {
 				$groupsList = $groups;
 			} elseif ( count( $groups ) > count( $this->botList[$adm] ) ) {
 				// Only some groups are missing
 				$groupsList = array_diff_key( $groups, $this->botList[$adm] );
-			} else {
-				continue;
 			}
 
 			foreach ( $groupsList as $group ) {
@@ -142,8 +141,7 @@ class UpdateList extends Task {
 			'lelimit' => 'max'
 		];
 
-		$req = RequestBase::newFromParams( $params );
-		$data = $req->execute();
+		$data = RequestBase::newFromParams( $params )->execute();
 		$ts = $this->extractTimestamp( $data, $group );
 
 		if ( isset( $oldUrl ) ) {
@@ -154,7 +152,7 @@ class UpdateList extends Task {
 			throw new TaskException( "$group flag date unavailable for $admin" );
 		}
 
-		return date( "d/m/Y", strtotime( $ts ) );
+		return date( 'd/m/Y', strtotime( $ts ) );
 	}
 
 	/**
@@ -171,9 +169,9 @@ class UpdateList extends Task {
 				// Old entries
 				continue;
 			}
-			if ( in_array( $group, $entry->params->newgroups ) &&
-				!in_array( $group, $entry->params->oldgroups )
-			) {
+
+			$addedGroups = array_diff( $entry->params->newgroups, $entry->params->oldgroups );
+			if ( in_array( $group, $addedGroups ) ) {
 				$ts = $entry->timestamp;
 				break;
 			}
@@ -206,18 +204,16 @@ class UpdateList extends Task {
 	protected function doUpdateList( array $newContent ) {
 		ksort( $newContent );
 
-		if ( $newContent !== $this->botList ) {
-			$this->getLogger()->info( 'Updating admin list' );
-		} else {
+		if ( $newContent === $this->botList ) {
 			$this->getLogger()->info( 'Admin list already up-to-date' );
 			return;
 		}
 
-		$stringified = json_encode( $newContent );
+		$this->getLogger()->info( 'Updating admin list' );
 
 		$params = [
 			'title' => $this->getConfig()->get( 'list-title' ),
-			'text' => $stringified,
+			'text' => json_encode( $newContent ),
 			'summary' => $this->getConfig()->get( 'list-update-summary' )
 		];
 
