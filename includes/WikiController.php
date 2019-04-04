@@ -37,12 +37,10 @@ class WikiController {
 			'titles' => $title,
 			'prop' => 'revisions',
 			'rvslots' => 'main',
-			'rvprop' => 'content',
-			'rvlimit' => 1
+			'rvprop' => 'content'
 		];
 
 		$req = RequestBase::newFromParams( $params );
-		$req->setResultLimit( 1 );
 		$data = $req->execute();
 		$page = reset( $data->query->pages );
 		if ( isset( $page->missing ) ) {
