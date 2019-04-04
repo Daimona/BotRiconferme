@@ -4,6 +4,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 use BotRiconferme\Config;
 use BotRiconferme\Bot;
+use BotRiconferme\Request\RequestBase;
 
 if ( PHP_SAPI !== 'cli' ) {
 	exit( 'CLI only!' );
@@ -28,6 +29,12 @@ $params = [
 $vals = getopt( '', $params );
 if ( count( $vals ) !== count( $params ) ) {
 	exit( 'Not enough params!' );
+}
+
+/* URL (for debugging purpose) */
+$url = getopt( '', [ 'force-url:' ] );
+if ( isset( $url['force-url'] ) ) {
+	RequestBase::$url = $url['force-url'];
 }
 
 /* PASSWORD */
