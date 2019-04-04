@@ -2,9 +2,12 @@
 
 namespace BotRiconferme\Exception;
 
+/**
+ * Error thrown when trying to read a non-existent page
+ */
 class MissingPageException extends APIRequestException {
 	/**
-	 * @param string|null $title
+	 * @param string|null $title If available
 	 */
 	public function __construct( string $title = null ) {
 		if ( $title ) {

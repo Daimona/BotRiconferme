@@ -5,6 +5,9 @@ namespace BotRiconferme;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Base class with a few utility methods available to get a logger, the config and a wiki controller
+ */
 abstract class ContextSource implements LoggerAwareInterface {
 	/** @var LoggerInterface */
 	private $logger;

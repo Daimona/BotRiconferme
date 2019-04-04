@@ -2,5 +2,8 @@
 
 namespace BotRiconferme\Exception;
 
+/**
+ * A generic error occurred during an API request
+ */
 class APIRequestException extends \Exception {
 }

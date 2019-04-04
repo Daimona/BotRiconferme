@@ -2,6 +2,9 @@
 
 namespace BotRiconferme;
 
+/**
+ * Object wrapping the result of the execution of a task.
+ */
 class TaskResult {
 	// Status codes
 	const STATUS_OK = 0;

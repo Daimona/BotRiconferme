@@ -2,6 +2,9 @@
 
 namespace BotRiconferme;
 
+/**
+ * Object holding data to be shared between different tasks.
+ */
 class TaskDataProvider extends ContextSource {
 	/** @var array[] */
 	private $users;
@@ -10,6 +13,8 @@ class TaskDataProvider extends ContextSource {
 	private $createdPages = [];
 
 	/**
+	 * Get a list of users to execute tasks on.
+	 *
 	 * @return array[]
 	 */
 	public function getUsersToProcess() : array {
@@ -56,6 +61,8 @@ class TaskDataProvider extends ContextSource {
 	}
 
 	/**
+	 * Discard an user from the current list
+	 *
 	 * @param string $name
 	 */
 	public function removeUser( string $name ) {

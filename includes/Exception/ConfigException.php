@@ -2,5 +2,8 @@
 
 namespace BotRiconferme\Exception;
 
+/**
+ * Errors happened due to the on-wiki config being not setup properly
+ */
 class ConfigException extends \Exception {
 }

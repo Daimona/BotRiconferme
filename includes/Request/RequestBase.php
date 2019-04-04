@@ -7,6 +7,9 @@ use BotRiconferme\Exception\APIRequestException;
 use BotRiconferme\Exception\MissingPageException;
 use BotRiconferme\Exception\ProtectedPageException;
 
+/**
+ * Core wrapper for an API request. Current implementations use either cURL or file_get_contents
+ */
 abstract class RequestBase {
 	const USER_AGENT = 'Daimona - BotRiconferme ' . Bot::VERSION .
 		' (https://github.com/Daimona/BotRiconferme)';
@@ -17,7 +20,7 @@ abstract class RequestBase {
 	// In seconds
 	const MAXLAG = 5;
 
-	/** @var string  */
+	/** @var string */
 	public static $url = 'https://it.wikipedia.org/w/api.php';
 	/** @var array */
 	protected static $cookiesToSet;
@@ -56,7 +59,7 @@ abstract class RequestBase {
 	}
 
 	/**
-	 * Make an API request
+	 * Entry point for an API request
 	 *
 	 * @return array
 	 */
@@ -80,7 +83,7 @@ abstract class RequestBase {
 	}
 
 	/**
-	 * Perform an API request, either via cURL (if available) or file_get_contents
+	 * Process parameters and call the actual request method
 	 *
 	 * @param array $params
 	 * @return \stdClass
@@ -106,6 +109,8 @@ abstract class RequestBase {
 	abstract protected function reallyMakeRequest( string $params ) : string;
 
 	/**
+	 * After a request, set cookies for the next ones
+	 *
 	 * @param array $cookies
 	 */
 	protected function setCookies( array $cookies ) {
@@ -117,6 +122,8 @@ abstract class RequestBase {
 	}
 
 	/**
+	 * Handle known warning and errors from an API request
+	 *
 	 * @param \stdClass $res
 	 * @throws APIRequestException
 	 */
@@ -183,6 +190,8 @@ abstract class RequestBase {
 	}
 
 	/**
+	 * Get the headers to use for a new request
+	 *
 	 * @return array
 	 */
 	protected function getHeaders() :array {
@@ -198,6 +207,8 @@ abstract class RequestBase {
 	}
 
 	/**
+	 * Utility function to implode headers
+	 *
 	 * @param array $headers
 	 * @return string
 	 */

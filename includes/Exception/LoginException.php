@@ -2,5 +2,8 @@
 
 namespace BotRiconferme\Exception;
 
+/**
+ * Specific error happened upon logging in
+ */
 class LoginException extends APIRequestException {
 }

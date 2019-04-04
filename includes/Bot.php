@@ -2,6 +2,9 @@
 
 namespace BotRiconferme;
 
+/**
+ * Higher-level class. It only wraps tasks executions, and contains generic data
+ */
 class Bot {
 	/** @var Logger */
 	private $logger;

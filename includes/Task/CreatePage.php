@@ -6,6 +6,9 @@ use BotRiconferme\TaskResult;
 use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Exception\TaskException;
 
+/**
+ * For each user, create the WP:A/Riconferma_annuale/USERNAME/XXX page and add it to its base page
+ */
 class CreatePage extends Task {
 	/**
 	 * @inheritDoc
@@ -23,6 +26,8 @@ class CreatePage extends Task {
 	}
 
 	/**
+	 * Determine what pages we need to create for a single user.
+	 *
 	 * @param string $user
 	 * @param array $groups
 	 */
@@ -30,7 +35,7 @@ class CreatePage extends Task {
 		try {
 			$num = $this->getLastPageNum( $user ) + 1;
 		} catch ( TaskException $e ) {
-			// The page was already created.
+			// The page was already created today. PLZ let this poor bot work!
 			$this->getDataProvider()->removeUser( $user );
 			$this->getLogger()->warning( $e->getMessage() . "\nRemoving $user." );
 			return;
@@ -50,6 +55,8 @@ class CreatePage extends Task {
 	}
 
 	/**
+	 * Get the number of last page for the given user
+	 *
 	 * @param string $user
 	 * @return int
 	 * @throws TaskException
@@ -103,6 +110,8 @@ class CreatePage extends Task {
 	}
 
 	/**
+	 * Really creates the page WP:A/Riconferma_annuale/USERNAME/XXX
+	 *
 	 * @param string $title
 	 * @param string $user
 	 * @param array $groups
@@ -128,6 +137,8 @@ class CreatePage extends Task {
 	}
 
 	/**
+	 * Creates the page WP:A/Riconferma_annuale/USERNAME if it doesn't exist
+	 *
 	 * @param string $title
 	 * @param string $newText
 	 */
@@ -144,6 +155,7 @@ class CreatePage extends Task {
 	}
 
 	/**
+	 * Updates the page WP:A/Riconferma_annuale/USERNAME if it already exists
 	 * @param string $title
 	 * @param string $newText
 	 */

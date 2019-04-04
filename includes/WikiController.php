@@ -7,6 +7,9 @@ use BotRiconferme\Exception\APIRequestException;
 use BotRiconferme\Exception\MissingPageException;
 use BotRiconferme\Request\RequestBase;
 
+/**
+ * Class for wiki interaction, contains some requests shorthands
+ */
 class WikiController {
 	/** @var bool */
 	private static $loggedIn = false;
@@ -20,6 +23,8 @@ class WikiController {
 	}
 
 	/**
+	 * Gets the content of a wiki page
+	 *
 	 * @param string $title
 	 * @return string
 	 * @throws MissingPageException
@@ -68,6 +73,7 @@ class WikiController {
 	}
 
 	/**
+	 * Login wrapper. Checks if we're already logged in and clears tokens cache
 	 * @throws LoginException
 	 */
 	public function login() {
@@ -103,6 +109,8 @@ class WikiController {
 	}
 
 	/**
+	 * Get a token, cached.
+	 *
 	 * @param string $type
 	 * @return string
 	 */

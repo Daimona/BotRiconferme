@@ -6,6 +6,9 @@ use BotRiconferme\TaskResult;
 use BotRiconferme\ContextSource;
 use BotRiconferme\TaskDataProvider;
 
+/**
+ * Base class for the various tasks performed by the bot.
+ */
 abstract class Task extends ContextSource {
 	// Status codes
 	const STATUS_OK = 0;
@@ -16,9 +19,11 @@ abstract class Task extends ContextSource {
 	private $dataProvider;
 
 	/**
+	 * Final to keep calls linear in the TaskManager
+	 *
 	 * @param TaskDataProvider $dataProvider
 	 */
-	public function __construct( TaskDataProvider $dataProvider ) {
+	final public function __construct( TaskDataProvider $dataProvider ) {
 		set_exception_handler( [ $this, 'handleException' ] );
 		set_error_handler( [ $this, 'handleError' ] );
 		parent::__construct();

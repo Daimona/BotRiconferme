@@ -4,6 +4,9 @@ namespace BotRiconferme\Task;
 
 use BotRiconferme\TaskResult;
 
+/**
+ * Notify the affected users
+ */
 class UserNotice extends Task {
 	/**
 	 * @inheritDoc
@@ -27,6 +30,8 @@ class UserNotice extends Task {
 	}
 
 	/**
+	 * Leaves a message to the talk page
+	 *
 	 * @param string $user
 	 * @param int $ricNum
 	 */

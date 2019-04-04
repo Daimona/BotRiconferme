@@ -6,10 +6,13 @@ use BotRiconferme\TaskResult;
 use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Exception\TaskException;
 
+/**
+ * Updates the JSON list, adding and removing dates according to the API list of privileged people
+ */
 class UpdateList extends Task {
-	/** @var array[] */
+	/** @var array[] The JSON list */
 	private $botList;
-	/** @var array[] */
+	/** @var array[] The list from the API request */
 	private $actualList;
 
 	/**
@@ -85,6 +88,8 @@ class UpdateList extends Task {
 	}
 
 	/**
+	 * Populate a list of new admins missing from the JSON list and their groups
+	 *
 	 * @return array[]
 	 */
 	protected function getMissingGroups() : array {
@@ -111,6 +116,8 @@ class UpdateList extends Task {
 	}
 
 	/**
+	 * Get the flag date for the given admin and group.
+	 *
 	 * @param string $admin
 	 * @param string $group
 	 * @return string
@@ -151,6 +158,8 @@ class UpdateList extends Task {
 	}
 
 	/**
+	 * Find the actual timestamp when the user was given the searched group
+	 *
 	 * @param array $data
 	 * @param string $group
 	 * @return string|null
@@ -171,7 +180,10 @@ class UpdateList extends Task {
 		}
 		return $ts;
 	}
+
 	/**
+	 * Get a list of admins who are in the JSON page but don't have the listed privileges anymore
+	 *
 	 * @return array[]
 	 */
 	protected function getExtraGroups() : array {
@@ -187,6 +199,8 @@ class UpdateList extends Task {
 	}
 
 	/**
+	 * Really edit the list with the new content, if it's not already up-to-date
+	 *
 	 * @param array $newContent
 	 */
 	protected function doUpdateList( array $newContent ) {
@@ -211,6 +225,8 @@ class UpdateList extends Task {
 	}
 
 	/**
+	 * Get the new content for the list
+	 *
 	 * @param array[] $missing
 	 * @param array[] $extra
 	 * @return array[]

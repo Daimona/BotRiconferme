@@ -5,6 +5,9 @@ namespace BotRiconferme\Task;
 use BotRiconferme\TaskResult;
 use BotRiconferme\Exception\TaskException;
 
+/**
+ * Do some updates around to notify people of the newly created pages
+ */
 class UpdatesAround extends Task {
 	/**
 	 * @inheritDoc
@@ -26,6 +29,8 @@ class UpdatesAround extends Task {
 	}
 
 	/**
+	 * Add created pages to Wikipedia:Amministratori/Riconferma annuale
+	 *
 	 * @param string $page
 	 */
 	protected function addToMainPage( string $page ) {
@@ -41,6 +46,8 @@ class UpdatesAround extends Task {
 	}
 
 	/**
+	 * Add a line in Wikipedia:Wikipediano/Votazioni
+	 *
 	 * @param string $page
 	 */
 	protected function addVote( string $page ) {
@@ -77,6 +84,8 @@ class UpdatesAround extends Task {
 	}
 
 	/**
+	 * Get a localized version of article + day + time
+	 *
 	 * @return string
 	 */
 	private function getTimeWithArticle() : string {
@@ -92,6 +101,8 @@ class UpdatesAround extends Task {
 	}
 
 	/**
+	 * Update the counter on Template:VotazioniRCnews
+	 *
 	 * @param string $page
 	 */
 	protected function addNews( string $page ) {

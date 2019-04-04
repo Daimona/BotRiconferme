@@ -1,4 +1,7 @@
 <?php declare( strict_types=1 );
+/**
+ * Entry point for the bot, called by CLI
+ */
 
 require __DIR__ . '/vendor/autoload.php';
 

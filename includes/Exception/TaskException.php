@@ -2,5 +2,8 @@
 
 namespace BotRiconferme\Exception;
 
+/**
+ * Generic task-related exception
+ */
 class TaskException extends \Exception {
 }

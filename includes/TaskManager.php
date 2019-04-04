@@ -9,6 +9,9 @@ use BotRiconferme\Task\UpdatesAround;
 use BotRiconferme\Task\UserNotice;
 use http\Exception\BadMethodCallException;
 
+/**
+ * Wrapper for single tasks
+ */
 class TaskManager {
 	// Run modes
 	const MODE_COMPLETE = 0;
@@ -34,6 +37,8 @@ class TaskManager {
 	}
 
 	/**
+	 * Main entry point
+	 *
 	 * @param int $mode One of the MODE_ constants
 	 * @param string|null $taskName Only used in MODE_SINGLE
 	 * @return TaskResult
@@ -79,6 +84,7 @@ class TaskManager {
 	}
 
 	/**
+	 * Get the last execution date to ensure no more than one full run is executed every day
 	 * @return string|null d/m/Y or null if no last run registered
 	 */
 	public static function getLastFullRunDate() : ?string {

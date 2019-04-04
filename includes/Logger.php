@@ -4,6 +4,9 @@ namespace BotRiconferme;
 
 use Psr\Log\AbstractLogger;
 
+/**
+ * Implementation for a PSR-3 logger
+ */
 class Logger extends AbstractLogger {
 	/**
 	 * @inheritDoc

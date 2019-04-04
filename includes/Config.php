@@ -5,6 +5,9 @@ namespace BotRiconferme;
 use BotRiconferme\Exception\ConfigException;
 use BotRiconferme\Exception\MissingPageException;
 
+/**
+ * Singleton class holding user-defined config
+ */
 class Config {
 	/** @var self */
 	private static $instance;
@@ -12,15 +15,16 @@ class Config {
 	private $opts = [];
 
 	/**
-	 * Use self::getInstance()
+	 * Use self::init() and self::getInstance()
 	 */
 	private function __construct() {
 	}
 
 	/**
-	 * Specific instance getter
+	 * Initialize a new self instance with CLI params set and retrieve on-wiki config.
 	 *
 	 * @param array $defaults
+	 * @throws ConfigException
 	 */
 	public static function init( array $defaults ) {
 		if ( self::$instance ) {
@@ -46,10 +50,12 @@ class Config {
 	}
 
 	/**
+	 * Set a config value.
+	 *
 	 * @param string $key
 	 * @param mixed $value
 	 */
-	public function set( string $key, $value ) {
+	protected function set( string $key, $value ) {
 		$this->opts[ $key ] = $value;
 	}
 
@@ -57,6 +63,7 @@ class Config {
 	 * Generic instance getter
 	 *
 	 * @return self
+	 * @throws ConfigException
 	 */
 	public static function getInstance() : self {
 		if ( !self::$instance ) {
@@ -66,8 +73,11 @@ class Config {
 	}
 
 	/**
+	 * Get the requested option, or fail if it doesn't exist
+	 *
 	 * @param string $opt
 	 * @return mixed
+	 * @throws ConfigException
 	 */
 	public function get( string $opt ) {
 		if ( !isset( $this->opts[ $opt ] ) ) {
