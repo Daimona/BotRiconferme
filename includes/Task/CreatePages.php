@@ -80,9 +80,12 @@ class CreatePages extends Task {
 
 		$last = 0;
 		foreach ( $res->query->allpages as $page ) {
-			if ( $this->pageWasCreatedToday( $page->title ) ) {
+			$createdOn = $this->getController()->getPageCreationTS( $page->title );
+			if ( date( 'z/Y' ) === date( 'z/Y', $createdOn ) ) {
+				// Was created today
 				throw new TaskException( 'Page ' . $page->title . ' was already created.' );
 			}
+
 			$bits = explode( '/', $page->title );
 			$cur = intval( end( $bits ) );
 			if ( is_numeric( $cur ) && $cur > $last ) {
@@ -90,27 +93,6 @@ class CreatePages extends Task {
 			}
 		}
 		return $last;
-	}
-
-	/**
-	 * @param string $title
-	 * @return bool
-	 */
-	private function pageWasCreatedToday( string $title ) : bool {
-		$params = [
-			'action' => 'query',
-			'prop' => 'revisions',
-			'titles' => $title,
-			'rvprop' => 'timestamp',
-			'rvslots' => 'main',
-			'rvlimit' => 1,
-			'rvdir' => 'newer'
-		];
-
-		$res = ( RequestBase::newFromParams( $params ) )->execute();
-		$data = $res->query->pages;
-		$time = strtotime( reset( $data )->revisions[0]->timestamp );
-		return date( 'z/Y' ) === date( 'z/Y', $time );
 	}
 
 	/**

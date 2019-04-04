@@ -128,4 +128,48 @@ class WikiController {
 
 		return $this->tokens[ $type ];
 	}
+
+	/**
+	 * Get the timestamp of the creation of the given page
+	 *
+	 * @param string $title
+	 * @return int
+	 */
+	public function getPageCreationTS( string $title ) : int {
+		$params = [
+			'action' => 'query',
+			'prop' => 'revisions',
+			'titles' => $title,
+			'rvprop' => 'timestamp',
+			'rvslots' => 'main',
+			'rvlimit' => 1,
+			'rvdir' => 'newer'
+		];
+
+		$res = ( RequestBase::newFromParams( $params ) )->execute();
+		$data = $res->query->pages;
+		return strtotime( reset( $data )->revisions[0]->timestamp );
+	}
+
+	/**
+	 * Sysop-level inifinite protection for a given page
+	 *
+	 * @param string $title
+	 * @param string $reason
+	 */
+	public function protectPage( string $title, string $reason ) {
+		$this->logger->info( "Protecting page $title" );
+		$this->login();
+
+		$params = [
+			'action' => 'protect',
+			'title' => $title,
+			'protections' => 'edit=sysop|move=sysop',
+			'expiry' => 'infinite',
+			'reason' => $reason,
+			'token' => $this->getToken( 'csrf' )
+		];
+
+		RequestBase::newFromParams( $params, true )->execute();
+	}
 }
