@@ -46,10 +46,22 @@ class UpdatesAround extends Task {
 			$append .= '{{' . $page . "}}\n";
 		}
 
+		$summary = strtr(
+			$this->getConfig()->get( 'ric-main-page-summary' ),
+			[ '$num', count( $pages ) ]
+		);
+		$summary = preg_replace_callback(
+			'!\{\{$plur|(\d+)|([^|]+)|([^|]+)}}!',
+			function ( $matches ) {
+				return intval( $matches[1] ) > 1 ? trim( $matches[3] ) : trim( $matches[2] );
+			},
+			$summary
+		);
+
 		$params = [
 			'title' => $this->getConfig()->get( 'ric-main-page' ),
 			'appendtext' => $append,
-			'summary' => $this->getConfig()->get( 'ric-main-page-summary' )
+			'summary' => $summary
 		];
 
 		$this->getController()->editPage( $params );
@@ -91,10 +103,22 @@ class UpdatesAround extends Task {
 			$newContent = preg_replace( $beforeReg, '$0' . "\n{$matches[0]}\n$newLines", $content, 1 );
 		}
 
+		$summary = strtr(
+			$this->getConfig()->get( 'ric-vote-page-summary' ),
+			[ '$num' => count( $pages ) ]
+		);
+		$summary = preg_replace_callback(
+			'!\{\{$plur|(\d+)|([^|]+)|([^|]+)}}!',
+			function ( $matches ) {
+				return intval( $matches[1] ) > 1 ? trim( $matches[3] ) : trim( $matches[2] );
+			},
+			$summary
+		);
+
 		$params = [
 			'title' => $votePage,
 			'text' => $newContent,
-			'summary' => $this->getConfig()->get( 'ric-vote-page-summary' )
+			'summary' => $summary
 		];
 
 		$this->getController()->editPage( $params );
@@ -137,10 +161,19 @@ class UpdatesAround extends Task {
 		$newNum = (int)$matches[2] + $amount;
 		$newContent = preg_replace( $reg, '${1}' . $newNum, $content );
 
+		$summary = strtr( $this->getConfig()->get( 'ric-news-page-summary' ), [ '$num' => $amount ] );
+		$summary = preg_replace_callback(
+			'!\{\{$plur|(\d+)|([^|]+)|([^|]+)}}!',
+			function ( $matches ) {
+				return intval( $matches[1] ) > 1 ? trim( $matches[3] ) : trim( $matches[2] );
+			},
+			$summary
+		);
+
 		$params = [
 			'title' => $newsPage,
 			'text' => $newContent,
-			'summary' => $this->getConfig()->get( 'ric-news-page-summary' )
+			'summary' => $summary
 		];
 
 		$this->getController()->editPage( $params );

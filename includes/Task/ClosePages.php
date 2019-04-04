@@ -198,10 +198,22 @@ class ClosePages extends Task {
 		$sectionReg = '!(^;È in corso.+riconferma tacita.+amministratori.+\n(?:\*.+[;\.]\n)+\*.+)[\.;]!m';
 		$newContent = preg_replace( $sectionReg, '$1.', $newContent );
 
+		$summary = strtr(
+			$this->getConfig()->get( 'close-vote-page-summary' ),
+			[ '$num' => count( $titles ) ]
+		);
+		$summary = preg_replace_callback(
+			'!\{\{$plur|(\d+)|([^|]+)|([^|]+)}}!',
+			function ( $matches ) {
+				return intval( $matches[1] ) > 1 ? trim( $matches[3] ) : trim( $matches[2] );
+			},
+			$summary
+		);
+
 		$params = [
 			'title' => $votePage,
 			'text' => $newContent,
-			'summary' => $this->getConfig()->get( 'close-vote-page-summary' )
+			'summary' => $summary
 		];
 
 		$this->getController()->editPage( $params );
@@ -227,10 +239,22 @@ class ClosePages extends Task {
 		$newNum = (int)$matches[2] - $amount;
 		$newContent = preg_replace( $reg, '${1}' . $newNum, $content );
 
+		$summary = strtr(
+			$this->getConfig()->get( 'close-news-page-summary' ),
+			[ '$num' => $amount ]
+		);
+		$summary = preg_replace_callback(
+			'!\{\{$plur|(\d+)|([^|]+)|([^|]+)}}!',
+			function ( $matches ) {
+				return intval( $matches[1] ) > 1 ? trim( $matches[3] ) : trim( $matches[2] );
+			},
+			$summary
+		);
+
 		$params = [
 			'title' => $newsPage,
 			'text' => $newContent,
-			'summary' => $this->getConfig()->get( 'close-news-page-summary' )
+			'summary' => $summary
 		];
 
 		$this->getController()->editPage( $params );
