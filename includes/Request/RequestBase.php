@@ -61,9 +61,9 @@ abstract class RequestBase {
 	/**
 	 * Entry point for an API request
 	 *
-	 * @return array
+	 * @return \stdClass
 	 */
-	public function execute() : array {
+	public function execute() : \stdClass {
 		$curParams = $this->params;
 		$sets = [];
 		do {
@@ -151,42 +151,41 @@ abstract class RequestBase {
 	 * Merge results from multiple requests in a single object
 	 *
 	 * @param \stdClass[] $sets
-	 * @return array
+	 * @return \stdClass
 	 */
-	private function mergeSets( array $sets ) : array {
-		$sets = $this->objectToArray( $sets );
+	private function mergeSets( array $sets ) : \stdClass {
 		// Use the first set as template
 		$ret = array_shift( $sets );
-		$act = $this->params['action'];
 
 		foreach ( $sets as $set ) {
-			$ret[$act] = array_merge_recursive(
-				$this->objectToArray( $ret[$act] ),
-				$this->objectToArray( $set[$act] )
-			);
+			$ret = $this->recursiveMerge( $ret, $set );
 		}
 		return $ret;
 	}
 
 	/**
-	 * Taken by MediaWiki's wfObjectToArray https://gerrit.wikimedia.org/g/mediawiki/core/+/
-	 *    846d970e6e02ebc0a284f32968e1681201706270/includes/GlobalFunctions.php#254
+	 * Recursively merge objects, keeping the structure
 	 *
-	 * @param \stdClass|array $objOrArray
-	 * @return array
+	 * @param array|\stdClass $first
+	 * @param array|\stdClass $second
+	 * @return array|\stdClass array
 	 */
-	private function objectToArray( $objOrArray ) : array {
-		$array = [];
-		if ( is_object( $objOrArray ) ) {
-			$objOrArray = get_object_vars( $objOrArray );
-		}
-		foreach ( $objOrArray as $key => $value ) {
-			if ( is_object( $value ) || is_array( $value ) ) {
-				$value = $this->objectToArray( $value );
+	private function recursiveMerge( $first, $second ) {
+		$ret = $first;
+		if ( is_array( $second ) ) {
+			$ret = is_array( $first ) ? array_merge_recursive( $first, $second ) : $second;
+		} elseif ( is_object( $second ) ) {
+			foreach ( get_object_vars( $second ) as $key => $val ) {
+				$areSameType = isset( $first->$key ) && (
+					( is_object( $first->$key ) && is_object( $val ) ) ||
+					( is_array( $first->$key ) && is_array( $val ) )
+				);
+
+				$ret->$key = $areSameType ? $this->recursiveMerge( $first->$key, $val ) : $val;
 			}
-			$array[$key] = $value;
 		}
-		return $array;
+
+		return $ret;
 	}
 
 	/**
