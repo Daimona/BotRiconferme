@@ -17,8 +17,12 @@ class CreatePage extends Task {
 		$this->getLogger()->info( 'Starting task CreatePage' );
 		$users = $this->getDataProvider()->getUsersToProcess();
 
-		foreach ( $users as $user => $groups ) {
-			$this->processUser( $user, $groups );
+		if ( $users ) {
+			foreach ( $users as $user => $groups ) {
+				$this->processUser( $user, $groups );
+			}
+		} else {
+			$this->getLogger()->info( 'No pages to create.' );
 		}
 
 		$this->getLogger()->info( 'Task CreatePage completed successfully' );

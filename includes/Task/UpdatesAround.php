@@ -16,12 +16,16 @@ class UpdatesAround extends Task {
 		$this->getLogger()->info( 'Starting task UpdatesAround' );
 
 		$pages = $this->getDataProvider()->getCreatedPages();
-		// Wikipedia:Amministratori/Riconferma annuale
-		$this->addToMainPage( $pages );
-		// WP:Wikipediano/Votazioni
-		$this->addVote( $pages );
-		// Template:VotazioniRCnews
-		$this->addNews( count( $pages ) );
+		if ( $pages ) {
+			// Wikipedia:Amministratori/Riconferma annuale
+			$this->addToMainPage( $pages );
+			// WP:Wikipediano/Votazioni
+			$this->addVote( $pages );
+			// Template:VotazioniRCnews
+			$this->addNews( count( $pages ) );
+		} else {
+			$this->getLogger()->info( 'No updates to do.' );
+		}
 
 		$this->getLogger()->info( 'Task UpdatesAround completed successfully' );
 		return new TaskResult( self::STATUS_OK );

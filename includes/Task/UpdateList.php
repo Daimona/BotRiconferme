@@ -26,8 +26,15 @@ class UpdateList extends Task {
 		$missing = $this->getMissingGroups();
 		$extra = $this->getExtraGroups();
 
+		$newContent = $this->botList;
 		if ( $missing || $extra ) {
-			$this->doUpdateList( $this->getNewContent( $missing, $extra ) );
+			$newContent = $this->getNewContent( $missing, $extra );
+		}
+
+		if ( $newContent === $this->botList ) {
+			$this->getLogger()->info( 'Admin list already up-to-date' );
+		} else {
+			$this->doUpdateList( $newContent );
 		}
 
 		if ( $this->errors ) {
@@ -202,13 +209,6 @@ class UpdateList extends Task {
 	 * @param array $newContent
 	 */
 	protected function doUpdateList( array $newContent ) {
-		ksort( $newContent );
-
-		if ( $newContent === $this->botList ) {
-			$this->getLogger()->info( 'Admin list already up-to-date' );
-			return;
-		}
-
 		$this->getLogger()->info( 'Updating admin list' );
 
 		$params = [
@@ -237,9 +237,9 @@ class UpdateList extends Task {
 				$newContent[ $user ] = array_diff_key( $groups, $extra[ $user ] );
 			}
 		}
-		// Add users which don't have an entry at all
-		$newContent = array_merge( $newContent, $missing );
-		// And remove empty users
-		return array_filter( $newContent );
+		// Add users which don't have an entry at all, and remove empty users
+		$newContent = array_filter( array_merge( $newContent, $missing ) );
+		ksort( $newContent );
+		return $newContent;
 	}
 }
