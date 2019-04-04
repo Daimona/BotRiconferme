@@ -176,12 +176,7 @@ abstract class RequestBase {
 			$ret = is_array( $first ) ? array_merge_recursive( $first, $second ) : $second;
 		} elseif ( is_object( $second ) ) {
 			foreach ( get_object_vars( $second ) as $key => $val ) {
-				$areSameType = isset( $first->$key ) && (
-					( is_object( $first->$key ) && is_object( $val ) ) ||
-					( is_array( $first->$key ) && is_array( $val ) )
-				);
-
-				$ret->$key = $areSameType ? $this->recursiveMerge( $first->$key, $val ) : $val;
+				$ret->$key = isset( $first->$key ) ? $this->recursiveMerge( $first->$key, $val ) : $val;
 			}
 		}
 
