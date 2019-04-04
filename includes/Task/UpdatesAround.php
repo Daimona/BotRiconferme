@@ -57,7 +57,7 @@ class UpdatesAround extends Task {
 
 		$introReg = '!^;È in corso la .*riconferma tacita.* degli .*amministratori.+!m';
 		if ( preg_match( $introReg, $visibleContent ) ) {
-			$newContent = preg_replace( $introReg, "$0\n$newLine;", $content, 1 );
+			$newContent = preg_replace( $introReg, '$0' . "\n$newLine;", $content, 1 );
 		} else {
 			$matches = [];
 			if ( preg_match( $introReg, $content, $matches ) === false ) {
