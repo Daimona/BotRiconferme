@@ -9,12 +9,12 @@ use BotRiconferme\Exception\TaskException;
 /**
  * For each user, create the WP:A/Riconferma_annuale/USERNAME/XXX page and add it to its base page
  */
-class CreatePage extends Task {
+class CreatePages extends Task {
 	/**
 	 * @inheritDoc
 	 */
 	public function run() : TaskResult {
-		$this->getLogger()->info( 'Starting task CreatePage' );
+		$this->getLogger()->info( 'Starting task CreatePages' );
 		$users = $this->getDataProvider()->getUsersToProcess();
 
 		if ( $users ) {
@@ -25,7 +25,7 @@ class CreatePage extends Task {
 			$this->getLogger()->info( 'No pages to create.' );
 		}
 
-		$this->getLogger()->info( 'Task CreatePage completed successfully' );
+		$this->getLogger()->info( 'Task CreatePages completed successfully' );
 		return new TaskResult( self::STATUS_OK );
 	}
 
@@ -47,7 +47,7 @@ class CreatePage extends Task {
 
 		$baseTitle = $this->getConfig()->get( 'ric-main-page' ) . "/$user";
 		$pageTitle = "$baseTitle/$num";
-		$this->doCreatePage( $pageTitle, $user, $groups );
+		$this->createPage( $pageTitle, $user, $groups );
 
 		$newText = str_replace( '$title', $pageTitle, $this->getConfig()->get( 'ric-base-page-text' ) );
 		if ( $num === 1 ) {
@@ -120,7 +120,7 @@ class CreatePage extends Task {
 	 * @param string $user
 	 * @param array $groups
 	 */
-	protected function doCreatePage( string $title, string $user, array $groups ) {
+	protected function createPage( string $title, string $user, array $groups ) {
 		$this->getLogger()->info( "Creating page $title" );
 		$text = $this->getConfig()->get( 'ric-page-text' );
 		$textParams = [

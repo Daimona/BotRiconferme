@@ -3,7 +3,7 @@
 namespace BotRiconferme;
 
 use BotRiconferme\Task\Task;
-use BotRiconferme\Task\CreatePage;
+use BotRiconferme\Task\CreatePages;
 use BotRiconferme\Task\UpdateList;
 use BotRiconferme\Task\UpdatesAround;
 use BotRiconferme\Task\UserNotice;
@@ -20,7 +20,7 @@ class TaskManager {
 	const LOG_FILE = './lastrun.log';
 	/** @var string[] */
 	const TASKS_MAP = [
-		'create-page' => CreatePage::class,
+		'create-pages' => CreatePages::class,
 		'update-list' => UpdateList::class,
 		'updates-around' => UpdatesAround::class,
 		'user-notice' => UserNotice::class,
@@ -65,7 +65,7 @@ class TaskManager {
 		// Order matters here
 		$list = [
 			'update-list',
-			'create-page',
+			'create-pages',
 			'updates-around',
 			'user-notice'
 		];
