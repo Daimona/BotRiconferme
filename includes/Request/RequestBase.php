@@ -30,6 +30,8 @@ abstract class RequestBase {
 	protected $method;
 	/** @var string[] */
 	protected $newCookies = [];
+	/** @var int */
+	private $limit = -1;
 
 	/**
 	 * Use self::newFromParams, which will provide the right class to use
@@ -59,6 +61,15 @@ abstract class RequestBase {
 	}
 
 	/**
+	 * Set a limit to the amount of returned results. -1 means no limit
+	 *
+	 * @param int $val
+	 */
+	public function setResultLimit( int $val ) {
+		$this->limit = $val;
+	}
+
+	/**
 	 * Entry point for an API request
 	 *
 	 * @return \stdClass
@@ -66,14 +77,16 @@ abstract class RequestBase {
 	public function execute() : \stdClass {
 		$curParams = $this->params;
 		$sets = [];
+		$amount = 0;
 		do {
 			$res = $this->makeRequestInternal( $curParams );
+			$amount += count( $res );
 
 			$this->handleErrorAndWarnings( $res );
 			$sets[] = $res;
 
 			$finished = true;
-			if ( isset( $res->continue ) ) {
+			if ( isset( $res->continue ) && $this->limit > -1 && $amount < $this->limit ) {
 				$curParams = array_merge( $curParams, get_object_vars( $res->continue ) );
 				$finished = false;
 			}

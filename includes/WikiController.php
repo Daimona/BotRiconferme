@@ -42,6 +42,7 @@ class WikiController {
 		];
 
 		$req = RequestBase::newFromParams( $params );
+		$req->setResultLimit( 1 );
 		$data = $req->execute();
 		$page = reset( $data->query->pages );
 		if ( isset( $page->missing ) ) {
