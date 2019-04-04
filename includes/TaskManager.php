@@ -7,7 +7,6 @@ use BotRiconferme\Task\CreatePage;
 use BotRiconferme\Task\UpdateList;
 use BotRiconferme\Task\UpdatesAround;
 use BotRiconferme\Task\UserNotice;
-use http\Exception\BadMethodCallException;
 
 /**
  * Wrapper for single tasks
@@ -48,7 +47,7 @@ class TaskManager {
 		if ( $mode === self::MODE_COMPLETE ) {
 			return $this->runAllTasks();
 		} elseif ( $taskName === null ) {
-			throw new BadMethodCallException( 'A task name must be specified in MODE_SINGLE' );
+			throw new \BadMethodCallException( 'A task name must be specified in MODE_SINGLE' );
 		} else {
 			return $this->runTask( $taskName );
 		}
