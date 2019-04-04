@@ -38,6 +38,7 @@ class CurlRequest extends RequestBase {
 
 		// Extract response body
 		$headerSize = curl_getinfo( $curl, CURLINFO_HEADER_SIZE );
+		/** @var string $result Because RETURNTRANSFER is set */
 		$body = substr( $result, $headerSize );
 		curl_close( $curl );
 

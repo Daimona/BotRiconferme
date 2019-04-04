@@ -15,14 +15,13 @@ class UpdatesAround extends Task {
 	public function run() : TaskResult {
 		$this->getLogger()->info( 'Starting task UpdatesAround' );
 
-		foreach ( $this->getDataProvider()->getCreatedPages() as $page ) {
-			// Wikipedia:Amministratori/Riconferma annuale
-			$this->addToMainPage( $page );
-			// WP:Wikipediano/Votazioni
-			$this->addVote( $page );
-			// Template:VotazioniRCnews
-			$this->addNews( $page );
-		}
+		$pages = $this->getDataProvider()->getCreatedPages();
+		// Wikipedia:Amministratori/Riconferma annuale
+		$this->addToMainPage( $pages );
+		// WP:Wikipediano/Votazioni
+		$this->addVote( $pages );
+		// Template:VotazioniRCnews
+		$this->addNews( count( $pages ) );
 
 		$this->getLogger()->info( 'Task UpdatesAround completed successfully' );
 		return new TaskResult( self::STATUS_OK );
@@ -31,14 +30,21 @@ class UpdatesAround extends Task {
 	/**
 	 * Add created pages to Wikipedia:Amministratori/Riconferma annuale
 	 *
-	 * @param string $page
+	 * @param string[] $pages
 	 */
-	protected function addToMainPage( string $page ) {
-		$this->getLogger()->info( "Adding $page to main" );
+	protected function addToMainPage( array $pages ) {
+		$this->getLogger()->info(
+			'Adding the following to main: ' . implode( ', ', $pages )
+		);
+
+		$append = '';
+		foreach ( $pages as $page ) {
+			$append .= '{{' . $page . "}}\n";
+		}
 
 		$params = [
 			'title' => $this->getConfig()->get( 'ric-main-page' ),
-			'appendtext' => '{{' . $page . '}}',
+			'appendtext' => $append,
 			'summary' => $this->getConfig()->get( 'ric-main-page-summary' )
 		];
 
@@ -48,30 +54,39 @@ class UpdatesAround extends Task {
 	/**
 	 * Add a line in Wikipedia:Wikipediano/Votazioni
 	 *
-	 * @param string $page
+	 * @param string[] $pages
 	 */
-	protected function addVote( string $page ) {
-		$this->getLogger()->info( "Adding $page to votes" );
+	protected function addVote( array $pages ) {
+		$this->getLogger()->info(
+			'Adding the following to votes: ' . implode( ', ', $pages )
+		);
 		$votePage = $this->getConfig()->get( 'ric-vote-page' );
 
 		$content = $this->getController()->getPageContent( $votePage );
 		// Remove comments etc.
 		$visibleContent = strip_tags( $content );
-		$user = explode( '/', $page )[2];
-		$time = $this->getTimeWithArticle();
 
-		$newLine = "*[[Utente:$user|]]. La [[$page|procedura]] termina $time";
+		$time = $this->getTimeWithArticle();
+		$newLines = '';
+		foreach ( $pages as $page ) {
+			$user = explode( '/', $page )[2];
+			$newLines .= "*[[Utente:$user|]]. La [[$page|procedura]] termina $time;\n";
+		}
 
 		$introReg = '!^;È in corso la .*riconferma tacita.* degli .*amministratori.+!m';
 		if ( preg_match( $introReg, $visibleContent ) ) {
-			$newContent = preg_replace( $introReg, '$0' . "\n$newLine;", $content, 1 );
+			// Put before the existing ones
+			$newContent = preg_replace( $introReg, '$0' . "\n$newLines", $content, 1 );
 		} else {
+			// Start section
 			$matches = [];
 			if ( preg_match( $introReg, $content, $matches ) === false ) {
 				throw new TaskException( 'Intro not found in vote page' );
 			}
 			$beforeReg = '!INSERIRE LA NOTIZIA PIÙ NUOVA IN CIMA.+!m';
-			$newContent = preg_replace( $beforeReg, "$0\n{$matches[0]}\n$newLine.", $content, 1 );
+			// Replace semicolon with full stop
+			$newLines = substr( $newLines, 0, -2 ) . ".\n";
+			$newContent = preg_replace( $beforeReg, '$0' . "\n{$matches[0]}\n$newLines", $content, 1 );
 		}
 
 		$params = [
@@ -103,10 +118,10 @@ class UpdatesAround extends Task {
 	/**
 	 * Update the counter on Template:VotazioniRCnews
 	 *
-	 * @param string $page
+	 * @param int $amount
 	 */
-	protected function addNews( string $page ) {
-		$this->getLogger()->info( "Adding $page to news" );
+	protected function addNews( int $amount ) {
+		$this->getLogger()->info( "Increasing the news counter by $amount" );
 		$newsPage = $this->getConfig()->get( 'ric-news-page' );
 
 		$content = $this->getController()->getPageContent( $newsPage );
@@ -117,7 +132,7 @@ class UpdatesAround extends Task {
 			throw new TaskException( 'Param not found in news page' );
 		}
 
-		$newNum = (int)$matches[2] + 1;
+		$newNum = (int)$matches[2] + $amount;
 		$newContent = preg_replace( $reg, '${1}' . $newNum, $content );
 
 		$params = [
