@@ -3,7 +3,6 @@
 namespace BotRiconferme\Task;
 
 use BotRiconferme\TaskResult;
-use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Exception\TaskException;
 use BotRiconferme\WikiController;
 

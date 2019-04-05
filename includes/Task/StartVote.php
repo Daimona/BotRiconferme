@@ -19,30 +19,37 @@ class StartVote extends Task {
 		$pages = $this->getDataProvider()->getOpenPages();
 
 		if ( $pages ) {
-			$actualPages = [];
-			foreach ( $pages as $page ) {
-				if ( WikiController::hasOpposition( $page ) ) {
-					try {
-						$this->openVote( $page );
-						$actualPages[] = $page;
-					} catch ( TaskException $e ) {
-						$this->getLogger()->warning( $e->getMessage() );
-					}
-				}
-			}
-
-			if ( $actualPages ) {
-				$this->updateVotePage( $actualPages );
-				$this->updateNews( count( $actualPages ) );
-			} else {
-				$this->getLogger()->info( 'No votes to open' );
-			}
+			$this->processPages( $pages );
 		} else {
 			$this->getLogger()->info( 'No open procedures.' );
 		}
 
 		$this->getLogger()->info( 'Task StartVote completed successfully' );
 		return new TaskResult( self::STATUS_OK );
+	}
+
+	/**
+	 * @param string[] $pages
+	 */
+	protected function processPages( array $pages ) {
+		$actualPages = [];
+		foreach ( $pages as $page ) {
+			if ( WikiController::hasOpposition( $page ) ) {
+				try {
+					$this->openVote( $page );
+					$actualPages[] = $page;
+				} catch ( TaskException $e ) {
+					$this->getLogger()->warning( $e->getMessage() );
+				}
+			}
+		}
+
+		if ( $actualPages ) {
+			$this->updateVotePage( $actualPages );
+			$this->updateNews( count( $actualPages ) );
+		} else {
+			$this->getLogger()->info( 'No votes to open' );
+		}
 	}
 
 	/**
