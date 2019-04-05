@@ -80,37 +80,38 @@ class WikiController {
 	 */
 	public static function getTimeWithArticle( int $timestamp ) : string {
 		$oldLoc = setlocale( LC_TIME, 'it_IT', 'Italian_Italy', 'Italian' );
-		$endTime = strftime( '%e %B alle %R', $timestamp );
+		$timeString = strftime( '%e %B alle %R', $timestamp );
 		// Remove the left space if day has a single digit
-		$endTime = ltrim( $endTime );
+		$timeString = ltrim( $timeString );
 		$artic = in_array( date( 'j', $timestamp ), [ 8, 11 ] ) ? "l'" : "il ";
 		setlocale( LC_TIME, $oldLoc );
 
-		return $artic . $endTime;
+		return $artic . $timeString;
 	}
 
 	/**
-	 * @param string $page
-	 * @return bool
+	 * Get a timestamp from a localized time string
+	 *
+	 * @param string $timeString
+	 * @return int
 	 * @fixme Not the right place for this
+	 * @todo Is there a better way?
 	 */
-	public static function hasOpposition( string $page ) : bool {
-		$params = [
-			'action' => 'query',
-			'prop' => 'revisions',
-			'titles' => $page,
-			'rvprop' => 'content',
-			'rvslots' => 'main',
-			'rvsection' => 4
-		];
-		$res = RequestBase::newFromParams( $params )->execute();
-		$page = reset( $res->query->pages );
-		$content = $page->revisions[0]->slots->main->{ '*' };
-		// Let's hope that this is good enough...
-		$votes = substr_count( $content, "\n\# *(?![#*])" );
-		return $votes >= 15;
-	}
+	public static function getTimestampFromLocalTime( string $timeString ) : int {
+		$oldLoc = setlocale( LC_TIME, 'it_IT', 'Italian_Italy', 'Italian' );
+		$bits = strptime( $timeString, '%e %m %Y alle %H:%M' );
+		$timestamp = mktime(
+			$bits['tm_hour'],
+			$bits['tm_min'],
+			0,
+			$bits['tm_mon'] + 1,
+			$bits['tm_mday'],
+			$bits['tm_year'] + 1900
+		);
+		setlocale( LC_TIME, $oldLoc );
 
+		return $timestamp;
+	}
 	/**
 	 * Login wrapper. Checks if we're already logged in and clears tokens cache
 	 * @throws LoginException

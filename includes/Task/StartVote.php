@@ -3,6 +3,7 @@
 namespace BotRiconferme\Task;
 
 use BotRiconferme\Exception\TaskException;
+use BotRiconferme\PageRiconferma;
 use BotRiconferme\TaskResult;
 use BotRiconferme\WikiController;
 
@@ -29,18 +30,14 @@ class StartVote extends Task {
 	}
 
 	/**
-	 * @param string[] $pages
+	 * @param PageRiconferma[] $pages
 	 */
 	protected function processPages( array $pages ) {
 		$actualPages = [];
 		foreach ( $pages as $page ) {
-			if ( WikiController::hasOpposition( $page ) ) {
-				try {
-					$this->openVote( $page );
-					$actualPages[] = $page;
-				} catch ( TaskException $e ) {
-					$this->getLogger()->warning( $e->getMessage() );
-				}
+			if ( $page->hasOpposition() && !$page->isVote() ) {
+				$this->openVote( $page );
+				$actualPages[] = $page;
 			}
 		}
 
@@ -55,17 +52,12 @@ class StartVote extends Task {
 	/**
 	 * Start the vote for the given page
 	 *
-	 * @param string $title
-	 * @throws TaskException
+	 * @param PageRiconferma $page
 	 */
-	protected function openVote( string $title ) {
-		$this->getLogger()->info( "Starting vote on $title" );
+	protected function openVote( PageRiconferma $page ) {
+		$this->getLogger()->info( "Starting vote on $page" );
 
-		$content = $this->getController()->getPageContent( $title );
-
-		if ( preg_match( '/<!-- SEZIONE DA UTILIZZARE PER/', $content ) === false ) {
-			throw new TaskException( "Vote already opened in $title" );
-		}
+		$content = $page->getContent();
 
 		$newContent = preg_replace(
 			'!^La procedura di riconferma tacita .+!m',
@@ -86,7 +78,7 @@ class StartVote extends Task {
 		);
 
 		$params = [
-			'title' => $title,
+			'title' => $page->getTitle(),
 			'text' => $newContent,
 			'summary' => $this->getConfig()->get( 'vote-start-summary' )
 		];
@@ -97,15 +89,19 @@ class StartVote extends Task {
 	/**
 	 * Update [[WP:Wikipediano/Votazioni]]
 	 *
-	 * @param string[] $titles
+	 * @param PageRiconferma[] $pages
 	 * @see ClosePages::updateVote()
 	 * @see UpdatesAround::addVote()
 	 */
-	protected function updateVotePage( array $titles ) {
+	protected function updateVotePage( array $pages ) {
 		$votePage = $this->getConfig()->get( 'ric-vote-page' );
 		$content = $this->getController()->getPageContent( $votePage );
 
-		$titleReg = implode( '|', array_map( 'preg_quote', $titles ) );
+		$titles = [];
+		foreach ( $pages as $page ) {
+			$titles[] = preg_quote( $page->getTitle() );
+		}
+		$titleReg = implode( '|', $titles );
 		$search = "!^\*.+ La \[\[($titleReg)\|procedura]] termina.+\n!gm";
 
 		$newContent = preg_replace( $search, '', $content );
@@ -115,9 +111,8 @@ class StartVote extends Task {
 
 		$newLines = '';
 		$time = WikiController::getTimeWithArticle( time() + ( 60 * 60 * 24 * 14 ) );
-		foreach ( $titles as $title ) {
-			$user = explode( '/', $title )[2];
-			$newLines .= "*[[Utente:$user|]]. La [[$title|votazione]] termina $time;\n";
+		foreach ( $pages as $page ) {
+			$newLines .= "*[[Utente:{$page->getUser()}|]]. La [[{$page->getTitle()}|votazione]] termina $time;\n";
 		}
 
 		$introReg = '!^Si vota per la \[\[Wikipedia:Amministratori/Riconferma annuale.+!m';
@@ -138,7 +133,7 @@ class StartVote extends Task {
 
 		$summary = strtr(
 			$this->getConfig()->get( 'vote-start-vote-page-summary' ),
-			[ '$num' => count( $titles ) ]
+			[ '$num' => count( $pages ) ]
 		);
 		$summary = preg_replace_callback(
 			'!\{\{$plur|(\d+)|([^|]+)|([^|]+)}}!',

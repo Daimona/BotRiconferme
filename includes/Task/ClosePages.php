@@ -2,9 +2,9 @@
 
 namespace BotRiconferme\Task;
 
+use BotRiconferme\PageRiconferma;
 use BotRiconferme\TaskResult;
 use BotRiconferme\Exception\TaskException;
-use BotRiconferme\WikiController;
 
 /**
  * For each open page, close it if the time's up and no more than 15 opposing votes were added
@@ -18,18 +18,18 @@ class ClosePages extends Task {
 	public function run() : TaskResult {
 		$this->getLogger()->info( 'Starting task ClosePages' );
 
-		$titles = $this->getPagesList();
+		$pages = $this->getPagesList();
 		$protectReason = $this->getConfig()->get( 'close-protect-summary' );
-		foreach ( $titles as $title ) {
-			$this->getController()->protectPage( $title, $protectReason );
-			$this->updateBasePage( $title );
+		foreach ( $pages as $page ) {
+			$this->getController()->protectPage( $page->getTitle(), $protectReason );
+			$this->updateBasePage( $page );
 		}
 
-		$this->removeFromMainPage( $titles );
-		$this->addToArchive( $titles );
-		$this->updateVote( $titles );
-		$this->updateNews( count( $titles ) );
-		$this->updateAdminList( $titles );
+		$this->removeFromMainPage( $pages );
+		$this->addToArchive( $pages );
+		$this->updateVote( $pages );
+		$this->updateNews( count( $pages ) );
+		$this->updateAdminList( $pages );
 
 		$this->getLogger()->info( 'Task ClosePages completed successfully' );
 		return new TaskResult( self::STATUS_OK );
@@ -38,14 +38,13 @@ class ClosePages extends Task {
 	/**
 	 * Get a list of pages to close
 	 *
-	 * @return string[]
+	 * @return PageRiconferma[]
 	 */
 	protected function getPagesList() : array {
 		$allPages = $this->getDataProvider()->getOpenPages();
 		$ret = [];
 		foreach ( $allPages as $page ) {
-			$created = $this->getController()->getPageCreationTS( $page );
-			if ( time() - $created <= 60 * 60 * 24 * 7 && !WikiController::hasOpposition( $page ) ) {
+			if ( time() > $page->getEndTimestamp() && !$page->hasOpposition() ) {
 				$ret[] = $page;
 			}
 		}
@@ -54,17 +53,19 @@ class ClosePages extends Task {
 
 	/**
 	 * Removes pages from WP:A/Riconferme annuali
-	 * @param string[] $titles
+	 * @param PageRiconferma[] $pages
 	 * @see UpdatesAround::addToMainPage()
 	 */
-	protected function removeFromMainPage( array $titles ) {
-		$this->getLogger()->info( 'Removing from main: ' . implode( ', ', $titles ) );
+	protected function removeFromMainPage( array $pages ) {
+		$this->getLogger()->info(
+			'Removing from main: ' . implode( ', ', array_map( 'strval', $pages ) )
+		);
 
 		$mainPage = $this->getConfig()->get( 'ric-main-page' );
 		$content = $this->getController()->getPageContent( $mainPage );
 		$translations = [];
-		foreach ( $titles as $title ) {
-			$translations[ '{{' . $title . '}}' ] = '';
+		foreach ( $pages as $page ) {
+			$translations[ '{{' . $page->getTitle() . '}}' ] = '';
 		}
 
 		$params = [
@@ -78,19 +79,21 @@ class ClosePages extends Task {
 	/**
 	 * Adds closed pages to the current archive
 	 *
-	 * @param string[] $titles
+	 * @param PageRiconferma[] $pages
 	 */
-	protected function addToArchive( array $titles ) {
-		$this->getLogger()->info( 'Adding to archive: ' . implode( ', ', $titles ) );
+	protected function addToArchive( array $pages ) {
+		$this->getLogger()->info(
+			'Adding to archive: ' . implode( ', ', array_map( 'strval', $pages ) )
+		);
 
 		$archiveTitle = $this->getConfig()->get( 'close-archive-title' );
 		$archiveTitle = "$archiveTitle/" . date( 'Y' );
 
 		$append = '';
 		$archivedList = [];
-		foreach ( $titles as $page ) {
-			$append .= '{{' . $page . "}}\n";
-			$archivedList[] = explode( '/', $page, 3 )[2];
+		foreach ( $pages as $page ) {
+			$append .= '{{' . $page->getTitle() . "}}\n";
+			$archivedList[] = $page->getUserNum();
 		}
 
 		if ( count( $archivedList ) > 1 ) {
@@ -115,19 +118,17 @@ class ClosePages extends Task {
 	}
 
 	/**
-	 * @param string $title
+	 * @param PageRiconferma $page
 	 * @see CreatePages::updateBasePage()
 	 */
-	protected function updateBasePage( string $title ) {
-		$this->getLogger()->info( "Updating base page $title" );
+	protected function updateBasePage( PageRiconferma $page ) {
+		$this->getLogger()->info( "Updating base page for $page" );
 
-		// @phan-suppress-next-line PhanTypeMismatchArgumentInternal WTF Phan what's wrong w/ u?
-		$baseTitle = substr( $title, 0, strrpos( $title, '/' ) );
-		$current = $this->getController()->getPageContent( $baseTitle );
+		$current = $this->getController()->getPageContent( $page->getBaseTitle() );
 
 		$newContent = str_replace( 'riconferma in corso', 'riconferma tacita', $current );
 		$params = [
-			'title' => $title,
+			'title' => $page->getTitle(),
 			'text' => $newContent,
 			'summary' => $this->getConfig()->get( 'close-base-page-summary-update' )
 		];
@@ -136,14 +137,19 @@ class ClosePages extends Task {
 	}
 
 	/**
-	 * @param string[] $titles
+	 * @param PageRiconferma[] $pages
 	 * @see UpdatesAround::addVote()
 	 */
-	protected function updateVote( array $titles ) {
+	protected function updateVote( array $pages ) {
 		$votePage = $this->getConfig()->get( 'ric-vote-page' );
 		$content = $this->getController()->getPageContent( $votePage );
 
-		$titleReg = implode( '|', array_map( 'preg_quote', $titles ) );
+		$titles = [];
+		foreach ( $pages as $page ) {
+			$titles[] = preg_quote( $page->getTitle() );
+		}
+
+		$titleReg = implode( '|', $titles );
 		$search = "!^\*.+ La \[\[($titleReg)\|procedura]] termina.+\n!gm";
 
 		$newContent = preg_replace( $search, '', $content );
@@ -153,7 +159,7 @@ class ClosePages extends Task {
 
 		$summary = strtr(
 			$this->getConfig()->get( 'close-vote-page-summary' ),
-			[ '$num' => count( $titles ) ]
+			[ '$num' => count( $pages ) ]
 		);
 		$summary = preg_replace_callback(
 			'!\{\{$plur|(\d+)|([^|]+)|([^|]+)}}!',
@@ -216,16 +222,16 @@ class ClosePages extends Task {
 	/**
 	 * Update date on WP:Amministratori/Lista
 	 *
-	 * @param string[] $titles
+	 * @param PageRiconferma[] $pages
 	 */
-	protected function updateAdminList( array $titles ) {
+	protected function updateAdminList( array $pages ) {
 		$listTitle = $this->getConfig()->get( 'admins-list' );
 		$content = $this->getController()->getPageContent( $listTitle );
 		$newDate = date( 'Ymd', strtotime( '+1 year' ) );
 
 		$names = [];
-		foreach ( $titles as $title ) {
-			$user = explode( '/', $title )[2];
+		foreach ( $pages as $page ) {
+			$user = $page->getUser();
 			$names[] = $user;
 			$reg = "!(\{\{Amministratore\/riga\|$user.+\| *)\d+(?= *\|(?: *pausa)? *\}\})!";
 			$content = preg_replace( $reg, '$1' . $newDate, $content );

@@ -65,7 +65,7 @@ class TaskDataProvider extends ContextSource {
 	/**
 	 * Get a list of all open procedures
 	 *
-	 * @return string[] Their titles
+	 * @return PageRiconferma[]
 	 */
 	public function getOpenPages() : array {
 		$baseTitle = $this->getConfig()->get( 'ric-main-page' );
@@ -82,7 +82,7 @@ class TaskDataProvider extends ContextSource {
 		$ret = [];
 		foreach ( reset( $pages )->templates as $page ) {
 			if ( preg_match( "!$baseTitle\/[^\/]+\/\d!", $page->title ) !== false ) {
-				$ret[] = $page->title;
+				$ret[] = new PageRiconferma( $page->title, $this->getController() );
 			}
 		}
 		return $ret;
