@@ -2,6 +2,7 @@
 
 namespace BotRiconferme\Task;
 
+use BotRiconferme\PageRiconferma;
 use BotRiconferme\TaskResult;
 use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Exception\TaskException;
@@ -55,7 +56,9 @@ class CreatePages extends Task {
 		} else {
 			$this->updateBasePage( $baseTitle, $newText );
 		}
-		$this->getDataProvider()->addCreatedPages( $pageTitle );
+
+		$pageObj = new PageRiconferma( $pageTitle, $this->getController() );
+		$this->getDataProvider()->addCreatedPages( $pageObj );
 	}
 
 	/**

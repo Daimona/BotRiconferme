@@ -11,7 +11,7 @@ class TaskDataProvider extends ContextSource {
 	/** @var array[] */
 	private $users;
 
-	/** @var string[] */
+	/** @var PageRiconferma[] */
 	private $createdPages = [];
 
 	/**
@@ -98,16 +98,16 @@ class TaskDataProvider extends ContextSource {
 	}
 
 	/**
-	 * @return string[]
+	 * @return PageRiconferma[]
 	 */
 	public function getCreatedPages() : array {
 		return $this->createdPages;
 	}
 
 	/**
-	 * @param string $title
+	 * @param PageRiconferma $page
 	 */
-	public function addCreatedPages( string $title ) {
-		$this->createdPages[] = $title;
+	public function addCreatedPages( PageRiconferma $page ) {
+		$this->createdPages[] = $page;
 	}
 }

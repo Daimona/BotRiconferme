@@ -41,6 +41,16 @@ class PageRiconferma {
 	}
 
 	/**
+	 * Returns the progressive number in the title
+	 *
+	 * @return int
+	 */
+	public function getNum() : int {
+		$bits = explode( '/', $this->getTitle() );
+		return end( $bits );
+	}
+
+	/**
 	 * Get the last part of the title as Username/Num
 	 *
 	 * @return string

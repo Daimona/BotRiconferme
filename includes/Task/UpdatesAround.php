@@ -2,6 +2,7 @@
 
 namespace BotRiconferme\Task;
 
+use BotRiconferme\PageRiconferma;
 use BotRiconferme\TaskResult;
 use BotRiconferme\Exception\TaskException;
 use BotRiconferme\WikiController;
@@ -35,16 +36,16 @@ class UpdatesAround extends Task {
 	/**
 	 * Add created pages to Wikipedia:Amministratori/Riconferma annuale
 	 *
-	 * @param string[] $pages
+	 * @param PageRiconferma[] $pages
 	 */
 	protected function addToMainPage( array $pages ) {
 		$this->getLogger()->info(
-			'Adding the following to main: ' . implode( ', ', $pages )
+			'Adding the following to main: ' . implode( ', ', array_map( 'strval', $pages ) )
 		);
 
 		$append = '';
 		foreach ( $pages as $page ) {
-			$append .= '{{' . $page . "}}\n";
+			$append .= '{{' . $page->getTitle() . "}}\n";
 		}
 
 		$summary = strtr(
@@ -71,11 +72,11 @@ class UpdatesAround extends Task {
 	/**
 	 * Add a line in Wikipedia:Wikipediano/Votazioni
 	 *
-	 * @param string[] $pages
+	 * @param PageRiconferma[] $pages
 	 */
 	protected function addVote( array $pages ) {
 		$this->getLogger()->info(
-			'Adding the following to votes: ' . implode( ', ', $pages )
+			'Adding the following to votes: ' . implode( ', ', array_map( 'strval', $pages ) )
 		);
 		$votePage = $this->getConfig()->get( 'ric-vote-page' );
 
@@ -84,8 +85,7 @@ class UpdatesAround extends Task {
 		$time = WikiController::getTimeWithArticle( time() + ( 60 * 60 * 24 * 7 ) );
 		$newLines = '';
 		foreach ( $pages as $page ) {
-			$user = explode( '/', $page )[2];
-			$newLines .= "*[[Utente:$user|]]. La [[$page|procedura]] termina $time;\n";
+			$newLines .= "*[[Utente:{$page->getUser()}|]]. La [[{$page->getTitle()}|procedura]] termina $time;\n";
 		}
 
 		$introReg = '!^;È in corso la .*riconferma tacita.* degli .*amministratori.+!m';

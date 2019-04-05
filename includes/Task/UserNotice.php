@@ -19,9 +19,7 @@ class UserNotice extends Task {
 		if ( $pages && $users ) {
 			$ricNums = [];
 			foreach ( $pages as $page ) {
-				$bits = explode( '/', $page );
-				$num = intval( array_pop( $bits ) );
-				$ricNums[ array_pop( $bits ) ] = $num;
+				$ricNums[ $page->getUser() ] = $page->getNum();
 			}
 
 			foreach ( $users as $user => $_ ) {
