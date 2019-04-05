@@ -4,6 +4,7 @@ namespace BotRiconferme\Task;
 
 use BotRiconferme\TaskResult;
 use BotRiconferme\Exception\TaskException;
+use BotRiconferme\WikiController;
 
 /**
  * Do some updates around to notify people of the newly created pages
@@ -80,7 +81,7 @@ class UpdatesAround extends Task {
 
 		$content = $this->getController()->getPageContent( $votePage );
 
-		$time = $this->getTimeWithArticle();
+		$time = WikiController::getTimeWithArticle( time() + ( 60 * 60 * 24 * 7 ) );
 		$newLines = '';
 		foreach ( $pages as $page ) {
 			$user = explode( '/', $page )[2];
@@ -122,23 +123,6 @@ class UpdatesAround extends Task {
 		];
 
 		$this->getController()->editPage( $params );
-	}
-
-	/**
-	 * Get a localized version of article + day + time
-	 *
-	 * @return string
-	 */
-	private function getTimeWithArticle() : string {
-		$oldLoc = setlocale( LC_TIME, 'it_IT', 'Italian_Italy', 'Italian' );
-		$endTS = time() + ( 60 * 60 * 24 * 7 );
-		$endTime = strftime( '%e %B alle %R', $endTS );
-		// Remove the left space if day has a single digit
-		$endTime = ltrim( $endTime );
-		$artic = in_array( date( 'j', $endTS ), [ 8, 11 ] ) ? "l'" : "il ";
-		setlocale( LC_TIME, $oldLoc );
-
-		return $artic . $endTime;
 	}
 
 	/**

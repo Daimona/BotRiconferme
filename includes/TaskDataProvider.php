@@ -2,6 +2,8 @@
 
 namespace BotRiconferme;
 
+use BotRiconferme\Request\RequestBase;
+
 /**
  * Object holding data to be shared between different tasks.
  */
@@ -58,6 +60,32 @@ class TaskDataProvider extends ContextSource {
 			$timestamp = \DateTime::createFromFormat( 'd/m/Y', $groups[ 'sysop' ] )->getTimestamp();
 		}
 		return $timestamp;
+	}
+
+	/**
+	 * Get a list of all open procedures
+	 *
+	 * @return string[] Their titles
+	 */
+	public function getOpenPages() : array {
+		$baseTitle = $this->getConfig()->get( 'ric-main-page' );
+		$params = [
+			'action' => 'query',
+			'prop' => 'templates',
+			'titles' => $baseTitle,
+			'tl_namespace' => 4,
+			'tllimit' => 'max'
+		];
+
+		$res = RequestBase::newFromParams( $params )->execute();
+		$pages = $res->query->pages;
+		$ret = [];
+		foreach ( reset( $pages )->templates as $page ) {
+			if ( preg_match( "!$baseTitle\/[^\/]+\/\d!", $page->title ) !== false ) {
+				$ret[] = $page->title;
+			}
+		}
+		return $ret;
 	}
 
 	/**

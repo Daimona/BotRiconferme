@@ -72,6 +72,46 @@ class WikiController {
 	}
 
 	/**
+	 * Get a localized version of article + day + time
+	 *
+	 * @param int $timestamp
+	 * @return string
+	 * @fixme Not the right place for this
+	 */
+	public static function getTimeWithArticle( int $timestamp ) : string {
+		$oldLoc = setlocale( LC_TIME, 'it_IT', 'Italian_Italy', 'Italian' );
+		$endTime = strftime( '%e %B alle %R', $timestamp );
+		// Remove the left space if day has a single digit
+		$endTime = ltrim( $endTime );
+		$artic = in_array( date( 'j', $timestamp ), [ 8, 11 ] ) ? "l'" : "il ";
+		setlocale( LC_TIME, $oldLoc );
+
+		return $artic . $endTime;
+	}
+
+	/**
+	 * @param string $page
+	 * @return bool
+	 * @fixme Not the right place for this
+	 */
+	public static function hasOpposition( string $page ) : bool {
+		$params = [
+			'action' => 'query',
+			'prop' => 'revisions',
+			'titles' => $page,
+			'rvprop' => 'content',
+			'rvslots' => 'main',
+			'rvsection' => 4
+		];
+		$res = RequestBase::newFromParams( $params )->execute();
+		$page = reset( $res->query->pages );
+		$content = $page->revisions[0]->slots->main->{ '*' };
+		// Let's hope that this is good enough...
+		$votes = substr_count( $content, "\n\# *(?![#*])" );
+		return $votes >= 15;
+	}
+
+	/**
 	 * Login wrapper. Checks if we're already logged in and clears tokens cache
 	 * @throws LoginException
 	 */

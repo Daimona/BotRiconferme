@@ -5,6 +5,7 @@ namespace BotRiconferme\Task;
 use BotRiconferme\TaskResult;
 use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Exception\TaskException;
+use BotRiconferme\WikiController;
 
 /**
  * For each open page, close it if the time's up and no more than 15 opposing votes were added
@@ -41,62 +42,15 @@ class ClosePages extends Task {
 	 * @return string[]
 	 */
 	protected function getPagesList() : array {
-		$allPages = $this->getTranscludedPages();
+		$allPages = $this->getDataProvider()->getOpenPages();
 		$ret = [];
 		foreach ( $allPages as $page ) {
 			$created = $this->getController()->getPageCreationTS( $page );
-			if ( time() - $created <= 60 * 60 * 24 * 7 && !$this->hasOpposition( $page ) ) {
+			if ( time() - $created <= 60 * 60 * 24 * 7 && !WikiController::hasOpposition( $page ) ) {
 				$ret[] = $page;
 			}
 		}
 		return $ret;
-	}
-
-	/**
-	 * Get a list of pages transcluded in the main one
-	 *
-	 * @return string[]
-	 */
-	protected function getTranscludedPages() : array {
-		$baseTitle = $this->getConfig()->get( 'ric-main-page' );
-		$params = [
-			'action' => 'query',
-			'prop' => 'templates',
-			'titles' => $baseTitle,
-			'tl_namespace' => 4,
-			'tllimit' => 'max'
-		];
-
-		$res = RequestBase::newFromParams( $params )->execute();
-		$pages = $res->query->pages;
-		$ret = [];
-		foreach ( reset( $pages )->templates as $page ) {
-			if ( preg_match( "!$baseTitle\/[^\/]+\/\d!", $page->title ) !== false ) {
-				$ret[] = $page->title;
-			}
-		}
-		return $ret;
-	}
-
-	/**
-	 * @param string $page
-	 * @return bool
-	 */
-	protected function hasOpposition( string $page ) : bool {
-		$params = [
-			'action' => 'query',
-			'prop' => 'revisions',
-			'titles' => $page,
-			'rvprop' => 'content',
-			'rvslots' => 'main',
-			'rvsection' => 4
-		];
-		$res = RequestBase::newFromParams( $params )->execute();
-		$page = reset( $res->query->pages );
-		$content = $page->revisions[0]->slots->main->{ '*' };
-		// Let's hope that this is good enough...
-		$votes = substr_count( $content, "\n\# *(?![#*])" );
-		return $votes >= 15;
 	}
 
 	/**
