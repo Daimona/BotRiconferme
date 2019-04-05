@@ -85,7 +85,8 @@ class UpdatesAround extends Task {
 		$time = WikiController::getTimeWithArticle( time() + ( 60 * 60 * 24 * 7 ) );
 		$newLines = '';
 		foreach ( $pages as $page ) {
-			$newLines .= "*[[Utente:{$page->getUser()}|]]. La [[{$page->getTitle()}|procedura]] termina $time;\n";
+			$newLines .= '*[[Utente:' . $page->getUser() . '|]]. ' .
+				'La [[' . $page->getTitle() . "|procedura]] termina $time;\n";
 		}
 
 		$introReg = '!^;È in corso la .*riconferma tacita.* degli .*amministratori.+!m';

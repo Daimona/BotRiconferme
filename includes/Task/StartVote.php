@@ -112,7 +112,8 @@ class StartVote extends Task {
 		$newLines = '';
 		$time = WikiController::getTimeWithArticle( time() + ( 60 * 60 * 24 * 14 ) );
 		foreach ( $pages as $page ) {
-			$newLines .= "*[[Utente:{$page->getUser()}|]]. La [[{$page->getTitle()}|votazione]] termina $time;\n";
+			$newLines .= '*[[Utente:' . $page->getUser() . '|]]. ' .
+				'La [[' . $page->getTitle() . "|votazione]] termina $time;\n";
 		}
 
 		$introReg = '!^Si vota per la \[\[Wikipedia:Amministratori/Riconferma annuale.+!m';

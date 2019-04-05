@@ -47,7 +47,7 @@ class PageRiconferma {
 	 */
 	public function getNum() : int {
 		$bits = explode( '/', $this->getTitle() );
-		return end( $bits );
+		return intval( end( $bits ) );
 	}
 
 	/**
@@ -65,6 +65,7 @@ class PageRiconferma {
 	 * @return string
 	 */
 	public function getBaseTitle() : string {
+		// @phan-suppress-next-line PhanTypeMismatchArgumentInternal Phan bug
 		return substr( $this->getTitle(), 0, strrpos( $this->getTitle(), '/' ) );
 	}
 
