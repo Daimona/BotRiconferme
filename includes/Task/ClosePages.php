@@ -8,7 +8,6 @@ use BotRiconferme\TaskResult;
 /**
  * For each open page, close it if the time's up and no more than 15 opposing votes were added
  * @fixme Avoid duplication with UpdatesAround etc.
- * @todo Handle votes
  */
 class ClosePages extends Task {
 	/**
@@ -167,9 +166,10 @@ class ClosePages extends Task {
 
 		$current = $this->getController()->getPageContent( $page->getBaseTitle() );
 
-		$text = $page->isVote() ?
-			'votazione: ' . ( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ? 'non riconfermato' : 'riconfermato' ) :
-			'riconferma tacita';
+		$outcomeText = $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ?
+			'non riconfermato' :
+			'riconfermato';
+		$text = $page->isVote() ? "votazione: $outcomeText" : 'riconferma tacita';
 
 		$newContent = str_replace( 'riconferma in corso', $text, $current );
 		$params = [
@@ -199,13 +199,13 @@ class ClosePages extends Task {
 
 		$newContent = preg_replace( $search, '', $content );
 		// Make sure the last line ends with a full stop in every section
-		$simpleSectReg = '!(^;È in corso.+riconferma tacita.+amministratori.+\n(?:\*.+[;\.]\n)+\*.+)[\.;]!m';
+		$simpleSectReg = '!(^;È in corso.+riconferma tacita.+amministrat.+\n(?:\*.+[;\.]\n)+\*.+)[\.;]!m';
 		$voteSectReg = '!(^;Si vota per la .+riconferma .+amministratori.+\n(?:\*.+[;\.]\n)+\*.+)[\.;]!m';
 		$newContent = preg_replace( $simpleSectReg, '$1.', $newContent );
 		$newContent = preg_replace( $voteSectReg, '$1.', $newContent );
 
 		// @fixme Remove empty sections, and add the "''Nessuna riconferma o votazione in corso''" message
-		//   if the page is empty! Or just wait for the page to be restyled...
+		// if the page is empty! Or just wait for the page to be restyled...
 
 		$summary = strtr(
 			$this->getConfig()->get( 'close-vote-page-summary' ),
@@ -242,14 +242,17 @@ class ClosePages extends Task {
 			}
 		}
 
-		$this->getLogger()->info( "Decreasing the news counter: $simpleAmount simple, $voteAmount votes." );
+		$this->getLogger()->info(
+			"Decreasing the news counter: $simpleAmount simple, $voteAmount votes."
+		);
+
 		$newsPage = $this->getConfig()->get( 'ric-news-page' );
 
 		$content = $this->getController()->getPageContent( $newsPage );
 		$simpleReg = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d+)!';
 		$voteReg = '!(\| *riconferme[ _]voto[ _]amministratori *= *)(\d+)!';
 
-		$simpleMatches = $voteMatched = [];
+		$simpleMatches = $voteMatches = [];
 		preg_match( $simpleReg, $content, $simpleMatches );
 		preg_match( $voteReg, $content, $voteMatches );
 
@@ -302,7 +305,6 @@ class ClosePages extends Task {
 				$riconfNames[] = $user;
 			}
 		}
-
 
 		if ( count( $riconfNames ) > 1 ) {
 			$lastUser = array_pop( $riconfNames );

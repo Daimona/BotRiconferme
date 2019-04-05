@@ -134,6 +134,8 @@ class PageRiconferma {
 
 	/**
 	 * Gets the quorum used for the current page
+	 *
+	 * @return int
 	 */
 	protected function getQuorum() : int {
 		$reg = "!soddisfare il \[\[[^|\]]+\|quorum]] di '''(\d+) voti'''!";

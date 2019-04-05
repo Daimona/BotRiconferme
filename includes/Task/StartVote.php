@@ -72,9 +72,10 @@ class StartVote extends Task {
 		);
 
 		$newContent = preg_replace(
-			'!(==== *Favorevoli alla riconferma *====\n\#[\s.]+|maggioranza di \'\'\'2/3\'\'\' dei votanti\.)\n-->!',
+			'!(==== *Favorevoli alla riconferma *====\n\#[\s.]+|maggioranza di.+ dei votanti\.)\n-->!',
 			'$1',
-			$newContent
+			$newContent,
+			2
 		);
 
 		$params = [
