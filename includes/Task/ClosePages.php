@@ -4,7 +4,6 @@ namespace BotRiconferme\Task;
 
 use BotRiconferme\PageRiconferma;
 use BotRiconferme\TaskResult;
-use BotRiconferme\Exception\TaskException;
 
 /**
  * For each open page, close it if the time's up and no more than 15 opposing votes were added
@@ -21,6 +20,9 @@ class ClosePages extends Task {
 		$pages = $this->getPagesList();
 		$protectReason = $this->getConfig()->get( 'close-protect-summary' );
 		foreach ( $pages as $page ) {
+			if ( $page->isVote() ) {
+				$this->addVoteCloseText( $page );
+			}
 			$this->getController()->protectPage( $page->getTitle(), $protectReason );
 			$this->updateBasePage( $page );
 		}
@@ -28,7 +30,7 @@ class ClosePages extends Task {
 		$this->removeFromMainPage( $pages );
 		$this->addToArchive( $pages );
 		$this->updateVote( $pages );
-		$this->updateNews( count( $pages ) );
+		$this->updateNews( $pages );
 		$this->updateAdminList( $pages );
 
 		$this->getLogger()->info( 'Task ClosePages completed successfully' );
@@ -44,7 +46,7 @@ class ClosePages extends Task {
 		$allPages = $this->getDataProvider()->getOpenPages();
 		$ret = [];
 		foreach ( $allPages as $page ) {
-			if ( time() > $page->getEndTimestamp() && !$page->hasOpposition() ) {
+			if ( time() > $page->getEndTimestamp() ) {
 				$ret[] = $page;
 			}
 		}
@@ -52,7 +54,24 @@ class ClosePages extends Task {
 	}
 
 	/**
+	 * @param PageRiconferma $page
+	 */
+	protected function addVoteCloseText( PageRiconferma $page ) {
+		$content = $page->getContent();
+		$beforeReg = '!è necessario ottenere una maggioranza .+ votanti\.!';
+		$newContent = preg_replace( $beforeReg, '$0' . "\n" . $page->getOutcomeText(), $content );
+
+		$params = [
+			'title' => $page->getTitle(),
+			'text' => $newContent,
+			'summary' => $this->getConfig()->get( 'close-result-summary' )
+		];
+		$this->getController()->editPage( $params );
+	}
+
+	/**
 	 * Removes pages from WP:A/Riconferme annuali
+	 *
 	 * @param PageRiconferma[] $pages
 	 * @see UpdatesAround::addToMainPage()
 	 */
@@ -86,8 +105,30 @@ class ClosePages extends Task {
 			'Adding to archive: ' . implode( ', ', array_map( 'strval', $pages ) )
 		);
 
-		$archiveTitle = $this->getConfig()->get( 'close-archive-title' );
-		$archiveTitle = "$archiveTitle/" . date( 'Y' );
+		$simple = $votes = [];
+		foreach ( $pages as $page ) {
+			if ( $page->isVote() ) {
+				$votes[] = $page;
+			} else {
+				$simple[] = $page;
+			}
+		}
+
+		$simpleTitle = $this->getConfig()->get( 'close-simple-archive-title' );
+		$voteTitle = $this->getConfig()->get( 'close-vote-archive-title' );
+
+		$this->reallyAddToArchive( $simpleTitle, $simple );
+		$this->reallyAddToArchive( $voteTitle, $votes );
+	}
+
+	/**
+	 * Really add $pages to the given archive
+	 *
+	 * @param string $archiveTitle
+	 * @param array $pages
+	 */
+	private function reallyAddToArchive( string $archiveTitle, array $pages ) {
+		$curTitle = "$archiveTitle/" . date( 'Y' );
 
 		$append = '';
 		$archivedList = [];
@@ -109,7 +150,7 @@ class ClosePages extends Task {
 		);
 
 		$params = [
-			'title' => $archiveTitle,
+			'title' => $curTitle,
 			'appendtext' => $append,
 			'summary' => $summary
 		];
@@ -126,7 +167,11 @@ class ClosePages extends Task {
 
 		$current = $this->getController()->getPageContent( $page->getBaseTitle() );
 
-		$newContent = str_replace( 'riconferma in corso', 'riconferma tacita', $current );
+		$text = $page->isVote() ?
+			'votazione: ' . ( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ? 'non riconfermato' : 'riconfermato' ) :
+			'riconferma tacita';
+
+		$newContent = str_replace( 'riconferma in corso', $text, $current );
 		$params = [
 			'title' => $page->getTitle(),
 			'text' => $newContent,
@@ -153,9 +198,14 @@ class ClosePages extends Task {
 		$search = "!^\*.+ La \[\[($titleReg)\|procedura]] termina.+\n!gm";
 
 		$newContent = preg_replace( $search, '', $content );
-		// Make sure the last line ends with a full stop
-		$sectionReg = '!(^;È in corso.+riconferma tacita.+amministratori.+\n(?:\*.+[;\.]\n)+\*.+)[\.;]!m';
-		$newContent = preg_replace( $sectionReg, '$1.', $newContent );
+		// Make sure the last line ends with a full stop in every section
+		$simpleSectReg = '!(^;È in corso.+riconferma tacita.+amministratori.+\n(?:\*.+[;\.]\n)+\*.+)[\.;]!m';
+		$voteSectReg = '!(^;Si vota per la .+riconferma .+amministratori.+\n(?:\*.+[;\.]\n)+\*.+)[\.;]!m';
+		$newContent = preg_replace( $simpleSectReg, '$1.', $newContent );
+		$newContent = preg_replace( $voteSectReg, '$1.', $newContent );
+
+		// @fixme Remove empty sections, and add the "''Nessuna riconferma o votazione in corso''" message
+		//   if the page is empty! Or just wait for the page to be restyled...
 
 		$summary = strtr(
 			$this->getConfig()->get( 'close-vote-page-summary' ),
@@ -179,28 +229,38 @@ class ClosePages extends Task {
 	}
 
 	/**
-	 * @param int $amount
-	 * @throws TaskException
+	 * @param array $pages
 	 * @see UpdatesAround::addNews()
 	 */
-	protected function updateNews( int $amount ) {
-		$this->getLogger()->info( "Decreasing the news counter by $amount" );
+	protected function updateNews( array $pages ) {
+		$simpleAmount = $voteAmount = 0;
+		foreach ( $pages as $page ) {
+			if ( $page->isVote() ) {
+				$voteAmount++;
+			} else {
+				$simpleAmount++;
+			}
+		}
+
+		$this->getLogger()->info( "Decreasing the news counter: $simpleAmount simple, $voteAmount votes." );
 		$newsPage = $this->getConfig()->get( 'ric-news-page' );
 
 		$content = $this->getController()->getPageContent( $newsPage );
-		$reg = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d+)!';
+		$simpleReg = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d+)!';
+		$voteReg = '!(\| *riconferme[ _]voto[ _]amministratori *= *)(\d+)!';
 
-		$matches = [];
-		if ( preg_match( $reg, $content, $matches ) === false ) {
-			throw new TaskException( 'Param not found in news page' );
-		}
+		$simpleMatches = $voteMatched = [];
+		preg_match( $simpleReg, $content, $simpleMatches );
+		preg_match( $voteReg, $content, $voteMatches );
 
-		$newNum = (int)$matches[2] - $amount;
-		$newContent = preg_replace( $reg, '${1}' . $newNum, $content );
+		$newSimp = (int)$simpleMatches[2] - $simpleAmount ?: '';
+		$newVote = (int)$voteMatches[2] - $voteAmount ?: '';
+		$newContent = preg_replace( $simpleReg, '${1}' . $newSimp, $content );
+		$newContent = preg_replace( $voteReg, '${1}' . $newVote, $newContent );
 
 		$summary = strtr(
 			$this->getConfig()->get( 'close-news-page-summary' ),
-			[ '$num' => $amount ]
+			[ '$num' => count( $pages ) ]
 		);
 		$summary = preg_replace_callback(
 			'!\{\{$plur|(\d+)|([^|]+)|([^|]+)}}!',
@@ -226,32 +286,53 @@ class ClosePages extends Task {
 	 */
 	protected function updateAdminList( array $pages ) {
 		$listTitle = $this->getConfig()->get( 'admins-list' );
-		$content = $this->getController()->getPageContent( $listTitle );
+		$newContent = $this->getController()->getPageContent( $listTitle );
 		$newDate = date( 'Ymd', strtotime( '+1 year' ) );
 
-		$names = [];
+		$riconfNames = $removeNames = [];
 		foreach ( $pages as $page ) {
 			$user = $page->getUser();
-			$names[] = $user;
-			$reg = "!(\{\{Amministratore\/riga\|$user.+\| *)\d+(?= *\|(?: *pausa)? *\}\})!";
-			$content = preg_replace( $reg, '$1' . $newDate, $content );
+			$reg = "!(\{\{Amministratore\/riga\|$user.+\| *)\d+( *\|(?: *pausa)? *\}\}\n)!";
+			if ( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ) {
+				// Remove the line
+				$newContent = preg_replace( $reg, '', $newContent );
+				$removeNames[] = $user;
+			} else {
+				$newContent = preg_replace( $reg, '$1' . $newDate . '$2', $newContent );
+				$riconfNames[] = $user;
+			}
 		}
 
-		if ( count( $names ) > 1 ) {
-			$lastUser = array_pop( $names );
-			$usersList = implode( ', ', $names ) . " e $lastUser";
+
+		if ( count( $riconfNames ) > 1 ) {
+			$lastUser = array_pop( $riconfNames );
+			$riconfList = implode( ', ', $riconfNames ) . " e $lastUser";
+		} elseif ( $riconfNames ) {
+			$riconfList = $riconfNames[0];
 		} else {
-			$usersList = $names[0];
+			$riconfList = 'nessuno';
+		}
+
+		if ( count( $removeNames ) > 1 ) {
+			$lastUser = array_pop( $removeNames );
+			$removeList = implode( ', ', $removeNames ) . " e $lastUser";
+		} elseif ( $removeNames ) {
+			$removeList = $removeNames[0];
+		} else {
+			$removeList = 'nessuno';
 		}
 
 		$summary = strtr(
 			$this->getConfig()->get( 'close-update-list-summary' ),
-			[ '$names' => $usersList ]
+			[
+				'$riconf' => $riconfList,
+				'$remove' => $removeList
+			]
 		);
 
 		$params = [
 			'title' => $listTitle,
-			'text' => $content,
+			'text' => $newContent,
 			'summary' => $summary
 		];
 

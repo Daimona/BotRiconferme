@@ -72,7 +72,7 @@ class StartVote extends Task {
 		);
 
 		$newContent = preg_replace(
-			'!(==== *Favorevoli alla riconferma *====\n\#[\s.]+)\n-->!',
+			'!(==== *Favorevoli alla riconferma *====\n\#[\s.]+|maggioranza di \'\'\'2/3\'\'\' dei votanti\.)\n-->!',
 			'$1',
 			$newContent
 		);
@@ -176,8 +176,8 @@ class StartVote extends Task {
 			throw new TaskException( 'Param "voto" not found in news page' );
 		}
 
-		$newTac = (int)$tacMatches[2] - $amount;
-		$newVot = (int)$votMatches[2] + $amount;
+		$newTac = (int)$tacMatches[2] - $amount ?: '';
+		$newVot = (int)$votMatches[2] + $amount ?: '';
 
 		$newContent = preg_replace( $regTac, '${1}' . $newTac, $content );
 		$newContent = preg_replace( $regVot, '${1}' . $newVot, $newContent );

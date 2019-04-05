@@ -15,6 +15,16 @@ class PageRiconferma {
 	/** @var string */
 	private $content;
 
+	// Sections of the page value is section number
+	const SECTION_SUPPORT = 3;
+	const SECTION_OPPOSE = 4;
+
+	// Possible outcomes of a vote
+	const OUTCOME_OK = 0;
+	const OUTCOME_FAIL_VOTES = 1;
+	const OUTCOME_NO_QUOR = 2;
+	const OUTCOME_FAIL = self::OUTCOME_FAIL_VOTES | self::OUTCOME_NO_QUOR;
+
 	/**
 	 * @param string $title
 	 * @param WikiController $controller
@@ -82,25 +92,115 @@ class PageRiconferma {
 	}
 
 	/**
-	 * Whether this page has enough opposing votes
+	 * Get the amount of opposing votes
 	 *
-	 * @return bool
+	 * @return int
 	 */
-	public function hasOpposition() : bool {
+	public function getOpposingCount() : int {
+		return $this->getCountForSection( self::SECTION_OPPOSE );
+	}
+
+	/**
+	 * Get the amount support votes
+	 *
+	 * @return int
+	 */
+	public function getSupportCount() : int {
+		return $this->getCountForSection( self::SECTION_SUPPORT );
+	}
+
+	/**
+	 * Count the votes in the given section
+	 *
+	 * @param int $secNum
+	 * @return int
+	 */
+	protected function getCountForSection( int $secNum ) : int {
 		$params = [
 			'action' => 'query',
 			'prop' => 'revisions',
 			'titles' => $this->title,
 			'rvprop' => 'content',
 			'rvslots' => 'main',
-			'rvsection' => 4
+			'rvsection' => $secNum
 		];
+
 		$res = RequestBase::newFromParams( $params )->execute();
 		$page = reset( $res->query->pages );
 		$content = $page->revisions[0]->slots->main->{ '*' };
 		// Let's hope that this is good enough...
-		$votes = substr_count( $content, "\n\# *(?![#*])" );
-		return $votes >= 15;
+		return substr_count( $content, "\n\# *(?![#*])" );
+	}
+
+	/**
+	 * Gets the quorum used for the current page
+	 */
+	protected function getQuorum() : int {
+		$reg = "!soddisfare il \[\[[^|\]]+\|quorum]] di '''(\d+) voti'''!";
+		$matches = [];
+		preg_match( $reg, $this->getContent(), $matches );
+		return intval( $matches[1] );
+	}
+
+	/**
+	 * Whether this page has enough opposing votes
+	 *
+	 * @return bool
+	 */
+	public function hasOpposition() : bool {
+		return $this->getOpposingCount() >= 15;
+	}
+
+	/**
+	 * Gets the outcome for the vote
+	 *
+	 * @return int One of the OUTCOME_* constants
+	 * @throws \BadMethodCallException
+	 */
+	public function getOutcome() : int {
+		if ( !$this->isVote() ) {
+			throw new \BadMethodCallException( 'Cannot get outcome for a non-vote page.' );
+		}
+		$totalVotes = $this->getOpposingCount() + $this->getSupportCount();
+		if ( $this->getSupportCount() < $this->getQuorum() ) {
+			return self::OUTCOME_NO_QUOR;
+		} elseif ( $this->getSupportCount() < 2 * $totalVotes / 3 ) {
+			return self::OUTCOME_FAIL_VOTES;
+		}
+		return self::OUTCOME_OK;
+	}
+
+	/**
+	 * Get the result text for the page itself
+	 *
+	 * @return string
+	 * @throws \BadMethodCallException
+	 */
+	public function getOutcomeText() : string {
+		if ( !$this->isVote() ) {
+			throw new \BadMethodCallException( 'No need for an outcome text.' );
+		}
+
+		$text = sprintf(
+			' Con %d voti a favore e %d contrari',
+			$this->getSupportCount(),
+			$this->getOpposingCount()
+		);
+		$user = $this->getUser();
+
+		switch ( $this->getOutcome() ) {
+			case self::OUTCOME_OK:
+				$text .= " $user viene riconfermato amministratore.";
+				break;
+			/** @noinspection PhpMissingBreakStatementInspection */
+			case self::OUTCOME_NO_QUOR:
+				$text .= ', non raggiungendo il quorum,';
+				// Fall through intended
+			case self::OUTCOME_FAIL:
+				$text .= " $user non viene riconfermato amministratore";
+				break;
+		}
+		return $text;
 	}
 
 	/**
