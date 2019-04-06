@@ -27,7 +27,7 @@ abstract class RequestBase {
 	/** @var array */
 	protected $params;
 	/** @var string */
-	protected $method;
+	protected $method = 'GET';
 	/** @var string[] */
 	protected $newCookies = [];
 
@@ -35,27 +35,34 @@ abstract class RequestBase {
 	 * Use self::newFromParams, which will provide the right class to use
 	 *
 	 * @param array $params
-	 * @param bool $isPOST
 	 */
-	protected function __construct( array $params, bool $isPOST = false ) {
+	protected function __construct( array $params ) {
 		$this->params = [ 'format' => 'json' ] + $params;
-		$this->method = $isPOST ? 'POST' : 'GET';
 	}
 
 	/**
 	 * Instance getter, will instantiate the proper subclass
 	 *
 	 * @param array $params
-	 * @param bool $isPOST
 	 * @return self
 	 */
-	public static function newFromParams( array $params, bool $isPOST = false ) : self {
+	public static function newFromParams( array $params ) : self {
 		if ( extension_loaded( 'curl' ) ) {
-			$ret = new CurlRequest( $params, $isPOST );
+			$ret = new CurlRequest( $params );
 		} else {
-			$ret = new NativeRequest( $params, $isPOST );
+			$ret = new NativeRequest( $params );
 		}
 		return $ret;
+	}
+
+	/**
+	 * Set the method to POST
+	 *
+	 * @return self For chaining
+	 */
+	public function post() : self {
+		$this->method = 'POST';
+		return $this;
 	}
 
 	/**

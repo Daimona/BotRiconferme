@@ -70,7 +70,7 @@ class WikiController {
 			'bot' => Config::getInstance()->get( 'bot-edits' )
 		] + $params;
 
-		$res = RequestBase::newFromParams( $params, true )->execute();
+		$res = RequestBase::newFromParams( $params )->post()->execute();
 		if ( $res->edit->result !== 'Success' ) {
 			throw new EditException( $res->edit->info );
 		}
@@ -137,7 +137,7 @@ class WikiController {
 		];
 
 		try {
-			$res = RequestBase::newFromParams( $params, true )->execute();
+			$res = RequestBase::newFromParams( $params )->post()->execute();
 		} catch ( APIRequestException $e ) {
 			throw new LoginException( $e->getMessage() );
 		}
@@ -216,6 +216,6 @@ class WikiController {
 			'token' => $this->getToken( 'csrf' )
 		];
 
-		RequestBase::newFromParams( $params, true )->execute();
+		RequestBase::newFromParams( $params )->post()->execute();
 	}
 }

@@ -64,6 +64,7 @@ class Config {
 				throw new ConfigException( 'Please create a messages page.' );
 			}
 		}
+		// @phan-suppress-next-line PhanTypeArraySuspiciousNullable
 		return $messages[$key];
 	}
 	/**
