@@ -168,10 +168,8 @@ class ClosePages extends Task {
 			$userNums = $archivedList[0];
 		}
 
-		$summary = strtr(
-			$this->getConfig()->get( 'close-archive-summary' ),
-			[ '$usernums' => $userNums ]
-		);
+		$summary = $this->msg( 'close-archive-summary' )
+			->params( [ '$usernums' => $userNums ] )->text();
 
 		$params = [
 			'title' => $curTitle,
@@ -211,6 +209,9 @@ class ClosePages extends Task {
 	 * @see UpdatesAround::addVote()
 	 */
 	protected function updateVote( array $pages ) {
+		$this->getLogger()->info(
+			'Updating votazioni: ' . implode( ', ', array_map( 'strval', $pages ) )
+		);
 		$votePage = $this->getConfig()->get( 'ric-vote-page' );
 		$content = $this->getController()->getPageContent( $votePage );
 
@@ -232,17 +233,8 @@ class ClosePages extends Task {
 		// @fixme Remove empty sections, and add the "''Nessuna riconferma o votazione in corso''" message
 		// if the page is empty! Or just wait for the page to be restyled...
 
-		$summary = strtr(
-			$this->getConfig()->get( 'close-vote-page-summary' ),
-			[ '$num' => count( $pages ) ]
-		);
-		$summary = preg_replace_callback(
-			'!\{\{$plur|(\d+)|([^|]+)|([^|]+)}}!',
-			function ( $matches ) {
-				return intval( $matches[1] ) > 1 ? trim( $matches[3] ) : trim( $matches[2] );
-			},
-			$summary
-		);
+		$summary = $this->msg( 'close-vote-page-summary' )
+			->params( [ '$num' => count( $pages ) ] )->text();
 
 		$params = [
 			'title' => $votePage,
@@ -286,17 +278,8 @@ class ClosePages extends Task {
 		$newContent = preg_replace( $simpleReg, '${1}' . $newSimp, $content );
 		$newContent = preg_replace( $voteReg, '${1}' . $newVote, $newContent );
 
-		$summary = strtr(
-			$this->getConfig()->get( 'close-news-page-summary' ),
-			[ '$num' => count( $pages ) ]
-		);
-		$summary = preg_replace_callback(
-			'!\{\{$plur|(\d+)|([^|]+)|([^|]+)}}!',
-			function ( $matches ) {
-				return intval( $matches[1] ) > 1 ? trim( $matches[3] ) : trim( $matches[2] );
-			},
-			$summary
-		);
+		$summary = $this->msg( 'close-news-page-summary' )
+			->params( [ '$num' => count( $pages ) ] )->text();
 
 		$params = [
 			'title' => $newsPage,
@@ -313,6 +296,9 @@ class ClosePages extends Task {
 	 * @param PageRiconferma[] $pages
 	 */
 	protected function updateAdminList( array $pages ) {
+		$this->getLogger()->info(
+			'Updating admin list: ' . implode( ', ', array_map( 'strval', $pages ) )
+		);
 		$listTitle = $this->getConfig()->get( 'admins-list' );
 		$newContent = $this->getController()->getPageContent( $listTitle );
 		$newDate = date( 'Ymd', strtotime( '+1 year' ) );
@@ -349,13 +335,12 @@ class ClosePages extends Task {
 			$removeList = 'nessuno';
 		}
 
-		$summary = strtr(
-			$this->getConfig()->get( 'close-update-list-summary' ),
-			[
+		$summary = $this->msg( 'close-update-list-summary' )
+			->params( [
 				'$riconf' => $riconfList,
 				'$remove' => $removeList
-			]
-		);
+			] )
+			->text();
 
 		$params = [
 			'title' => $listTitle,
@@ -370,6 +355,7 @@ class ClosePages extends Task {
 	 * @param PageRiconferma[] $pages
 	 */
 	protected function updateCUList( array $pages ) {
+		$this->getLogger()->info( 'Checking if CU list needs updating.' );
 		$cuListTitle = $this->getConfig()->get( 'cu-list-title' );
 		$listTitle = $this->getConfig()->get( 'list-title' );
 		$admins = json_decode( $this->getController()->getPageContent( $listTitle ), true );
@@ -395,6 +381,10 @@ class ClosePages extends Task {
 			return;
 		}
 
+		$this->getLogger()->info(
+			'Updating CU list. Riconf: ' . implode( ', ', $riconfNames ) .
+			'; remove: ' . implode( ', ', $removeNames )
+		);
 		if ( count( $riconfNames ) > 1 ) {
 			$lastUser = array_pop( $riconfNames );
 			$riconfList = implode( ', ', $riconfNames ) . " e $lastUser";
@@ -413,13 +403,12 @@ class ClosePages extends Task {
 			$removeList = 'nessuno';
 		}
 
-		$summary = strtr(
-			$this->getConfig()->get( 'cu-list-update-summary' ),
-			[
+		$summary = $this->msg( 'cu-list-update-summary' )
+			->params( [
 				'$riconf' => $riconfList,
 				'$remove' => $removeList
-			]
-		);
+			] )
+			->text();
 
 		$params = [
 			'title' => $cuListTitle,
@@ -433,6 +422,7 @@ class ClosePages extends Task {
 	 * @param PageRiconferma[] $pages
 	 */
 	protected function updateBurList( array $pages ) {
+		$this->getLogger()->info( 'Checking if bur list needs updating.' );
 		$listTitle = $this->getConfig()->get( 'list-title' );
 		$admins = json_decode( $this->getController()->getPageContent( $listTitle ), true );
 
@@ -450,6 +440,7 @@ class ClosePages extends Task {
 			return;
 		}
 
+		$this->getLogger()->info( 'Updating bur list. Removing: ' . implode( ', ', $remove ) );
 		$remList = implode( '|', array_map( 'preg_quote', $remove ) );
 		$burListTitle = $this->getConfig()->get( 'bur-list-title' );
 		$content = $this->getController()->getPageContent( $burListTitle );
@@ -463,12 +454,9 @@ class ClosePages extends Task {
 			$removeList = $remove[0];
 		}
 
-		$summary = strtr(
-			$this->getConfig()->get( 'bur-list-update-summary' ),
-			[
-				'$remove' => $removeList
-			]
-		);
+		$summary = $this->msg( 'bur-list-update-summary' )
+			->params( [ '$remove' => $removeList ] )
+			->text();
 
 		$params = [
 			'title' => $burListTitle,
@@ -484,6 +472,9 @@ class ClosePages extends Task {
 	 * @param PageRiconferma[] $pages
 	 */
 	protected function requestRemoval( array $pages ) {
+		$this->getLogger()->info(
+			'Requesting removal on meta for: ' . implode( ', ', array_map( 'strval', $pages ) )
+		);
 		$listTitle = $this->getConfig()->get( 'list-title' );
 		$admins = json_decode( $this->getController()->getPageContent( $listTitle ), true );
 
@@ -506,12 +497,9 @@ class ClosePages extends Task {
 			$newContent .= $curText;
 		}
 
-		$summary = strtr(
-			$this->getConfig()->get( 'flag-removal-summary' ),
-			[
-				'$num' => count( $pages )
-			]
-		);
+		$summary = $this->msg( 'flag-removal-summary' )
+			->params( [ '$num' => count( $pages ) ] )
+			->text();
 
 		$params = [
 			'title' => $pageTitle,
@@ -529,6 +517,7 @@ class ClosePages extends Task {
 	 * @param PageRiconferma[] $pages
 	 */
 	protected function updateAnnunci( array $pages ) {
+		$this->getLogger()->info( 'Updating annunci' );
 		$title = $this->getConfig()->get( 'annunci-title' );
 
 		$names = [];
@@ -560,10 +549,9 @@ class ClosePages extends Task {
 			$namesList = $names[0];
 		}
 
-		$summary = strtr(
-			$this->getConfig()->get( 'annunci-summary' ),
-			[ '$names' => $namesList ]
-		);
+		$summary = $this->msg( 'flag-removal-summary' )
+			->params( [ '$names' => $namesList ] )
+			->text();
 
 		$params = [
 			'title' => $title,
@@ -579,6 +567,7 @@ class ClosePages extends Task {
 	 * @param PageRiconferma[] $pages
 	 */
 	protected function updateUltimeNotizie( array $pages ) {
+		$this->getLogger()->info( 'Updating ultime notizie' );
 		$title = $this->getConfig()->get( 'ultimenotizie-title' );
 
 		$names = [];
@@ -608,10 +597,9 @@ class ClosePages extends Task {
 			$namesList = $names[0];
 		}
 
-		$summary = strtr(
-			$this->getConfig()->get( 'ultimenotizie-summary' ),
-			[ '$names' => $namesList ]
-		);
+		$summary = $this->msg( 'ultimenotizie-summary' )
+			->params( [ '$names' => $namesList ] )
+			->text();
 
 		$params = [
 			'title' => $title,

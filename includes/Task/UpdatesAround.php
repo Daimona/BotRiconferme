@@ -48,17 +48,8 @@ class UpdatesAround extends Task {
 			$append .= '{{' . $page->getTitle() . "}}\n";
 		}
 
-		$summary = strtr(
-			$this->getConfig()->get( 'ric-main-page-summary' ),
-			[ '$num', count( $pages ) ]
-		);
-		$summary = preg_replace_callback(
-			'!\{\{$plur|(\d+)|([^|]+)|([^|]+)}}!',
-			function ( $matches ) {
-				return intval( $matches[1] ) > 1 ? trim( $matches[3] ) : trim( $matches[2] );
-			},
-			$summary
-		);
+		$summary = $this->msg( 'ric-main-page-summary' )
+			->params( [ '$num' => count( $pages ) ] )->text();
 
 		$params = [
 			'title' => $this->getConfig()->get( 'ric-main-page' ),
@@ -105,17 +96,8 @@ class UpdatesAround extends Task {
 			$newContent = preg_replace( $beforeReg, '$0' . "\n{$matches[0]}\n$newLines", $content, 1 );
 		}
 
-		$summary = strtr(
-			$this->getConfig()->get( 'ric-vote-page-summary' ),
-			[ '$num' => count( $pages ) ]
-		);
-		$summary = preg_replace_callback(
-			'!\{\{$plur|(\d+)|([^|]+)|([^|]+)}}!',
-			function ( $matches ) {
-				return intval( $matches[1] ) > 1 ? trim( $matches[3] ) : trim( $matches[2] );
-			},
-			$summary
-		);
+		$summary = $this->msg( 'ric-vote-page-summary' )
+			->params( [ '$num' => count( $pages ) ] )->text();
 
 		$params = [
 			'title' => $votePage,
@@ -146,14 +128,9 @@ class UpdatesAround extends Task {
 		$newNum = (int)$matches[2] + $amount;
 		$newContent = preg_replace( $reg, '${1}' . $newNum, $content );
 
-		$summary = strtr( $this->getConfig()->get( 'ric-news-page-summary' ), [ '$num' => $amount ] );
-		$summary = preg_replace_callback(
-			'!\{\{$plur|(\d+)|([^|]+)|([^|]+)}}!',
-			function ( $matches ) {
-				return intval( $matches[1] ) > 1 ? trim( $matches[3] ) : trim( $matches[2] );
-			},
-			$summary
-		);
+		$summary = $this->msg( 'ric-news-page-summary' )
+			->params( [ '$num' => $amount ] )
+			->text();
 
 		$params = [
 			'title' => $newsPage,

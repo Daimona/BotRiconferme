@@ -132,17 +132,9 @@ class StartVote extends Task {
 			$newContent = preg_replace( $beforeReg, '$0' . "\n{$matches[0]}\n$newLines", $newContent, 1 );
 		}
 
-		$summary = strtr(
-			$this->getConfig()->get( 'vote-start-vote-page-summary' ),
-			[ '$num' => count( $pages ) ]
-		);
-		$summary = preg_replace_callback(
-			'!\{\{$plur|(\d+)|([^|]+)|([^|]+)}}!',
-			function ( $matches ) {
-				return intval( $matches[1] ) > 1 ? trim( $matches[3] ) : trim( $matches[2] );
-			},
-			$summary
-		);
+		$summary = $this->msg( 'vote-start-vote-page-summary' )
+			->params( [ '$num' => count( $pages ) ] )
+			->text();
 
 		$params = [
 			'title' => $votePage,
@@ -182,17 +174,9 @@ class StartVote extends Task {
 		$newContent = preg_replace( $regTac, '${1}' . $newTac, $content );
 		$newContent = preg_replace( $regVot, '${1}' . $newVot, $newContent );
 
-		$summary = strtr(
-			$this->getConfig()->get( 'vote-start-news-page-summary' ),
-			[ '$num' => $amount ]
-		);
-		$summary = preg_replace_callback(
-			'!\{\{$plur|(\d+)|([^|]+)|([^|]+)}}!',
-			function ( $matches ) {
-				return intval( $matches[1] ) > 1 ? trim( $matches[3] ) : trim( $matches[2] );
-			},
-			$summary
-		);
+		$summary = $this->msg( 'vote-start-news-page-summary' )
+			->params( [ '$num' => $amount ] )
+			->text();
 
 		$params = [
 			'title' => $newsPage,

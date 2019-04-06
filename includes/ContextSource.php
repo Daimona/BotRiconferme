@@ -65,4 +65,14 @@ abstract class ContextSource implements LoggerAwareInterface {
 	protected function setController( WikiController $controller ) {
 		$this->controller = $controller;
 	}
+
+	/**
+	 * Get a message
+	 *
+	 * @param string $key
+	 * @return Message
+	 */
+	protected function msg( string $key ) : Message {
+		return new Message( $key );
+	}
 }
