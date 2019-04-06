@@ -31,6 +31,8 @@ class ClosePages extends Task {
 		$this->updateVote( $pages );
 		$this->updateNews( $pages );
 		$this->updateAdminList( $pages );
+		$this->updateCUList( $pages );
+		$this->updateBurList( $pages );
 
 		$this->getLogger()->info( 'Task ClosePages completed successfully' );
 		return new TaskResult( self::STATUS_OK );
@@ -193,7 +195,7 @@ class ClosePages extends Task {
 			$titles[] = preg_quote( $page->getTitle() );
 		}
 
-		$titleReg = implode( '|', $titles );
+		$titleReg = implode( '|', array_map( 'preg_quote', $titles ) );
 		$search = "!^\*.+ La \[\[($titleReg)\|procedura]] termina.+\n!gm";
 
 		$newContent = preg_replace( $search, '', $content );
@@ -337,6 +339,118 @@ class ClosePages extends Task {
 			'summary' => $summary
 		];
 
+		$this->getController()->editPage( $params );
+	}
+
+	/**
+	 * @param PageRiconferma[] $pages
+	 */
+	protected function updateCUList( array $pages ) {
+		$cuListTitle = $this->getConfig()->get( 'cu-list-title' );
+		$listTitle = $this->getConfig()->get( 'list-title' );
+		$admins = json_decode( $this->getController()->getPageContent( $listTitle ), true );
+		$newContent = $this->getController()->getPageContent( $cuListTitle );
+
+		$riconfNames = $removeNames = [];
+		foreach ( $pages as $page ) {
+			$user = $page->getUser();
+			if ( array_key_exists( 'checkuser', $admins[ $user ] ) ) {
+				$reg = "!(\{\{ *Checkuser *\| *$user *\|[^}]+\| *)[\w \d](}}.*\n)!";
+				if ( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ) {
+					// Remove the line
+					$newContent = preg_replace( $reg, '', $newContent );
+					$removeNames[] = $user;
+				} else {
+					$newContent = preg_replace( $reg, '$1{{subst:#time:j F Y}}$2', $newContent );
+					$riconfNames[] = $user;
+				}
+			}
+		}
+
+		if ( !$riconfNames && !$removeNames ) {
+			return;
+		}
+
+		if ( count( $riconfNames ) > 1 ) {
+			$lastUser = array_pop( $riconfNames );
+			$riconfList = implode( ', ', $riconfNames ) . " e $lastUser";
+		} elseif ( $riconfNames ) {
+			$riconfList = $riconfNames[0];
+		} else {
+			$riconfList = 'nessuno';
+		}
+
+		if ( count( $removeNames ) > 1 ) {
+			$lastUser = array_pop( $removeNames );
+			$removeList = implode( ', ', $removeNames ) . " e $lastUser";
+		} elseif ( $removeNames ) {
+			$removeList = $removeNames[0];
+		} else {
+			$removeList = 'nessuno';
+		}
+
+		$summary = strtr(
+			$this->getConfig()->get( 'cu-list-update-summary' ),
+			[
+				'$riconf' => $riconfList,
+				'$remove' => $removeList
+			]
+		);
+
+		$params = [
+			'title' => $cuListTitle,
+			'text' => $newContent,
+			'summary' => $summary
+		];
+		$this->getController()->editPage( $params );
+	}
+
+	/**
+	 * @param PageRiconferma[] $pages
+	 */
+	protected function updateBurList( array $pages ) {
+		$listTitle = $this->getConfig()->get( 'list-title' );
+		$admins = json_decode( $this->getController()->getPageContent( $listTitle ), true );
+
+		$remove = [];
+		foreach ( $pages as $page ) {
+			$user = $page->getUser();
+			if ( array_key_exists( 'bureaucrat', $admins[ $user ] ) &&
+				$page->getOutcome() & PageRiconferma::OUTCOME_FAIL
+			) {
+				$remove[] = $user;
+			}
+		}
+
+		if ( !$remove ) {
+			return;
+		}
+
+		$remList = implode( '|', array_map( 'preg_quote', $remove ) );
+		$burListTitle = $this->getConfig()->get( 'bur-list-title' );
+		$content = $this->getController()->getPageContent( $burListTitle );
+		$reg = "!^\#\{\{ *Burocrate *\| *($remList).+\n!m";
+		$newContent = preg_replace( $reg, '', $content );
+
+		if ( count( $remove ) > 1 ) {
+			$lastUser = array_pop( $remove );
+			$removeList = implode( ', ', $remove ) . " e $lastUser";
+		} else {
+			$removeList = $remove[0];
+		}
+
+		$summary = strtr(
+			$this->getConfig()->get( 'bur-list-update-summary' ),
+			[
+				'$remove' => $removeList
+			]
+		);
+
+		$params = [
+			'title' => $burListTitle,
+			'text' => $newContent,
+			'summary' => $summary
+		];
 		$this->getController()->editPage( $params );
 	}
 }

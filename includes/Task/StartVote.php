@@ -101,7 +101,7 @@ class StartVote extends Task {
 		foreach ( $pages as $page ) {
 			$titles[] = preg_quote( $page->getTitle() );
 		}
-		$titleReg = implode( '|', $titles );
+		$titleReg = implode( '|', array_map( 'preg_quote', $titles ) );
 		$search = "!^\*.+ La \[\[($titleReg)\|procedura]] termina.+\n!gm";
 
 		$newContent = preg_replace( $search, '', $content );
