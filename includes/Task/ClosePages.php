@@ -418,7 +418,7 @@ class ClosePages extends Task {
 	 */
 	protected function updateBurList( array $pages ) {
 		$this->getLogger()->info( 'Checking if bur list needs updating.' );
-		$admins =  $this->getDataProvider()->getUsersList();
+		$admins = $this->getDataProvider()->getUsersList();
 
 		$remove = [];
 		foreach ( $pages as $page ) {

@@ -10,7 +10,7 @@ class Page {
 	protected $title;
 	/** @var WikiController */
 	protected $controller;
-	/** @var string */
+	/** @var string|null */
 	protected $content;
 
 	/**

@@ -58,7 +58,8 @@ class Config {
 		static $messages = null;
 		if ( $messages === null ) {
 			try {
-				$messages = ( new WikiController )->getPageContent( $this->opts[ 'msg-title' ] );
+				$cont = ( new WikiController )->getPageContent( $this->opts[ 'msg-title' ] );
+				$messages = json_decode( $cont, true );
 			} catch ( MissingPageException $e ) {
 				throw new ConfigException( 'Please create a messages page.' );
 			}
