@@ -391,7 +391,7 @@ class ClosePages extends Task {
 			}
 		}
 
-		if ( !$riconfNames && !$removeNames ) {
+		if ( !$riconfNames || !$removeNames ) {
 			return;
 		}
 
@@ -536,7 +536,8 @@ class ClosePages extends Task {
 		foreach ( $pages as $page ) {
 			$user = $page->getUser();
 			$names[] = $user;
-			$text .= "{{Breve|admin|{{subst:#time:j}}|[[Utente:$user|]] non è stato riconfermato [[WP:A|amministratore]].}}\n";
+			$text .= "{{Breve|admin|{{subst:#time:j}}|[[Utente:$user|]] " .
+				"non è stato riconfermato [[WP:A|amministratore]].}}\n";
 		}
 
 		$oldLoc = setlocale( LC_TIME, 'it_IT', 'Italian_Italy', 'Italian' );
@@ -586,7 +587,8 @@ class ClosePages extends Task {
 			$user = $page->getUser();
 			$title = $page->getTitle();
 			$names[] = $user;
-			$text .= "'''{{subst:#time:j F}}''': [[Utente:$user|]] non è stato [[$title|riconfermato]] [[WP:A|amministratore]]; ora gli admin sono {{subst:#expr: {{NUMBEROFADMINS}} - 1}}.";
+			$text .= "'''{{subst:#time:j F}}''': [[Utente:$user|]] non è stato [[$title|riconfermato]] " .
+				'[[WP:A|amministratore]]; ora gli admin sono {{subst:#expr: {{NUMBEROFADMINS}} - 1}}.';
 		}
 
 		$content = $this->getController()->getPageContent( $title );

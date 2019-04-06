@@ -2,8 +2,6 @@
 
 namespace BotRiconferme;
 
-use BotRiconferme\Request\RequestBase;
-
 /**
  * Represents a single riconferma page
  */
