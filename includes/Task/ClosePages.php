@@ -549,7 +549,7 @@ class ClosePages extends Task {
 			$namesList = $names[0];
 		}
 
-		$summary = $this->msg( 'flag-removal-summary' )
+		$summary = $this->msg( 'annunci-summary' )
 			->params( [ '$names' => $namesList ] )
 			->text();
 

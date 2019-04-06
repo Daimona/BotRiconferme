@@ -20,10 +20,10 @@ class Message {
 	}
 
 	/**
-	 * @param string[] $args
+	 * @param array $args
 	 * @return self
 	 */
-	public function params( $args ) : self {
+	public function params( array $args ) : self {
 		$this->value = strtr( $this->value, $args );
 		return $this;
 	}
