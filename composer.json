@@ -19,8 +19,8 @@
 		"ext-curl": "Faster requests"
 	},
 	"require-dev": {
-		"mediawiki/mediawiki-codesniffer": "24.0.0",
-		"phan/phan": "1.2.7"
+		"mediawiki/mediawiki-codesniffer": "25.0.0",
+		"phan/phan": "1.2.8"
 	},
 	"autoload": {
 		"psr-4": {
