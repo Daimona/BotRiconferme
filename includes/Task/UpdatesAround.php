@@ -70,7 +70,7 @@ class UpdatesAround extends Task {
 		$this->getLogger()->info(
 			'Adding the following to votes: ' . implode( ', ', array_map( 'strval', $pages ) )
 		);
-		$votePage = new Page( $this->getConfig()->get( 'ric-vote-page' ), $this->getController() );
+		$votePage = new Page( $this->getConfig()->get( 'ric-vote-page' ) );
 
 		$content = $votePage->getContent();
 
@@ -115,7 +115,7 @@ class UpdatesAround extends Task {
 	 */
 	protected function addNews( int $amount ) {
 		$this->getLogger()->info( "Increasing the news counter by $amount" );
-		$newsPage = new Page( $this->getConfig()->get( 'ric-news-page' ), $this->getController() );
+		$newsPage = new Page( $this->getConfig()->get( 'ric-news-page' ) );
 
 		$content = $newsPage->getContent();
 		$reg = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d+)!';

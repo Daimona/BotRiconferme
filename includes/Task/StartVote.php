@@ -95,7 +95,7 @@ class StartVote extends Task {
 	 * @see UpdatesAround::addVote()
 	 */
 	protected function updateVotePage( array $pages ) {
-		$votePage = new Page( $this->getConfig()->get( 'ric-vote-page' ), $this->getController() );
+		$votePage = new Page( $this->getConfig()->get( 'ric-vote-page' ) );
 		$content = $votePage->getContent();
 
 		$titles = [];
@@ -154,7 +154,7 @@ class StartVote extends Task {
 	 */
 	protected function updateNews( int $amount ) {
 		$this->getLogger()->info( "Turning $amount pages into votes" );
-		$newsPage = new Page( $this->getConfig()->get( 'ric-news-page' ), $this->getController() );
+		$newsPage = new Page( $this->getConfig()->get( 'ric-news-page' ) );
 
 		$content = $newsPage->getContent();
 		$regTac = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d+)!';

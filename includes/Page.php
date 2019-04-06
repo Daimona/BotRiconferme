@@ -15,11 +15,10 @@ class Page {
 
 	/**
 	 * @param string $title
-	 * @param WikiController $controller
 	 */
-	public function __construct( string $title, WikiController $controller ) {
+	public function __construct( string $title ) {
 		$this->title = $title;
-		$this->controller = $controller;
+		$this->controller = new WikiController();
 	}
 
 	/**

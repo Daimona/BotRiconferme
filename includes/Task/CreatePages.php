@@ -57,7 +57,7 @@ class CreatePages extends Task {
 			$this->updateBasePage( $baseTitle, $newText );
 		}
 
-		$pageObj = new PageRiconferma( $pageTitle, $this->getController() );
+		$pageObj = new PageRiconferma( $pageTitle );
 		$this->getDataProvider()->addCreatedPages( $pageObj );
 	}
 

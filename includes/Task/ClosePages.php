@@ -105,7 +105,7 @@ class ClosePages extends Task {
 			'Removing from main: ' . implode( ', ', array_map( 'strval', $pages ) )
 		);
 
-		$mainPage = new Page( $this->getConfig()->get( 'ric-main-page' ), $this->getController() );
+		$mainPage = new Page( $this->getConfig()->get( 'ric-main-page' ) );
 		$translations = [];
 		foreach ( $pages as $page ) {
 			$translations[ '{{' . $page->getTitle() . '}}' ] = '';
@@ -187,7 +187,7 @@ class ClosePages extends Task {
 	protected function updateBasePage( PageRiconferma $page ) {
 		$this->getLogger()->info( "Updating base page for $page" );
 
-		$basePage = new Page( $page->getBaseTitle(), $this->getController() );
+		$basePage = new Page( $page->getBaseTitle() );
 		$current = $basePage->getContent();
 
 		$outcomeText = $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ?
@@ -212,7 +212,7 @@ class ClosePages extends Task {
 		$this->getLogger()->info(
 			'Updating votazioni: ' . implode( ', ', array_map( 'strval', $pages ) )
 		);
-		$votePage = new Page( $this->getConfig()->get( 'ric-vote-page' ), $this->getController() );
+		$votePage = new Page( $this->getConfig()->get( 'ric-vote-page' ) );
 		$content = $votePage->getContent();
 
 		$titles = [];
@@ -262,7 +262,7 @@ class ClosePages extends Task {
 			"Decreasing the news counter: $simpleAmount simple, $voteAmount votes."
 		);
 
-		$newsPage = new Page( $this->getConfig()->get( 'ric-news-page' ), $this->getController() );
+		$newsPage = new Page( $this->getConfig()->get( 'ric-news-page' ) );
 
 		$content = $newsPage->getContent();
 		$simpleReg = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d+)!';
@@ -297,7 +297,7 @@ class ClosePages extends Task {
 		$this->getLogger()->info(
 			'Updating admin list: ' . implode( ', ', array_map( 'strval', $pages ) )
 		);
-		$adminsPage = new Page( $this->getConfig()->get( 'admins-list' ), $this->getController() );
+		$adminsPage = new Page( $this->getConfig()->get( 'admins-list' ) );
 		$newContent = $adminsPage->getContent();
 		$newDate = date( 'Ymd', strtotime( '+1 year' ) );
 
@@ -353,7 +353,7 @@ class ClosePages extends Task {
 	 */
 	protected function updateCUList( array $pages ) {
 		$this->getLogger()->info( 'Checking if CU list needs updating.' );
-		$cuList = new Page( $this->getConfig()->get( 'cu-list-title' ), $this->getController() );
+		$cuList = new Page( $this->getConfig()->get( 'cu-list-title' ) );
 		$admins = $this->getDataProvider()->getUsersList();
 		$newContent = $cuList->getContent();
 
@@ -436,7 +436,7 @@ class ClosePages extends Task {
 
 		$this->getLogger()->info( 'Updating bur list. Removing: ' . implode( ', ', $remove ) );
 		$remList = implode( '|', array_map( 'preg_quote', $remove ) );
-		$burList = new Page( $this->getConfig()->get( 'bur-list-title' ), $this->getController() );
+		$burList = new Page( $this->getConfig()->get( 'bur-list-title' ) );
 		$content = $burList->getContent();
 		$reg = "!^\#\{\{ *Burocrate *\| *($remList).+\n!m";
 		$newContent = preg_replace( $reg, '', $content );
@@ -472,7 +472,7 @@ class ClosePages extends Task {
 
 		$oldUrl = RequestBase::$url;
 		RequestBase::$url = 'https://meta.wikimedia.org/w/api.php';
-		$flagRemPage = new Page( $this->getConfig()->get( 'flag-removal-page' ), $this->getController() );
+		$flagRemPage = new Page( $this->getConfig()->get( 'flag-removal-page' ) );
 		$section = $this->getConfig()->get( 'flag-removal-section' );
 		$baseText = $this->getConfig()->get( 'flag-removal-text' );
 
@@ -524,7 +524,7 @@ class ClosePages extends Task {
 		$month = ucfirst( strftime( '%B', time() ) );
 		setlocale( LC_TIME, $oldLoc );
 
-		$annunciPage = new Page( $this->getConfig()->get( 'annunci-title' ), $this->getController() );
+		$annunciPage = new Page( $this->getConfig()->get( 'annunci-title' ) );
 		$content = $annunciPage->getContent( 1 );
 		$secReg = "!=== *$month *===!";
 		if ( preg_match( $secReg, $content ) !== false ) {
@@ -559,7 +559,7 @@ class ClosePages extends Task {
 	 */
 	protected function updateUltimeNotizie( array $pages ) {
 		$this->getLogger()->info( 'Updating ultime notizie' );
-		$notiziePage = new Page( $this->getConfig()->get( 'ultimenotizie-title' ), $this->getController() );
+		$notiziePage = new Page( $this->getConfig()->get( 'ultimenotizie-title' ) );
 
 		$names = [];
 		$text = '';

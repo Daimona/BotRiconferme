@@ -94,7 +94,7 @@ class TaskDataProvider extends ContextSource {
 		$ret = [];
 		foreach ( reset( $pages )->templates as $page ) {
 			if ( preg_match( "!$baseTitle\/[^\/]+\/\d!", $page->title ) !== false ) {
-				$ret[] = new PageRiconferma( $page->title, $this->getController() );
+				$ret[] = new PageRiconferma( $page->title );
 			}
 		}
 		return $ret;
