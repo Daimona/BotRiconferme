@@ -79,12 +79,11 @@ class StartVote extends Task {
 		);
 
 		$params = [
-			'title' => $page->getTitle(),
 			'text' => $newContent,
 			'summary' => $this->getConfig()->get( 'vote-start-summary' )
 		];
 
-		$this->getController()->editPage( $params );
+		$page->edit( $params );
 	}
 
 	/**

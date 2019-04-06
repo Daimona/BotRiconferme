@@ -234,6 +234,23 @@ class PageRiconferma {
 		}
 	}
 
+	/**
+	 * Edit this page and update content
+	 *
+	 * @param array $params
+	 */
+	public function edit( array $params ) {
+		$params = [
+			'title' => $this->getTitle()
+		] + $params;
+
+		$this->controller->editPage( $params );
+		if ( isset( $params['text'] ) ) {
+			$this->content = $params['text'];
+		} elseif ( isset( $params['appendtext'] ) ) {
+			$this->content .= $params['appendtext'];
+		}
+	}
 	public function __toString() {
 		return $this->getTitle();
 	}

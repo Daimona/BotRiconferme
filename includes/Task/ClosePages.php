@@ -61,11 +61,10 @@ class ClosePages extends Task {
 		$newContent = preg_replace( $beforeReg, '$0' . "\n" . $page->getOutcomeText(), $content );
 
 		$params = [
-			'title' => $page->getTitle(),
 			'text' => $newContent,
 			'summary' => $this->getConfig()->get( 'close-result-summary' )
 		];
-		$this->getController()->editPage( $params );
+		$page->edit( $params );
 	}
 
 	/**
