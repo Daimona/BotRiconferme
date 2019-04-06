@@ -3,6 +3,7 @@
 namespace BotRiconferme\Task;
 
 use BotRiconferme\Exception\TaskException;
+use BotRiconferme\Page;
 use BotRiconferme\PageRiconferma;
 use BotRiconferme\TaskResult;
 use BotRiconferme\WikiController;
@@ -94,8 +95,8 @@ class StartVote extends Task {
 	 * @see UpdatesAround::addVote()
 	 */
 	protected function updateVotePage( array $pages ) {
-		$votePage = $this->getConfig()->get( 'ric-vote-page' );
-		$content = $this->getController()->getPageContent( $votePage );
+		$votePage = new Page( $this->getConfig()->get( 'ric-vote-page' ), $this->getController() );
+		$content = $votePage->getContent();
 
 		$titles = [];
 		foreach ( $pages as $page ) {
@@ -137,12 +138,11 @@ class StartVote extends Task {
 			->text();
 
 		$params = [
-			'title' => $votePage,
 			'text' => $newContent,
 			'summary' => $summary
 		];
 
-		$this->getController()->editPage( $params );
+		$votePage->edit( $params );
 	}
 
 	/**
@@ -154,9 +154,9 @@ class StartVote extends Task {
 	 */
 	protected function updateNews( int $amount ) {
 		$this->getLogger()->info( "Turning $amount pages into votes" );
-		$newsPage = $this->getConfig()->get( 'ric-news-page' );
+		$newsPage = new Page( $this->getConfig()->get( 'ric-news-page' ), $this->getController() );
 
-		$content = $this->getController()->getPageContent( $newsPage );
+		$content = $newsPage->getContent();
 		$regTac = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d+)!';
 		$regVot = '!(\| *riconferme[ _]voto[ _]amministratori *= *)(\d+)!';
 
@@ -179,11 +179,10 @@ class StartVote extends Task {
 			->text();
 
 		$params = [
-			'title' => $newsPage,
 			'text' => $newContent,
 			'summary' => $summary
 		];
 
-		$this->getController()->editPage( $params );
+		$newsPage->edit( $params );
 	}
 }

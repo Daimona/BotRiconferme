@@ -2,6 +2,7 @@
 
 namespace BotRiconferme\Task;
 
+use BotRiconferme\Page;
 use BotRiconferme\PageRiconferma;
 use BotRiconferme\Request\RequestBase;
 use BotRiconferme\TaskResult;
@@ -104,8 +105,7 @@ class ClosePages extends Task {
 			'Removing from main: ' . implode( ', ', array_map( 'strval', $pages ) )
 		);
 
-		$mainPage = $this->getConfig()->get( 'ric-main-page' );
-		$content = $this->getController()->getPageContent( $mainPage );
+		$mainPage = new Page( $this->getConfig()->get( 'ric-main-page' ), $this->getController() );
 		$translations = [];
 		foreach ( $pages as $page ) {
 			$translations[ '{{' . $page->getTitle() . '}}' ] = '';
@@ -113,7 +113,7 @@ class ClosePages extends Task {
 
 		$params = [
 			'title' => $mainPage,
-			'text' => strtr( $content, $translations ),
+			'text' => strtr( $mainPage->getContent(), $translations ),
 			'summary' => $this->getConfig()->get( 'close-main-summary' )
 		];
 		$this->getController()->editPage( $params );
@@ -187,7 +187,8 @@ class ClosePages extends Task {
 	protected function updateBasePage( PageRiconferma $page ) {
 		$this->getLogger()->info( "Updating base page for $page" );
 
-		$current = $this->getController()->getPageContent( $page->getBaseTitle() );
+		$basePage = new Page( $page->getBaseTitle(), $this->getController() );
+		$current = $basePage->getContent();
 
 		$outcomeText = $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ?
 			'non riconfermato' :
@@ -196,12 +197,11 @@ class ClosePages extends Task {
 
 		$newContent = str_replace( 'riconferma in corso', $text, $current );
 		$params = [
-			'title' => $page->getTitle(),
 			'text' => $newContent,
 			'summary' => $this->getConfig()->get( 'close-base-page-summary-update' )
 		];
 
-		$this->getController()->editPage( $params );
+		$basePage->edit( $params );
 	}
 
 	/**
@@ -212,8 +212,8 @@ class ClosePages extends Task {
 		$this->getLogger()->info(
 			'Updating votazioni: ' . implode( ', ', array_map( 'strval', $pages ) )
 		);
-		$votePage = $this->getConfig()->get( 'ric-vote-page' );
-		$content = $this->getController()->getPageContent( $votePage );
+		$votePage = new Page( $this->getConfig()->get( 'ric-vote-page' ), $this->getController() );
+		$content = $votePage->getContent();
 
 		$titles = [];
 		foreach ( $pages as $page ) {
@@ -237,12 +237,11 @@ class ClosePages extends Task {
 			->params( [ '$num' => count( $pages ) ] )->text();
 
 		$params = [
-			'title' => $votePage,
 			'text' => $newContent,
 			'summary' => $summary
 		];
 
-		$this->getController()->editPage( $params );
+		$votePage->edit( $params );
 	}
 
 	/**
@@ -263,9 +262,9 @@ class ClosePages extends Task {
 			"Decreasing the news counter: $simpleAmount simple, $voteAmount votes."
 		);
 
-		$newsPage = $this->getConfig()->get( 'ric-news-page' );
+		$newsPage = new Page( $this->getConfig()->get( 'ric-news-page' ), $this->getController() );
 
-		$content = $this->getController()->getPageContent( $newsPage );
+		$content = $newsPage->getContent();
 		$simpleReg = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d+)!';
 		$voteReg = '!(\| *riconferme[ _]voto[ _]amministratori *= *)(\d+)!';
 
@@ -282,12 +281,11 @@ class ClosePages extends Task {
 			->params( [ '$num' => count( $pages ) ] )->text();
 
 		$params = [
-			'title' => $newsPage,
 			'text' => $newContent,
 			'summary' => $summary
 		];
 
-		$this->getController()->editPage( $params );
+		$newsPage->edit( $params );
 	}
 
 	/**
@@ -299,8 +297,8 @@ class ClosePages extends Task {
 		$this->getLogger()->info(
 			'Updating admin list: ' . implode( ', ', array_map( 'strval', $pages ) )
 		);
-		$listTitle = $this->getConfig()->get( 'admins-list' );
-		$newContent = $this->getController()->getPageContent( $listTitle );
+		$adminsPage = new Page( $this->getConfig()->get( 'admins-list' ), $this->getController() );
+		$newContent = $adminsPage->getContent();
 		$newDate = date( 'Ymd', strtotime( '+1 year' ) );
 
 		$riconfNames = $removeNames = [];
@@ -343,12 +341,11 @@ class ClosePages extends Task {
 			->text();
 
 		$params = [
-			'title' => $listTitle,
 			'text' => $newContent,
 			'summary' => $summary
 		];
 
-		$this->getController()->editPage( $params );
+		$adminsPage->edit( $params );
 	}
 
 	/**
@@ -356,10 +353,9 @@ class ClosePages extends Task {
 	 */
 	protected function updateCUList( array $pages ) {
 		$this->getLogger()->info( 'Checking if CU list needs updating.' );
-		$cuListTitle = $this->getConfig()->get( 'cu-list-title' );
-		$listTitle = $this->getConfig()->get( 'list-title' );
-		$admins = json_decode( $this->getController()->getPageContent( $listTitle ), true );
-		$newContent = $this->getController()->getPageContent( $cuListTitle );
+		$cuList = new Page( $this->getConfig()->get( 'cu-list-title' ), $this->getController() );
+		$admins = $this->getDataProvider()->getUsersList();
+		$newContent = $cuList->getContent();
 
 		$riconfNames = $removeNames = [];
 		foreach ( $pages as $page ) {
@@ -411,11 +407,10 @@ class ClosePages extends Task {
 			->text();
 
 		$params = [
-			'title' => $cuListTitle,
 			'text' => $newContent,
 			'summary' => $summary
 		];
-		$this->getController()->editPage( $params );
+		$cuList->edit( $params );
 	}
 
 	/**
@@ -423,8 +418,7 @@ class ClosePages extends Task {
 	 */
 	protected function updateBurList( array $pages ) {
 		$this->getLogger()->info( 'Checking if bur list needs updating.' );
-		$listTitle = $this->getConfig()->get( 'list-title' );
-		$admins = json_decode( $this->getController()->getPageContent( $listTitle ), true );
+		$admins =  $this->getDataProvider()->getUsersList();
 
 		$remove = [];
 		foreach ( $pages as $page ) {
@@ -442,8 +436,8 @@ class ClosePages extends Task {
 
 		$this->getLogger()->info( 'Updating bur list. Removing: ' . implode( ', ', $remove ) );
 		$remList = implode( '|', array_map( 'preg_quote', $remove ) );
-		$burListTitle = $this->getConfig()->get( 'bur-list-title' );
-		$content = $this->getController()->getPageContent( $burListTitle );
+		$burList = new Page( $this->getConfig()->get( 'bur-list-title' ), $this->getController() );
+		$content = $burList->getContent();
 		$reg = "!^\#\{\{ *Burocrate *\| *($remList).+\n!m";
 		$newContent = preg_replace( $reg, '', $content );
 
@@ -459,11 +453,10 @@ class ClosePages extends Task {
 			->text();
 
 		$params = [
-			'title' => $burListTitle,
 			'text' => $newContent,
 			'summary' => $summary
 		];
-		$this->getController()->editPage( $params );
+		$burList->edit( $params );
 	}
 
 	/**
@@ -475,16 +468,15 @@ class ClosePages extends Task {
 		$this->getLogger()->info(
 			'Requesting removal on meta for: ' . implode( ', ', array_map( 'strval', $pages ) )
 		);
-		$listTitle = $this->getConfig()->get( 'list-title' );
-		$admins = json_decode( $this->getController()->getPageContent( $listTitle ), true );
+		$admins = $this->getDataProvider()->getUsersList();
 
 		$oldUrl = RequestBase::$url;
 		RequestBase::$url = 'https://meta.wikimedia.org/w/api.php';
-		$pageTitle = $this->getConfig()->get( 'flag-removal-page' );
+		$flagRemPage = new Page( $this->getConfig()->get( 'flag-removal-page' ), $this->getController() );
 		$section = $this->getConfig()->get( 'flag-removal-section' );
 		$baseText = $this->getConfig()->get( 'flag-removal-text' );
 
-		$newContent = $this->getController()->getPageContent( $pageTitle, $section );
+		$newContent = $flagRemPage->getContent( $section );
 		foreach ( $pages as $page ) {
 			$curText = strtr(
 				$baseText,
@@ -502,11 +494,11 @@ class ClosePages extends Task {
 			->text();
 
 		$params = [
-			'title' => $pageTitle,
+			'section' => $section,
 			'text' => $newContent,
 			'summary' => $summary
 		];
-		$this->getController()->editPage( $params );
+		$flagRemPage->edit( $params );
 
 		RequestBase::$url = $oldUrl;
 	}
@@ -518,7 +510,6 @@ class ClosePages extends Task {
 	 */
 	protected function updateAnnunci( array $pages ) {
 		$this->getLogger()->info( 'Updating annunci' );
-		$title = $this->getConfig()->get( 'annunci-title' );
 
 		$names = [];
 		$text = '';
@@ -533,7 +524,8 @@ class ClosePages extends Task {
 		$month = ucfirst( strftime( '%B', time() ) );
 		setlocale( LC_TIME, $oldLoc );
 
-		$content = $this->getController()->getPageContent( $title, 1 );
+		$annunciPage = new Page( $this->getConfig()->get( 'annunci-title' ), $this->getController() );
+		$content = $annunciPage->getContent( 1 );
 		$secReg = "!=== *$month *===!";
 		if ( preg_match( $secReg, $content ) !== false ) {
 			$newContent = preg_replace( $secReg, '$0' . "\n" . $text, $content );
@@ -554,11 +546,10 @@ class ClosePages extends Task {
 			->text();
 
 		$params = [
-			'title' => $title,
 			'text' => $newContent,
 			'summary' => $summary
 		];
-		$this->getController()->editPage( $params );
+		$annunciPage->edit( $params );
 	}
 
 	/**
@@ -568,7 +559,7 @@ class ClosePages extends Task {
 	 */
 	protected function updateUltimeNotizie( array $pages ) {
 		$this->getLogger()->info( 'Updating ultime notizie' );
-		$title = $this->getConfig()->get( 'ultimenotizie-title' );
+		$notiziePage = new Page( $this->getConfig()->get( 'ultimenotizie-title' ), $this->getController() );
 
 		$names = [];
 		$text = '';
@@ -580,7 +571,7 @@ class ClosePages extends Task {
 				'[[WP:A|amministratore]]; ora gli admin sono {{subst:#expr: {{NUMBEROFADMINS}} - 1}}.';
 		}
 
-		$content = $this->getController()->getPageContent( $title );
+		$content = $notiziePage->getContent();
 		$year = date( 'Y' );
 		$secReg = "!== *$year *==!";
 		if ( preg_match( $secReg, $content ) !== false ) {
@@ -602,10 +593,9 @@ class ClosePages extends Task {
 			->text();
 
 		$params = [
-			'title' => $title,
 			'text' => $newContent,
 			'summary' => $summary
 		];
-		$this->getController()->editPage( $params );
+		$notiziePage->edit( $params );
 	}
 }

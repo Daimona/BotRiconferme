@@ -9,10 +9,26 @@ use BotRiconferme\Request\RequestBase;
  */
 class TaskDataProvider extends ContextSource {
 	/** @var array[] */
-	private $users;
-
+	private $processUsers;
+	/** @var array[] */
+	private $allUsers;
 	/** @var PageRiconferma[] */
 	private $createdPages = [];
+
+	/**
+	 * Get the full content of the JSON users list
+	 *
+	 * @return array[]
+	 */
+	public function getUsersList() : array {
+		if ( $this->allUsers === null ) {
+			$this->getLogger()->debug( 'Retrieving users list' );
+			$content = $this->getController()->getPageContent( $this->getConfig()->get( 'list-title' ) );
+			$this->allUsers = json_decode( $content, true );
+		}
+
+		return $this->allUsers;
+	}
 
 	/**
 	 * Get a list of users to execute tasks on.
@@ -20,25 +36,21 @@ class TaskDataProvider extends ContextSource {
 	 * @return array[]
 	 */
 	public function getUsersToProcess() : array {
-		if ( $this->users === null ) {
-			$this->getLogger()->debug( 'Retrieving users list' );
-			$content = $this->getController()->getPageContent( $this->getConfig()->get( 'list-title' ) );
-			$listUsers = json_decode( $content, true );
-
-			$this->users = [];
-			foreach ( $listUsers as $user => $groups ) {
+		if ( $this->processUsers === null ) {
+			$this->processUsers = [];
+			foreach ( $this->getUsersList() as $user => $groups ) {
 				$timestamp = $this->getValidTimestamp( $groups );
 
 				if ( date( 'd/m', $timestamp ) === date( 'd/m' ) &&
 					// Don't trigger if the date is actually today
 					date( 'd/m/Y', $timestamp ) !== date( 'd/m/Y' )
 				) {
-					$this->users[ $user ] = $groups;
+					$this->processUsers[ $user ] = $groups;
 				}
 			}
 		}
 
-		return $this->users;
+		return $this->processUsers;
 	}
 
 	/**
@@ -94,7 +106,7 @@ class TaskDataProvider extends ContextSource {
 	 * @param string $name
 	 */
 	public function removeUser( string $name ) {
-		unset( $this->users[ $name ] );
+		unset( $this->processUsers[ $name ] );
 	}
 
 	/**

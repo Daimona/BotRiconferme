@@ -21,7 +21,7 @@ class UpdateList extends Task {
 	public function run() : TaskResult {
 		$this->getLogger()->info( 'Starting task UpdateList' );
 		$this->actualList = $this->getActualAdmins();
-		$this->botList = $this->getList();
+		$this->botList = $this->getDataProvider()->getUsersList();
 
 		$missing = $this->getMissingGroups();
 		$extra = $this->getExtraGroups();
@@ -82,16 +82,6 @@ class UpdateList extends Task {
 			$ret[ $u->name ] = $interestingGroups;
 		}
 		return $ret;
-	}
-
-	/**
-	 * @return array
-	 */
-	protected function getList() : array {
-		$this->getLogger()->debug( 'Retrieving admins - JSON list' );
-		$content = $this->getController()->getPageContent( $this->getConfig()->get( 'list-title' ) );
-
-		return json_decode( $content, true );
 	}
 
 	/**

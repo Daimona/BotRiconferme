@@ -2,6 +2,7 @@
 
 namespace BotRiconferme\Task;
 
+use BotRiconferme\Page;
 use BotRiconferme\PageRiconferma;
 use BotRiconferme\TaskResult;
 use BotRiconferme\Exception\TaskException;
@@ -69,9 +70,9 @@ class UpdatesAround extends Task {
 		$this->getLogger()->info(
 			'Adding the following to votes: ' . implode( ', ', array_map( 'strval', $pages ) )
 		);
-		$votePage = $this->getConfig()->get( 'ric-vote-page' );
+		$votePage = new Page( $this->getConfig()->get( 'ric-vote-page' ), $this->getController() );
 
-		$content = $this->getController()->getPageContent( $votePage );
+		$content = $votePage->getContent();
 
 		$time = WikiController::getTimeWithArticle( time() + ( 60 * 60 * 24 * 7 ) );
 		$newLines = '';
@@ -100,12 +101,11 @@ class UpdatesAround extends Task {
 			->params( [ '$num' => count( $pages ) ] )->text();
 
 		$params = [
-			'title' => $votePage,
 			'text' => $newContent,
 			'summary' => $summary
 		];
 
-		$this->getController()->editPage( $params );
+		$votePage->edit( $params );
 	}
 
 	/**
@@ -115,9 +115,9 @@ class UpdatesAround extends Task {
 	 */
 	protected function addNews( int $amount ) {
 		$this->getLogger()->info( "Increasing the news counter by $amount" );
-		$newsPage = $this->getConfig()->get( 'ric-news-page' );
+		$newsPage = new Page( $this->getConfig()->get( 'ric-news-page' ), $this->getController() );
 
-		$content = $this->getController()->getPageContent( $newsPage );
+		$content = $newsPage->getContent();
 		$reg = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d+)!';
 
 		$matches = [];
@@ -133,11 +133,10 @@ class UpdatesAround extends Task {
 			->text();
 
 		$params = [
-			'title' => $newsPage,
 			'text' => $newContent,
 			'summary' => $summary
 		];
 
-		$this->getController()->editPage( $params );
+		$newsPage->edit( $params );
 	}
 }

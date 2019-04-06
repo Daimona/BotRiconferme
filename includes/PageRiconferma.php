@@ -5,15 +5,8 @@ namespace BotRiconferme;
 /**
  * Represents a single riconferma page
  */
-class PageRiconferma {
-	/** @var string */
-	private $title;
-	/** @var WikiController */
-	private $controller;
-	/** @var string */
-	private $content;
-
-	// Sections of the page value is section number
+class PageRiconferma extends Page {
+	// Sections of the page. The value is the section number
 	const SECTION_SUPPORT = 3;
 	const SECTION_OPPOSE = 4;
 
@@ -22,22 +15,6 @@ class PageRiconferma {
 	const OUTCOME_FAIL_VOTES = 1;
 	const OUTCOME_NO_QUOR = 2;
 	const OUTCOME_FAIL = self::OUTCOME_FAIL_VOTES | self::OUTCOME_NO_QUOR;
-
-	/**
-	 * @param string $title
-	 * @param WikiController $controller
-	 */
-	public function __construct( string $title, WikiController $controller ) {
-		$this->title = $title;
-		$this->controller = $controller;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getTitle() : string {
-		return $this->title;
-	}
 
 	/**
 	 * Get the name of the user from the title
@@ -75,18 +52,6 @@ class PageRiconferma {
 	public function getBaseTitle() : string {
 		// @phan-suppress-next-line PhanTypeMismatchArgumentInternal Phan bug
 		return substr( $this->getTitle(), 0, strrpos( $this->getTitle(), '/' ) );
-	}
-
-	/**
-	 * Get the content of this page
-	 *
-	 * @return string
-	 */
-	public function getContent() : string {
-		if ( $this->content === null ) {
-			$this->content = $this->controller->getPageContent( $this->title );
-		}
-		return $this->content;
 	}
 
 	/**
@@ -219,26 +184,5 @@ class PageRiconferma {
 			$created = $this->controller->getPageCreationTS( $this->title );
 			return $created + 60 * 60 * 24 * 7;
 		}
-	}
-
-	/**
-	 * Edit this page and update content
-	 *
-	 * @param array $params
-	 */
-	public function edit( array $params ) {
-		$params = [
-			'title' => $this->getTitle()
-		] + $params;
-
-		$this->controller->editPage( $params );
-		if ( isset( $params['text'] ) ) {
-			$this->content = $params['text'];
-		} elseif ( isset( $params['appendtext'] ) ) {
-			$this->content .= $params['appendtext'];
-		}
-	}
-	public function __toString() {
-		return $this->getTitle();
 	}
 }
