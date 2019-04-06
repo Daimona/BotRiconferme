@@ -3,6 +3,7 @@
 namespace BotRiconferme\Task;
 
 use BotRiconferme\PageRiconferma;
+use BotRiconferme\Request\RequestBase;
 use BotRiconferme\TaskResult;
 
 /**
@@ -32,7 +33,14 @@ class ClosePages extends Task {
 		$this->updateNews( $pages );
 		$this->updateAdminList( $pages );
 		$this->updateCUList( $pages );
-		$this->updateBurList( $pages );
+
+		$failed = $this->getFailures( $pages );
+		if ( $failed ) {
+			$this->updateBurList( $failed );
+			$this->requestRemoval( $failed );
+			$this->updateAnnunci( $failed );
+			$this->updateUltimeNotizie( $failed );
+		}
 
 		$this->getLogger()->info( 'Task ClosePages completed successfully' );
 		return new TaskResult( self::STATUS_OK );
@@ -48,6 +56,22 @@ class ClosePages extends Task {
 		$ret = [];
 		foreach ( $allPages as $page ) {
 			if ( time() > $page->getEndTimestamp() ) {
+				$ret[] = $page;
+			}
+		}
+		return $ret;
+	}
+
+	/**
+	 * Extract the list of failed votes from the given list of pages
+	 *
+	 * @param PageRiconferma[] $pages
+	 * @return PageRiconferma[]
+	 */
+	private function getFailures( array $pages ) : array {
+		$ret = [];
+		foreach ( $pages as $page ) {
+			if ( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ) {
 				$ret[] = $page;
 			}
 		}
@@ -448,6 +472,147 @@ class ClosePages extends Task {
 
 		$params = [
 			'title' => $burListTitle,
+			'text' => $newContent,
+			'summary' => $summary
+		];
+		$this->getController()->editPage( $params );
+	}
+
+	/**
+	 * Request the removal of the flag on meta
+	 *
+	 * @param PageRiconferma[] $pages
+	 */
+	protected function requestRemoval( array $pages ) {
+		$listTitle = $this->getConfig()->get( 'list-title' );
+		$admins = json_decode( $this->getController()->getPageContent( $listTitle ), true );
+
+		$oldUrl = RequestBase::$url;
+		RequestBase::$url = 'https://meta.wikimedia.org/w/api.php';
+		$pageTitle = $this->getConfig()->get( 'flag-removal-page' );
+		$section = $this->getConfig()->get( 'flag-removal-section' );
+		$baseText = $this->getConfig()->get( 'flag-removal-text' );
+
+		$newContent = $this->getController()->getPageContent( $pageTitle, $section );
+		foreach ( $pages as $page ) {
+			$curText = strtr(
+				$baseText,
+				[
+					'$username' => $page->getUser(),
+					'$link' => '[[:it:' . $page->getTitle() . ']]',
+					'$groups' => implode( ', ', array_keys( $admins[ $page->getUser() ] ) )
+				]
+			);
+			$newContent .= $curText;
+		}
+
+		$summary = strtr(
+			$this->getConfig()->get( 'flag-removal-summary' ),
+			[
+				'$num' => count( $pages )
+			]
+		);
+
+		$params = [
+			'title' => $pageTitle,
+			'text' => $newContent,
+			'summary' => $summary
+		];
+		$this->getController()->editPage( $params );
+
+		RequestBase::$url = $oldUrl;
+	}
+
+	/**
+	 * Update [[Wikipedia:Wikipediano/Annunci]]
+	 *
+	 * @param PageRiconferma[] $pages
+	 */
+	protected function updateAnnunci( array $pages ) {
+		$title = $this->getConfig()->get( 'annunci-title' );
+
+		$names = [];
+		$text = '';
+		foreach ( $pages as $page ) {
+			$user = $page->getUser();
+			$names[] = $user;
+			$text .= "{{Breve|admin|{{subst:#time:j}}|[[Utente:$user|]] non è stato riconfermato [[WP:A|amministratore]].}}\n";
+		}
+
+		$oldLoc = setlocale( LC_TIME, 'it_IT', 'Italian_Italy', 'Italian' );
+		$month = ucfirst( strftime( '%B', time() ) );
+		setlocale( LC_TIME, $oldLoc );
+
+		$content = $this->getController()->getPageContent( $title, 1 );
+		$secReg = "!=== *$month *===!";
+		if ( preg_match( $secReg, $content ) !== false ) {
+			$newContent = preg_replace( $secReg, '$0' . "\n" . $text, $content );
+		} else {
+			$re = '!</div>\s*}}\s*</includeonly>!';
+			$newContent = preg_replace( $re, '$0' . "\n=== $month ===\n" . $text, $content );
+		}
+
+		if ( count( $names ) > 1 ) {
+			$lastUser = array_pop( $names );
+			$namesList = implode( ', ', $names ) . " e $lastUser";
+		} else {
+			$namesList = $names[0];
+		}
+
+		$summary = strtr(
+			$this->getConfig()->get( 'annunci-summary' ),
+			[ '$names' => $namesList ]
+		);
+
+		$params = [
+			'title' => $title,
+			'text' => $newContent,
+			'summary' => $summary
+		];
+		$this->getController()->editPage( $params );
+	}
+
+	/**
+	 * Update [[Wikipedia:Ultime notizie]]
+	 *
+	 * @param PageRiconferma[] $pages
+	 */
+	protected function updateUltimeNotizie( array $pages ) {
+		$title = $this->getConfig()->get( 'ultimenotizie-title' );
+
+		$names = [];
+		$text = '';
+		foreach ( $pages as $page ) {
+			$user = $page->getUser();
+			$title = $page->getTitle();
+			$names[] = $user;
+			$text .= "'''{{subst:#time:j F}}''': [[Utente:$user|]] non è stato [[$title|riconfermato]] [[WP:A|amministratore]]; ora gli admin sono {{subst:#expr: {{NUMBEROFADMINS}} - 1}}.";
+		}
+
+		$content = $this->getController()->getPageContent( $title );
+		$year = date( 'Y' );
+		$secReg = "!== *$year *==!";
+		if ( preg_match( $secReg, $content ) !== false ) {
+			$newContent = preg_replace( $secReg, '$0' . "\n" . $text, $content );
+		} else {
+			$re = '!si veda la \[\[[^\]+relativa discussione]]\.\n!';
+			$newContent = preg_replace( $re, '$0' . "\n== $year ==\n" . $text, $content );
+		}
+
+		if ( count( $names ) > 1 ) {
+			$lastUser = array_pop( $names );
+			$namesList = implode( ', ', $names ) . " e $lastUser";
+		} else {
+			$namesList = $names[0];
+		}
+
+		$summary = strtr(
+			$this->getConfig()->get( 'ultimenotizie-summary' ),
+			[ '$names' => $namesList ]
+		);
+
+		$params = [
+			'title' => $title,
 			'text' => $newContent,
 			'summary' => $summary
 		];

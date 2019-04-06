@@ -27,10 +27,11 @@ class WikiController {
 	 * Gets the content of a wiki page
 	 *
 	 * @param string $title
+	 * @param int|null $section
 	 * @return string
 	 * @throws MissingPageException
 	 */
-	public function getPageContent( string $title ) : string {
+	public function getPageContent( string $title, int $section = null ) : string {
 		$this->logger->debug( "Retrieving page $title" );
 		$params = [
 			'action' => 'query',
@@ -39,6 +40,10 @@ class WikiController {
 			'rvslots' => 'main',
 			'rvprop' => 'content'
 		];
+
+		if ( $section !== null ) {
+			$params['rvsection'] = $section;
+		}
 
 		$req = RequestBase::newFromParams( $params );
 		$data = $req->execute();

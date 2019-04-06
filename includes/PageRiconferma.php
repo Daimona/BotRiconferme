@@ -116,18 +116,7 @@ class PageRiconferma {
 	 * @return int
 	 */
 	protected function getCountForSection( int $secNum ) : int {
-		$params = [
-			'action' => 'query',
-			'prop' => 'revisions',
-			'titles' => $this->title,
-			'rvprop' => 'content',
-			'rvslots' => 'main',
-			'rvsection' => $secNum
-		];
-
-		$res = RequestBase::newFromParams( $params )->execute();
-		$page = reset( $res->query->pages );
-		$content = $page->revisions[0]->slots->main->{ '*' };
+		$content = $this->controller->getPageContent( $this->title, $secNum );
 		// Let's hope that this is good enough...
 		return substr_count( $content, "\n\# *(?![#*])" );
 	}
