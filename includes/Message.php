@@ -16,7 +16,7 @@ class Message {
 	 */
 	public function __construct( string $key ) {
 		$this->key = $key;
-		$this->value = Config::getInstance()->get( $key );
+		$this->value = Config::getInstance()->getWikiMessage( $key );
 	}
 
 	/**

@@ -50,7 +50,7 @@ class CreatePages extends Task {
 		$pageTitle = "$baseTitle/$num";
 		$this->createPage( $pageTitle, $user, $groups );
 
-		$newText = str_replace( '$title', $pageTitle, $this->getConfig()->get( 'ric-base-page-text' ) );
+		$newText = $this->msg( 'ric-base-page-text' )->params( [ '$title' => $pageTitle ] )->text();
 		if ( $num === 1 ) {
 			$this->createBasePage( $baseTitle, $newText );
 		} else {

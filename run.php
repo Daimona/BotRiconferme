@@ -21,12 +21,14 @@ if ( PHP_SAPI !== 'cli' ) {
 	'username' => 'BotRiconferme'
 	'list-title' => 'Utente:BotRiconferme/List.json',
 	'config-title' => 'Utente:BotRiconferme/Config.json',
+	'msg-title' => 'Utente:BotRiconferme/Messages.json"
 */
 
 $params = [
 	'username:',
 	'list-title:',
-	'config-title:'
+	'config-title:',
+	'msg-title:'
 ];
 
 $vals = getopt( '', $params );

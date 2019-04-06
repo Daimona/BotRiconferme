@@ -33,6 +33,7 @@ class Config {
 
 		$inst = new self;
 		$inst->set( 'list-title', $defaults['list-title'] );
+		$inst->set( 'msg-title', $defaults['msg-title'] );
 		$inst->set( 'username', $defaults['username'] );
 		$inst->set( 'password', $defaults['password'] );
 		self::$instance = $inst;
@@ -49,6 +50,21 @@ class Config {
 		}
 	}
 
+	/**
+	 * @param string $key
+	 * @return string
+	 */
+	public function getWikiMessage( string $key ) : string {
+		static $messages = null;
+		if ( $messages === null ) {
+			try {
+				$messages = ( new WikiController )->getPageContent( $this->opts[ 'msg-title' ] );
+			} catch ( MissingPageException $e ) {
+				throw new ConfigException( 'Please create a messages page.' );
+			}
+		}
+		return $messages[$key];
+	}
 	/**
 	 * Set a config value.
 	 *
