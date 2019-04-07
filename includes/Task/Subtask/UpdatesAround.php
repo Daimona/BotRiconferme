@@ -2,8 +2,8 @@
 
 namespace BotRiconferme\Task\Subtask;
 
-use BotRiconferme\Page;
-use BotRiconferme\PageRiconferma;
+use BotRiconferme\Page\Page;
+use BotRiconferme\Page\PageRiconferma;
 use BotRiconferme\TaskResult;
 use BotRiconferme\Exception\TaskException;
 use BotRiconferme\WikiController;

@@ -2,7 +2,7 @@
 
 namespace BotRiconferme\Task\Subtask;
 
-use BotRiconferme\PageRiconferma;
+use BotRiconferme\Page\PageRiconferma;
 use BotRiconferme\TaskResult;
 use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Exception\TaskException;

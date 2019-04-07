@@ -3,8 +3,8 @@
 namespace BotRiconferme\Task;
 
 use BotRiconferme\Exception\TaskException;
-use BotRiconferme\Page;
-use BotRiconferme\PageRiconferma;
+use BotRiconferme\Page\Page;
+use BotRiconferme\Page\PageRiconferma;
 use BotRiconferme\TaskResult;
 use BotRiconferme\WikiController;
 

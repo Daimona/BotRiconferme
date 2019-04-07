@@ -2,6 +2,7 @@
 
 namespace BotRiconferme\Task;
 
+use BotRiconferme\Page\PageBotList;
 use BotRiconferme\TaskResult;
 use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Exception\TaskException;
@@ -42,7 +43,12 @@ class UpdateList extends Task {
 		if ( $newContent === $this->botList ) {
 			$this->getLogger()->info( 'Admin list already up-to-date' );
 		} else {
-			$this->doUpdateList( $newContent );
+			$this->getLogger()->info( 'Updating admin list' );
+
+			PageBotList::get()->edit( [
+				'text' => json_encode( $newContent ),
+				'summary' => $this->getConfig()->get( 'list-update-summary' )
+			] );
 		}
 
 		if ( $this->errors ) {
@@ -194,23 +200,6 @@ class UpdateList extends Task {
 			}
 		}
 		return $extra;
-	}
-
-	/**
-	 * Really edit the list with the new content, if it's not already up-to-date
-	 *
-	 * @param array $newContent
-	 */
-	protected function doUpdateList( array $newContent ) {
-		$this->getLogger()->info( 'Updating admin list' );
-
-		$params = [
-			'title' => $this->getConfig()->get( 'list-title' ),
-			'text' => json_encode( $newContent ),
-			'summary' => $this->getConfig()->get( 'list-update-summary' )
-		];
-
-		$this->getController()->editPage( $params );
 	}
 
 	/**

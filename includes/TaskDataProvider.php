@@ -2,6 +2,8 @@
 
 namespace BotRiconferme;
 
+use BotRiconferme\Page\PageBotList;
+use BotRiconferme\Page\PageRiconferma;
 use BotRiconferme\Request\RequestBase;
 
 /**
@@ -23,8 +25,7 @@ class TaskDataProvider extends ContextSource {
 	public function getUsersList() : array {
 		if ( $this->allUsers === null ) {
 			$this->getLogger()->debug( 'Retrieving users list' );
-			$content = $this->getController()->getPageContent( $this->getConfig()->get( 'list-title' ) );
-			$this->allUsers = json_decode( $content, true );
+			$this->allUsers = PageBotList::get()->getAdminsList();
 		}
 
 		return $this->allUsers;

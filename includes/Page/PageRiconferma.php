@@ -1,6 +1,9 @@
 <?php declare( strict_types=1 );
 
-namespace BotRiconferme;
+namespace BotRiconferme\Page;
+
+use BotRiconferme\Page\Page;
+use BotRiconferme\WikiController;
 
 /**
  * Represents a single riconferma page
