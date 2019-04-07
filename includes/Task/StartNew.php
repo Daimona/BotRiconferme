@@ -25,7 +25,7 @@ class StartNew extends Task {
 		$res = new TaskResult( TaskResult::STATUS_OK );
 		do {
 			$res->merge( $this->runSubtask( current( $orderedList ) ) );
-		} while ( $res->isOK() && next( $list ) );
+		} while ( $res->isOK() && next( $orderedList ) );
 
 		return $res;
 	}

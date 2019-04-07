@@ -53,7 +53,7 @@ class TaskManager {
 		if ( $mode === self::MODE_COMPLETE ) {
 			return $this->runAllTasks();
 		} elseif ( $name === null ) {
-			throw new \BadMethodCallException( 'A task name must be specified in MODE_TASK and MODE_SUBTASK' );
+			throw new \BadMethodCallException( 'MODE_TASK and MODE_SUBTASK need a (sub)task name.' );
 		} else {
 			return $mode === self::MODE_TASK ? $this->runTask( $name ) : $this->runSubtask( $name );
 		}
@@ -80,7 +80,7 @@ class TaskManager {
 		$res = new TaskResult( TaskResult::STATUS_OK );
 		do {
 			$res->merge( $this->runSubtask( current( $orderedList ) ) );
-		} while ( $res->isOK() && next( $list ) );
+		} while ( $res->isOK() && next( $orderedList ) );
 
 		if ( $res->isOK() ) {
 			self::setLastFullRunDate();
