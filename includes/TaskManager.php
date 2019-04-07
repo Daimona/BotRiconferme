@@ -5,8 +5,11 @@ namespace BotRiconferme;
 use BotRiconferme\Task\CloseOld;
 use BotRiconferme\Task\StartNew;
 use BotRiconferme\Task\StartVote;
+use BotRiconferme\Task\Subtask\ArchivePages;
 use BotRiconferme\Task\Subtask\ClosePages;
 use BotRiconferme\Task\Subtask\CreatePages;
+use BotRiconferme\Task\Subtask\FailedUpdates;
+use BotRiconferme\Task\Subtask\SimpleUpdates;
 use BotRiconferme\Task\Subtask\Subtask;
 use BotRiconferme\Task\Subtask\UpdatesAround;
 use BotRiconferme\Task\Subtask\UserNotice;
@@ -33,8 +36,11 @@ class TaskManager {
 		'start-vote' => StartVote::class
 	];
 	const SUBTASKS_MAP = [
+		'archive-pages' => ArchivePages::class,
 		'close-pages' => ClosePages::class,
 		'create-pages' => CreatePages::class,
+		'failed-updates' => FailedUpdates::class,
+		'simple-updates' => SimpleUpdates::class,
 		'updates-around' => UpdatesAround::class,
 		'user-notice' => UserNotice::class
 	];

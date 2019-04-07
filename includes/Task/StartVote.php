@@ -5,6 +5,7 @@ namespace BotRiconferme\Task;
 use BotRiconferme\Exception\TaskException;
 use BotRiconferme\Page;
 use BotRiconferme\PageRiconferma;
+use BotRiconferme\Task\Subtask\SimpleUpdates;
 use BotRiconferme\TaskResult;
 use BotRiconferme\WikiController;
 
@@ -99,7 +100,7 @@ class StartVote extends Task {
 	 * Update [[WP:Wikipediano/Votazioni]]
 	 *
 	 * @param PageRiconferma[] $pages
-	 * @see ClosePages::updateVote()
+	 * @see SimpleUpdates::updateVote()
 	 * @see UpdatesAround::addVote()
 	 */
 	protected function updateVotePage( array $pages ) {
@@ -158,7 +159,7 @@ class StartVote extends Task {
 	 *
 	 * @param int $amount Of pages to move
 	 * @see UpdatesAround::addNews()
-	 * @see ClosePages::updateNews()
+	 * @see SimpleUpdates::updateNews()
 	 */
 	protected function updateNews( int $amount ) {
 		$this->getLogger()->info( "Turning $amount pages into votes" );

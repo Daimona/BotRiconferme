@@ -2,7 +2,10 @@
 
 namespace BotRiconferme\Task;
 
+use BotRiconferme\Task\Subtask\ArchivePages;
 use BotRiconferme\Task\Subtask\ClosePages;
+use BotRiconferme\Task\Subtask\FailedUpdates;
+use BotRiconferme\Task\Subtask\SimpleUpdates;
 use BotRiconferme\TaskResult;
 
 /**
@@ -14,7 +17,10 @@ class CloseOld extends Task {
 	 */
 	public function run() : TaskResult {
 		$orderedList = [
-			'close-pages'
+			'close-pages',
+			'archive-pages',
+			'simple-updates',
+			'failed-updates'
 		];
 
 		$res = new TaskResult( TaskResult::STATUS_OK );
@@ -30,7 +36,10 @@ class CloseOld extends Task {
 	 */
 	protected function getSubtasksMap(): array {
 		return [
-			'close-pages' => ClosePages::class
+			'archive-pages' => ArchivePages::class,
+			'close-pages' => ClosePages::class,
+			'failed-updates' => FailedUpdates::class,
+			'simple-updates' => SimpleUpdates::class
 		];
 	}
 }
