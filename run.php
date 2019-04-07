@@ -7,7 +7,6 @@ require __DIR__ . '/vendor/autoload.php';
 
 use BotRiconferme\Config;
 use BotRiconferme\Bot;
-use BotRiconferme\Request\RequestBase;
 
 if ( PHP_SAPI !== 'cli' ) {
 	exit( 'CLI only!' );
@@ -38,9 +37,7 @@ if ( count( $vals ) !== count( $params ) ) {
 
 /* URL (for debugging purpose) */
 $urlParam = getopt( '', [ 'force-url:' ] );
-$url = isset( $urlParam['force-url'] ) ?
-	$urlParam['force-url'] :
-	'https://it.wikipedia.org/w/api.php';
+$url = $urlParam['force-url'] ?? 'https://it.wikipedia.org/w/api.php';
 
 define( 'DEFAULT_URL', $url );
 

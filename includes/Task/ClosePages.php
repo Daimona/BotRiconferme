@@ -4,7 +4,6 @@ namespace BotRiconferme\Task;
 
 use BotRiconferme\Page;
 use BotRiconferme\PageRiconferma;
-use BotRiconferme\Request\RequestBase;
 use BotRiconferme\TaskResult;
 
 /**
