@@ -2,7 +2,6 @@
 
 namespace BotRiconferme\Page;
 
-use BotRiconferme\Page\Page;
 use BotRiconferme\WikiController;
 
 /**

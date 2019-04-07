@@ -35,17 +35,16 @@ class SimpleUpdates extends Subtask {
 			'Updating votazioni: ' . implode( ', ', array_map( 'strval', $pages ) )
 		);
 		$votePage = new Page( $this->getConfig()->get( 'ric-vote-page' ) );
-		$content = $votePage->getContent();
 
 		$titles = [];
 		foreach ( $pages as $page ) {
 			$titles[] = preg_quote( $page->getTitle() );
 		}
 
-		$titleReg = implode( '|', array_map( 'preg_quote', $titles ) );
+		$titleReg = implode( '|', $titles );
 		$search = "!^\*.+ La \[\[($titleReg)\|procedura]] termina.+\n!gm";
 
-		$newContent = preg_replace( $search, '', $content );
+		$newContent = preg_replace( $search, '', $votePage->getContent() );
 		// Make sure the last line ends with a full stop in every section
 		$simpleSectReg = '!(^;È in corso.+riconferma tacita.+amministrat.+\n(?:\*.+[;\.]\n)+\*.+)[\.;]!m';
 		$voteSectReg = '!(^;Si vota per la .+riconferma .+amministratori.+\n(?:\*.+[;\.]\n)+\*.+)[\.;]!m';

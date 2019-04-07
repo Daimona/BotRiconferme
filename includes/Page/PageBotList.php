@@ -3,7 +3,6 @@
 namespace BotRiconferme\Page;
 
 use BotRiconferme\Config;
-use BotRiconferme\Page\Page;
 
 /**
  * Singleton class representing the JSON list of admins
@@ -23,7 +22,7 @@ class PageBotList extends Page {
 	 */
 	public static function get() : self {
 		static $instance = null;
-		if ( $instance = null ) {
+		if ( $instance === null ) {
 			$instance = new self;
 		}
 		return $instance;
