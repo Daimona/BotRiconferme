@@ -1,6 +1,6 @@
 <?php declare( strict_types=1 );
 
-namespace BotRiconferme\Task;
+namespace BotRiconferme\Task\Subtask;
 
 use BotRiconferme\Page;
 use BotRiconferme\PageRiconferma;
@@ -10,7 +10,7 @@ use BotRiconferme\TaskResult;
  * For each open page, close it if the time's up and no more than 15 opposing votes were added
  * @fixme Avoid duplication with UpdatesAround etc.
  */
-class ClosePages extends Task {
+class ClosePages extends Subtask {
 	/**
 	 * @inheritDoc
 	 */

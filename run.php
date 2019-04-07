@@ -77,12 +77,20 @@ Config::init( $vals );
 $bot = new Bot();
 
 /*
- * E.g. --task=update-list
+ * E.g.
+ *
+ * --task=update-list
+ * or
+ * --subtask=user-notice
  */
-$taskOpts = getopt( '', [ 'task:' ] );
+$taskOpts = getopt( '', [ 'task:', 'subtask:' ] );
 
-if ( $taskOpts ) {
-	$bot->runSingle( $taskOpts[ 'task' ] );
+if ( count( $taskOpts ) === 2 ) {
+	throw new InvalidArgumentException( 'Cannot specify both task and subtask.' );
+} elseif ( isset( $taskOpts['task'] ) ) {
+	$bot->runTask( $taskOpts[ 'task' ] );
+} elseif ( isset( $taskOpts['subtask'] ) ) {
+	$bot->runSubtask( $taskOpts[ 'subtask' ] );
 } else {
 	$bot->run();
 }

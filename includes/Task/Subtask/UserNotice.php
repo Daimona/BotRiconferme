@@ -1,13 +1,13 @@
 <?php declare( strict_types=1 );
 
-namespace BotRiconferme\Task;
+namespace BotRiconferme\Task\Subtask;
 
 use BotRiconferme\TaskResult;
 
 /**
  * Notify the affected users
  */
-class UserNotice extends Task {
+class UserNotice extends Subtask {
 	/**
 	 * @inheritDoc
 	 */

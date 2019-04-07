@@ -1,6 +1,6 @@
 <?php declare( strict_types=1 );
 
-namespace BotRiconferme\Task;
+namespace BotRiconferme\Task\Subtask;
 
 use BotRiconferme\Page;
 use BotRiconferme\PageRiconferma;
@@ -11,7 +11,7 @@ use BotRiconferme\WikiController;
 /**
  * Do some updates around to notify people of the newly created pages
  */
-class UpdatesAround extends Task {
+class UpdatesAround extends Subtask {
 	/**
 	 * @inheritDoc
 	 */

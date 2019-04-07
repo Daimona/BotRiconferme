@@ -2,77 +2,41 @@
 
 namespace BotRiconferme\Task;
 
+use BotRiconferme\Task\Subtask\Subtask;
 use BotRiconferme\TaskResult;
-use BotRiconferme\ContextSource;
-use BotRiconferme\TaskDataProvider;
 
 /**
- * Base class for the various tasks performed by the bot.
+ * Base class for a high-level task.
  */
-abstract class Task extends ContextSource {
-	// Status codes
-	const STATUS_OK = 0;
-	const STATUS_ERROR = 1;
-	/** @var string[] */
-	protected $errors = [];
-	/** @var TaskDataProvider */
-	private $dataProvider;
-
+abstract class Task extends TaskBase {
 	/**
-	 * Final to keep calls linear in the TaskManager
+	 * Get a map of [ 'task name' => 'its class name' ]
 	 *
-	 * @param TaskDataProvider $dataProvider
+	 * @return string[]
 	 */
-	final public function __construct( TaskDataProvider $dataProvider ) {
-		set_exception_handler( [ $this, 'handleException' ] );
-		set_error_handler( [ $this, 'handleError' ] );
-		parent::__construct();
-		$this->dataProvider = $dataProvider;
-	}
-
-	public function __destruct() {
-		restore_error_handler();
-		restore_exception_handler();
-	}
+	abstract protected function getSubtasksMap() : array;
 
 	/**
-	 * Main routine
-	 *
+	 * @param string $subtask Defined in self::SUBTASKS_MAP
 	 * @return TaskResult
 	 */
-	abstract public function run() : TaskResult;
+	protected function runSubtask( string $subtask ) : TaskResult {
+		$map = $this->getSubtasksMap();
+		if ( !isset( $map[ $subtask ] ) ) {
+			throw new \InvalidArgumentException( "'$subtask' is not a valid task." );
+		}
 
-	/**
-	 * Exception handler.
-	 *
-	 * @param \Throwable $ex
-	 * @protected
-	 */
-	public function handleException( \Throwable $ex ) {
-		$this->getLogger()->error(
-			get_class( $ex ) . ': ' .
-			$ex->getMessage() . "\nTrace:\n" .
-			$ex->getTraceAsString()
-		);
+		$class = $map[ $subtask ];
+		return $this->getSubtaskInstance( $class )->run();
 	}
 
 	/**
-	 * Error handler. As default, always throw
+	 * Helper to make type inferencing easier
 	 *
-	 * @param int $errno
-	 * @param string $errstr
-	 * @param string $errfile
-	 * @param int $errline
-	 * @protected
+	 * @param string $class
+	 * @return Subtask
 	 */
-	public function handleError( $errno, $errstr, $errfile, $errline ) {
-		throw new \ErrorException( $errstr, 0, $errno, $errfile, $errline );
-	}
-
-	/**
-	 * @return TaskDataProvider
-	 */
-	protected function getDataProvider() : TaskDataProvider {
-		return $this->dataProvider;
+	private function getSubtaskInstance( string $class ) : Subtask {
+		return new $class( $this->getDataProvider() );
 	}
 }

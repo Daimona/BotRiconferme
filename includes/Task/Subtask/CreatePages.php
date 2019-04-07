@@ -1,6 +1,6 @@
 <?php declare( strict_types=1 );
 
-namespace BotRiconferme\Task;
+namespace BotRiconferme\Task\Subtask;
 
 use BotRiconferme\PageRiconferma;
 use BotRiconferme\TaskResult;
@@ -10,7 +10,7 @@ use BotRiconferme\Exception\TaskException;
 /**
  * For each user, create the WP:A/Riconferma_annuale/USERNAME/XXX page and add it to its base page
  */
-class CreatePages extends Task {
+class CreatePages extends Subtask {
 	/**
 	 * @inheritDoc
 	 */

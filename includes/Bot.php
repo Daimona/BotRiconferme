@@ -31,19 +31,36 @@ class Bot {
 	}
 
 	/**
-	 * Run a single task, e.g. for debugging purposes
+	 * Run a single task
 	 *
 	 * @param string $task
 	 */
-	public function runSingle( string $task ) {
+	public function runTask( string $task ) {
 		$this->logger->info( "Starting single task $task." );
 		$manager = new TaskManager;
-		$res = $manager->run( TaskManager::MODE_SINGLE, $task );
+		$res = $manager->run( TaskManager::MODE_TASK, $task );
 		$line = '---------------------------------------------------';
 		if ( $res->isOK() ) {
-			$this->logger->info( "Execution of $task completed successfully.\n$line\n\n" );
+			$this->logger->info( "Execution of task $task completed successfully.\n$line\n\n" );
 		} else {
-			$this->logger->error( "Execution of $task failed.\n$res\n$line\n\n" );
+			$this->logger->error( "Execution of task $task failed.\n$res\n$line\n\n" );
+		}
+	}
+
+	/**
+	 * Run a single subtask, e.g. for debugging purposes
+	 *
+	 * @param string $subtask
+	 */
+	public function runSubtask( string $subtask ) {
+		$this->logger->info( "Starting single subtask $subtask." );
+		$manager = new TaskManager;
+		$res = $manager->run( TaskManager::MODE_SUBTASK, $subtask );
+		$line = '---------------------------------------------------';
+		if ( $res->isOK() ) {
+			$this->logger->info( "Execution of subtask $subtask completed successfully.\n$line\n\n" );
+		} else {
+			$this->logger->error( "Execution of subtask $subtask failed.\n$res\n$line\n\n" );
 		}
 	}
 }

@@ -2,11 +2,16 @@
 
 namespace BotRiconferme;
 
+use BotRiconferme\Task\CloseOld;
+use BotRiconferme\Task\StartNew;
+use BotRiconferme\Task\StartVote;
+use BotRiconferme\Task\Subtask\ClosePages;
+use BotRiconferme\Task\Subtask\CreatePages;
+use BotRiconferme\Task\Subtask\Subtask;
+use BotRiconferme\Task\Subtask\UpdatesAround;
+use BotRiconferme\Task\Subtask\UserNotice;
 use BotRiconferme\Task\Task;
-use BotRiconferme\Task\CreatePages;
 use BotRiconferme\Task\UpdateList;
-use BotRiconferme\Task\UpdatesAround;
-use BotRiconferme\Task\UserNotice;
 
 /**
  * Wrapper for single tasks
@@ -14,46 +19,49 @@ use BotRiconferme\Task\UserNotice;
 class TaskManager {
 	// Run modes
 	const MODE_COMPLETE = 0;
-	const MODE_SINGLE = 1;
+	const MODE_TASK = 1;
+	const MODE_SUBTASK = 2;
 
 	// File where the date of the last full run is stored
 	const LOG_FILE = './lastrun.log';
 	/** @var string[] */
 	const TASKS_MAP = [
-		'create-pages' => CreatePages::class,
+		'start-new' => StartNew::class,
+		'close-old' => CloseOld::class,
 		'update-list' => UpdateList::class,
+		'start-vote' => StartVote::class
+	];
+	const SUBTASKS_MAP = [
+		'close-pages' => ClosePages::class,
+		'create-pages' => CreatePages::class,
 		'updates-around' => UpdatesAround::class,
-		'user-notice' => UserNotice::class,
+		'user-notice' => UserNotice::class
 	];
 	/** @var TaskDataProvider */
 	private $provider;
 
 	/**
-	 * Should only be used for debugging purpose.
-	 */
-	public static function resetLastRunDate() {
-		file_put_contents( self::LOG_FILE, '' );
-	}
-
-	/**
 	 * Main entry point
 	 *
 	 * @param int $mode One of the MODE_ constants
-	 * @param string|null $taskName Only used in MODE_SINGLE
+	 * @param string|null $name Only used in MODE_TASK and MODE_SUBTASK
 	 * @return TaskResult
 	 */
-	public function run( int $mode, string $taskName = null ) : TaskResult {
+	public function run( int $mode, string $name = null ) : TaskResult {
 		$this->provider = new TaskDataProvider;
+
 		if ( $mode === self::MODE_COMPLETE ) {
 			return $this->runAllTasks();
-		} elseif ( $taskName === null ) {
-			throw new \BadMethodCallException( 'A task name must be specified in MODE_SINGLE' );
+		} elseif ( $name === null ) {
+			throw new \BadMethodCallException( 'A task name must be specified in MODE_TASK and MODE_SUBTASK' );
 		} else {
-			return $this->runTask( $taskName );
+			return $mode === self::MODE_TASK ? $this->runTask( $name ) : $this->runSubtask( $name );
 		}
 	}
 
 	/**
+	 * Run everything
+	 *
 	 * @return TaskResult
 	 */
 	protected function runAllTasks() : TaskResult {
@@ -62,17 +70,16 @@ class TaskManager {
 			return new TaskResult( TaskResult::STATUS_ERROR, [ 'A full run was already executed today.' ] );
 		}
 
-		// Order matters here
-		$list = [
+		$orderedList = [
 			'update-list',
-			'create-pages',
-			'updates-around',
-			'user-notice'
+			'start-new',
+			'start-vote',
+			'close-old'
 		];
 
 		$res = new TaskResult( TaskResult::STATUS_OK );
 		do {
-			$res->merge( $this->runTask( current( $list ) ) );
+			$res->merge( $this->runSubtask( current( $orderedList ) ) );
 		} while ( $res->isOK() && next( $list ) );
 
 		if ( $res->isOK() ) {
@@ -83,8 +90,39 @@ class TaskManager {
 	}
 
 	/**
+	 * Run a single task
+	 *
+	 * @param string $name
+	 * @return TaskResult
+	 */
+	protected function runTask( string $name ) : TaskResult {
+		if ( !isset( self::TASKS_MAP[ $name ] ) ) {
+			throw new \InvalidArgumentException( "'$name' is not a valid task." );
+		}
+
+		$class = self::TASKS_MAP[ $name ];
+		return $this->getTaskInstance( $class )->run();
+	}
+
+	/**
+	 * Run a single subtask
+	 *
+	 * @param string $name
+	 * @return TaskResult
+	 */
+	protected function runSubtask( string $name ) : TaskResult {
+		if ( !isset( self::SUBTASKS_MAP[ $name ] ) ) {
+			throw new \InvalidArgumentException( "'$name' is not a valid subtask." );
+		}
+
+		$class = self::SUBTASKS_MAP[ $name ];
+		return $this->getSubtaskInstance( $class )->run();
+	}
+
+	/**
 	 * Get the last execution date to ensure no more than one full run is executed every day
 	 * @return string|null d/m/Y or null if no last run registered
+	 * @fixme Is this even necessary?
 	 */
 	public static function getLastFullRunDate() : ?string {
 		if ( file_exists( self::LOG_FILE ) ) {
@@ -95,25 +133,22 @@ class TaskManager {
 	}
 
 	/**
-	 * @param string $task Defined in self::TASKS_MAP
-	 * @return TaskResult
-	 */
-	protected function runTask( string $task ) : TaskResult {
-		if ( !isset( self::TASKS_MAP[ $task ] ) ) {
-			throw new \InvalidArgumentException( "'$task' is not a valid task." );
-		}
-
-		$class = self::TASKS_MAP[ $task ];
-		return $this->getTaskInstance( $class )->run();
-	}
-
-	/**
 	 * Helper to make type inferencing easier
 	 *
 	 * @param string $class
 	 * @return Task
 	 */
 	private function getTaskInstance( string $class ) : Task {
+		return new $class( $this->provider );
+	}
+
+	/**
+	 * Helper to make type inferencing easier
+	 *
+	 * @param string $class
+	 * @return Subtask
+	 */
+	private function getSubtaskInstance( string $class ) : Subtask {
 		return new $class( $this->provider );
 	}
 

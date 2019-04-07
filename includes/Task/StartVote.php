@@ -15,6 +15,14 @@ class StartVote extends Task {
 	/**
 	 * @inheritDoc
 	 */
+	protected function getSubtasksMap(): array {
+		// Everything is done here.
+		return [];
+	}
+
+	/**
+	 * @inheritDoc
+	 */
 	public function run() : TaskResult {
 		$this->getLogger()->info( 'Starting task StartVote' );
 
