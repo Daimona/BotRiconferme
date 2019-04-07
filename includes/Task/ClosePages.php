@@ -470,9 +470,10 @@ class ClosePages extends Task {
 		);
 		$admins = $this->getDataProvider()->getUsersList();
 
-		$oldUrl = RequestBase::$url;
-		RequestBase::$url = 'https://meta.wikimedia.org/w/api.php';
-		$flagRemPage = new Page( $this->getConfig()->get( 'flag-removal-page' ) );
+		$flagRemPage = new Page(
+			$this->getConfig()->get( 'flag-removal-page' ),
+			'https://meta.wikimedia.org/w/api.php'
+		);
 		$section = $this->getConfig()->get( 'flag-removal-section' );
 		$baseText = $this->getConfig()->get( 'flag-removal-text' );
 
@@ -499,8 +500,6 @@ class ClosePages extends Task {
 			'summary' => $summary
 		];
 		$flagRemPage->edit( $params );
-
-		RequestBase::$url = $oldUrl;
 	}
 
 	/**

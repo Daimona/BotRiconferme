@@ -16,11 +16,17 @@ class WikiController {
 	private static $loggedIn = false;
 	/** @var Logger */
 	private $logger;
+	/** @var string */
+	private $domain;
 	/** @var string[] */
 	private $tokens;
 
-	public function __construct() {
+	/**
+	 * @param string $domain The URL of the wiki, if different from default
+	 */
+	public function __construct( string $domain = DEFAULT_URL ) {
 		$this->logger = new Logger;
+		$this->domain = $domain;
 	}
 
 	/**
@@ -45,7 +51,7 @@ class WikiController {
 			$params['rvsection'] = $section;
 		}
 
-		$req = RequestBase::newFromParams( $params );
+		$req = RequestBase::newFromParams( $params )->setUrl( $this->domain );
 		$data = $req->execute();
 		$page = reset( $data->query->pages );
 		if ( isset( $page->missing ) ) {
@@ -70,7 +76,10 @@ class WikiController {
 			'bot' => Config::getInstance()->get( 'bot-edits' )
 		] + $params;
 
-		$res = RequestBase::newFromParams( $params )->post()->execute();
+		$res = RequestBase::newFromParams( $params )
+			->setUrl( $this->domain )
+			->setPost()
+			->execute();
 		if ( $res->edit->result !== 'Success' ) {
 			throw new EditException( $res->edit->info );
 		}
@@ -137,7 +146,7 @@ class WikiController {
 		];
 
 		try {
-			$res = RequestBase::newFromParams( $params )->post()->execute();
+			$res = RequestBase::newFromParams( $params )->setUrl( $this->domain )->setPost()->execute();
 		} catch ( APIRequestException $e ) {
 			throw new LoginException( $e->getMessage() );
 		}
@@ -166,7 +175,7 @@ class WikiController {
 				'type'   => $type
 			];
 
-			$req = RequestBase::newFromParams( $params );
+			$req = RequestBase::newFromParams( $params )->setUrl( $this->domain );
 			$res = $req->execute();
 
 			$this->tokens[ $type ] = $res->query->tokens->{ "{$type}token" };
@@ -192,7 +201,7 @@ class WikiController {
 			'rvdir' => 'newer'
 		];
 
-		$res = ( RequestBase::newFromParams( $params ) )->execute();
+		$res = RequestBase::newFromParams( $params )->setUrl( $this->domain )->execute();
 		$data = $res->query->pages;
 		return strtotime( reset( $data )->revisions[0]->timestamp );
 	}
@@ -216,6 +225,6 @@ class WikiController {
 			'token' => $this->getToken( 'csrf' )
 		];
 
-		RequestBase::newFromParams( $params )->post()->execute();
+		RequestBase::newFromParams( $params )->setUrl( $this->domain )->setPost()->execute();
 	}
 }

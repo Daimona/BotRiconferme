@@ -15,10 +15,11 @@ class Page {
 
 	/**
 	 * @param string $title
+	 * @param string $domain The site where the page lives, if different from default
 	 */
-	public function __construct( string $title ) {
+	public function __construct( string $title, string $domain = DEFAULT_URL ) {
 		$this->title = $title;
-		$this->controller = new WikiController();
+		$this->controller = new WikiController( $domain );
 	}
 
 	/**

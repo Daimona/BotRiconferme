@@ -37,10 +37,12 @@ if ( count( $vals ) !== count( $params ) ) {
 }
 
 /* URL (for debugging purpose) */
-$url = getopt( '', [ 'force-url:' ] );
-if ( isset( $url['force-url'] ) ) {
-	RequestBase::$url = $url['force-url'];
-}
+$urlParam = getopt( '', [ 'force-url:' ] );
+$url = isset( $urlParam['force-url'] ) ?
+	$urlParam['force-url'] :
+	'https://it.wikipedia.org/w/api.php';
+
+define( 'DEFAULT_URL', $url );
 
 /* PASSWORD */
 

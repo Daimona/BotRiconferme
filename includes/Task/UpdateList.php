@@ -122,10 +122,9 @@ class UpdateList extends Task {
 	protected function getFlagDate( string $admin, string $group ) : string {
 		$this->getLogger()->info( "Retrieving $group flag date for $admin" );
 
+		$url = DEFAULT_URL;
 		if ( $group === 'checkuser' ) {
-			// Little hack
-			$oldUrl = RequestBase::$url;
-			RequestBase::$url = 'https://meta.wikimedia.org/w/api.php';
+			$url = 'https://meta.wikimedia.org/w/api.php';
 			$admin .= '@itwiki';
 		}
 
@@ -138,12 +137,8 @@ class UpdateList extends Task {
 			'lelimit' => 'max'
 		];
 
-		$data = RequestBase::newFromParams( $params )->execute();
+		$data = RequestBase::newFromParams( $params )->setUrl( $url )->execute();
 		$ts = $this->extractTimestamp( $data, $group );
-
-		if ( isset( $oldUrl ) ) {
-			RequestBase::$url = $oldUrl;
-		}
 
 		if ( $ts === null ) {
 			throw new TaskException( "$group flag date unavailable for $admin" );

@@ -21,7 +21,7 @@ abstract class RequestBase {
 	const MAXLAG = 5;
 
 	/** @var string */
-	public static $url = 'https://it.wikipedia.org/w/api.php';
+	protected $url;
 	/** @var array */
 	protected static $cookiesToSet;
 	/** @var array */
@@ -38,6 +38,7 @@ abstract class RequestBase {
 	 */
 	protected function __construct( array $params ) {
 		$this->params = [ 'format' => 'json' ] + $params;
+		$this->url = DEFAULT_URL;
 	}
 
 	/**
@@ -60,8 +61,19 @@ abstract class RequestBase {
 	 *
 	 * @return self For chaining
 	 */
-	public function post() : self {
+	public function setPost() : self {
 		$this->method = 'POST';
+		return $this;
+	}
+
+	/**
+	 * Set a different URL for this request
+	 *
+	 * @param string $url
+	 * @return self for chaining
+	 */
+	public function setUrl( string $url ) : self {
+		$this->url = $url;
 		return $this;
 	}
 

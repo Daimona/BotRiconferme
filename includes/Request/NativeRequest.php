@@ -16,7 +16,7 @@ class NativeRequest extends RequestBase {
 				'header' => $this->buildHeadersString( $this->getHeaders() )
 			]
 		];
-		$url = self::$url;
+		$url = $this->url;
 		if ( $this->method === 'POST' ) {
 			$context['http']['content'] = $params;
 		} else {
