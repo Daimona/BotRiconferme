@@ -129,6 +129,7 @@ class PageRiconferma extends Page {
 	 *
 	 * @return string
 	 * @throws \BadMethodCallException
+	 * @throws \LogicException
 	 */
 	public function getOutcomeText() : string {
 		if ( !$this->isVote() ) {
@@ -153,6 +154,8 @@ class PageRiconferma extends Page {
 			case self::OUTCOME_FAIL:
 				$text .= " $user non viene riconfermato amministratore";
 				break;
+			default:
+				throw new \LogicException( 'Invalid outcome: ' . $this->getOutcome() );
 		}
 		return $text;
 	}

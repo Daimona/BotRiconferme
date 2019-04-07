@@ -132,11 +132,9 @@ class UpdatesAround extends Subtask {
 			->params( [ '$num' => $amount ] )
 			->text();
 
-		$params = [
+		$newsPage->edit( [
 			'text' => $newContent,
 			'summary' => $summary
-		];
-
-		$newsPage->edit( $params );
+		] );
 	}
 }

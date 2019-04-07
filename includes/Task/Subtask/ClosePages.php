@@ -39,11 +39,10 @@ class ClosePages extends Subtask {
 		$beforeReg = '!è necessario ottenere una maggioranza .+ votanti\.!';
 		$newContent = preg_replace( $beforeReg, '$0' . "\n" . $page->getOutcomeText(), $content );
 
-		$params = [
+		$page->edit( [
 			'text' => $newContent,
 			'summary' => $this->getConfig()->get( 'close-result-summary' )
-		];
-		$page->edit( $params );
+		] );
 	}
 
 	/**
@@ -62,11 +61,10 @@ class ClosePages extends Subtask {
 		$text = $page->isVote() ? "votazione: $outcomeText" : 'riconferma tacita';
 
 		$newContent = str_replace( 'riconferma in corso', $text, $current );
-		$params = [
+
+		$basePage->edit( [
 			'text' => $newContent,
 			'summary' => $this->getConfig()->get( 'close-base-page-summary-update' )
-		];
-
-		$basePage->edit( $params );
+		] );
 	}
 }

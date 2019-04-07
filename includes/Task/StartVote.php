@@ -5,7 +5,6 @@ namespace BotRiconferme\Task;
 use BotRiconferme\Exception\TaskException;
 use BotRiconferme\Page;
 use BotRiconferme\PageRiconferma;
-use BotRiconferme\Task\Subtask\SimpleUpdates;
 use BotRiconferme\TaskResult;
 use BotRiconferme\WikiController;
 

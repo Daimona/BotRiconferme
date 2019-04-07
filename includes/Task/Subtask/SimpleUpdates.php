@@ -26,7 +26,6 @@ class SimpleUpdates extends Subtask {
 		return new TaskResult( self::STATUS_OK );
 	}
 
-
 	/**
 	 * @param PageRiconferma[] $pages
 	 * @see UpdatesAround::addVote()
@@ -59,12 +58,10 @@ class SimpleUpdates extends Subtask {
 		$summary = $this->msg( 'close-vote-page-summary' )
 			->params( [ '$num' => count( $pages ) ] )->text();
 
-		$params = [
+		$votePage->edit( [
 			'text' => $newContent,
 			'summary' => $summary
-		];
-
-		$votePage->edit( $params );
+		] );
 	}
 
 	/**
@@ -103,12 +100,10 @@ class SimpleUpdates extends Subtask {
 		$summary = $this->msg( 'close-news-page-summary' )
 			->params( [ '$num' => count( $pages ) ] )->text();
 
-		$params = [
+		$newsPage->edit( [
 			'text' => $newContent,
 			'summary' => $summary
-		];
-
-		$newsPage->edit( $params );
+		] );
 	}
 
 	/**
@@ -163,12 +158,10 @@ class SimpleUpdates extends Subtask {
 			] )
 			->text();
 
-		$params = [
+		$adminsPage->edit( [
 			'text' => $newContent,
 			'summary' => $summary
-		];
-
-		$adminsPage->edit( $params );
+		] );
 	}
 
 	/**
@@ -229,10 +222,9 @@ class SimpleUpdates extends Subtask {
 			] )
 			->text();
 
-		$params = [
+		$cuList->edit( [
 			'text' => $newContent,
 			'summary' => $summary
-		];
-		$cuList->edit( $params );
+		] );
 	}
 }

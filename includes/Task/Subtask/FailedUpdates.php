@@ -83,11 +83,10 @@ class FailedUpdates extends Subtask {
 			->params( [ '$remove' => $removeList ] )
 			->text();
 
-		$params = [
+		$burList->edit( [
 			'text' => $newContent,
 			'summary' => $summary
-		];
-		$burList->edit( $params );
+		] );
 	}
 
 	/**
@@ -125,12 +124,11 @@ class FailedUpdates extends Subtask {
 			->params( [ '$num' => count( $pages ) ] )
 			->text();
 
-		$params = [
+		$flagRemPage->edit( [
 			'section' => $section,
 			'text' => $newContent,
 			'summary' => $summary
-		];
-		$flagRemPage->edit( $params );
+		] );
 	}
 
 	/**
@@ -175,11 +173,10 @@ class FailedUpdates extends Subtask {
 			->params( [ '$names' => $namesList ] )
 			->text();
 
-		$params = [
+		$annunciPage->edit( [
 			'text' => $newContent,
 			'summary' => $summary
-		];
-		$annunciPage->edit( $params );
+		] );
 	}
 
 	/**
@@ -222,10 +219,9 @@ class FailedUpdates extends Subtask {
 			->params( [ '$names' => $namesList ] )
 			->text();
 
-		$params = [
+		$notiziePage->edit( [
 			'text' => $newContent,
 			'summary' => $summary
-		];
-		$notiziePage->edit( $params );
+		] );
 	}
 }

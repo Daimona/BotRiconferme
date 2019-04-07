@@ -36,17 +36,15 @@ class ArchivePages extends Subtask {
 		);
 
 		$mainPage = new Page( $this->getConfig()->get( 'ric-main-page' ) );
-		$translations = [];
+		$remove = [];
 		foreach ( $pages as $page ) {
-			$translations[ '{{' . $page->getTitle() . '}}' ] = '';
+			$remove[] = '{{' . $page->getTitle() . '}}';
 		}
 
-		$params = [
-			'title' => $mainPage,
-			'text' => strtr( $mainPage->getContent(), $translations ),
+		$mainPage->edit( [
+			'text' => str_replace( $remove, '', $mainPage->getContent() ),
 			'summary' => $this->getConfig()->get( 'close-main-summary' )
-		];
-		$this->getController()->editPage( $params );
+		] );
 	}
 
 	/**
@@ -82,7 +80,7 @@ class ArchivePages extends Subtask {
 	 * @param array $pages
 	 */
 	private function reallyAddToArchive( string $archiveTitle, array $pages ) {
-		$curTitle = "$archiveTitle/" . date( 'Y' );
+		$archivePage = new Page( "$archiveTitle/" . date( 'Y' ) );
 
 		$append = '';
 		$archivedList = [];
@@ -101,12 +99,9 @@ class ArchivePages extends Subtask {
 		$summary = $this->msg( 'close-archive-summary' )
 			->params( [ '$usernums' => $userNums ] )->text();
 
-		$params = [
-			'title' => $curTitle,
+		$archivePage->edit( [
 			'appendtext' => $append,
 			'summary' => $summary
-		];
-
-		$this->getController()->editPage( $params );
+		] );
 	}
 }
