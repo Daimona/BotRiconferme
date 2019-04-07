@@ -17,7 +17,7 @@ class ClosePages extends Subtask {
 	public function run() : TaskResult {
 		$this->getLogger()->info( 'Starting task ClosePages' );
 
-		$pages = $this->getPagesList();
+		$pages = $this->getDataProvider()->getPagesToClose();
 		$protectReason = $this->getConfig()->get( 'close-protect-summary' );
 		foreach ( $pages as $page ) {
 			if ( $page->isVote() ) {
@@ -44,22 +44,6 @@ class ClosePages extends Subtask {
 
 		$this->getLogger()->info( 'Task ClosePages completed successfully' );
 		return new TaskResult( self::STATUS_OK );
-	}
-
-	/**
-	 * Get a list of pages to close
-	 *
-	 * @return PageRiconferma[]
-	 */
-	protected function getPagesList() : array {
-		$allPages = $this->getDataProvider()->getOpenPages();
-		$ret = [];
-		foreach ( $allPages as $page ) {
-			if ( time() > $page->getEndTimestamp() ) {
-				$ret[] = $page;
-			}
-		}
-		return $ret;
 	}
 
 	/**

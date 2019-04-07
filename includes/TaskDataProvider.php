@@ -80,24 +80,47 @@ class TaskDataProvider extends ContextSource {
 	 * @return PageRiconferma[]
 	 */
 	public function getOpenPages() : array {
-		$baseTitle = $this->getConfig()->get( 'ric-main-page' );
-		$params = [
-			'action' => 'query',
-			'prop' => 'templates',
-			'titles' => $baseTitle,
-			'tl_namespace' => 4,
-			'tllimit' => 'max'
-		];
+		static $list = null;
+		if ( $list === null ) {
+			$baseTitle = $this->getConfig()->get( 'ric-main-page' );
+			$params = [
+				'action' => 'query',
+				'prop' => 'templates',
+				'titles' => $baseTitle,
+				'tl_namespace' => 4,
+				'tllimit' => 'max'
+			];
 
-		$res = RequestBase::newFromParams( $params )->execute();
-		$pages = $res->query->pages;
-		$ret = [];
-		foreach ( reset( $pages )->templates as $page ) {
-			if ( preg_match( "!$baseTitle\/[^\/]+\/\d!", $page->title ) !== false ) {
-				$ret[] = new PageRiconferma( $page->title );
+			$res = RequestBase::newFromParams( $params )->execute();
+			$pages = $res->query->pages;
+			$list = [];
+			foreach ( reset( $pages )->templates as $page ) {
+				if ( preg_match( "!$baseTitle\/[^\/]+\/\d!", $page->title ) !== false ) {
+					$list[] = new PageRiconferma( $page->title );
+				}
 			}
 		}
-		return $ret;
+
+		return $list;
+	}
+
+	/**
+	 * Get a list of all procedures to be closed
+	 *
+	 * @return PageRiconferma[]
+	 */
+	public function getPagesToClose() : array {
+		static $list = null;
+		if ( $list === null ) {
+			$allPages = $this->getOpenPages();
+			$list = [];
+			foreach ( $allPages as $page ) {
+				if ( time() > $page->getEndTimestamp() ) {
+					$list[] = $page;
+				}
+			}
+		}
+		return $list;
 	}
 
 	/**

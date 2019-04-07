@@ -8,5 +8,4 @@ use BotRiconferme\Task\TaskBase;
  * Base class for subtasks
  */
 abstract class Subtask extends TaskBase {
-	//@fixme Write-me
 }
