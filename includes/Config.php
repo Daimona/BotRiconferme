@@ -64,6 +64,9 @@ class Config {
 				throw new ConfigException( 'Please create a messages page.' );
 			}
 		}
+		if ( !isset( $messages[ $key ] ) ) {
+			throw new ConfigException( "Message '$key' does not exist." );
+		}
 		// @phan-suppress-next-line PhanTypeArraySuspiciousNullable
 		return $messages[$key];
 	}

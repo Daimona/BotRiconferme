@@ -39,7 +39,7 @@ class WikiController {
 	 * @throws MissingPageException
 	 */
 	public function getPageContent( string $title, int $section = null ) : string {
-		$this->logger->debug( "Retrieving page $title" );
+		$this->logger->debug( "Retrieving content of page $title" );
 		$params = [
 			'action' => 'query',
 			'titles' => $title,
@@ -61,7 +61,7 @@ class WikiController {
 
 		$mainSlot = $page->revisions[0]->slots->main;
 
-		if ( isset( $mainSlot->nosuchsection ) ) {
+		if ( $section !== null && isset( $mainSlot->nosuchsection ) ) {
 			throw new MissingSectionException( $title, $section );
 		}
 		return $mainSlot->{ '*' };

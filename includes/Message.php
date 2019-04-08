@@ -109,4 +109,8 @@ class Message {
 
 		return $ret;
 	}
+
+	public function __toString() {
+		return $this->text();
+	}
 }

@@ -16,7 +16,7 @@ class ClosePages extends Subtask {
 	 */
 	public function runInternal() : int {
 		$pages = $this->getDataProvider()->getPagesToClose();
-		$protectReason = $this->getConfig()->get( 'close-protect-summary' );
+		$protectReason = $this->msg( 'close-protect-summary' )->text();
 		foreach ( $pages as $page ) {
 			if ( $page->isVote() ) {
 				$this->addVoteCloseText( $page );
@@ -38,7 +38,7 @@ class ClosePages extends Subtask {
 
 		$page->edit( [
 			'text' => $newContent,
-			'summary' => $this->getConfig()->get( 'close-result-summary' )
+			'summary' => $this->msg( 'close-result-summary' )->text()
 		] );
 	}
 
@@ -61,7 +61,7 @@ class ClosePages extends Subtask {
 
 		$basePage->edit( [
 			'text' => $newContent,
-			'summary' => $this->getConfig()->get( 'close-base-page-summary-update' )
+			'summary' => $this->msg( 'close-base-page-summary-update' )->text()
 		] );
 	}
 }

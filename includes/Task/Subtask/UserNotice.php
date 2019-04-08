@@ -46,7 +46,7 @@ class UserNotice extends Subtask {
 			'section' => 'new',
 			'text' => $msg,
 			'sectiontitle' => $this->getConfig()->get( 'user-notice-title' ),
-			'summary' => $this->getConfig()->get( 'user-notice-summary' )
+			'summary' => $this->msg( 'user-notice-summary' )->text()
 		];
 
 		$this->getController()->editPage( $params );

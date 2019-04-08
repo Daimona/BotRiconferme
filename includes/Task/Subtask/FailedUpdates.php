@@ -96,7 +96,7 @@ class FailedUpdates extends Subtask {
 			'https://meta.wikimedia.org/w/api.php'
 		);
 		$section = $this->getConfig()->get( 'flag-removal-section' );
-		$baseText = $this->getConfig()->get( 'flag-removal-text' );
+		$baseText = $this->msg( 'flag-removal-text' )->text();
 
 		$newContent = $flagRemPage->getContent( $section );
 		foreach ( $pages as $page ) {

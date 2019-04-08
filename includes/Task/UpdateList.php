@@ -47,7 +47,7 @@ class UpdateList extends Task {
 
 		PageBotList::get()->edit( [
 			'text' => json_encode( $newContent ),
-			'summary' => $this->getConfig()->get( 'list-update-summary' )
+			'summary' => $this->msg( 'list-update-summary' )->text()
 		] );
 
 		return $this->errors ? TaskResult::STATUS_ERROR : TaskResult::STATUS_GOOD;

@@ -41,7 +41,7 @@ class ArchivePages extends Subtask {
 
 		$mainPage->edit( [
 			'text' => str_replace( $remove, '', $mainPage->getContent() ),
-			'summary' => $this->getConfig()->get( 'close-main-summary' )
+			'summary' => $this->msg( 'close-main-summary' )->text()
 		] );
 	}
 

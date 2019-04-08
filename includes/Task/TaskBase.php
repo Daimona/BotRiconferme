@@ -38,21 +38,22 @@ abstract class TaskBase extends ContextSource {
 	 * @return TaskResult
 	 */
 	final public function run() : TaskResult {
-		$task = static::class;
-		$this->getLogger()->info( "Starting task $task" );
+		$class = ( new \ReflectionClass( $this ) )->getShortName();
+		$opName = $this->getOperationName();
+		$this->getLogger()->info( "Starting $opName $class" );
 
 		$status = $this->runInternal();
 
 		switch ( $status ) {
 			case TaskResult::STATUS_GOOD:
-				$msg = "Task $task completed successfully.";
+				$msg = ucfirst( $opName ) . " $class completed successfully.";
 				break;
 			case TaskResult::STATUS_NOTHING:
-				$msg = "Task $task: nothing to do.";
+				$msg = ucfirst( $opName ) . " $class: nothing to do.";
 				break;
 			case TaskResult::STATUS_ERROR:
 				// We're fine with it, but don't run other tasks
-				$msg = "Task $task completed with warnings.";
+				$msg = ucfirst( $opName ) . " $class completed with warnings.";
 				break;
 			default:
 				throw new \LogicException( "Unexpected status: $status." );
@@ -68,6 +69,13 @@ abstract class TaskBase extends ContextSource {
 	 * @return int One of the STATUS_* constants
 	 */
 	abstract protected function runInternal() : int;
+
+	/**
+	 * How this operation should be called in logs
+	 *
+	 * @return string
+	 */
+	abstract protected function getOperationName() : string;
 
 	/**
 	 * Exception handler.

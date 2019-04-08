@@ -105,19 +105,17 @@ class CreatePages extends Subtask {
 	 */
 	protected function createPage( string $title, string $user, array $groups ) {
 		$this->getLogger()->info( "Creating page $title" );
-		$text = $this->getConfig()->get( 'ric-page-text' );
 		$textParams = [
 			'$user' => $user,
 			'$date' => $groups['sysop'],
 			'$burocrate' => $groups['bureaucrat'] ?? '',
 			'$checkuser' => $groups['checkuser'] ?? ''
 		];
-		$text = strtr( $text, $textParams );
 
 		$params = [
 			'title' => $title,
-			'text' => $text,
-			'summary' => $this->getConfig()->get( 'ric-page-summary' )
+			'text' => $this->msg( 'ric-page-text' )->params( $textParams )->text(),
+			'summary' => $this->msg( 'ric-page-summary' )->text()
 		];
 
 		$this->getController()->editPage( $params );
@@ -135,7 +133,7 @@ class CreatePages extends Subtask {
 		$params = [
 			'title' => $title,
 			'text' => $newText,
-			'summary' => $this->getConfig()->get( 'ric-base-page-summary' )
+			'summary' => $this->msg( 'ric-base-page-summary' )->text()
 		];
 
 		$this->getController()->editPage( $params );
@@ -152,7 +150,7 @@ class CreatePages extends Subtask {
 		$params = [
 			'title' => $title,
 			'appendtext' => $newText,
-			'summary' => $this->getConfig()->get( 'ric-base-page-summary-update' )
+			'summary' => $this->msg( 'ric-base-page-summary-update' )->text()
 		];
 
 		$this->getController()->editPage( $params );

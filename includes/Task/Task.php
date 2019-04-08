@@ -31,6 +31,13 @@ abstract class Task extends TaskBase {
 	}
 
 	/**
+	 * @inheritDoc
+	 */
+	final protected function getOperationName(): string {
+		return 'task';
+	}
+
+	/**
 	 * Helper to make type inferencing easier
 	 *
 	 * @param string $class

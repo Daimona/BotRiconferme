@@ -86,7 +86,7 @@ class TaskManager {
 
 		$res = new TaskResult( TaskResult::STATUS_GOOD );
 		do {
-			$res->merge( $this->runSubtask( current( $orderedList ) ) );
+			$res->merge( $this->runTask( current( $orderedList ) ) );
 		} while ( $res->isOK() && next( $orderedList ) );
 
 		if ( $res->isOK() ) {

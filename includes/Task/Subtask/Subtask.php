@@ -8,4 +8,10 @@ use BotRiconferme\Task\TaskBase;
  * Base class for subtasks
  */
 abstract class Subtask extends TaskBase {
+	/**
+	 * @inheritDoc
+	 */
+	final protected function getOperationName(): string {
+		return 'subtask';
+	}
 }

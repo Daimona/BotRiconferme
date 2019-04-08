@@ -30,15 +30,14 @@ class StartVote extends Task {
 			return TaskResult::STATUS_NOTHING;
 		}
 
-		$this->processPages( $pages );
-
-		return TaskResult::STATUS_GOOD;
+		return $this->processPages( $pages );
 	}
 
 	/**
 	 * @param PageRiconferma[] $pages
+	 * @return int a STATUS_* constant
 	 */
-	protected function processPages( array $pages ) {
+	protected function processPages( array $pages ) : int {
 		$actualPages = [];
 		foreach ( $pages as $page ) {
 			if ( $page->hasOpposition() && !$page->isVote() ) {
@@ -50,8 +49,9 @@ class StartVote extends Task {
 		if ( $actualPages ) {
 			$this->updateVotePage( $actualPages );
 			$this->updateNews( count( $actualPages ) );
+			return TaskResult::STATUS_GOOD;
 		} else {
-			$this->getLogger()->info( 'No votes to open' );
+			return TaskResult::STATUS_NOTHING;
 		}
 	}
 
@@ -86,7 +86,7 @@ class StartVote extends Task {
 
 		$params = [
 			'text' => $newContent,
-			'summary' => $this->getConfig()->get( 'vote-start-summary' )
+			'summary' => $this->msg( 'vote-start-summary' )->text()
 		];
 
 		$page->edit( $params );
