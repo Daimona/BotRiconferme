@@ -5,7 +5,6 @@ namespace BotRiconferme\Task\Subtask;
 use BotRiconferme\Message;
 use BotRiconferme\Page\Page;
 use BotRiconferme\Page\PageRiconferma;
-use BotRiconferme\TaskResult;
 
 /**
  * Update various pages around, to be done for all failed procedures
@@ -14,9 +13,7 @@ class FailedUpdates extends Subtask {
 	/**
 	 * @inheritDoc
 	 */
-	public function run() : TaskResult {
-		$this->getLogger()->info( 'Starting task FailedUpdates' );
-
+	public function runInternal() : int {
 		$failed = $this->getFailures();
 		if ( $failed ) {
 			$this->updateBurList( $failed );
@@ -25,8 +22,7 @@ class FailedUpdates extends Subtask {
 			$this->updateUltimeNotizie( $failed );
 		}
 
-		$this->getLogger()->info( 'Task FailedUpdates completed successfully' );
-		return new TaskResult( self::STATUS_OK );
+		return self::STATUS_OK;
 	}
 
 	/**

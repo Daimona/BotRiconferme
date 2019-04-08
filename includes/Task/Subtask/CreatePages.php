@@ -3,7 +3,6 @@
 namespace BotRiconferme\Task\Subtask;
 
 use BotRiconferme\Page\PageRiconferma;
-use BotRiconferme\TaskResult;
 use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Exception\TaskException;
 
@@ -14,8 +13,7 @@ class CreatePages extends Subtask {
 	/**
 	 * @inheritDoc
 	 */
-	public function run() : TaskResult {
-		$this->getLogger()->info( 'Starting task CreatePages' );
+	public function runInternal() : int {
 		$users = $this->getDataProvider()->getUsersToProcess();
 
 		if ( $users ) {
@@ -26,8 +24,7 @@ class CreatePages extends Subtask {
 			$this->getLogger()->info( 'No pages to create.' );
 		}
 
-		$this->getLogger()->info( 'Task CreatePages completed successfully' );
-		return new TaskResult( self::STATUS_OK );
+		return self::STATUS_OK ;
 	}
 
 	/**

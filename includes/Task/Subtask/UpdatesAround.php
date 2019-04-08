@@ -5,7 +5,6 @@ namespace BotRiconferme\Task\Subtask;
 use BotRiconferme\Message;
 use BotRiconferme\Page\Page;
 use BotRiconferme\Page\PageRiconferma;
-use BotRiconferme\TaskResult;
 use BotRiconferme\Exception\TaskException;
 
 /**
@@ -15,9 +14,7 @@ class UpdatesAround extends Subtask {
 	/**
 	 * @inheritDoc
 	 */
-	public function run() : TaskResult {
-		$this->getLogger()->info( 'Starting task UpdatesAround' );
-
+	public function runInternal() : int {
 		$pages = $this->getDataProvider()->getCreatedPages();
 		if ( $pages ) {
 			// Wikipedia:Amministratori/Riconferma annuale
@@ -30,8 +27,7 @@ class UpdatesAround extends Subtask {
 			$this->getLogger()->info( 'No updates to do.' );
 		}
 
-		$this->getLogger()->info( 'Task UpdatesAround completed successfully' );
-		return new TaskResult( self::STATUS_OK );
+		return self::STATUS_OK;
 	}
 
 	/**

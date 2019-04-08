@@ -36,11 +36,33 @@ abstract class TaskBase extends ContextSource {
 	}
 
 	/**
-	 * Main routine
+	 * Entry point
 	 *
 	 * @return TaskResult
 	 */
-	abstract public function run() : TaskResult;
+	final public function run() : TaskResult {
+		$task = static::class;
+		$this->getLogger()->info( "Starting task $task" );
+
+		$status = $this->runInternal();
+
+		if ( $status === self::STATUS_ERROR ) {
+			// We're fine with it, but don't run other tasks
+			$msg = "Task $task completed with warnings.";
+		} else {
+			$msg = "Task $task completed successfully.";
+		}
+
+		$this->getLogger()->info( $msg );
+		return new TaskResult( $status, $this->errors );
+	}
+
+	/**
+	 * Actual main routine.
+	 *
+	 * @return int One of the STATUS_* constants
+	 */
+	abstract protected function runInternal() : int;
 
 	/**
 	 * Exception handler.

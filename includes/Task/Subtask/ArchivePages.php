@@ -5,7 +5,6 @@ namespace BotRiconferme\Task\Subtask;
 use BotRiconferme\Message;
 use BotRiconferme\Page\Page;
 use BotRiconferme\Page\PageRiconferma;
-use BotRiconferme\TaskResult;
 
 /**
  * Remove pages from the main page and add them to the archive
@@ -14,15 +13,12 @@ class ArchivePages extends Subtask {
 	/**
 	 * @inheritDoc
 	 */
-	public function run() : TaskResult {
-		$this->getLogger()->info( 'Starting task ArchivePages' );
-
+	public function runInternal() : int {
 		$pages = $this->getDataProvider()->getPagesToClose();
 		$this->removeFromMainPage( $pages );
 		$this->addToArchive( $pages );
 
-		$this->getLogger()->info( 'Task ArchivePages completed successfully' );
-		return new TaskResult( self::STATUS_OK );
+		return self::STATUS_OK;
 	}
 
 	/**

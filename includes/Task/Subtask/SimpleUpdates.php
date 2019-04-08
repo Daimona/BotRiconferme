@@ -5,7 +5,6 @@ namespace BotRiconferme\Task\Subtask;
 use BotRiconferme\Message;
 use BotRiconferme\Page\Page;
 use BotRiconferme\Page\PageRiconferma;
-use BotRiconferme\TaskResult;
 
 /**
  * Update various pages around, to be done for all closed procedures
@@ -14,17 +13,14 @@ class SimpleUpdates extends Subtask {
 	/**
 	 * @inheritDoc
 	 */
-	public function run() : TaskResult {
-		$this->getLogger()->info( 'Starting task SimpleUpdates' );
-
+	public function runInternal() : int {
 		$pages = $this->getDataProvider()->getPagesToClose();
 		$this->updateVote( $pages );
 		$this->updateNews( $pages );
 		$this->updateAdminList( $pages );
 		$this->updateCUList( $pages );
 
-		$this->getLogger()->info( 'Task SimpleUpdates completed successfully' );
-		return new TaskResult( self::STATUS_OK );
+		return self::STATUS_OK;
 	}
 
 	/**

@@ -15,7 +15,7 @@ class CloseOld extends Task {
 	/**
 	 * @inheritDoc
 	 */
-	public function run() : TaskResult {
+	public function runInternal() : int {
 		$orderedList = [
 			'close-pages',
 			'archive-pages',
@@ -28,7 +28,7 @@ class CloseOld extends Task {
 			$res->merge( $this->runSubtask( current( $orderedList ) ) );
 		} while ( $res->isOK() && next( $orderedList ) );
 
-		return $res;
+		return $res->getStatus();
 	}
 
 	/**

@@ -4,7 +4,6 @@ namespace BotRiconferme\Task\Subtask;
 
 use BotRiconferme\Page\Page;
 use BotRiconferme\Page\PageRiconferma;
-use BotRiconferme\TaskResult;
 
 /**
  * For each open page, protect it, add a closing text if it was a vote, and
@@ -14,9 +13,7 @@ class ClosePages extends Subtask {
 	/**
 	 * @inheritDoc
 	 */
-	public function run() : TaskResult {
-		$this->getLogger()->info( 'Starting task ClosePages' );
-
+	public function runInternal() : int {
 		$pages = $this->getDataProvider()->getPagesToClose();
 		$protectReason = $this->getConfig()->get( 'close-protect-summary' );
 		foreach ( $pages as $page ) {
@@ -27,8 +24,7 @@ class ClosePages extends Subtask {
 			$this->updateBasePage( $page );
 		}
 
-		$this->getLogger()->info( 'Task ClosePages completed successfully' );
-		return new TaskResult( self::STATUS_OK );
+		return self::STATUS_OK ;
 	}
 
 	/**

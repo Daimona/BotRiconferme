@@ -14,7 +14,7 @@ class StartNew extends Task {
 	/**
 	 * @inheritDoc
 	 */
-	public function run() : TaskResult {
+	public function runInternal() : int {
 		$orderedList = [
 			'update-list',
 			'create-pages',
@@ -27,7 +27,7 @@ class StartNew extends Task {
 			$res->merge( $this->runSubtask( current( $orderedList ) ) );
 		} while ( $res->isOK() && next( $orderedList ) );
 
-		return $res;
+		return $res->getStatus();
 	}
 
 	/**

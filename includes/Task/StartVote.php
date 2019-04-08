@@ -6,7 +6,6 @@ use BotRiconferme\Exception\TaskException;
 use BotRiconferme\Message;
 use BotRiconferme\Page\Page;
 use BotRiconferme\Page\PageRiconferma;
-use BotRiconferme\TaskResult;
 
 /**
  * Start a vote if there are >= 15 opposing comments
@@ -23,9 +22,7 @@ class StartVote extends Task {
 	/**
 	 * @inheritDoc
 	 */
-	public function run() : TaskResult {
-		$this->getLogger()->info( 'Starting task StartVote' );
-
+	public function runInternal() : int {
 		$pages = $this->getDataProvider()->getOpenPages();
 
 		if ( $pages ) {
@@ -34,8 +31,7 @@ class StartVote extends Task {
 			$this->getLogger()->info( 'No open procedures.' );
 		}
 
-		$this->getLogger()->info( 'Task StartVote completed successfully' );
-		return new TaskResult( self::STATUS_OK );
+		return self::STATUS_OK ;
 	}
 
 	/**

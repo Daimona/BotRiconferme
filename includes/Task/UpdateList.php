@@ -3,7 +3,6 @@
 namespace BotRiconferme\Task;
 
 use BotRiconferme\Page\PageBotList;
-use BotRiconferme\TaskResult;
 use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Exception\TaskException;
 
@@ -27,8 +26,7 @@ class UpdateList extends Task {
 	/**
 	 * @inheritDoc
 	 */
-	public function run() : TaskResult {
-		$this->getLogger()->info( 'Starting task UpdateList' );
+	public function runInternal() : int {
 		$this->actualList = $this->getActualAdmins();
 		$this->botList = $this->getDataProvider()->getUsersList();
 
@@ -51,17 +49,7 @@ class UpdateList extends Task {
 			] );
 		}
 
-		if ( $this->errors ) {
-			// We're fine with it, but don't run other tasks
-			$msg = 'Task UpdateList completed with warnings.';
-			$status = self::STATUS_ERROR;
-		} else {
-			$msg = 'Task UpdateList completed successfully';
-			$status = self::STATUS_OK;
-		}
-
-		$this->getLogger()->info( $msg );
-		return new TaskResult( $status, $this->errors );
+		return $this->errors ? self::STATUS_ERROR : self::STATUS_OK;
 	}
 
 	/**

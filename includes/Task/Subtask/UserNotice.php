@@ -2,8 +2,6 @@
 
 namespace BotRiconferme\Task\Subtask;
 
-use BotRiconferme\TaskResult;
-
 /**
  * Notify the affected users
  */
@@ -11,9 +9,7 @@ class UserNotice extends Subtask {
 	/**
 	 * @inheritDoc
 	 */
-	public function run() : TaskResult {
-		$this->getLogger()->info( 'Starting task UserNotice' );
-
+	public function runInternal() : int {
 		$pages = $this->getDataProvider()->getCreatedPages();
 		$users = $this->getDataProvider()->getUsersToProcess();
 		if ( $pages && $users ) {
@@ -29,8 +25,7 @@ class UserNotice extends Subtask {
 			$this->getLogger()->info( 'No messages to leave.' );
 		}
 
-		$this->getLogger()->info( 'Task UserNotice completed successfully' );
-		return new TaskResult( self::STATUS_OK );
+		return self::STATUS_OK;
 	}
 
 	/**
