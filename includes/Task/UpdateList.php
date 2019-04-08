@@ -182,10 +182,11 @@ class UpdateList extends Task {
 	protected function getExtraGroups() : array {
 		$extra = [];
 		foreach ( $this->botList as $name => $groups ) {
+			$trueGroups = array_diff_key( $groups, [ 'override' => true ] );
 			if ( !isset( $this->actualList[ $name ] ) ) {
-				$extra[ $name ] = $groups;
-			} elseif ( count( $groups ) > count( $this->actualList[ $name ] ) ) {
-				$extra[ $name ] = array_diff_key( $groups, $this->actualList[ $name ] );
+				$extra[ $name ] = $trueGroups;
+			} elseif ( count( $trueGroups ) > count( $this->actualList[ $name ] ) ) {
+				$extra[ $name ] = array_diff_key( $trueGroups, $this->actualList[ $name ] );
 			}
 		}
 		return $extra;

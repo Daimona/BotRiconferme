@@ -61,6 +61,10 @@ class TaskDataProvider extends ContextSource {
 	 * @return int
 	 */
 	private function getValidTimestamp( array $groups ) : int {
+		if ( isset( $groups['override'] ) ) {
+			return $groups['override'];
+		}
+
 		$checkuser = isset( $groups[ 'checkuser' ] ) ?
 			\DateTime::createFromFormat( 'd/m/Y', $groups[ 'checkuser' ] )->getTimestamp() :
 			0;
