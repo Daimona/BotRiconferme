@@ -92,7 +92,7 @@ class FailedUpdates extends Subtask {
 		$admins = $this->getDataProvider()->getUsersList();
 
 		$flagRemPage = new Page(
-			$this->getConfig()->get( 'flag-removal-page' ),
+			$this->getConfig()->get( 'flag-removal-page-title' ),
 			'https://meta.wikimedia.org/w/api.php'
 		);
 		$section = $this->getConfig()->get( 'flag-removal-section' );
@@ -140,7 +140,7 @@ class FailedUpdates extends Subtask {
 		$month = ucfirst( strftime( '%B', time() ) );
 		setlocale( LC_TIME, $oldLoc );
 
-		$annunciPage = new Page( $this->getConfig()->get( 'annunci-title' ) );
+		$annunciPage = new Page( $this->getConfig()->get( 'annunci-page-title' ) );
 		$content = $annunciPage->getContent( 1 );
 		$secReg = "!=== *$month *===!";
 		if ( preg_match( $secReg, $content ) !== false ) {
@@ -167,7 +167,7 @@ class FailedUpdates extends Subtask {
 	 */
 	protected function updateUltimeNotizie( array $pages ) {
 		$this->getLogger()->info( 'Updating ultime notizie' );
-		$notiziePage = new Page( $this->getConfig()->get( 'ultimenotizie-title' ) );
+		$notiziePage = new Page( $this->getConfig()->get( 'ultimenotizie-page-title' ) );
 
 		$names = [];
 		$text = '';

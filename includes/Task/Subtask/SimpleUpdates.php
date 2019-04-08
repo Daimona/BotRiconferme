@@ -37,7 +37,7 @@ class SimpleUpdates extends Subtask {
 		$this->getLogger()->info(
 			'Updating votazioni: ' . implode( ', ', array_map( 'strval', $pages ) )
 		);
-		$votePage = new Page( $this->getConfig()->get( 'ric-vote-page' ) );
+		$votePage = new Page( $this->getConfig()->get( 'vote-page-title' ) );
 
 		$titles = [];
 		foreach ( $pages as $page ) {
@@ -84,7 +84,7 @@ class SimpleUpdates extends Subtask {
 			"Decreasing the news counter: $simpleAmount simple, $voteAmount votes."
 		);
 
-		$newsPage = new Page( $this->getConfig()->get( 'ric-news-page' ) );
+		$newsPage = new Page( $this->getConfig()->get( 'news-page-title' ) );
 
 		$content = $newsPage->getContent();
 		$simpleReg = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d+)!';
@@ -116,7 +116,7 @@ class SimpleUpdates extends Subtask {
 		$this->getLogger()->info(
 			'Updating admin list: ' . implode( ', ', array_map( 'strval', $pages ) )
 		);
-		$adminsPage = new Page( $this->getConfig()->get( 'admins-list' ) );
+		$adminsPage = new Page( $this->getConfig()->get( 'admins-list-title' ) );
 		$newContent = $adminsPage->getContent();
 		$newDate = date( 'Ymd', strtotime( '+1 year' ) );
 

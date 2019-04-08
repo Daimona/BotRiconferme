@@ -47,11 +47,11 @@ class UpdatesAround extends Subtask {
 			$append .= '{{' . $page->getTitle() . "}}\n";
 		}
 
-		$summary = $this->msg( 'ric-main-page-summary' )
+		$summary = $this->msg( 'main-page-summary' )
 			->params( [ '$num' => count( $pages ) ] )->text();
 
 		$params = [
-			'title' => $this->getConfig()->get( 'ric-main-page' ),
+			'title' => $this->getConfig()->get( 'main-page-title' ),
 			'appendtext' => $append,
 			'summary' => $summary
 		];
@@ -68,7 +68,7 @@ class UpdatesAround extends Subtask {
 		$this->getLogger()->info(
 			'Adding the following to votes: ' . implode( ', ', array_map( 'strval', $pages ) )
 		);
-		$votePage = new Page( $this->getConfig()->get( 'ric-vote-page' ) );
+		$votePage = new Page( $this->getConfig()->get( 'vote-page-title' ) );
 
 		$content = $votePage->getContent();
 
@@ -96,7 +96,7 @@ class UpdatesAround extends Subtask {
 			$newContent = preg_replace( $beforeReg, '$0' . "\n{$matches[0]}\n$newLines", $content, 1 );
 		}
 
-		$summary = $this->msg( 'ric-vote-page-summary' )
+		$summary = $this->msg( 'vote-page-summary' )
 			->params( [ '$num' => count( $pages ) ] )->text();
 
 		$params = [
@@ -114,7 +114,7 @@ class UpdatesAround extends Subtask {
 	 */
 	protected function addNews( int $amount ) {
 		$this->getLogger()->info( "Increasing the news counter by $amount" );
-		$newsPage = new Page( $this->getConfig()->get( 'ric-news-page' ) );
+		$newsPage = new Page( $this->getConfig()->get( 'news-page-title' ) );
 
 		$content = $newsPage->getContent();
 		$reg = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d+)!';
@@ -128,7 +128,7 @@ class UpdatesAround extends Subtask {
 		$newNum = (int)$matches[2] + $amount;
 		$newContent = preg_replace( $reg, '${1}' . $newNum, $content );
 
-		$summary = $this->msg( 'ric-news-page-summary' )
+		$summary = $this->msg( 'news-page-summary' )
 			->params( [ '$num' => $amount ] )
 			->text();
 

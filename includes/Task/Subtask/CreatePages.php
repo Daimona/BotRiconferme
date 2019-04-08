@@ -44,11 +44,11 @@ class CreatePages extends Subtask {
 			return;
 		}
 
-		$baseTitle = $this->getConfig()->get( 'ric-main-page' ) . "/$user";
+		$baseTitle = $this->getConfig()->get( 'main-page-title' ) . "/$user";
 		$pageTitle = "$baseTitle/$num";
 		$this->createPage( $pageTitle, $user, $groups );
 
-		$newText = $this->msg( 'ric-base-page-text' )->params( [ '$title' => $pageTitle ] )->text();
+		$newText = $this->msg( 'base-page-text' )->params( [ '$title' => $pageTitle ] )->text();
 		if ( $num === 1 ) {
 			$this->createBasePage( $baseTitle, $newText );
 		} else {
@@ -68,7 +68,7 @@ class CreatePages extends Subtask {
 	 */
 	protected function getLastPageNum( string $user ) : int {
 		$this->getLogger()->debug( "Retrieving previous pages for $user" );
-		$unprefixedTitle = explode( ':', $this->getConfig()->get( 'ric-main-page' ), 2 )[1];
+		$unprefixedTitle = explode( ':', $this->getConfig()->get( 'main-page-title' ), 2 )[1];
 		$params = [
 			'action' => 'query',
 			'list' => 'allpages',
@@ -133,7 +133,7 @@ class CreatePages extends Subtask {
 		$params = [
 			'title' => $title,
 			'text' => $newText,
-			'summary' => $this->msg( 'ric-base-page-summary' )->text()
+			'summary' => $this->msg( 'base-page-summary' )->text()
 		];
 
 		$this->getController()->editPage( $params );
@@ -150,7 +150,7 @@ class CreatePages extends Subtask {
 		$params = [
 			'title' => $title,
 			'appendtext' => $newText,
-			'summary' => $this->msg( 'ric-base-page-summary-update' )->text()
+			'summary' => $this->msg( 'base-page-summary-update' )->text()
 		];
 
 		$this->getController()->editPage( $params );

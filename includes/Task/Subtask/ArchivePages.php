@@ -38,7 +38,7 @@ class ArchivePages extends Subtask {
 			'Removing from main: ' . implode( ', ', array_map( 'strval', $pages ) )
 		);
 
-		$mainPage = new Page( $this->getConfig()->get( 'ric-main-page' ) );
+		$mainPage = new Page( $this->getConfig()->get( 'main-page-title' ) );
 		$remove = [];
 		foreach ( $pages as $page ) {
 			$remove[] = '{{' . $page->getTitle() . '}}';

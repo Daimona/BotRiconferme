@@ -83,7 +83,7 @@ class TaskDataProvider extends ContextSource {
 	public function getOpenPages() : array {
 		static $list = null;
 		if ( $list === null ) {
-			$baseTitle = $this->getConfig()->get( 'ric-main-page' );
+			$baseTitle = $this->getConfig()->get( 'main-page-title' );
 			$params = [
 				'action' => 'query',
 				'prop' => 'templates',
