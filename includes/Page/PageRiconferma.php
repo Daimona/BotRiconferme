@@ -8,15 +8,24 @@ use BotRiconferme\Message;
  * Represents a single riconferma page
  */
 class PageRiconferma extends Page {
-	// Sections of the page. The value is the section number
-	const SECTION_SUPPORT = 3;
-	const SECTION_OPPOSE = 4;
+	// Sections of the page. Value = section number, and depends on whether the page is a vote
+	private $supportSection = 3;
+	private $opposeSection = 4;
 
 	// Possible outcomes of a vote
 	const OUTCOME_OK = 0;
 	const OUTCOME_FAIL_VOTES = 1;
 	const OUTCOME_NO_QUOR = 2;
 	const OUTCOME_FAIL = self::OUTCOME_FAIL_VOTES | self::OUTCOME_NO_QUOR;
+
+	/**
+	 * @param string $title
+	 */
+	public function __construct( string $title ) {
+		parent::__construct( $title );
+		$this->supportSection = $this->isVote() ? 3 : 0;
+		$this->opposeSection = $this->isVote() ? 4 : 3;
+	}
 
 	/**
 	 * Get the name of the user from the title
@@ -62,16 +71,20 @@ class PageRiconferma extends Page {
 	 * @return int
 	 */
 	public function getOpposingCount() : int {
-		return $this->getCountForSection( self::SECTION_OPPOSE );
+		return $this->getCountForSection( $this->opposeSection );
 	}
 
 	/**
 	 * Get the amount support votes
 	 *
 	 * @return int
+	 * @throws \BadMethodCallException
 	 */
 	public function getSupportCount() : int {
-		return $this->getCountForSection( self::SECTION_SUPPORT );
+		if ( !$this->isVote() ) {
+			throw new \BadMethodCallException( 'Cannot get support for a non-vote page.' );
+		}
+		return $this->getCountForSection( $this->supportSection );
 	}
 
 	/**
@@ -167,7 +180,7 @@ class PageRiconferma extends Page {
 	 */
 	public function isVote() : bool {
 		$sectionReg = '/<!-- SEZIONE DA UTILIZZARE PER/';
-		return $this->matches( $sectionReg );
+		return !$this->matches( $sectionReg );
 	}
 
 	/**

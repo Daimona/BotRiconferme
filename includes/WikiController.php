@@ -6,6 +6,7 @@ use BotRiconferme\Exception\EditException;
 use BotRiconferme\Exception\LoginException;
 use BotRiconferme\Exception\APIRequestException;
 use BotRiconferme\Exception\MissingPageException;
+use BotRiconferme\Exception\MissingSectionException;
 use BotRiconferme\Request\RequestBase;
 
 /**
@@ -58,7 +59,12 @@ class WikiController {
 			throw new MissingPageException( $title );
 		}
 
-		return $page->revisions[0]->slots->main->{ '*' };
+		$mainSlot = $page->revisions[0]->slots->main;
+
+		if ( isset( $mainSlot->nosuchsection ) ) {
+			throw new MissingSectionException( $title, $section );
+		}
+		return $mainSlot->{ '*' };
 	}
 
 	/**

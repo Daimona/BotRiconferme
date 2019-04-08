@@ -16,7 +16,6 @@ class StartNew extends Task {
 	 */
 	public function runInternal() : int {
 		$orderedList = [
-			'update-list',
 			'create-pages',
 			'updates-around',
 			'user-notice'
@@ -36,7 +35,6 @@ class StartNew extends Task {
 	protected function getSubtasksMap() : array {
 		return [
 			'create-pages' => CreatePages::class,
-			'update-list' => UpdateList::class,
 			'updates-around' => UpdatesAround::class,
 			'user-notice' => UserNotice::class,
 		];

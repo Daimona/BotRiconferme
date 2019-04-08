@@ -5,6 +5,7 @@ namespace BotRiconferme\Task\Subtask;
 use BotRiconferme\Message;
 use BotRiconferme\Page\Page;
 use BotRiconferme\Page\PageRiconferma;
+use BotRiconferme\TaskResult;
 
 /**
  * Remove pages from the main page and add them to the archive

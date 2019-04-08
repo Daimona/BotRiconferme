@@ -161,7 +161,7 @@ abstract class RequestBase {
 			throw $ex;
 		} elseif ( isset( $res->warnings ) ) {
 			$act = $this->params[ 'action' ];
-			$warning = $res->warnings->$act;
+			$warning = $res->warnings->$act ?? $res->warnings->main;
 			throw new APIRequestException( reset( $warning ) );
 		}
 	}

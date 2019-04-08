@@ -4,6 +4,7 @@ namespace BotRiconferme\Task\Subtask;
 
 use BotRiconferme\Page\Page;
 use BotRiconferme\Page\PageRiconferma;
+use BotRiconferme\TaskResult;
 
 /**
  * For each open page, protect it, add a closing text if it was a vote, and

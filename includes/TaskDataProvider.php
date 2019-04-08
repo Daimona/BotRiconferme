@@ -88,7 +88,7 @@ class TaskDataProvider extends ContextSource {
 				'action' => 'query',
 				'prop' => 'templates',
 				'titles' => $baseTitle,
-				'tl_namespace' => 4,
+				'tlnamespace' => 4,
 				'tllimit' => 'max'
 			];
 

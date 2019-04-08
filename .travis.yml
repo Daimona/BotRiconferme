@@ -12,6 +12,7 @@ install:
   - composer validate
   
 before_script:
+  - pecl channel-update pecl.php.net
   - pecl install ast
   - phpenv config-rm xdebug.ini
 
