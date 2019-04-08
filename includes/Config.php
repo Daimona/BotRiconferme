@@ -67,7 +67,6 @@ class Config {
 		if ( !isset( $messages[ $key ] ) ) {
 			throw new ConfigException( "Message '$key' does not exist." );
 		}
-		// @phan-suppress-next-line PhanTypeArraySuspiciousNullable
 		return $messages[$key];
 	}
 	/**
