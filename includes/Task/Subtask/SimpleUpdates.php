@@ -5,6 +5,7 @@ namespace BotRiconferme\Task\Subtask;
 use BotRiconferme\Message;
 use BotRiconferme\Page\Page;
 use BotRiconferme\Page\PageRiconferma;
+use BotRiconferme\TaskResult;
 
 /**
  * Update various pages around, to be done for all closed procedures
@@ -20,7 +21,7 @@ class SimpleUpdates extends Subtask {
 		$this->updateAdminList( $pages );
 		$this->updateCUList( $pages );
 
-		return self::STATUS_GOOD;
+		return TaskResult::STATUS_GOOD;
 	}
 
 	/**

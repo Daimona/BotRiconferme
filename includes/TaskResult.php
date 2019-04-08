@@ -6,9 +6,10 @@ namespace BotRiconferme;
  * Object wrapping the result of the execution of a task.
  */
 class TaskResult {
-	// Status codes
-	const STATUS_OK = 0;
-	const STATUS_ERROR = 1;
+	// Status codes. GOOD = everything fine, NOTHING = nothing to do, ERROR = found non-fatal errors
+	const STATUS_NOTHING = 0;
+	const STATUS_GOOD = 1;
+	const STATUS_ERROR = 3;
 
 	/** @var string[] */
 	private $errors;
@@ -71,6 +72,6 @@ class TaskResult {
 	 * @return bool
 	 */
 	public function isOK() : bool {
-		return $this->status === self::STATUS_OK;
+		return ( $this->status | self::STATUS_GOOD ) === self::STATUS_GOOD;
 	}
 }

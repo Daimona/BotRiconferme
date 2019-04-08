@@ -5,6 +5,7 @@ namespace BotRiconferme\Task;
 use BotRiconferme\Page\PageBotList;
 use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Exception\TaskException;
+use BotRiconferme\TaskResult;
 
 /**
  * Updates the JSON list, adding and removing dates according to the API list of privileged people
@@ -39,7 +40,7 @@ class UpdateList extends Task {
 		}
 
 		if ( $newContent === $this->botList ) {
-			return self::STATUS_NOTHING;
+			return TaskResult::STATUS_NOTHING;
 		}
 
 		$this->getLogger()->info( 'Updating admin list' );
@@ -49,7 +50,7 @@ class UpdateList extends Task {
 			'summary' => $this->getConfig()->get( 'list-update-summary' )
 		] );
 
-		return $this->errors ? self::STATUS_ERROR : self::STATUS_GOOD;
+		return $this->errors ? TaskResult::STATUS_ERROR : TaskResult::STATUS_GOOD;
 	}
 
 	/**

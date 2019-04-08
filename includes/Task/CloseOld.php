@@ -23,7 +23,7 @@ class CloseOld extends Task {
 			'failed-updates'
 		];
 
-		$res = new TaskResult( TaskResult::STATUS_OK );
+		$res = new TaskResult( TaskResult::STATUS_GOOD );
 		do {
 			$res->merge( $this->runSubtask( current( $orderedList ) ) );
 		} while ( $res->isOK() && next( $orderedList ) );

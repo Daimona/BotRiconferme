@@ -5,6 +5,7 @@ namespace BotRiconferme\Task\Subtask;
 use BotRiconferme\Page\PageRiconferma;
 use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Exception\TaskException;
+use BotRiconferme\TaskResult;
 
 /**
  * For each user, create the WP:A/Riconferma_annuale/USERNAME/XXX page and add it to its base page
@@ -17,14 +18,14 @@ class CreatePages extends Subtask {
 		$users = $this->getDataProvider()->getUsersToProcess();
 
 		if ( !$users ) {
-			return self::STATUS_NOTHING;
+			return TaskResult::STATUS_NOTHING;
 		}
 
 		foreach ( $users as $user => $groups ) {
 			$this->processUser( $user, $groups );
 		}
 
-		return self::STATUS_GOOD ;
+		return TaskResult::STATUS_GOOD;
 	}
 
 	/**

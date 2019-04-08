@@ -2,6 +2,8 @@
 
 namespace BotRiconferme\Task\Subtask;
 
+use BotRiconferme\TaskResult;
+
 /**
  * Notify the affected users
  */
@@ -14,7 +16,7 @@ class UserNotice extends Subtask {
 		$users = $this->getDataProvider()->getUsersToProcess();
 
 		if ( !$pages || !$users ) {
-			return self::STATUS_NOTHING;
+			return TaskResult::STATUS_NOTHING;
 		}
 
 		$ricNums = [];
@@ -26,7 +28,7 @@ class UserNotice extends Subtask {
 			$this->addMsg( $user, $ricNums[ $user ] );
 		}
 
-		return self::STATUS_GOOD;
+		return TaskResult::STATUS_GOOD;
 	}
 
 	/**

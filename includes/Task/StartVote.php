@@ -6,6 +6,7 @@ use BotRiconferme\Exception\TaskException;
 use BotRiconferme\Message;
 use BotRiconferme\Page\Page;
 use BotRiconferme\Page\PageRiconferma;
+use BotRiconferme\TaskResult;
 
 /**
  * Start a vote if there are >= 15 opposing comments
@@ -26,12 +27,12 @@ class StartVote extends Task {
 		$pages = $this->getDataProvider()->getOpenPages();
 
 		if ( !$pages ) {
-			return self::STATUS_NOTHING;
+			return TaskResult::STATUS_NOTHING;
 		}
 
 		$this->processPages( $pages );
 
-		return self::STATUS_GOOD ;
+		return TaskResult::STATUS_GOOD;
 	}
 
 	/**

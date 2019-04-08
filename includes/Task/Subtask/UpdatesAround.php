@@ -6,6 +6,7 @@ use BotRiconferme\Message;
 use BotRiconferme\Page\Page;
 use BotRiconferme\Page\PageRiconferma;
 use BotRiconferme\Exception\TaskException;
+use BotRiconferme\TaskResult;
 
 /**
  * Do some updates around to notify people of the newly created pages
@@ -18,7 +19,7 @@ class UpdatesAround extends Subtask {
 		$pages = $this->getDataProvider()->getCreatedPages();
 
 		if ( !$pages ) {
-			return self::STATUS_NOTHING;
+			return TaskResult::STATUS_NOTHING;
 		}
 
 		// Wikipedia:Amministratori/Riconferma annuale
@@ -28,7 +29,7 @@ class UpdatesAround extends Subtask {
 		// Template:VotazioniRCnews
 		$this->addNews( count( $pages ) );
 
-		return self::STATUS_GOOD;
+		return TaskResult::STATUS_GOOD;
 	}
 
 	/**

@@ -10,10 +10,6 @@ use BotRiconferme\TaskDataProvider;
  * Base framework for all kind of tasks and subtasks
  */
 abstract class TaskBase extends ContextSource {
-	// Status codes. GOOD = everything fine, NOTHING = nothing to do, ERROR = found non-fatal errors
-	const STATUS_GOOD = 0;
-	const STATUS_NOTHING = 1;
-	const STATUS_ERROR = 2;
 	/** @var string[] */
 	protected $errors = [];
 	/** @var TaskDataProvider */
@@ -48,13 +44,13 @@ abstract class TaskBase extends ContextSource {
 		$status = $this->runInternal();
 
 		switch ( $status ) {
-			case self::STATUS_GOOD:
+			case TaskResult::STATUS_GOOD:
 				$msg = "Task $task completed successfully.";
 				break;
-			case self::STATUS_NOTHING:
+			case TaskResult::STATUS_NOTHING:
 				$msg = "Task $task: nothing to do.";
 				break;
-			case self::STATUS_ERROR:
+			case TaskResult::STATUS_ERROR:
 				// We're fine with it, but don't run other tasks
 				$msg = "Task $task completed with warnings.";
 				break;
