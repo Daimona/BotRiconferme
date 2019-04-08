@@ -16,18 +16,19 @@ class UpdatesAround extends Subtask {
 	 */
 	public function runInternal() : int {
 		$pages = $this->getDataProvider()->getCreatedPages();
-		if ( $pages ) {
-			// Wikipedia:Amministratori/Riconferma annuale
-			$this->addToMainPage( $pages );
-			// WP:Wikipediano/Votazioni
-			$this->addVote( $pages );
-			// Template:VotazioniRCnews
-			$this->addNews( count( $pages ) );
-		} else {
-			$this->getLogger()->info( 'No updates to do.' );
+
+		if ( !$pages ) {
+			return self::STATUS_NOTHING;
 		}
 
-		return self::STATUS_OK;
+		// Wikipedia:Amministratori/Riconferma annuale
+		$this->addToMainPage( $pages );
+		// WP:Wikipediano/Votazioni
+		$this->addVote( $pages );
+		// Template:VotazioniRCnews
+		$this->addNews( count( $pages ) );
+
+		return self::STATUS_GOOD;
 	}
 
 	/**

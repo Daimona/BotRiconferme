@@ -20,7 +20,7 @@ class SimpleUpdates extends Subtask {
 		$this->updateAdminList( $pages );
 		$this->updateCUList( $pages );
 
-		return self::STATUS_OK;
+		return self::STATUS_GOOD;
 	}
 
 	/**

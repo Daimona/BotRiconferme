@@ -25,13 +25,13 @@ class StartVote extends Task {
 	public function runInternal() : int {
 		$pages = $this->getDataProvider()->getOpenPages();
 
-		if ( $pages ) {
-			$this->processPages( $pages );
-		} else {
-			$this->getLogger()->info( 'No open procedures.' );
+		if ( !$pages ) {
+			return self::STATUS_NOTHING;
 		}
 
-		return self::STATUS_OK ;
+		$this->processPages( $pages );
+
+		return self::STATUS_GOOD ;
 	}
 
 	/**

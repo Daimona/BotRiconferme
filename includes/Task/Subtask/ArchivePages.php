@@ -18,7 +18,7 @@ class ArchivePages extends Subtask {
 		$this->removeFromMainPage( $pages );
 		$this->addToArchive( $pages );
 
-		return self::STATUS_OK;
+		return self::STATUS_GOOD;
 	}
 
 	/**

@@ -39,17 +39,17 @@ class UpdateList extends Task {
 		}
 
 		if ( $newContent === $this->botList ) {
-			$this->getLogger()->info( 'Admin list already up-to-date' );
-		} else {
-			$this->getLogger()->info( 'Updating admin list' );
-
-			PageBotList::get()->edit( [
-				'text' => json_encode( $newContent ),
-				'summary' => $this->getConfig()->get( 'list-update-summary' )
-			] );
+			return self::STATUS_NOTHING;
 		}
 
-		return $this->errors ? self::STATUS_ERROR : self::STATUS_OK;
+		$this->getLogger()->info( 'Updating admin list' );
+
+		PageBotList::get()->edit( [
+			'text' => json_encode( $newContent ),
+			'summary' => $this->getConfig()->get( 'list-update-summary' )
+		] );
+
+		return $this->errors ? self::STATUS_ERROR : self::STATUS_GOOD;
 	}
 
 	/**

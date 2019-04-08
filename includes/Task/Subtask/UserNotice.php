@@ -12,20 +12,21 @@ class UserNotice extends Subtask {
 	public function runInternal() : int {
 		$pages = $this->getDataProvider()->getCreatedPages();
 		$users = $this->getDataProvider()->getUsersToProcess();
-		if ( $pages && $users ) {
-			$ricNums = [];
-			foreach ( $pages as $page ) {
-				$ricNums[ $page->getUser() ] = $page->getNum();
-			}
 
-			foreach ( $users as $user => $_ ) {
-				$this->addMsg( $user, $ricNums[ $user ] );
-			}
-		} else {
-			$this->getLogger()->info( 'No messages to leave.' );
+		if ( !$pages || !$users ) {
+			return self::STATUS_NOTHING;
 		}
 
-		return self::STATUS_OK;
+		$ricNums = [];
+		foreach ( $pages as $page ) {
+			$ricNums[ $page->getUser() ] = $page->getNum();
+		}
+
+		foreach ( $users as $user => $_ ) {
+			$this->addMsg( $user, $ricNums[ $user ] );
+		}
+
+		return self::STATUS_GOOD;
 	}
 
 	/**

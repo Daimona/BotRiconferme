@@ -24,7 +24,7 @@ class ClosePages extends Subtask {
 			$this->updateBasePage( $page );
 		}
 
-		return self::STATUS_OK ;
+		return self::STATUS_GOOD ;
 	}
 
 	/**

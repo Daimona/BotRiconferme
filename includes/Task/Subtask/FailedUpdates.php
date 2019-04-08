@@ -22,7 +22,7 @@ class FailedUpdates extends Subtask {
 			$this->updateUltimeNotizie( $failed );
 		}
 
-		return self::STATUS_OK;
+		return self::STATUS_GOOD;
 	}
 
 	/**

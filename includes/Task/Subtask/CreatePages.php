@@ -16,15 +16,15 @@ class CreatePages extends Subtask {
 	public function runInternal() : int {
 		$users = $this->getDataProvider()->getUsersToProcess();
 
-		if ( $users ) {
-			foreach ( $users as $user => $groups ) {
-				$this->processUser( $user, $groups );
-			}
-		} else {
-			$this->getLogger()->info( 'No pages to create.' );
+		if ( !$users ) {
+			return self::STATUS_NOTHING;
 		}
 
-		return self::STATUS_OK ;
+		foreach ( $users as $user => $groups ) {
+			$this->processUser( $user, $groups );
+		}
+
+		return self::STATUS_GOOD ;
 	}
 
 	/**
