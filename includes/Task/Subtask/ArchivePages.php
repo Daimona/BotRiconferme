@@ -16,6 +16,11 @@ class ArchivePages extends Subtask {
 	 */
 	public function runInternal() : int {
 		$pages = $this->getDataProvider()->getPagesToClose();
+
+		if ( !$pages ) {
+			return TaskResult::STATUS_NOTHING;
+		}
+
 		$this->removeFromMainPage( $pages );
 		$this->addToArchive( $pages );
 

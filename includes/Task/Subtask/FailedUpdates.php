@@ -96,19 +96,16 @@ class FailedUpdates extends Subtask {
 			'https://meta.wikimedia.org/w/api.php'
 		);
 		$section = $this->getConfig()->get( 'flag-removal-section' );
-		$baseText = $this->msg( 'flag-removal-text' )->text();
+		$baseText = $this->msg( 'flag-removal-text' );
 
 		$newContent = $flagRemPage->getContent( $section );
 		foreach ( $pages as $page ) {
-			$curText = strtr(
-				$baseText,
-				[
+			$newContent .=
+				$baseText->params( [
 					'$username' => $page->getUser(),
 					'$link' => '[[:it:' . $page->getTitle() . ']]',
 					'$groups' => implode( ', ', array_keys( $admins[ $page->getUser() ] ) )
-				]
-			);
-			$newContent .= $curText;
+				] )->text();
 		}
 
 		$summary = $this->msg( 'flag-removal-summary' )

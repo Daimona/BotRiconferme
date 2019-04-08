@@ -16,6 +16,11 @@ class SimpleUpdates extends Subtask {
 	 */
 	public function runInternal() : int {
 		$pages = $this->getDataProvider()->getPagesToClose();
+
+		if ( !$pages ) {
+			return TaskResult::STATUS_NOTHING;
+		}
+
 		$this->updateVote( $pages );
 		$this->updateNews( $pages );
 		$this->updateAdminList( $pages );
@@ -40,7 +45,7 @@ class SimpleUpdates extends Subtask {
 		}
 
 		$titleReg = implode( '|', $titles );
-		$search = "!^\*.+ La \[\[($titleReg)\|procedura]] termina.+\n!gm";
+		$search = "!^\*.+ La \[\[($titleReg)\|procedura]] termina.+\n!m";
 
 		$newContent = preg_replace( $search, '', $votePage->getContent() );
 		// Make sure the last line ends with a full stop in every section
