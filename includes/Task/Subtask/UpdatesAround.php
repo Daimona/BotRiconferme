@@ -2,11 +2,11 @@
 
 namespace BotRiconferme\Task\Subtask;
 
+use BotRiconferme\Message;
 use BotRiconferme\Page\Page;
 use BotRiconferme\Page\PageRiconferma;
 use BotRiconferme\TaskResult;
 use BotRiconferme\Exception\TaskException;
-use BotRiconferme\WikiController;
 
 /**
  * Do some updates around to notify people of the newly created pages
@@ -74,7 +74,7 @@ class UpdatesAround extends Subtask {
 
 		$content = $votePage->getContent();
 
-		$time = WikiController::getTimeWithArticle( time() + ( 60 * 60 * 24 * 7 ) );
+		$time = Message::getTimeWithArticle( time() + ( 60 * 60 * 24 * 7 ) );
 		$newLines = '';
 		foreach ( $pages as $page ) {
 			$newLines .= '*[[Utente:' . $page->getUser() . '|]]. ' .

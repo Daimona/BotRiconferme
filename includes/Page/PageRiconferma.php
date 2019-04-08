@@ -2,7 +2,7 @@
 
 namespace BotRiconferme\Page;
 
-use BotRiconferme\WikiController;
+use BotRiconferme\Message;
 
 /**
  * Represents a single riconferma page
@@ -180,7 +180,7 @@ class PageRiconferma extends Page {
 			$reg = "!La votazione ha inizio il.+ e ha termine.+ '''([^']+)''' alle ore '''([^']+)'''!";
 			list( , $day, $hours ) = $this->getMatch( $reg );
 			$day = preg_replace( '![^\d \w]!', '', $day );
-			return WikiController::getTimestampFromLocalTime( $day . " alle " . $hours );
+			return Message::getTimestampFromLocalTime( $day . " alle " . $hours );
 		} else {
 			$created = $this->controller->getPageCreationTS( $this->title );
 			return $created + 60 * 60 * 24 * 7;

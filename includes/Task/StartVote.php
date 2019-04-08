@@ -3,10 +3,10 @@
 namespace BotRiconferme\Task;
 
 use BotRiconferme\Exception\TaskException;
+use BotRiconferme\Message;
 use BotRiconferme\Page\Page;
 use BotRiconferme\Page\PageRiconferma;
 use BotRiconferme\TaskResult;
-use BotRiconferme\WikiController;
 
 /**
  * Start a vote if there are >= 15 opposing comments
@@ -119,7 +119,7 @@ class StartVote extends Task {
 		$newContent = preg_replace( $sectionReg, '$1.', $newContent );
 
 		$newLines = '';
-		$time = WikiController::getTimeWithArticle( time() + ( 60 * 60 * 24 * 14 ) );
+		$time = Message::getTimeWithArticle( time() + ( 60 * 60 * 24 * 14 ) );
 		foreach ( $pages as $page ) {
 			$newLines .= '*[[Utente:' . $page->getUser() . '|]]. ' .
 				'La [[' . $page->getTitle() . "|votazione]] termina $time;\n";
@@ -168,16 +168,15 @@ class StartVote extends Task {
 		$regTac = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d+)!';
 		$regVot = '!(\| *riconferme[ _]voto[ _]amministratori *= *)(\d+)!';
 
-		$tacMatches = $votMatches = [];
-		if ( preg_match( $regTac, $content, $tacMatches ) === false ) {
+		if ( !$newsPage->matches( $regTac ) ) {
 			throw new TaskException( 'Param "tacite" not found in news page' );
 		}
-		if ( preg_match( $regVot, $content, $votMatches ) === false ) {
+		if ( !$newsPage->matches( $regVot ) ) {
 			throw new TaskException( 'Param "voto" not found in news page' );
 		}
 
-		$newTac = (int)$tacMatches[2] - $amount ?: '';
-		$newVot = (int)$votMatches[2] + $amount ?: '';
+		$newTac = intval( $newsPage->getMatch( $regTac )[2] ) - $amount ?: '';
+		$newVot = intval( $newsPage->getMatch( $regVot )[2] ) + $amount ?: '';
 
 		$newContent = preg_replace( $regTac, '${1}' . $newTac, $content );
 		$newContent = preg_replace( $regVot, '${1}' . $newVot, $newContent );
