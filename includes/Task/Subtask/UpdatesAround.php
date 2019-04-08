@@ -87,8 +87,9 @@ class UpdatesAround extends Subtask {
 			$newContent = preg_replace( $introReg, '$0' . "\n$newLines", $content, 1 );
 		} else {
 			// Start section
-			$matches = [];
-			if ( preg_match( $introReg, $content, $matches ) === false ) {
+			try {
+				$matches = $votePage->getMatch( $introReg );
+			} catch ( \Exception $e ) {
 				throw new TaskException( 'Intro not found in vote page' );
 			}
 			$beforeReg = '!INSERIRE LA NOTIZIA PIÙ NUOVA IN CIMA.+!m';
@@ -120,8 +121,9 @@ class UpdatesAround extends Subtask {
 		$content = $newsPage->getContent();
 		$reg = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d+)!';
 
-		$matches = [];
-		if ( preg_match( $reg, $content, $matches ) === false ) {
+		try {
+			$matches = $newsPage->getMatch( $reg );
+		} catch ( \Exception $e ) {
 			throw new TaskException( 'Param not found in news page' );
 		}
 

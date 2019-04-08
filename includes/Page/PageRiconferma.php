@@ -93,9 +93,7 @@ class PageRiconferma extends Page {
 	 */
 	protected function getQuorum() : int {
 		$reg = "!soddisfare il \[\[[^|\]]+\|quorum]] di '''(\d+) voti'''!";
-		$matches = [];
-		preg_match( $reg, $this->getContent(), $matches );
-		return intval( $matches[1] );
+		return intval( $this->getMatch( $reg )[1] );
 	}
 
 	/**
@@ -169,7 +167,7 @@ class PageRiconferma extends Page {
 	 */
 	public function isVote() : bool {
 		$sectionReg = '/<!-- SEZIONE DA UTILIZZARE PER/';
-		return preg_match( $sectionReg, $this->getContent() ) === false;
+		return $this->matches( $sectionReg );
 	}
 
 	/**
@@ -179,10 +177,8 @@ class PageRiconferma extends Page {
 	 */
 	public function getEndTimestamp() : int {
 		if ( $this->isVote() ) {
-			$matches = [];
 			$reg = "!La votazione ha inizio il.+ e ha termine.+ '''([^']+)''' alle ore '''([^']+)'''!";
-			preg_match( $reg, $this->getContent(), $matches );
-			list( , $day, $hours ) = $matches;
+			list( , $day, $hours ) = $this->getMatch( $reg );
 			$day = preg_replace( '![^\d \w]!', '', $day );
 			return WikiController::getTimestampFromLocalTime( $day . " alle " . $hours );
 		} else {

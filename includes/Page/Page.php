@@ -68,6 +68,32 @@ class Page {
 	}
 
 	/**
+	 * Check whether the page content is matched by the given regex
+	 *
+	 * @param string $regex
+	 * @return bool
+	 */
+	public function matches( string $regex ) : bool {
+		return preg_match( $regex, $this->getContent() ) !== false;
+	}
+
+	/**
+	 * Get the matches from a preg_match on the page content, and throws if the
+	 * regex doesn't match.
+	 *
+	 * @param string $regex
+	 * @return string[]
+	 * @throws \Exception
+	 */
+	public function getMatch( string $regex ) : array {
+		$ret = [];
+		if ( preg_match( $regex, $this->getContent(), $ret ) === false ) {
+			throw new \Exception;
+		}
+		return $ret;
+	}
+
+	/**
 	 * For easier logging etc.
 	 *
 	 * @return string

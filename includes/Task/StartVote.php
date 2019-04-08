@@ -126,13 +126,13 @@ class StartVote extends Task {
 		}
 
 		$introReg = '!^Si vota per la \[\[Wikipedia:Amministratori/Riconferma annuale.+!m';
-		if ( preg_match( $introReg, strip_tags( $content ) ) ) {
+		if ( preg_match( $introReg, strip_tags( $newContent ) ) ) {
 			// Put before the existing ones, if they're found outside comments
 			$newContent = preg_replace( $introReg, '$0' . "\n$newLines", $newContent, 1 );
 		} else {
 			// Start section
 			$matches = [];
-			if ( preg_match( $introReg, $content, $matches ) === false ) {
+			if ( preg_match( $introReg, $newContent, $matches ) === false ) {
 				throw new TaskException( 'Intro not found in vote page' );
 			}
 			$beforeReg = '!INSERIRE LA NOTIZIA PIÙ NUOVA IN CIMA.+!m';

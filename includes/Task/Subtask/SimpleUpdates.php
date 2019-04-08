@@ -87,9 +87,8 @@ class SimpleUpdates extends Subtask {
 		$simpleReg = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d+)!';
 		$voteReg = '!(\| *riconferme[ _]voto[ _]amministratori *= *)(\d+)!';
 
-		$simpleMatches = $voteMatches = [];
-		preg_match( $simpleReg, $content, $simpleMatches );
-		preg_match( $voteReg, $content, $voteMatches );
+		$simpleMatches = $newsPage->getMatch( $simpleReg );
+		$voteMatches = $newsPage->getMatch( $voteReg );
 
 		$newSimp = (int)$simpleMatches[2] - $simpleAmount ?: '';
 		$newVote = (int)$voteMatches[2] - $voteAmount ?: '';
