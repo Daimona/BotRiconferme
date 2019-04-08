@@ -2,6 +2,7 @@
 
 namespace BotRiconferme\Task\Subtask;
 
+use BotRiconferme\Message;
 use BotRiconferme\Page\Page;
 use BotRiconferme\Page\PageRiconferma;
 use BotRiconferme\TaskResult;
@@ -89,15 +90,8 @@ class ArchivePages extends Subtask {
 			$archivedList[] = $page->getUserNum();
 		}
 
-		if ( count( $archivedList ) > 1 ) {
-			$last = array_pop( $archivedList );
-			$userNums = implode( ', ', $archivedList ) . " e $last";
-		} else {
-			$userNums = $archivedList[0];
-		}
-
 		$summary = $this->msg( 'close-archive-summary' )
-			->params( [ '$usernums' => $userNums ] )->text();
+			->params( [ '$usernums' => Message::commaList( $archivedList ) ] )->text();
 
 		$archivePage->edit( [
 			'appendtext' => $append,

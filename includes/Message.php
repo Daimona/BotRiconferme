@@ -88,4 +88,25 @@ class Message {
 
 		return $timestamp;
 	}
+
+	/**
+	 * Given an array of data, returns a list of its elements using commas, and " e " before
+	 * the last one. $emptyText can be used to specify the text in case $data is empty.
+	 *
+	 * @param array $data
+	 * @param string $emptyText
+	 * @return string
+	 */
+	public static function commaList( array $data, string $emptyText = 'nessuno' ) : string {
+		if ( count( $data ) > 1 ) {
+			$last = array_pop( $data );
+			$ret = implode( ', ', $data ) . " e $last";
+		} elseif ( $data ) {
+			$ret = $data[0];
+		} else {
+			$ret = $emptyText;
+		}
+
+		return $ret;
+	}
 }

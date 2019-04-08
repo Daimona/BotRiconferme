@@ -2,6 +2,7 @@
 
 namespace BotRiconferme\Task\Subtask;
 
+use BotRiconferme\Message;
 use BotRiconferme\Page\Page;
 use BotRiconferme\Page\PageRiconferma;
 use BotRiconferme\TaskResult;
@@ -72,15 +73,8 @@ class FailedUpdates extends Subtask {
 		$reg = "!^\#\{\{ *Burocrate *\| *($remList).+\n!m";
 		$newContent = preg_replace( $reg, '', $content );
 
-		if ( count( $remove ) > 1 ) {
-			$lastUser = array_pop( $remove );
-			$removeList = implode( ', ', $remove ) . " e $lastUser";
-		} else {
-			$removeList = $remove[0];
-		}
-
 		$summary = $this->msg( 'bur-list-update-summary' )
-			->params( [ '$remove' => $removeList ] )
+			->params( [ '$remove' => Message::commaList( $remove ) ] )
 			->text();
 
 		$burList->edit( [
@@ -162,15 +156,8 @@ class FailedUpdates extends Subtask {
 			$newContent = preg_replace( $re, '$0' . "\n=== $month ===\n" . $text, $content );
 		}
 
-		if ( count( $names ) > 1 ) {
-			$lastUser = array_pop( $names );
-			$namesList = implode( ', ', $names ) . " e $lastUser";
-		} else {
-			$namesList = $names[0];
-		}
-
 		$summary = $this->msg( 'annunci-summary' )
-			->params( [ '$names' => $namesList ] )
+			->params( [ '$names' => Message::commaList( $names ) ] )
 			->text();
 
 		$annunciPage->edit( [
@@ -208,15 +195,8 @@ class FailedUpdates extends Subtask {
 			$newContent = preg_replace( $re, '$0' . "\n== $year ==\n" . $text, $content );
 		}
 
-		if ( count( $names ) > 1 ) {
-			$lastUser = array_pop( $names );
-			$namesList = implode( ', ', $names ) . " e $lastUser";
-		} else {
-			$namesList = $names[0];
-		}
-
 		$summary = $this->msg( 'ultimenotizie-summary' )
-			->params( [ '$names' => $namesList ] )
+			->params( [ '$names' => Message::commaList( $names ) ] )
 			->text();
 
 		$notiziePage->edit( [

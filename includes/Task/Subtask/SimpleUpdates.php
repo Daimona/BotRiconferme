@@ -2,6 +2,7 @@
 
 namespace BotRiconferme\Task\Subtask;
 
+use BotRiconferme\Message;
 use BotRiconferme\Page\Page;
 use BotRiconferme\Page\PageRiconferma;
 use BotRiconferme\TaskResult;
@@ -131,28 +132,10 @@ class SimpleUpdates extends Subtask {
 			}
 		}
 
-		if ( count( $riconfNames ) > 1 ) {
-			$lastUser = array_pop( $riconfNames );
-			$riconfList = implode( ', ', $riconfNames ) . " e $lastUser";
-		} elseif ( $riconfNames ) {
-			$riconfList = $riconfNames[0];
-		} else {
-			$riconfList = 'nessuno';
-		}
-
-		if ( count( $removeNames ) > 1 ) {
-			$lastUser = array_pop( $removeNames );
-			$removeList = implode( ', ', $removeNames ) . " e $lastUser";
-		} elseif ( $removeNames ) {
-			$removeList = $removeNames[0];
-		} else {
-			$removeList = 'nessuno';
-		}
-
 		$summary = $this->msg( 'close-update-list-summary' )
 			->params( [
-				'$riconf' => $riconfList,
-				'$remove' => $removeList
+				'$riconf' => Message::commaList( $riconfNames ),
+				'$remove' => Message::commaList( $removeNames )
 			] )
 			->text();
 
@@ -195,28 +178,11 @@ class SimpleUpdates extends Subtask {
 			'Updating CU list. Riconf: ' . implode( ', ', $riconfNames ) .
 			'; remove: ' . implode( ', ', $removeNames )
 		);
-		if ( count( $riconfNames ) > 1 ) {
-			$lastUser = array_pop( $riconfNames );
-			$riconfList = implode( ', ', $riconfNames ) . " e $lastUser";
-		} elseif ( $riconfNames ) {
-			$riconfList = $riconfNames[0];
-		} else {
-			$riconfList = 'nessuno';
-		}
-
-		if ( count( $removeNames ) > 1 ) {
-			$lastUser = array_pop( $removeNames );
-			$removeList = implode( ', ', $removeNames ) . " e $lastUser";
-		} elseif ( $removeNames ) {
-			$removeList = $removeNames[0];
-		} else {
-			$removeList = 'nessuno';
-		}
 
 		$summary = $this->msg( 'cu-list-update-summary' )
 			->params( [
-				'$riconf' => $riconfList,
-				'$remove' => $removeList
+				'$riconf' => Message::commaList( $riconfNames ),
+				'$remove' => Message::commaList( $removeNames )
 			] )
 			->text();
 
