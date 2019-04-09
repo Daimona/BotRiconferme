@@ -47,15 +47,14 @@ class FailedUpdates extends Subtask {
 	 */
 	protected function updateBurList( array $pages ) {
 		$this->getLogger()->info( 'Checking if bur list needs updating.' );
-		$admins = $this->getDataProvider()->getUsersList();
 
 		$remove = [];
 		foreach ( $pages as $page ) {
 			$user = $page->getUser();
-			if ( array_key_exists( 'bureaucrat', $admins[ $user ] ) &&
+			if ( $user->inGroup( 'bureaucrat' ) &&
 				$page->getOutcome() & PageRiconferma::OUTCOME_FAIL
 			) {
-				$remove[] = $user;
+				$remove[] = $user->getName();
 			}
 		}
 
@@ -89,7 +88,6 @@ class FailedUpdates extends Subtask {
 		$this->getLogger()->info(
 			'Requesting removal on meta for: ' . implode( ', ', array_map( 'strval', $pages ) )
 		);
-		$admins = $this->getDataProvider()->getUsersList();
 
 		$flagRemPage = new Page(
 			$this->getConfig()->get( 'flag-removal-page-title' ),
@@ -102,9 +100,9 @@ class FailedUpdates extends Subtask {
 		foreach ( $pages as $page ) {
 			$newContent .=
 				$baseText->params( [
-					'$username' => $page->getUser(),
+					'$username' => $page->getUser()->getName(),
 					'$link' => '[[:it:' . $page->getTitle() . ']]',
-					'$groups' => implode( ', ', array_keys( $admins[ $page->getUser() ] ) )
+					'$groups' => $page->getUser()->getGroups()
 				] )->text();
 		}
 
@@ -130,7 +128,7 @@ class FailedUpdates extends Subtask {
 		$names = [];
 		$text = '';
 		foreach ( $pages as $page ) {
-			$user = $page->getUser();
+			$user = $page->getUser()->getName();
 			$names[] = $user;
 			$text .= "{{Breve|admin|{{subst:#time:j}}|[[Utente:$user|]] " .
 				"non è stato riconfermato [[WP:A|amministratore]].}}\n";
@@ -172,7 +170,7 @@ class FailedUpdates extends Subtask {
 		$names = [];
 		$text = '';
 		foreach ( $pages as $page ) {
-			$user = $page->getUser();
+			$user = $page->getUser()->getName();
 			$title = $page->getTitle();
 			$names[] = $user;
 			$text .= "'''{{subst:#time:j F}}''': [[Utente:$user|]] non è stato [[$title|riconfermato]] " .

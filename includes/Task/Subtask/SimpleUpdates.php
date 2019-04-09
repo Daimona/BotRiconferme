@@ -122,7 +122,7 @@ class SimpleUpdates extends Subtask {
 
 		$riconfNames = $removeNames = [];
 		foreach ( $pages as $page ) {
-			$user = $page->getUser();
+			$user = $page->getUser()->getName();
 			$reg = "!(\{\{Amministratore\/riga\|$user.+\| *)\d+( *\|(?: *pausa)? *\}\}\n)!";
 			if ( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ) {
 				// Remove the line
@@ -153,21 +153,20 @@ class SimpleUpdates extends Subtask {
 	protected function updateCUList( array $pages ) {
 		$this->getLogger()->info( 'Checking if CU list needs updating.' );
 		$cuList = new Page( $this->getConfig()->get( 'cu-list-title' ) );
-		$admins = $this->getDataProvider()->getUsersList();
 		$newContent = $cuList->getContent();
 
 		$riconfNames = $removeNames = [];
 		foreach ( $pages as $page ) {
 			$user = $page->getUser();
-			if ( array_key_exists( 'checkuser', $admins[ $user ] ) ) {
+			if ( $user->inGroup( 'checkuser' ) ) {
 				$reg = "!(\{\{ *Checkuser *\| *$user *\|[^}]+\| *)[\w \d](}}.*\n)!";
 				if ( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ) {
 					// Remove the line
 					$newContent = preg_replace( $reg, '', $newContent );
-					$removeNames[] = $user;
+					$removeNames[] = $user->getName();
 				} else {
 					$newContent = preg_replace( $reg, '$1{{subst:#time:j F Y}}$2', $newContent );
-					$riconfNames[] = $user;
+					$riconfNames[] = $user->getName();
 				}
 			}
 		}

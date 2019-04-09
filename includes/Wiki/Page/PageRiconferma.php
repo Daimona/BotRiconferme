@@ -3,6 +3,7 @@
 namespace BotRiconferme\Wiki\Page;
 
 use BotRiconferme\Message;
+use BotRiconferme\Wiki\User;
 
 /**
  * Represents a single riconferma page
@@ -30,10 +31,11 @@ class PageRiconferma extends Page {
 	/**
 	 * Get the name of the user from the title
 	 *
-	 * @return string
+	 * @return User
 	 */
-	public function getUser() : string {
-		return explode( '/', $this->title )[2];
+	public function getUser() : User {
+		$name = explode( '/', $this->title )[2];
+		return new User( $name );
 	}
 
 	/**
