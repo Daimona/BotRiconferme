@@ -4,6 +4,7 @@ namespace BotRiconferme;
 
 use BotRiconferme\Exception\ConfigException;
 use BotRiconferme\Exception\MissingPageException;
+use BotRiconferme\Wiki\Controller;
 
 /**
  * Singleton class holding user-defined config
@@ -40,7 +41,7 @@ class Config {
 
 		// On-wiki values
 		try {
-			$conf = ( new WikiController )->getPageContent( $defaults[ 'config-title' ] );
+			$conf = ( new Controller )->getPageContent( $defaults[ 'config-title' ] );
 		} catch ( MissingPageException $e ) {
 			throw new ConfigException( 'Please create a config page.' );
 		}
@@ -58,7 +59,7 @@ class Config {
 		static $messages = null;
 		if ( $messages === null ) {
 			try {
-				$cont = ( new WikiController )->getPageContent( $this->opts[ 'msg-title' ] );
+				$cont = ( new Controller )->getPageContent( $this->opts[ 'msg-title' ] );
 				$messages = json_decode( $cont, true );
 			} catch ( MissingPageException $e ) {
 				throw new ConfigException( 'Please create a messages page.' );

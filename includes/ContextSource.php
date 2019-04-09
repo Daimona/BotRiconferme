@@ -2,6 +2,7 @@
 
 namespace BotRiconferme;
 
+use BotRiconferme\Wiki\Controller;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 
@@ -15,13 +16,13 @@ abstract class ContextSource implements LoggerAwareInterface {
 	/** @var Config */
 	private $config;
 
-	/** @var WikiController */
+	/** @var Controller */
 	private $controller;
 
 	public function __construct() {
 		$this->setLogger( new Logger );
 		$this->setConfig( Config::getInstance() );
-		$this->setController( new WikiController );
+		$this->setController( new Controller );
 	}
 
 	/**
@@ -53,16 +54,16 @@ abstract class ContextSource implements LoggerAwareInterface {
 	}
 
 	/**
-	 * @return WikiController
+	 * @return Controller
 	 */
-	protected function getController() : WikiController {
+	protected function getController() : Controller {
 		return $this->controller;
 	}
 
 	/**
-	 * @param WikiController $controller
+	 * @param Controller $controller
 	 */
-	protected function setController( WikiController $controller ) {
+	protected function setController( Controller $controller ) {
 		$this->controller = $controller;
 	}
 

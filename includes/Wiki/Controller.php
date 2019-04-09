@@ -1,18 +1,20 @@
 <?php declare( strict_types=1 );
 
-namespace BotRiconferme;
+namespace BotRiconferme\Wiki;
 
+use BotRiconferme\Config;
 use BotRiconferme\Exception\EditException;
 use BotRiconferme\Exception\LoginException;
 use BotRiconferme\Exception\APIRequestException;
 use BotRiconferme\Exception\MissingPageException;
 use BotRiconferme\Exception\MissingSectionException;
+use BotRiconferme\Logger;
 use BotRiconferme\Request\RequestBase;
 
 /**
  * Class for wiki interaction, contains some requests shorthands
  */
-class WikiController {
+class Controller {
 	/** @var bool */
 	private static $loggedIn = false;
 	/** @var Logger */

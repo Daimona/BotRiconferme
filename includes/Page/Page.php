@@ -3,7 +3,7 @@
 namespace BotRiconferme\Page;
 
 use BotRiconferme\Logger;
-use BotRiconferme\WikiController;
+use BotRiconferme\Wiki\Controller;
 
 /**
  * Represents a single on-wiki page
@@ -11,7 +11,7 @@ use BotRiconferme\WikiController;
 class Page {
 	/** @var string */
 	protected $title;
-	/** @var WikiController */
+	/** @var Controller */
 	protected $controller;
 	/** @var string|null */
 	protected $content;
@@ -22,7 +22,7 @@ class Page {
 	 */
 	public function __construct( string $title, string $domain = DEFAULT_URL ) {
 		$this->title = $title;
-		$this->controller = new WikiController( $domain );
+		$this->controller = new Controller( $domain );
 	}
 
 	/**
