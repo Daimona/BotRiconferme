@@ -83,11 +83,11 @@ class TaskDataProvider extends ContextSource {
 	public function getOpenPages() : array {
 		static $list = null;
 		if ( $list === null ) {
-			$baseTitle = $this->getConfig()->get( 'main-page-title' );
+			$mainTitle = $this->getConfig()->get( 'main-page-title' );
 			$params = [
 				'action' => 'query',
 				'prop' => 'templates',
-				'titles' => $baseTitle,
+				'titles' => $mainTitle,
 				'tlnamespace' => 4,
 				'tllimit' => 'max'
 			];
@@ -96,7 +96,7 @@ class TaskDataProvider extends ContextSource {
 			$pages = $res->query->pages;
 			$list = [];
 			foreach ( reset( $pages )->templates as $page ) {
-				if ( preg_match( "!$baseTitle\/[^\/]+\/\d!", $page->title ) !== false ) {
+				if ( preg_match( "!$mainTitle\/[^\/]+\/\d!", $page->title ) ) {
 					$list[] = new PageRiconferma( $page->title );
 				}
 			}

@@ -143,7 +143,7 @@ class FailedUpdates extends Subtask {
 		$annunciPage = new Page( $this->getConfig()->get( 'annunci-page-title' ) );
 		$content = $annunciPage->getContent( 1 );
 		$secReg = "!=== *$month *===!";
-		if ( preg_match( $secReg, $content ) !== false ) {
+		if ( preg_match( $secReg, $content ) ) {
 			$newContent = preg_replace( $secReg, '$0' . "\n" . $text, $content );
 		} else {
 			$re = '!</div>\s*}}\s*</includeonly>!';
@@ -182,7 +182,7 @@ class FailedUpdates extends Subtask {
 		$content = $notiziePage->getContent();
 		$year = date( 'Y' );
 		$secReg = "!== *$year *==!";
-		if ( preg_match( $secReg, $content ) !== false ) {
+		if ( preg_match( $secReg, $content ) ) {
 			$newContent = preg_replace( $secReg, '$0' . "\n" . $text, $content );
 		} else {
 			$re = '!si veda la \[\[[^\]+relativa discussione]]\.\n!';

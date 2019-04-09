@@ -42,7 +42,7 @@ class Message {
 	protected function parsePlurals() {
 		$reg = '!\{\{$plur|(?P<amount>\d+)|(?P<sing>[^}|]+)|(?P<plur>[^|}]+)}}!';
 
-		if ( preg_match( $reg, $this->value ) === false ) {
+		if ( preg_match( $reg, $this->value ) === 0 ) {
 			return;
 		}
 		$this->value = preg_replace_callback(

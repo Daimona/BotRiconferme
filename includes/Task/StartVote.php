@@ -129,7 +129,7 @@ class StartVote extends Task {
 		} else {
 			// Start section
 			$matches = [];
-			if ( preg_match( $introReg, $newContent, $matches ) === false ) {
+			if ( preg_match( $introReg, $newContent, $matches ) === 0 ) {
 				throw new TaskException( 'Intro not found in vote page' );
 			}
 			$beforeReg = '!INSERIRE LA NOTIZIA PIÙ NUOVA IN CIMA.+!m';

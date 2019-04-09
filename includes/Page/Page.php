@@ -74,7 +74,7 @@ class Page {
 	 * @return bool
 	 */
 	public function matches( string $regex ) : bool {
-		return preg_match( $regex, $this->getContent() ) !== false;
+		return (bool)preg_match( $regex, $this->getContent() );
 	}
 
 	/**
@@ -87,8 +87,8 @@ class Page {
 	 */
 	public function getMatch( string $regex ) : array {
 		$ret = [];
-		if ( preg_match( $regex, $this->getContent(), $ret ) === false ) {
-			throw new \Exception;
+		if ( preg_match( $regex, $this->getContent(), $ret ) === 0 ) {
+			throw new \Exception( 'The content does not match the given regex' );
 		}
 		return $ret;
 	}
