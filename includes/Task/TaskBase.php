@@ -75,7 +75,7 @@ abstract class TaskBase extends ContextSource {
 	 *
 	 * @return string
 	 */
-	abstract protected function getOperationName() : string;
+	abstract public function getOperationName() : string;
 
 	/**
 	 * Exception handler.

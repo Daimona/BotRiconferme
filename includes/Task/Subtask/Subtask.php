@@ -11,7 +11,7 @@ abstract class Subtask extends TaskBase {
 	/**
 	 * @inheritDoc
 	 */
-	final protected function getOperationName(): string {
+	final public function getOperationName(): string {
 		return 'subtask';
 	}
 }

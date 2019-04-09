@@ -21,7 +21,7 @@ class SimpleUpdates extends Subtask {
 			return TaskResult::STATUS_NOTHING;
 		}
 
-		$this->updateVote( $pages );
+		$this->updateVotazioni( $pages );
 		$this->updateNews( $pages );
 		$this->updateAdminList( $pages );
 		$this->updateCUList( $pages );
@@ -31,9 +31,9 @@ class SimpleUpdates extends Subtask {
 
 	/**
 	 * @param PageRiconferma[] $pages
-	 * @see UpdatesAround::addVote()
+	 * @see UpdatesAround::addToVotazioni()
 	 */
-	protected function updateVote( array $pages ) {
+	protected function updateVotazioni( array $pages ) {
 		$this->getLogger()->info(
 			'Updating votazioni: ' . implode( ', ', array_map( 'strval', $pages ) )
 		);
@@ -68,7 +68,7 @@ class SimpleUpdates extends Subtask {
 
 	/**
 	 * @param array $pages
-	 * @see UpdatesAround::addNews()
+	 * @see UpdatesAround::addToNews()
 	 */
 	protected function updateNews( array $pages ) {
 		$simpleAmount = $voteAmount = 0;

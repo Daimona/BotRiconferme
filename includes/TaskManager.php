@@ -22,9 +22,9 @@ use BotRiconferme\Task\UpdateList;
  */
 class TaskManager {
 	// Run modes
-	const MODE_COMPLETE = 0;
-	const MODE_TASK = 1;
-	const MODE_SUBTASK = 2;
+	const MODE_COMPLETE = 'full process';
+	const MODE_TASK = 'single task';
+	const MODE_SUBTASK = 'single subtask';
 
 	// File where the date of the last full run is stored
 	const LOG_FILE = './lastrun.log';
@@ -50,11 +50,11 @@ class TaskManager {
 	/**
 	 * Main entry point
 	 *
-	 * @param int $mode One of the MODE_ constants
+	 * @param string $mode One of the MODE_ constants
 	 * @param string|null $name Only used in MODE_TASK and MODE_SUBTASK
 	 * @return TaskResult
 	 */
-	public function run( int $mode, string $name = null ) : TaskResult {
+	public function run( string $mode, string $name = null ) : TaskResult {
 		$this->provider = new TaskDataProvider;
 
 		if ( $mode === self::MODE_COMPLETE ) {

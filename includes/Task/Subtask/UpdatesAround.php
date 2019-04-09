@@ -25,9 +25,9 @@ class UpdatesAround extends Subtask {
 		// Wikipedia:Amministratori/Riconferma annuale
 		$this->addToMainPage( $pages );
 		// WP:Wikipediano/Votazioni
-		$this->addVote( $pages );
+		$this->addToVotazioni( $pages );
 		// Template:VotazioniRCnews
-		$this->addNews( count( $pages ) );
+		$this->addToNews( count( $pages ) );
 
 		return TaskResult::STATUS_GOOD;
 	}
@@ -64,7 +64,7 @@ class UpdatesAround extends Subtask {
 	 *
 	 * @param PageRiconferma[] $pages
 	 */
-	protected function addVote( array $pages ) {
+	protected function addToVotazioni( array $pages ) {
 		$this->getLogger()->info(
 			'Adding the following to votes: ' . implode( ', ', array_map( 'strval', $pages ) )
 		);
@@ -112,7 +112,7 @@ class UpdatesAround extends Subtask {
 	 *
 	 * @param int $amount
 	 */
-	protected function addNews( int $amount ) {
+	protected function addToNews( int $amount ) {
 		$this->getLogger()->info( "Increasing the news counter by $amount" );
 		$newsPage = new Page( $this->getConfig()->get( 'news-page-title' ) );
 

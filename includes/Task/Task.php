@@ -33,7 +33,7 @@ abstract class Task extends TaskBase {
 	/**
 	 * @inheritDoc
 	 */
-	final protected function getOperationName(): string {
+	final public function getOperationName(): string {
 		return 'task';
 	}
 

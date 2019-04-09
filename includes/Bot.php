@@ -16,18 +16,29 @@ class Bot {
 	}
 
 	/**
-	 * Entry point for the whole process
+	 * Internal call to TaskManager
+	 *
+	 * @param string $mode
+	 * @param string|null $name
 	 */
-	public function run() {
-		$this->logger->info( 'Starting full process.' );
+	private function run( string $mode = TaskManager::MODE_COMPLETE, string $name = null ) {
+		$activity = $mode === TaskManager::MODE_COMPLETE ? TaskManager::MODE_COMPLETE : "$mode $name";
+		$this->logger->info( "Starting $activity" );
 		$manager = new TaskManager;
-		$res = $manager->run( TaskManager::MODE_COMPLETE );
+		$res = $manager->run( $mode, $name );
 		$line = '---------------------------------------------------';
 		if ( $res->isOK() ) {
-			$this->logger->info( "Execution completed successfully.\n$line\n\n" );
+			$this->logger->info( "Execution of $activity completed successfully.\n$line\n\n" );
 		} else {
-			$this->logger->error( "Execution failed.\n$res\n$line\n\n" );
+			$this->logger->error( "Execution of $activity failed.\n$res\n$line\n\n" );
 		}
+	}
+
+	/**
+	 * Entry point for the whole process
+	 */
+	public function runAll() {
+		$this->run();
 	}
 
 	/**
@@ -36,15 +47,7 @@ class Bot {
 	 * @param string $task
 	 */
 	public function runTask( string $task ) {
-		$this->logger->info( "Starting single task $task." );
-		$manager = new TaskManager;
-		$res = $manager->run( TaskManager::MODE_TASK, $task );
-		$line = '---------------------------------------------------';
-		if ( $res->isOK() ) {
-			$this->logger->info( "Execution of task $task completed successfully.\n$line\n\n" );
-		} else {
-			$this->logger->error( "Execution of task $task failed.\n$res\n$line\n\n" );
-		}
+		$this->run( TaskManager::MODE_TASK, $task );
 	}
 
 	/**
@@ -53,14 +56,6 @@ class Bot {
 	 * @param string $subtask
 	 */
 	public function runSubtask( string $subtask ) {
-		$this->logger->info( "Starting single subtask $subtask." );
-		$manager = new TaskManager;
-		$res = $manager->run( TaskManager::MODE_SUBTASK, $subtask );
-		$line = '---------------------------------------------------';
-		if ( $res->isOK() ) {
-			$this->logger->info( "Execution of subtask $subtask completed successfully.\n$line\n\n" );
-		} else {
-			$this->logger->error( "Execution of subtask $subtask failed.\n$res\n$line\n\n" );
-		}
+		$this->run( TaskManager::MODE_SUBTASK, $subtask );
 	}
 }

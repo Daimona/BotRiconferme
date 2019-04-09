@@ -96,8 +96,8 @@ class StartVote extends Task {
 	 * Update [[WP:Wikipediano/Votazioni]]
 	 *
 	 * @param PageRiconferma[] $pages
-	 * @see SimpleUpdates::updateVote()
-	 * @see UpdatesAround::addVote()
+	 * @see SimpleUpdates::updateVotazioni()
+	 * @see UpdatesAround::addToVotazioni()
 	 */
 	protected function updateVotePage( array $pages ) {
 		$votePage = new Page( $this->getConfig()->get( 'vote-page-title' ) );
@@ -154,7 +154,7 @@ class StartVote extends Task {
 	 * Template:VotazioniRCnews
 	 *
 	 * @param int $amount Of pages to move
-	 * @see UpdatesAround::addNews()
+	 * @see UpdatesAround::addToNews()
 	 * @see SimpleUpdates::updateNews()
 	 */
 	protected function updateNews( int $amount ) {

@@ -92,5 +92,5 @@ if ( count( $taskOpts ) === 2 ) {
 } elseif ( isset( $taskOpts['subtask'] ) ) {
 	$bot->runSubtask( $taskOpts[ 'subtask' ] );
 } else {
-	$bot->run();
+	$bot->runAll();
 }
