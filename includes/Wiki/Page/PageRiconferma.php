@@ -186,6 +186,14 @@ class PageRiconferma extends Page {
 	}
 
 	/**
+	 * Get the timestamp of the creation of the page
+	 *
+	 * @return int
+	 */
+	public function getCreationTimestamp() : int {
+		return $this->controller->getPageCreationTS( $this->title );
+	}
+	/**
 	 * Get the end time
 	 *
 	 * @return int
@@ -197,8 +205,7 @@ class PageRiconferma extends Page {
 			$day = preg_replace( '![^\d \w]!', '', $day );
 			return Message::getTimestampFromLocalTime( $day . " alle " . $hours );
 		} else {
-			$created = $this->controller->getPageCreationTS( $this->title );
-			return $created + 60 * 60 * 24 * 7;
+			return $this->getCreationTimestamp() + 60 * 60 * 24 * 7;
 		}
 	}
 }

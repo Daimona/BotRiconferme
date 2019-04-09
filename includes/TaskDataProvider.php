@@ -92,8 +92,7 @@ class TaskDataProvider extends ContextSource {
 				'tllimit' => 'max'
 			];
 
-			$res = RequestBase::newFromParams( $params )->execute();
-			$pages = $res->query->pages;
+			$pages = RequestBase::newFromParams( $params )->execute()->query->pages;
 			$list = [];
 			foreach ( reset( $pages )->templates as $page ) {
 				if ( preg_match( "!$mainTitle\/[^\/]+\/\d!", $page->title ) ) {

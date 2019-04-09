@@ -52,7 +52,7 @@ class FailedUpdates extends Subtask {
 		foreach ( $pages as $page ) {
 			$user = $page->getUser();
 			if ( $user->inGroup( 'bureaucrat' ) &&
-				$page->getOutcome() & PageRiconferma::OUTCOME_FAIL
+				( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL )
 			) {
 				$remove[] = $user->getName();
 			}

@@ -73,24 +73,22 @@ class CreatePages extends Subtask {
 			'action' => 'query',
 			'list' => 'allpages',
 			'apnamespace' => 4,
-			'apprefix' => "$unprefixedTitle/$user",
+			'apprefix' => "$unprefixedTitle/$user/",
 			'aplimit' => 'max'
 		];
 
-		$res = ( RequestBase::newFromParams( $params ) )->execute();
+		$res = RequestBase::newFromParams( $params )->execute();
 
 		$last = 0;
-		foreach ( $res->query->allpages as $page ) {
-			$createdOn = $this->getController()->getPageCreationTS( $page->title );
-			if ( date( 'z/Y' ) === date( 'z/Y', $createdOn ) ) {
+		foreach ( $res->query->allpages as $resPage ) {
+			$page = new PageRiconferma( $resPage->title );
+			if ( date( 'z/Y' ) === date( 'z/Y', $page->getCreationTimestamp() ) ) {
 				// Was created today
-				throw new TaskException( 'Page ' . $page->title . ' was already created.' );
+				throw new TaskException( "Page $page was already created." );
 			}
 
-			$bits = explode( '/', $page->title );
-			$cur = intval( end( $bits ) );
-			if ( is_numeric( $cur ) && $cur > $last ) {
-				$last = $cur;
+			if ( $page->getNum() > $last ) {
+				$last = $page->getNum();
 			}
 		}
 		return $last;
