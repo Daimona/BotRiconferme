@@ -44,9 +44,13 @@ class ArchivePages extends Subtask {
 			$remove[] = '{{' . $page->getTitle() . '}}';
 		}
 
+		$summary = $this->msg( 'close-main-summary' )
+			->params( [ '$num' => count( $pages ) ] )
+			->text();
+
 		$mainPage->edit( [
 			'text' => str_replace( $remove, '', $mainPage->getContent() ),
-			'summary' => $this->msg( 'close-main-summary' )->text()
+			'summary' => $summary
 		] );
 	}
 
@@ -85,7 +89,7 @@ class ArchivePages extends Subtask {
 	private function reallyAddToArchive( string $archiveTitle, array $pages ) {
 		$archivePage = new Page( "$archiveTitle/" . date( 'Y' ) );
 
-		$append = '';
+		$append = "\n";
 		$archivedList = [];
 		foreach ( $pages as $page ) {
 			$append .= '{{' . $page->getTitle() . "}}\n";

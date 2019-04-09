@@ -42,7 +42,7 @@ class UpdatesAround extends Subtask {
 			'Adding the following to main: ' . implode( ', ', array_map( 'strval', $pages ) )
 		);
 
-		$append = '';
+		$append = "\n";
 		foreach ( $pages as $page ) {
 			$append .= '{{' . $page->getTitle() . "}}\n";
 		}
@@ -72,7 +72,7 @@ class UpdatesAround extends Subtask {
 
 		$content = $votePage->getContent();
 
-		$time = Message::getTimeWithArticle( time() + ( 60 * 60 * 24 * 7 ) );
+		$time = Message::getTimeWithArticle( time() + ( 60 * 60 * 24 * PageRiconferma::SIMPLE_DURATION ) );
 		$newLines = '';
 		foreach ( $pages as $page ) {
 			$newLines .= '*[[Utente:' . $page->getUser() . '|]]. ' .
@@ -117,7 +117,7 @@ class UpdatesAround extends Subtask {
 		$newsPage = new Page( $this->getConfig()->get( 'news-page-title' ) );
 
 		$content = $newsPage->getContent();
-		$reg = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d+)!';
+		$reg = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d*)(?=\s*[}|])!';
 
 		try {
 			$matches = $newsPage->getMatch( $reg );

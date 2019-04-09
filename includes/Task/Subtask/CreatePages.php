@@ -40,7 +40,7 @@ class CreatePages extends Subtask {
 		} catch ( TaskException $e ) {
 			// The page was already created today. PLZ let this poor bot work!
 			$this->getDataProvider()->removeUser( $user );
-			$this->getLogger()->warning( $e->getMessage() . "\nRemoving $user." );
+			$this->getLogger()->warning( $e->getMessage() . "\nRemoving $user from the list." );
 			return;
 		}
 
@@ -147,7 +147,7 @@ class CreatePages extends Subtask {
 
 		$params = [
 			'title' => $title,
-			'appendtext' => $newText,
+			'appendtext' => "\n$newText",
 			'summary' => $this->msg( 'base-page-summary-update' )->text()
 		];
 

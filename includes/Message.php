@@ -40,7 +40,7 @@ class Message {
 	 * Replace {{$plur|<amount>|sing|plur}}
 	 */
 	protected function parsePlurals() {
-		$reg = '!\{\{$plur|(?P<amount>\d+)|(?P<sing>[^}|]+)|(?P<plur>[^|}]+)}}!';
+		$reg = '!\{\{\$plur\|(?P<amount>\d+)\|(?P<sing>[^}|]+)\|(?P<plur>[^|}]+)}}!';
 
 		if ( preg_match( $reg, $this->value ) === 0 ) {
 			return;
@@ -76,22 +76,27 @@ class Message {
 	 *
 	 * @param string $timeString
 	 * @return int
-	 * @todo Is there a better way?
 	 */
 	public static function getTimestampFromLocalTime( string $timeString ) : int {
-		$oldLoc = setlocale( LC_TIME, 'it_IT', 'Italian_Italy', 'Italian' );
-		$bits = strptime( $timeString, '%e %m %Y alle %H:%M' );
-		$timestamp = mktime(
-			$bits['tm_hour'],
-			$bits['tm_min'],
-			0,
-			$bits['tm_mon'] + 1,
-			$bits['tm_mday'],
-			$bits['tm_year'] + 1900
-		);
-		setlocale( LC_TIME, $oldLoc );
+		$months = [
+			'gennaio' => 'January',
+			'febbraio' => 'February',
+			'marzo' => 'March',
+			'aprile' => 'April',
+			'maggio' => 'May',
+			'giugno' => 'June',
+			'luglio' => 'July',
+			'agosto' => 'August',
+			'settembre' => 'September',
+			'ottobre' => 'October',
+			'novembre' => 'November',
+			'dicembre' => 'December'
+		];
 
-		return $timestamp;
+		$englishTime = str_ireplace( array_keys( $months ), array_values( $months ), $timeString );
+		$englishTime = str_replace( ' alle ', ' ', $englishTime );
+
+		return strtotime( $englishTime );
 	}
 
 	/**

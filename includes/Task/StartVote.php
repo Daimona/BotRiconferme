@@ -9,7 +9,7 @@ use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\TaskResult;
 
 /**
- * Start a vote if there are >= 15 opposing comments
+ * Start a vote if there are >= PageRiconferma::REQUIRED_OPPOSE opposing comments
  */
 class StartVote extends Task {
 	/**
@@ -108,7 +108,7 @@ class StartVote extends Task {
 			$titles[] = preg_quote( $page->getTitle() );
 		}
 		$titleReg = implode( '|', $titles );
-		$search = "!^\*.+ La \[\[($titleReg)\|procedura]] termina.+\n!gm";
+		$search = "!^\*.+ La \[\[($titleReg)\|procedura]] termina.+\n!m";
 
 		$newContent = preg_replace( $search, '', $content );
 		// Make sure the last line ends with a full stop
@@ -116,14 +116,16 @@ class StartVote extends Task {
 		$newContent = preg_replace( $sectionReg, '$1.', $newContent );
 
 		$newLines = '';
-		$time = Message::getTimeWithArticle( time() + ( 60 * 60 * 24 * 14 ) );
+		$time = Message::getTimeWithArticle( time() + ( 60 * 60 * 24 * PageRiconferma::VOTE_DURATION ) );
 		foreach ( $pages as $page ) {
 			$newLines .= '*[[Utente:' . $page->getUser() . '|]]. ' .
 				'La [[' . $page->getTitle() . "|votazione]] termina $time;\n";
 		}
 
-		$introReg = '!^Si vota per la \[\[Wikipedia:Amministratori/Riconferma annuale.+!m';
-		if ( preg_match( $introReg, strip_tags( $newContent ) ) ) {
+		$introReg = '!^;Si vota per la \[\[Wikipedia:Amministratori/Riconferma annuale.+!m';
+		// Strip comments
+		$visible = preg_replace( '/(?=<!--)([\s\S]*?)-->/', '', $newContent );
+		if ( preg_match( $introReg, $visible ) ) {
 			// Put before the existing ones, if they're found outside comments
 			$newContent = preg_replace( $introReg, '$0' . "\n$newLines", $newContent, 1 );
 		} else {
@@ -162,8 +164,8 @@ class StartVote extends Task {
 		$newsPage = new Page( $this->getConfig()->get( 'news-page-title' ) );
 
 		$content = $newsPage->getContent();
-		$regTac = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d+)!';
-		$regVot = '!(\| *riconferme[ _]voto[ _]amministratori *= *)(\d+)!';
+		$regTac = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d*)(?=\s*[}|])!';
+		$regVot = '!(\| *riconferme[ _]voto[ _]amministratori *= *)(\d*)(?=\s*[}|])!';
 
 		if ( !$newsPage->matches( $regTac ) ) {
 			throw new TaskException( 'Param "tacite" not found in news page' );

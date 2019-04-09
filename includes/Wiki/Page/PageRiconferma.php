@@ -19,6 +19,11 @@ class PageRiconferma extends Page {
 	const OUTCOME_NO_QUOR = 2;
 	const OUTCOME_FAIL = self::OUTCOME_FAIL_VOTES | self::OUTCOME_NO_QUOR;
 
+	// Values depending on bureaucracy
+	const REQUIRED_OPPOSE = 15;
+	const SIMPLE_DURATION = 7;
+	const VOTE_DURATION = 14;
+
 	/**
 	 * @param string $title
 	 */
@@ -98,7 +103,7 @@ class PageRiconferma extends Page {
 	protected function getCountForSection( int $secNum ) : int {
 		$content = $this->controller->getPageContent( $this->title, $secNum );
 		// Let's hope that this is good enough...
-		return substr_count( $content, "\n\# *(?![#*])" );
+		return preg_match_all("/^\# *(?![# *]|\.\.\.$)/m", $content );
 	}
 
 	/**
@@ -117,7 +122,7 @@ class PageRiconferma extends Page {
 	 * @return bool
 	 */
 	public function hasOpposition() : bool {
-		return $this->getOpposingCount() >= 15;
+		return $this->getOpposingCount() >= self::REQUIRED_OPPOSE;
 	}
 
 	/**
@@ -200,12 +205,12 @@ class PageRiconferma extends Page {
 	 */
 	public function getEndTimestamp() : int {
 		if ( $this->isVote() ) {
-			$reg = "!La votazione ha inizio il.+ e ha termine.+ '''([^']+)''' alle ore '''([^']+)'''!";
-			list( , $day, $hours ) = $this->getMatch( $reg );
+			$reg = "!La votazione ha inizio il.+ alle ore ([\d:]+) e ha termine il (.+) alla stessa ora!";
+			list( , $hours, $day ) = $this->getMatch( $reg );
 			$day = preg_replace( '![^\d \w]!', '', $day );
 			return Message::getTimestampFromLocalTime( $day . " alle " . $hours );
 		} else {
-			return $this->getCreationTimestamp() + 60 * 60 * 24 * 7;
+			return $this->getCreationTimestamp() + 60 * 60 * 24 * self::SIMPLE_DURATION;
 		}
 	}
 }

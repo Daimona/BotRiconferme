@@ -45,7 +45,7 @@ class UserNotice extends Subtask {
 			'title' => "User talk:$user",
 			'section' => 'new',
 			'text' => $msg,
-			'sectiontitle' => $this->getConfig()->get( 'user-notice-sectiontitle' ),
+			'sectiontitle' => $this->msg( 'user-notice-sectiontitle' )->text(),
 			'summary' => $this->msg( 'user-notice-summary' )->text()
 		];
 

@@ -85,9 +85,9 @@ abstract class TaskBase extends ContextSource {
 	 */
 	public function handleException( \Throwable $ex ) {
 		$this->getLogger()->error(
-			get_class( $ex ) . ': ' .
-			$ex->getMessage() . "\nTrace:\n" .
-			$ex->getTraceAsString()
+			( new \ReflectionClass( $ex ) )->getShortName() . ': ' .
+			$ex->getMessage() . "\nin " . $ex->getFile() . ' line ' .
+			$ex->getLine() . "\nTrace:\n" . $ex->getTraceAsString()
 		);
 	}
 

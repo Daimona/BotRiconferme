@@ -109,7 +109,7 @@ class FailedUpdates extends Subtask {
 		$summary = $this->msg( 'flag-removal-summary' )
 			->params( [ '$num' => count( $pages ) ] )
 			->text();
-
+return;
 		$flagRemPage->edit( [
 			'section' => $section,
 			'text' => $newContent,

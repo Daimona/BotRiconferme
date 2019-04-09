@@ -87,8 +87,8 @@ class SimpleUpdates extends Subtask {
 		$newsPage = new Page( $this->getConfig()->get( 'news-page-title' ) );
 
 		$content = $newsPage->getContent();
-		$simpleReg = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d+)!';
-		$voteReg = '!(\| *riconferme[ _]voto[ _]amministratori *= *)(\d+)!';
+		$simpleReg = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d*)(?=\s*[}|])!';
+		$voteReg = '!(\| *riconferme[ _]voto[ _]amministratori *= *)(\d*)(?=\s*[}|])!';
 
 		$simpleMatches = $newsPage->getMatch( $simpleReg );
 		$voteMatches = $newsPage->getMatch( $voteReg );
