@@ -1,6 +1,6 @@
 <?php declare( strict_types=1 );
 
-namespace BotRiconferme\Page;
+namespace BotRiconferme\Wiki\Page;
 
 use BotRiconferme\Config;
 

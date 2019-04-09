@@ -4,8 +4,8 @@ namespace BotRiconferme\Task;
 
 use BotRiconferme\Exception\TaskException;
 use BotRiconferme\Message;
-use BotRiconferme\Page\Page;
-use BotRiconferme\Page\PageRiconferma;
+use BotRiconferme\Wiki\Page\Page;
+use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\TaskResult;
 
 /**

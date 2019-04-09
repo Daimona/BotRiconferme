@@ -2,7 +2,7 @@
 
 namespace BotRiconferme\Task;
 
-use BotRiconferme\Page\PageBotList;
+use BotRiconferme\Wiki\Page\PageBotList;
 use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Exception\TaskException;
 use BotRiconferme\TaskResult;
