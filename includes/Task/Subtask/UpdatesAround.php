@@ -72,7 +72,7 @@ class UpdatesAround extends Subtask {
 
 		$content = $votePage->getContent();
 
-		$time = Message::getTimeWithArticle( time() + ( 60 * 60 * 24 * PageRiconferma::SIMPLE_DURATION ) );
+		$time = Message::getTimeWithArticle( time() + ( 3600 * 24 * PageRiconferma::SIMPLE_DURATION ) );
 		$newLines = '';
 		foreach ( $pages as $page ) {
 			$newLines .= '*[[Utente:' . $page->getUser() . '|]]. ' .

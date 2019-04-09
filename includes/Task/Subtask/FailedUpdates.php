@@ -93,25 +93,26 @@ class FailedUpdates extends Subtask {
 			$this->getConfig()->get( 'flag-removal-page-title' ),
 			'https://meta.wikimedia.org/w/api.php'
 		);
-		$section = $this->getConfig()->get( 'flag-removal-section' );
 		$baseText = $this->msg( 'flag-removal-text' );
 
-		$newContent = $flagRemPage->getContent( $section );
+		$content = $flagRemPage->getContent();
+		$append = '';
 		foreach ( $pages as $page ) {
-			$newContent .=
+			$append .=
 				$baseText->params( [
 					'$username' => $page->getUser()->getName(),
 					'$link' => '[[:it:' . $page->getTitle() . ']]',
-					'$groups' => $page->getUser()->getGroups()
+					'$groups' => implode( ', ', $page->getUser()->getGroups() )
 				] )->text();
 		}
 
+		$after = '=== Miscellaneous requests ===';
+		$newContent = str_replace( $after, "$append\n$after", $content );
 		$summary = $this->msg( 'flag-removal-summary' )
 			->params( [ '$num' => count( $pages ) ] )
 			->text();
-return;
+
 		$flagRemPage->edit( [
-			'section' => $section,
 			'text' => $newContent,
 			'summary' => $summary
 		] );
@@ -124,6 +125,7 @@ return;
 	 */
 	protected function updateAnnunci( array $pages ) {
 		$this->getLogger()->info( 'Updating annunci' );
+		$section = 1;
 
 		$names = [];
 		$text = '';
@@ -139,7 +141,7 @@ return;
 		setlocale( LC_TIME, $oldLoc );
 
 		$annunciPage = new Page( $this->getConfig()->get( 'annunci-page-title' ) );
-		$content = $annunciPage->getContent( 1 );
+		$content = $annunciPage->getContent( $section );
 		$secReg = "!=== *$month *===!";
 		if ( preg_match( $secReg, $content ) ) {
 			$newContent = preg_replace( $secReg, '$0' . "\n" . $text, $content );
@@ -153,6 +155,7 @@ return;
 			->text();
 
 		$annunciPage->edit( [
+			'section' => $section,
 			'text' => $newContent,
 			'summary' => $summary
 		] );
@@ -173,8 +176,8 @@ return;
 			$user = $page->getUser()->getName();
 			$title = $page->getTitle();
 			$names[] = $user;
-			$text .= "'''{{subst:#time:j F}}''': [[Utente:$user|]] non è stato [[$title|riconfermato]] " .
-				'[[WP:A|amministratore]]; ora gli admin sono {{subst:#expr: {{NUMBEROFADMINS}} - 1}}.';
+			$text .= "*'''{{subst:#time:j F}}''': [[Utente:$user|]] non è stato [[$title|riconfermato]] " .
+				"[[WP:A|amministratore]]; ora gli admin sono {{subst:#expr: {{subst:NUMBEROFADMINS}} - 1}}.\n";
 		}
 
 		$content = $notiziePage->getContent();

@@ -101,9 +101,13 @@ class PageRiconferma extends Page {
 	 * @return int
 	 */
 	protected function getCountForSection( int $secNum ) : int {
-		$content = $this->controller->getPageContent( $this->title, $secNum );
-		// Let's hope that this is good enough...
-		return preg_match_all("/^\# *(?![# *]|\.\.\.$)/m", $content );
+		static $cache = [];
+		if ( !isset( $cache[ $secNum ] ) ) {
+			$content = $this->controller->getPageContent( $this->title, $secNum );
+			// Let's hope that this is good enough...
+			$cache[$secNum] = preg_match_all( "/^\# *(?![# *]|\.\.\.$)/m", $content );
+		}
+		return $cache[$secNum];
 	}
 
 	/**

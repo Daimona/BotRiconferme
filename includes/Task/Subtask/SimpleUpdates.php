@@ -159,7 +159,7 @@ class SimpleUpdates extends Subtask {
 		foreach ( $pages as $page ) {
 			$user = $page->getUser();
 			if ( $user->inGroup( 'checkuser' ) ) {
-				$reg = "!(\{\{ *Checkuser *\| *$user *\|[^}]+\| *)[\w \d](}}.*\n)!";
+				$reg = "!(\{\{ *Checkuser *\| *$user *\|[^}]+\| *)[\w \d]+(}}.*\n)!";
 				if ( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ) {
 					// Remove the line
 					$newContent = preg_replace( $reg, '', $newContent );
@@ -171,7 +171,7 @@ class SimpleUpdates extends Subtask {
 			}
 		}
 
-		if ( !$riconfNames || !$removeNames ) {
+		if ( !$riconfNames && !$removeNames ) {
 			return;
 		}
 

@@ -41,7 +41,8 @@ class Controller {
 	 * @throws MissingPageException
 	 */
 	public function getPageContent( string $title, int $section = null ) : string {
-		$this->logger->debug( "Retrieving content of page $title" );
+		$msg = "Retrieving content of page $title" . ( $section !== null ? ", section $section" : '' );
+		$this->logger->debug( $msg );
 		$params = [
 			'action' => 'query',
 			'titles' => $title,
@@ -99,7 +100,6 @@ class Controller {
 	 */
 	public function login() {
 		if ( self::$loggedIn ) {
-			$this->logger->debug( 'Already logged in' );
 			return;
 		}
 
