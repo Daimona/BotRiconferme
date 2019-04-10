@@ -34,10 +34,7 @@ class UpdateList extends Task {
 		$missing = $this->getMissingGroups();
 		$extra = $this->getExtraGroups();
 
-		$newContent = $this->botList;
-		if ( $missing || $extra ) {
-			$newContent = $this->getNewContent( $missing, $extra );
-		}
+		$newContent = $this->getNewContent( $missing, $extra );
 
 		if ( $newContent === $this->botList ) {
 			return TaskResult::STATUS_NOTHING;
@@ -228,7 +225,7 @@ class UpdateList extends Task {
 	protected function removeOverrides( array $newContent ) : array {
 		$removed = [];
 		foreach ( $newContent as $user => $groups ) {
-			$ts = PageBotList::getValidTimestamp( $groups );
+			$ts = PageBotList::getValidFlagTimestamp( $groups );
 			if ( date( 'd/m', $ts ) === date( 'd/m', strtotime( '- 1 days' ) ) &&
 				isset( $newContent[ $user ]['override'] )
 			) {

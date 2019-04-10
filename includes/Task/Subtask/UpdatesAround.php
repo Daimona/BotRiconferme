@@ -75,14 +75,14 @@ class UpdatesAround extends Subtask {
 		$time = Message::getTimeWithArticle( time() + ( 3600 * 24 * PageRiconferma::SIMPLE_DURATION ) );
 		$newLines = '';
 		foreach ( $pages as $page ) {
-			$newLines .= '*[[Utente:' . $page->getUser() . '|]]. ' .
+			$newLines .= "\n*[[Utente:" . $page->getUser() . '|]]. ' .
 				'La [[' . $page->getTitle() . "|procedura]] termina $time;\n";
 		}
 
 		$introReg = '!^;È in corso la .*riconferma tacita.* degli .*amministratori.+!m';
 		if ( preg_match( $introReg, strip_tags( $content ) ) ) {
 			// Put before the existing ones, if they're found outside comments
-			$newContent = preg_replace( $introReg, '$0' . "\n$newLines", $content, 1 );
+			$newContent = preg_replace( $introReg, '$0' . $newLines, $content, 1 );
 		} else {
 			// Start section
 			try {

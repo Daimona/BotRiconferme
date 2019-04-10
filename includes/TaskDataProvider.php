@@ -25,12 +25,11 @@ class TaskDataProvider extends ContextSource {
 		if ( $this->processUsers === null ) {
 			$this->processUsers = [];
 			foreach ( PageBotList::get()->getAdminsList() as $user => $groups ) {
-				if ( array_intersect_key( $groups, [ 'override-perm', 'override' ] ) ) {
-					// A one-time override takes precedence
-					$timestamp = $groups[ 'override' ] ?? $groups[ 'override-perm' ];
-					$override = true;
-				} else {
-					$timestamp = PageBotList::getValidTimestamp( $groups );
+				$override = true;
+				$timestamp = PageBotList::getOverrideTimestamp( $groups );
+
+				if ( $timestamp === null ) {
+					$timestamp = PageBotList::getValidFlagTimestamp( $groups );
 					$override = false;
 				}
 

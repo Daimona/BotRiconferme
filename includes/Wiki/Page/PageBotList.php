@@ -29,12 +29,25 @@ class PageBotList extends Page {
 	}
 
 	/**
+	 * @param string[] $groups
+	 * @return int|null
+	 */
+	public static function getOverrideTimestamp( array $groups ) : ?int {
+		if ( array_intersect_key( $groups, [ 'override-perm' => true, 'override' => true ] ) ) {
+			// A one-time override takes precedence
+			$date = $groups[ 'override' ] ?? $groups[ 'override-perm' ];
+			return \DateTime::createFromFormat( 'd/m/Y', $date )->getTimestamp();
+		}
+		return null;
+	}
+
+	/**
 	 * Get the valid timestamp for the given groups
 	 *
 	 * @param array $groups
 	 * @return int
 	 */
-	public static function getValidTimestamp( array $groups ): int {
+	public static function getValidFlagTimestamp( array $groups ): int {
 		$checkuser = isset( $groups['checkuser'] ) ?
 			\DateTime::createFromFormat( 'd/m/Y', $groups['checkuser'] )->getTimestamp() :
 			0;

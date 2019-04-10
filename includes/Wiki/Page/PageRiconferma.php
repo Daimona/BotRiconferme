@@ -12,6 +12,8 @@ class PageRiconferma extends Page {
 	// Sections of the page. Value = section number, and depends on whether the page is a vote
 	private $supportSection = 3;
 	private $opposeSection = 4;
+	/** @var array Counts of votes for each section */
+	private $sectionCounts = [];
 
 	// Possible outcomes of a vote
 	const OUTCOME_OK = 0;
@@ -101,13 +103,12 @@ class PageRiconferma extends Page {
 	 * @return int
 	 */
 	protected function getCountForSection( int $secNum ) : int {
-		static $cache = [];
-		if ( !isset( $cache[ $secNum ] ) ) {
+		if ( !isset( $this->sectionCounts[ $secNum ] ) ) {
 			$content = $this->controller->getPageContent( $this->title, $secNum );
 			// Let's hope that this is good enough...
-			$cache[$secNum] = preg_match_all( "/^\# *(?![# *]|\.\.\.$)/m", $content );
+			$this->sectionCounts[$secNum] = preg_match_all( "/^\# *(?![# *]|\.\.\.$)/m", $content );
 		}
-		return $cache[$secNum];
+		return $this->sectionCounts[$secNum];
 	}
 
 	/**
