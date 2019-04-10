@@ -43,7 +43,7 @@ define( 'DEFAULT_URL', $url );
 
 /* PASSWORD */
 
-$PWFILE = './password.txt';
+$PWFILE = __DIR__ . '/password.txt';
 /*
  * Either
  * --password=(BotPassword)
