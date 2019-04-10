@@ -26,8 +26,6 @@ class TaskManager {
 	const MODE_TASK = 'single task';
 	const MODE_SUBTASK = 'single subtask';
 
-	// File where the date of the last full run is stored
-	const LOG_FILE = './lastrun.log';
 	/** @var string[] */
 	const TASKS_MAP = [
 		'start-new' => StartNew::class,
@@ -72,11 +70,6 @@ class TaskManager {
 	 * @return TaskResult
 	 */
 	protected function runAllTasks() : TaskResult {
-		if ( self::getLastFullRunDate() === date( 'd/m/Y' ) ) {
-			// Really avoid executing twice the same day
-			return new TaskResult( TaskResult::STATUS_ERROR, [ 'A full run was already executed today.' ] );
-		}
-
 		$orderedList = [
 			'update-list',
 			'start-new',
@@ -88,10 +81,6 @@ class TaskManager {
 		do {
 			$res->merge( $this->runTask( current( $orderedList ) ) );
 		} while ( $res->isOK() && next( $orderedList ) );
-
-		if ( $res->isOK() ) {
-			self::setLastFullRunDate();
-		}
 
 		return $res;
 	}
@@ -127,19 +116,6 @@ class TaskManager {
 	}
 
 	/**
-	 * Get the last execution date to ensure no more than one full run is executed every day
-	 * @return string|null d/m/Y or null if no last run registered
-	 * @fixme Is this even necessary?
-	 */
-	public static function getLastFullRunDate() : ?string {
-		if ( file_exists( self::LOG_FILE ) ) {
-			return file_get_contents( self::LOG_FILE ) ?: null;
-		} else {
-			return null;
-		}
-	}
-
-	/**
 	 * Helper to make type inferencing easier
 	 *
 	 * @param string $class
@@ -157,9 +133,5 @@ class TaskManager {
 	 */
 	private function getSubtaskInstance( string $class ) : Subtask {
 		return new $class( $this->provider );
-	}
-
-	public static function setLastFullRunDate() {
-		file_put_contents( self::LOG_FILE, date( 'd/m/Y' ) );
 	}
 }
