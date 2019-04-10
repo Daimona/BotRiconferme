@@ -3,6 +3,7 @@
 namespace BotRiconferme\Task\Subtask;
 
 use BotRiconferme\Message;
+use BotRiconferme\Wiki\Element;
 use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\TaskResult;
@@ -54,7 +55,7 @@ class FailedUpdates extends Subtask {
 			if ( $user->inGroup( 'bureaucrat' ) &&
 				( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL )
 			) {
-				$remove[] = $user->getName();
+				$remove[] = $user;
 			}
 		}
 
@@ -63,10 +64,10 @@ class FailedUpdates extends Subtask {
 		}
 
 		$this->getLogger()->info( 'Updating bur list. Removing: ' . implode( ', ', $remove ) );
-		$remList = implode( '|', array_map( 'preg_quote', $remove ) );
+		$remList = Element::regexFromArray( $remove );
 		$burList = new Page( $this->getConfig()->get( 'bur-list-title' ) );
 		$content = $burList->getContent();
-		$reg = "!^\#\{\{ *Burocrate *\| *($remList).+\n!m";
+		$reg = "!^\#\{\{ *Burocrate *\| *$remList.+\n!m";
 		$newContent = preg_replace( $reg, '', $content );
 
 		$summary = $this->msg( 'bur-list-update-summary' )
@@ -86,7 +87,7 @@ class FailedUpdates extends Subtask {
 	 */
 	protected function requestRemoval( array $pages ) {
 		$this->getLogger()->info(
-			'Requesting removal on meta for: ' . implode( ', ', array_map( 'strval', $pages ) )
+			'Requesting removal on meta for: ' . implode( ', ', $pages )
 		);
 
 		$flagRemPage = new Page(

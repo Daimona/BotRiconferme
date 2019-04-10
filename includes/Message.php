@@ -112,7 +112,7 @@ class Message {
 			$last = array_pop( $data );
 			$ret = implode( ', ', $data ) . " e $last";
 		} elseif ( $data ) {
-			$ret = $data[0];
+			$ret = (string)$data[0];
 		} else {
 			$ret = $emptyText;
 		}

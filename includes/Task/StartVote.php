@@ -4,6 +4,7 @@ namespace BotRiconferme\Task;
 
 use BotRiconferme\Exception\TaskException;
 use BotRiconferme\Message;
+use BotRiconferme\Wiki\Element;
 use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\TaskResult;
@@ -103,12 +104,8 @@ class StartVote extends Task {
 		$votePage = new Page( $this->getConfig()->get( 'vote-page-title' ) );
 		$content = $votePage->getContent();
 
-		$titles = [];
-		foreach ( $pages as $page ) {
-			$titles[] = preg_quote( $page->getTitle() );
-		}
-		$titleReg = implode( '|', $titles );
-		$search = "!^\*.+ La \[\[($titleReg)\|procedura]] termina.+\n!m";
+		$titleReg = Element::regexFromArray( $pages );
+		$search = "!^\*.+ La \[\[$titleReg\|procedura]] termina.+\n!m";
 
 		$newContent = preg_replace( $search, '', $content );
 		// Make sure the last line ends with a full stop

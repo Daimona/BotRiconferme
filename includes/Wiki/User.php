@@ -7,7 +7,7 @@ use BotRiconferme\Wiki\Page\PageBotList;
 /**
  * Class representing a single user.
  */
-class User {
+class User extends Element {
 	/** @var string */
 	private $name;
 	/** @var string[] */
@@ -46,6 +46,15 @@ class User {
 	 */
 	public function inGroup( string $groupName ) : bool {
 		return in_array( $groupName, $this->getGroups() );
+	}
+
+	/**
+	 * Returns a regex for matching the name of this user
+	 *
+	 * @inheritDoc
+	 */
+	public function getRegex() : string {
+		return str_replace( ' ', '[ _]', preg_quote( $this->name ) );
 	}
 
 	/**

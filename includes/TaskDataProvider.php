@@ -2,6 +2,7 @@
 
 namespace BotRiconferme;
 
+use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageBotList;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\Request\RequestBase;
@@ -93,9 +94,10 @@ class TaskDataProvider extends ContextSource {
 			];
 
 			$pages = RequestBase::newFromParams( $params )->execute()->query->pages;
+			$reg = ( new Page( $mainTitle ) )->getRegex();
 			$list = [];
 			foreach ( reset( $pages )->templates as $page ) {
-				if ( preg_match( "!$mainTitle\/[^\/]+\/\d!", $page->title ) ) {
+				if ( preg_match( "!$reg\/[^\/]+\/\d!", $page->title ) ) {
 					$list[] = new PageRiconferma( $page->title );
 				}
 			}

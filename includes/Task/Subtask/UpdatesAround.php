@@ -39,7 +39,7 @@ class UpdatesAround extends Subtask {
 	 */
 	protected function addToMainPage( array $pages ) {
 		$this->getLogger()->info(
-			'Adding the following to main: ' . implode( ', ', array_map( 'strval', $pages ) )
+			'Adding the following to main: ' . implode( ', ', $pages )
 		);
 
 		$append = "\n";
@@ -66,7 +66,7 @@ class UpdatesAround extends Subtask {
 	 */
 	protected function addToVotazioni( array $pages ) {
 		$this->getLogger()->info(
-			'Adding the following to votes: ' . implode( ', ', array_map( 'strval', $pages ) )
+			'Adding the following to votes: ' . implode( ', ', $pages )
 		);
 		$votePage = new Page( $this->getConfig()->get( 'vote-page-title' ) );
 

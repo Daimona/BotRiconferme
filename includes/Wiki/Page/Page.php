@@ -4,11 +4,12 @@ namespace BotRiconferme\Wiki\Page;
 
 use BotRiconferme\Logger;
 use BotRiconferme\Wiki\Controller;
+use BotRiconferme\Wiki\Element;
 
 /**
  * Represents a single on-wiki page
  */
-class Page {
+class Page extends Element {
 	/** @var string */
 	protected $title;
 	/** @var Controller */
@@ -91,6 +92,15 @@ class Page {
 			throw new \Exception( 'The content does not match the given regex' );
 		}
 		return $ret;
+	}
+
+	/**
+	 * Returns a regex for matching the title of this page
+	 *
+	 * @inheritDoc
+	 */
+	public function getRegex() : string {
+		return str_replace( ' ', '[ _]', preg_quote( $this->title ) );
 	}
 
 	/**

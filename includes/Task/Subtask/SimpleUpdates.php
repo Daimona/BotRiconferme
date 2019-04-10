@@ -3,6 +3,7 @@
 namespace BotRiconferme\Task\Subtask;
 
 use BotRiconferme\Message;
+use BotRiconferme\Wiki\Element;
 use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\TaskResult;
@@ -35,17 +36,12 @@ class SimpleUpdates extends Subtask {
 	 */
 	protected function updateVotazioni( array $pages ) {
 		$this->getLogger()->info(
-			'Updating votazioni: ' . implode( ', ', array_map( 'strval', $pages ) )
+			'Updating votazioni: ' . implode( ', ', $pages )
 		);
 		$votePage = new Page( $this->getConfig()->get( 'vote-page-title' ) );
 
-		$titles = [];
-		foreach ( $pages as $page ) {
-			$titles[] = preg_quote( $page->getTitle() );
-		}
-
-		$titleReg = implode( '|', $titles );
-		$search = "!^\*.+ La \[\[($titleReg)\|procedura]] termina.+\n!m";
+		$titleReg = Element::regexFromArray( $pages );
+		$search = "!^\*.+ La \[\[$titleReg\|procedura]] termina.+\n!m";
 
 		$newContent = preg_replace( $search, '', $votePage->getContent() );
 		// Make sure the last line ends with a full stop in every section
@@ -114,7 +110,7 @@ class SimpleUpdates extends Subtask {
 	 */
 	protected function updateAdminList( array $pages ) {
 		$this->getLogger()->info(
-			'Updating admin list: ' . implode( ', ', array_map( 'strval', $pages ) )
+			'Updating admin list: ' . implode( ', ', $pages )
 		);
 		$adminsPage = new Page( $this->getConfig()->get( 'admins-list-title' ) );
 		$newContent = $adminsPage->getContent();
@@ -122,15 +118,15 @@ class SimpleUpdates extends Subtask {
 
 		$riconfNames = $removeNames = [];
 		foreach ( $pages as $page ) {
-			$user = $page->getUser()->getName();
-			$reg = "!(\{\{Amministratore\/riga\|$user.+\| *)\d+( *\|(?: *pausa)? *\}\}\n)!";
+			$user = $page->getUser();
+			$reg = '!(\{\{Amministratore\/riga\|' . $user->getRegex() . ".+\| *)\d+( *\|(?: *pausa)? *\}\}\n)!";
 			if ( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ) {
 				// Remove the line
 				$newContent = preg_replace( $reg, '', $newContent );
-				$removeNames[] = $user;
+				$removeNames[] = $user->getName();
 			} else {
 				$newContent = preg_replace( $reg, '$1' . $newDate . '$2', $newContent );
-				$riconfNames[] = $user;
+				$riconfNames[] = $user->getName();
 			}
 		}
 
@@ -159,7 +155,7 @@ class SimpleUpdates extends Subtask {
 		foreach ( $pages as $page ) {
 			$user = $page->getUser();
 			if ( $user->inGroup( 'checkuser' ) ) {
-				$reg = "!(\{\{ *Checkuser *\| *$user *\|[^}]+\| *)[\w \d]+(}}.*\n)!";
+				$reg = '!(\{\{ *Checkuser *\| *' . $user->getRegex() . " *\|[^}]+\| *)[\w \d]+(}}.*\n)!";
 				if ( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ) {
 					// Remove the line
 					$newContent = preg_replace( $reg, '', $newContent );

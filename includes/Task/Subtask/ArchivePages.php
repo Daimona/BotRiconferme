@@ -35,7 +35,7 @@ class ArchivePages extends Subtask {
 	 */
 	protected function removeFromMainPage( array $pages ) {
 		$this->getLogger()->info(
-			'Removing from main: ' . implode( ', ', array_map( 'strval', $pages ) )
+			'Removing from main: ' . implode( ', ', $pages )
 		);
 
 		$mainPage = new Page( $this->getConfig()->get( 'main-page-title' ) );
@@ -61,7 +61,7 @@ class ArchivePages extends Subtask {
 	 */
 	protected function addToArchive( array $pages ) {
 		$this->getLogger()->info(
-			'Adding to archive: ' . implode( ', ', array_map( 'strval', $pages ) )
+			'Adding to archive: ' . implode( ', ', $pages )
 		);
 
 		$simple = $votes = [];
