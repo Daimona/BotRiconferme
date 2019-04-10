@@ -89,8 +89,13 @@ class Controller {
 			->setUrl( $this->domain )
 			->setPost()
 			->execute();
-		if ( $res->edit->result !== 'Success' ) {
-			throw new EditException( $res->edit->info );
+
+		$editData = $res->edit;
+		if ( $editData->result !== 'Success' ) {
+			if ( isset( $editData->captcha ) ) {
+				throw new EditException( 'Got captcha!' );
+			}
+			throw new EditException( $editData->info ?? reset( $editData ) );
 		}
 	}
 

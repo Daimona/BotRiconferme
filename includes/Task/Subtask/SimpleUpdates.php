@@ -119,13 +119,13 @@ class SimpleUpdates extends Subtask {
 		$riconfNames = $removeNames = [];
 		foreach ( $pages as $page ) {
 			$user = $page->getUser();
-			$reg = '!(\{\{Amministratore\/riga\|' . $user->getRegex() . ".+\| *)\d+( *\|[ \w]*\}\}.*\n)!";
+			$reg = '!(\{\{Amministratore\/riga\|' . $user->getRegex() . ".+\| *)\d+( *\|[ \w]*\}\}.*\n)!";var_dump($reg);
 			if ( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ) {
 				// Remove the line
 				$newContent = preg_replace( $reg, '', $newContent );
 				$removeNames[] = $user->getName();
 			} else {
-				$newContent = preg_replace( $reg, '$1' . $newDate . '$2', $newContent );
+				$newContent = preg_replace( $reg, '${1}' . $newDate . '$2', $newContent );
 				$riconfNames[] = $user->getName();
 			}
 		}
