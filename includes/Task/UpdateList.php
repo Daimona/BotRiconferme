@@ -29,7 +29,7 @@ class UpdateList extends Task {
 	 */
 	public function runInternal() : int {
 		$this->actualList = $this->getActualAdmins();
-		$this->botList = $this->getDataProvider()->getUsersList();
+		$this->botList = PageBotList::get()->getAdminsList();
 
 		$missing = $this->getMissingGroups();
 		$extra = $this->getExtraGroups();
@@ -182,6 +182,8 @@ class UpdateList extends Task {
 	protected function getExtraGroups() : array {
 		$extra = [];
 		foreach ( $this->botList as $name => $groups ) {
+			// These are not groups
+			unset( $groups[ 'override' ], $groups[ 'override-perm' ] );
 			if ( !isset( $this->actualList[ $name ] ) ) {
 				$extra[ $name ] = $groups;
 			} elseif ( count( $groups ) > count( $this->actualList[ $name ] ) ) {
@@ -210,7 +212,37 @@ class UpdateList extends Task {
 		}
 		// Add users which don't have an entry at all, and remove empty users
 		$newContent = array_filter( array_merge( $newContent, $missing ) );
+		$newContent = $this->removeOverrides( $newContent );
 		ksort( $newContent );
+		return $newContent;
+	}
+
+	/**
+	 * Remove expired overrides. This must happen after the override date has been used AND
+	 * after the "normal" date has passed. Given that "override" can only be used to anticipate
+	 * a date, we remove it the day after the "normal date".
+	 *
+	 * @param array[] $newContent
+	 * @return array[]
+	 */
+	protected function removeOverrides( array $newContent ) : array {
+		$removed = [];
+		foreach ( $newContent as $user => $groups ) {
+			$ts = PageBotList::getValidTimestamp( $groups );
+			if ( date( 'd/m', $ts ) === date( 'd/m', strtotime( '- 1 days' ) ) &&
+				isset( $newContent[ $user ]['override'] )
+			) {
+				unset( $newContent[ $user ][ 'override' ] );
+				$removed[] = $user;
+			}
+		}
+
+		if ( $removed ) {
+			$this->getLogger()->info( 'Removing overrides for users: ' . implode( ', ', $removed ) );
+		} else {
+			$this->getLogger()->debug( 'No overrides to remove' );
+		}
+
 		return $newContent;
 	}
 }

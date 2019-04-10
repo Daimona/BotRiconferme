@@ -13,24 +13,8 @@ use BotRiconferme\Request\RequestBase;
 class TaskDataProvider extends ContextSource {
 	/** @var array[] */
 	private $processUsers;
-	/** @var array[] */
-	private $allUsers;
 	/** @var PageRiconferma[] */
 	private $createdPages = [];
-
-	/**
-	 * Get the full content of the JSON users list
-	 *
-	 * @return array[]
-	 */
-	public function getUsersList() : array {
-		if ( $this->allUsers === null ) {
-			$this->getLogger()->debug( 'Retrieving users list' );
-			$this->allUsers = PageBotList::get()->getAdminsList();
-		}
-
-		return $this->allUsers;
-	}
 
 	/**
 	 * Get a list of users to execute tasks on.
@@ -40,12 +24,19 @@ class TaskDataProvider extends ContextSource {
 	public function getUsersToProcess() : array {
 		if ( $this->processUsers === null ) {
 			$this->processUsers = [];
-			foreach ( $this->getUsersList() as $user => $groups ) {
-				$timestamp = $this->getValidTimestamp( $groups );
+			foreach ( PageBotList::get()->getAdminsList() as $user => $groups ) {
+				if ( array_intersect_key( $groups, [ 'override-perm', 'override' ] ) ) {
+					// A one-time override takes precedence
+					$timestamp = $groups[ 'override' ] ?? $groups[ 'override-perm' ];
+					$override = true;
+				} else {
+					$timestamp = PageBotList::getValidTimestamp( $groups );
+					$override = false;
+				}
 
 				if ( date( 'd/m', $timestamp ) === date( 'd/m' ) &&
-					// Don't trigger if the date is actually today
-					date( 'd/m/Y', $timestamp ) !== date( 'd/m/Y' )
+					// Don't trigger if the date is actually today and it's not an override
+					( $override || date( 'd/m/Y', $timestamp ) !== date( 'd/m/Y' ) )
 				) {
 					$this->processUsers[ $user ] = $groups;
 				}
@@ -53,27 +44,6 @@ class TaskDataProvider extends ContextSource {
 		}
 
 		return $this->processUsers;
-	}
-
-	/**
-	 * Get the valid timestamp for the given groups
-	 *
-	 * @param array $groups
-	 * @return int
-	 */
-	private function getValidTimestamp( array $groups ) : int {
-		$checkuser = isset( $groups[ 'checkuser' ] ) ?
-			\DateTime::createFromFormat( 'd/m/Y', $groups[ 'checkuser' ] )->getTimestamp() :
-			0;
-		$bureaucrat = isset( $groups[ 'bureaucrat' ] ) ?
-			\DateTime::createFromFormat( 'd/m/Y', $groups[ 'bureaucrat' ] )->getTimestamp() :
-			0;
-
-		$timestamp = max( $bureaucrat, $checkuser );
-		if ( $timestamp === 0 ) {
-			$timestamp = \DateTime::createFromFormat( 'd/m/Y', $groups[ 'sysop' ] )->getTimestamp();
-		}
-		return $timestamp;
 	}
 
 	/**

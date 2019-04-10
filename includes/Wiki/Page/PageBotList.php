@@ -29,6 +29,27 @@ class PageBotList extends Page {
 	}
 
 	/**
+	 * Get the valid timestamp for the given groups
+	 *
+	 * @param array $groups
+	 * @return int
+	 */
+	public static function getValidTimestamp( array $groups ): int {
+		$checkuser = isset( $groups['checkuser'] ) ?
+			\DateTime::createFromFormat( 'd/m/Y', $groups['checkuser'] )->getTimestamp() :
+			0;
+		$bureaucrat = isset( $groups['bureaucrat'] ) ?
+			\DateTime::createFromFormat( 'd/m/Y', $groups['bureaucrat'] )->getTimestamp() :
+			0;
+
+		$timestamp = max( $bureaucrat, $checkuser );
+		if ( $timestamp === 0 ) {
+			$timestamp = \DateTime::createFromFormat( 'd/m/Y', $groups['sysop'] )->getTimestamp();
+		}
+		return $timestamp;
+	}
+
+	/**
 	 * Get the actual list of admins
 	 *
 	 * @return array[]
