@@ -210,7 +210,7 @@ class UpdateList extends Task {
 		// Add users which don't have an entry at all, and remove empty users
 		$newContent = array_filter( array_merge( $newContent, $missing ) );
 		$newContent = $this->removeOverrides( $newContent );
-		ksort( $newContent );
+		ksort( $newContent, SORT_STRING | SORT_FLAG_CASE );
 		return $newContent;
 	}
 

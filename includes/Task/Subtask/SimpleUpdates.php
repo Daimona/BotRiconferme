@@ -119,7 +119,7 @@ class SimpleUpdates extends Subtask {
 		$riconfNames = $removeNames = [];
 		foreach ( $pages as $page ) {
 			$user = $page->getUser();
-			$reg = '!(\{\{Amministratore\/riga\|' . $user->getRegex() . ".+\| *)\d+( *\|[ \w]*\}\}.*\n)!";var_dump($reg);
+			$reg = '!(\{\{Amministratore\/riga\|' . $user->getRegex() . ".+\| *)\d+( *\|[ \w]*\}\}.*\n)!";
 			if ( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ) {
 				// Remove the line
 				$newContent = preg_replace( $reg, '', $newContent );
