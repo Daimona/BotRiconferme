@@ -12,6 +12,6 @@ class Logger extends AbstractLogger {
 	 * @inheritDoc
 	 */
 	public function log( $level, $message, array $context = [] ) {
-		error_log( "$level - $message" );
+		printf( "%s [%s] - %s\n", date( 'd M H:i:s' ), $level, $message );
 	}
 }

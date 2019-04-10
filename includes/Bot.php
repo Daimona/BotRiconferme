@@ -23,7 +23,7 @@ class Bot {
 	 */
 	private function run( string $mode = TaskManager::MODE_COMPLETE, string $name = null ) {
 		$activity = $mode === TaskManager::MODE_COMPLETE ? TaskManager::MODE_COMPLETE : "$mode $name";
-		$this->logger->info( "Starting $activity" );
+		$this->logger->info( "Running $activity" );
 		$manager = new TaskManager;
 		$res = $manager->run( $mode, $name );
 		$line = '---------------------------------------------------';
