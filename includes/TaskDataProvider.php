@@ -25,24 +25,33 @@ class TaskDataProvider extends ContextSource {
 		if ( $this->processUsers === null ) {
 			$this->processUsers = [];
 			foreach ( PageBotList::get()->getAdminsList() as $user => $groups ) {
-				$override = true;
-				$timestamp = PageBotList::getOverrideTimestamp( $groups );
-
-				if ( $timestamp === null ) {
-					$timestamp = PageBotList::getValidFlagTimestamp( $groups );
-					$override = false;
-				}
-
-				if ( date( 'd/m', $timestamp ) === date( 'd/m' ) &&
-					// Don't trigger if the date is actually today and it's not an override
-					( $override || date( 'd/m/Y', $timestamp ) !== date( 'd/m/Y' ) )
-				) {
+				if ( $this->shouldAddUser( $groups ) ) {
 					$this->processUsers[ $user ] = $groups;
 				}
 			}
 		}
 
 		return $this->processUsers;
+	}
+
+	/**
+	 * Whether a user with the given groups should be processed
+	 *
+	 * @param array[] $groups
+	 * @return bool
+	 */
+	private function shouldAddUser( array $groups ) : bool {
+		$override = true;
+		$timestamp = PageBotList::getOverrideTimestamp( $groups );
+
+		if ( $timestamp === null ) {
+			$timestamp = PageBotList::getValidFlagTimestamp( $groups );
+			$override = false;
+		}
+
+		return ( date( 'd/m', $timestamp ) === date( 'd/m' ) &&
+			// Don't add it if the date is actually today and it's not an override
+			( $override || date( 'd/m/Y', $timestamp ) !== date( 'd/m/Y' ) ) );
 	}
 
 	/**
@@ -53,6 +62,7 @@ class TaskDataProvider extends ContextSource {
 	public function getOpenPages() : array {
 		static $list = null;
 		if ( $list === null ) {
+			$list = [];
 			$mainTitle = $this->getConfig()->get( 'main-page-title' );
 			$params = [
 				'action' => 'query',
@@ -62,11 +72,10 @@ class TaskDataProvider extends ContextSource {
 				'tllimit' => 'max'
 			];
 
+			$titleReg = ( new Page( $mainTitle ) )->getRegex();
 			$pages = RequestBase::newFromParams( $params )->execute()->query->pages;
-			$reg = ( new Page( $mainTitle ) )->getRegex();
-			$list = [];
 			foreach ( reset( $pages )->templates as $page ) {
-				if ( preg_match( "!$reg\/[^\/]+\/\d!", $page->title ) ) {
+				if ( preg_match( "!$titleReg\/[^\/]+\/\d!", $page->title ) ) {
 					$list[] = new PageRiconferma( $page->title );
 				}
 			}
@@ -83,9 +92,8 @@ class TaskDataProvider extends ContextSource {
 	public function getPagesToClose() : array {
 		static $list = null;
 		if ( $list === null ) {
-			$allPages = $this->getOpenPages();
 			$list = [];
-			foreach ( $allPages as $page ) {
+			foreach ( $this->getOpenPages() as $page ) {
 				if ( time() > $page->getEndTimestamp() ) {
 					$list[] = $page;
 				}

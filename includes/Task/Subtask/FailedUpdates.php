@@ -137,9 +137,7 @@ class FailedUpdates extends Subtask {
 			$text .= $msg->params( [ '$user' => $user ] )->text();
 		}
 
-		$oldLoc = setlocale( LC_TIME, 'it_IT', 'Italian_Italy', 'Italian' );
-		$month = ucfirst( strftime( '%B', time() ) );
-		setlocale( LC_TIME, $oldLoc );
+		$month = ucfirst( Message::MONTHS[ date( 'F' ) ] );
 
 		$annunciPage = new Page( $this->getConfig()->get( 'annunci-page-title' ) );
 		$content = $annunciPage->getContent( $section );
@@ -147,8 +145,8 @@ class FailedUpdates extends Subtask {
 		if ( preg_match( $secReg, $content ) ) {
 			$newContent = preg_replace( $secReg, '$0' . "\n" . $text, $content );
 		} else {
-			$re = '!</div>\s*}}\s*</includeonly>!';
-			$newContent = preg_replace( $re, '$0' . "\n=== $month ===\n" . $text, $content );
+			$before = '!</div>\s*}}\s*</includeonly>!';
+			$newContent = preg_replace( $before, '$0' . "\n=== $month ===\n" . $text, $content );
 		}
 
 		$summary = $this->msg( 'annunci-summary' )
@@ -187,8 +185,8 @@ class FailedUpdates extends Subtask {
 		if ( preg_match( $secReg, $content ) ) {
 			$newContent = preg_replace( $secReg, '$0' . "\n" . $text, $content );
 		} else {
-			$re = '!si veda la \[\[[^\]+relativa discussione]]\.\n!';
-			$newContent = preg_replace( $re, '$0' . "\n== $year ==\n" . $text, $content );
+			$reg = '!si veda la \[\[[^\]+relativa discussione]]\.\n!';
+			$newContent = preg_replace( $reg, '$0' . "\n== $year ==\n" . $text, $content );
 		}
 
 		$summary = $this->msg( 'ultimenotizie-summary' )

@@ -6,6 +6,20 @@ namespace BotRiconferme;
  *
  */
 class Message {
+	const MONTHS = [
+		'January' => 'gennaio',
+		'February' => 'febbraio',
+		'March' => 'marzo',
+		'April' => 'aprile',
+		'May' => 'maggio',
+		'June' => 'giugno',
+		'July' => 'luglio',
+		'August' => 'agosto',
+		'September' => 'settembre',
+		'October' => 'ottobre',
+		'November' => 'novembre',
+		'December' => 'dicembre'
+	];
 	/** @var string */
 	private $key;
 	/** @var string */
@@ -78,22 +92,11 @@ class Message {
 	 * @return int
 	 */
 	public static function getTimestampFromLocalTime( string $timeString ) : int {
-		$months = [
-			'gennaio' => 'January',
-			'febbraio' => 'February',
-			'marzo' => 'March',
-			'aprile' => 'April',
-			'maggio' => 'May',
-			'giugno' => 'June',
-			'luglio' => 'July',
-			'agosto' => 'August',
-			'settembre' => 'September',
-			'ottobre' => 'October',
-			'novembre' => 'November',
-			'dicembre' => 'December'
-		];
-
-		$englishTime = str_ireplace( array_keys( $months ), array_values( $months ), $timeString );
+		$englishTime = str_ireplace(
+			array_values( self::MONTHS ),
+			array_keys( self::MONTHS ),
+			$timeString
+		);
 		$englishTime = str_replace( ' alle ', ' ', $englishTime );
 
 		return strtotime( $englishTime );

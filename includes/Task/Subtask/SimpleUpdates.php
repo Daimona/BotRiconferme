@@ -114,18 +114,16 @@ class SimpleUpdates extends Subtask {
 		);
 		$adminsPage = new Page( $this->getConfig()->get( 'admins-list-title' ) );
 		$newContent = $adminsPage->getContent();
-		$newDate = date( 'Ymd', strtotime( '+1 year' ) );
 
 		$riconfNames = $removeNames = [];
 		foreach ( $pages as $page ) {
 			$user = $page->getUser();
 			$reg = '!(\{\{Amministratore\/riga\|' . $user->getRegex() . ".+\| *)\d+( *\|[ \w]*\}\}.*\n)!";
 			if ( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ) {
-				// Remove the line
 				$newContent = preg_replace( $reg, '', $newContent );
 				$removeNames[] = $user->getName();
 			} else {
-				$newContent = preg_replace( $reg, '${1}' . $newDate . '$2', $newContent );
+				$newContent = preg_replace( $reg, '${1}{{subst:#time:Ymd|+1 year}}$2', $newContent );
 				$riconfNames[] = $user->getName();
 			}
 		}
@@ -157,7 +155,6 @@ class SimpleUpdates extends Subtask {
 			if ( $user->inGroup( 'checkuser' ) ) {
 				$reg = '!(\{\{ *Checkuser *\| *' . $user->getRegex() . " *\|[^}]+\| *)[\w \d]+(}}.*\n)!";
 				if ( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ) {
-					// Remove the line
 					$newContent = preg_replace( $reg, '', $newContent );
 					$removeNames[] = $user->getName();
 				} else {
@@ -170,11 +167,6 @@ class SimpleUpdates extends Subtask {
 		if ( !$riconfNames && !$removeNames ) {
 			return;
 		}
-
-		$this->getLogger()->info(
-			'Updating CU list. Riconf: ' . implode( ', ', $riconfNames ) .
-			'; remove: ' . implode( ', ', $removeNames )
-		);
 
 		$summary = $this->msg( 'cu-list-update-summary' )
 			->params( [

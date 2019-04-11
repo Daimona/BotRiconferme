@@ -92,15 +92,10 @@ class UpdateList extends Task {
 	protected function getMissingGroups() : array {
 		$missing = [];
 		foreach ( $this->actualList as $adm => $groups ) {
-			$groupsList = [];
-			if ( !isset( $this->botList[ $adm ] ) ) {
-				$groupsList = $groups;
-			} elseif ( count( $groups ) > count( $this->botList[$adm] ) ) {
-				// Only some groups are missing
-				$groupsList = array_diff_key( $groups, $this->botList[$adm] );
-			}
+			$botList = $this->botList[$adm] ?? [];
+			$curMissing = array_diff_key( $groups, $botList[$adm] );
 
-			foreach ( $groupsList as $group ) {
+			foreach ( $curMissing as $group ) {
 				try {
 					$missing[ $adm ][ $group ] = $this->getFlagDate( $adm, $group );
 				} catch ( TaskException $e ) {
@@ -157,15 +152,12 @@ class UpdateList extends Task {
 	private function extractTimestamp( \stdClass $data, string $group ) : ?string {
 		$ts = null;
 		foreach ( $data->query->logevents as $entry ) {
-			if ( !isset( $entry->params ) ) {
-				// Old entries
-				continue;
-			}
-
-			$addedGroups = array_diff( $entry->params->newgroups, $entry->params->oldgroups );
-			if ( in_array( $group, $addedGroups ) ) {
-				$ts = $entry->timestamp;
-				break;
+			if ( isset( $entry->params ) ) {
+				$addedGroups = array_diff( $entry->params->newgroups, $entry->params->oldgroups );
+				if ( in_array( $group, $addedGroups ) ) {
+					$ts = $entry->timestamp;
+					break;
+				}
 			}
 		}
 		return $ts;
@@ -226,8 +218,8 @@ class UpdateList extends Task {
 		$removed = [];
 		foreach ( $newContent as $user => $groups ) {
 			$ts = PageBotList::getValidFlagTimestamp( $groups );
-			if ( date( 'd/m', $ts ) === date( 'd/m', strtotime( '- 1 days' ) ) &&
-				isset( $newContent[ $user ]['override'] )
+			if ( isset( $groups['override'] ) && ( date( 'd/m', $ts ) ===
+				date( 'd/m', strtotime( '- 1 days' ) ) )
 			) {
 				unset( $newContent[ $user ][ 'override' ] );
 				$removed[] = $user;
