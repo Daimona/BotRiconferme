@@ -25,8 +25,8 @@ class SimpleUpdates extends Subtask {
 
 		$this->updateVotazioni( $pages );
 		$this->updateNews( $pages );
-		$this->updateAdminList( $this->getDataProvider()->getGroupOutcomes( 'sysop', $pages ) );
-		$checkUsers = $this->getDataProvider()->getGroupOutcomes( 'checkuser', $pages );
+		$this->updateAdminList( $this->getGroupOutcomes( 'sysop', $pages ) );
+		$checkUsers = $this->getGroupOutcomes( 'checkuser', $pages );
 		if ( $checkUsers ) {
 			$this->updateCUList( $checkUsers );
 		}
@@ -176,5 +176,23 @@ class SimpleUpdates extends Subtask {
 			'text' => $newContent,
 			'summary' => $summary
 		] );
+	}
+
+	/**
+	 * Given a user group and an array of PageRiconferma, get an array of users from $pages
+	 * which are in the given groups and the outcome of the procedure (true = confirmed)
+	 * @param string $group
+	 * @param PageRiconferma[] $pages
+	 * @return bool[]
+	 */
+	private function getGroupOutcomes( string $group, array $pages ) : array {
+		$ret = [];
+		foreach ( $pages as $page ) {
+			$user = $page->getUser();
+			if ( $user->inGroup( $group ) ) {
+				$ret[ $user->getName() ] = !( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL );
+			}
+		}
+		return $ret;
 	}
 }

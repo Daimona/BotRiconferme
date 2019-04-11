@@ -7,6 +7,7 @@ use BotRiconferme\Wiki\Element;
 use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\TaskResult;
+use BotRiconferme\Wiki\User;
 
 /**
  * Update various pages around, to be done for all failed procedures
@@ -18,7 +19,7 @@ class FailedUpdates extends Subtask {
 	public function runInternal() : int {
 		$failed = $this->getFailures();
 		if ( $failed ) {
-			$bureaucrats = array_keys( $this->getDataProvider()->getGroupOutcomes( 'bureaucrat', $failed ) );
+			$bureaucrats = array_keys( $this->getFailedBureaucrats( $failed ) );
 			if ( $bureaucrats ) {
 				$this->updateBurList( $bureaucrats );
 			}
@@ -47,11 +48,9 @@ class FailedUpdates extends Subtask {
 	}
 
 	/**
-	 * @param string[] $users
+	 * @param User[] $users
 	 */
 	protected function updateBurList( array $users ) {
-		$this->getLogger()->info( 'Updating bureaucrats list.' );
-
 		$this->getLogger()->info( 'Updating bur list. Removing: ' . implode( ', ', $users ) );
 		$remList = Element::regexFromArray( $users );
 		$burList = new Page( $this->getConfig()->get( 'bur-list-title' ) );
@@ -186,5 +185,22 @@ class FailedUpdates extends Subtask {
 			'text' => $newContent,
 			'summary' => $summary
 		] );
+	}
+
+	/**
+	 * Get a list of bureaucrats from the given $pages
+	 *
+	 * @param PageRiconferma[] $pages
+	 * @return User[]
+	 */
+	private function getFailedBureaucrats( array $pages ) : array {
+		$ret = [];
+		foreach ( $pages as $page ) {
+			$user = $page->getUser();
+			if ( $user->inGroup( 'bureaucrat' ) ) {
+				$ret[] = $user;
+			}
+		}
+		return $ret;
 	}
 }
