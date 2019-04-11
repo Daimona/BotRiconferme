@@ -130,11 +130,11 @@ class FailedUpdates extends Subtask {
 
 		$names = [];
 		$text = '';
+		$msg = $this->msg( 'annunci-text' );
 		foreach ( $pages as $page ) {
 			$user = $page->getUser()->getName();
 			$names[] = $user;
-			$text .= "{{Breve|admin|{{subst:#time:j}}|[[Utente:$user|]] " .
-				"non è stato riconfermato [[WP:A|amministratore]].}}\n";
+			$text .= $msg->params( [ '$user' => $user ] )->text();
 		}
 
 		$oldLoc = setlocale( LC_TIME, 'it_IT', 'Italian_Italy', 'Italian' );
@@ -173,12 +173,12 @@ class FailedUpdates extends Subtask {
 
 		$names = [];
 		$text = '';
+		$msg = $this->msg( 'ultimenotizie-text' );
 		foreach ( $pages as $page ) {
 			$user = $page->getUser()->getName();
 			$title = $page->getTitle();
 			$names[] = $user;
-			$text .= "*'''{{subst:#time:j F}}''': [[Utente:$user|]] non è stato [[$title|riconfermato]] " .
-				"[[WP:A|amministratore]]; ora gli admin sono {{subst:#expr: {{subst:NUMBEROFADMINS}} - 1}}.\n";
+			$text .= $msg->params( [ '$user' => $user, '$title' => $title ] )->text();
 		}
 
 		$content = $notiziePage->getContent();
