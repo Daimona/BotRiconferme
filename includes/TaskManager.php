@@ -18,7 +18,7 @@ use BotRiconferme\Task\UpdateList;
 
 /**
  * Wrapper for single tasks
- * @fixme Reduce duplication with Task class and subclasses
+ * @todo Reduce duplication with Task class and subclasses
  */
 class TaskManager {
 	// Run modes

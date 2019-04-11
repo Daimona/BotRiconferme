@@ -74,9 +74,7 @@ class FailedUpdates extends Subtask {
 	 * @param PageRiconferma[] $pages
 	 */
 	protected function requestRemoval( array $pages ) {
-		$this->getLogger()->info(
-			'Requesting removal on meta for: ' . implode( ', ', $pages )
-		);
+		$this->getLogger()->info( 'Requesting flag removal for: ' . implode( ', ', $pages ) );
 
 		$flagRemPage = new Page(
 			$this->getConfig()->get( 'flag-removal-page-title' ),
@@ -84,7 +82,6 @@ class FailedUpdates extends Subtask {
 		);
 		$baseText = $this->msg( 'flag-removal-text' );
 
-		$content = $flagRemPage->getContent();
 		$append = '';
 		foreach ( $pages as $page ) {
 			$append .=
@@ -96,7 +93,7 @@ class FailedUpdates extends Subtask {
 		}
 
 		$after = '=== Miscellaneous requests ===';
-		$newContent = str_replace( $after, "$append\n$after", $content );
+		$newContent = str_replace( $after, "$append\n$after", $flagRemPage->getContent() );
 		$summary = $this->msg( 'flag-removal-summary' )
 			->params( [ '$num' => count( $pages ) ] )
 			->text();
@@ -162,9 +159,8 @@ class FailedUpdates extends Subtask {
 		$msg = $this->msg( 'ultimenotizie-text' );
 		foreach ( $pages as $page ) {
 			$user = $page->getUser()->getName();
-			$title = $page->getTitle();
 			$names[] = $user;
-			$text .= $msg->params( [ '$user' => $user, '$title' => $title ] )->text();
+			$text .= $msg->params( [ '$user' => $user, '$title' => $page->getTitle() ] )->text();
 		}
 
 		$content = $notiziePage->getContent();
@@ -178,8 +174,7 @@ class FailedUpdates extends Subtask {
 		}
 
 		$summary = $this->msg( 'ultimenotizie-summary' )
-			->params( [ '$names' => Message::commaList( $names ) ] )
-			->text();
+			->params( [ '$names' => Message::commaList( $names ) ] )->text();
 
 		$notiziePage->edit( [
 			'text' => $newContent,

@@ -18,7 +18,7 @@ abstract class Element {
 	 *
 	 * @param self[] $elements
 	 * @return string
-	 * @fixme Is this the right place?
+	 * @todo Is this the right place?
 	 */
 	public static function regexFromArray( array $elements ) : string {
 		$bits = [];
