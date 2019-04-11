@@ -78,8 +78,8 @@ class UpdateList extends Task {
 			if ( in_array( $u->name, $blacklist ) ) {
 				continue;
 			}
-			$interestingGroups = array_values( array_intersect( $u->groups, [ 'sysop', 'bureaucrat', 'checkuser' ] ) );
-			$ret[ $u->name ] = $interestingGroups;
+			$interestingGroups = array_intersect( $u->groups, [ 'sysop', 'bureaucrat', 'checkuser' ] );
+			$ret[ $u->name ] = array_values( $interestingGroups );
 		}
 		return $ret;
 	}
