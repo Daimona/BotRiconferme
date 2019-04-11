@@ -92,8 +92,7 @@ class UpdateList extends Task {
 	protected function getMissingGroups() : array {
 		$missing = [];
 		foreach ( $this->actualList as $adm => $groups ) {
-			$botList = $this->botList[$adm] ?? [];
-			$curMissing = array_diff_key( $groups, $botList[$adm] );
+			$curMissing = array_diff_key( $groups, $this->botList[$adm] ?? [] );
 
 			foreach ( $curMissing as $group ) {
 				try {

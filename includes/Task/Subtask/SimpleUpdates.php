@@ -7,6 +7,7 @@ use BotRiconferme\Wiki\Element;
 use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\TaskResult;
+use BotRiconferme\Wiki\User;
 
 /**
  * Update various pages around, to be done for all closed procedures
@@ -24,8 +25,11 @@ class SimpleUpdates extends Subtask {
 
 		$this->updateVotazioni( $pages );
 		$this->updateNews( $pages );
-		$this->updateAdminList( $pages );
-		$this->updateCUList( $pages );
+		$this->updateAdminList( $this->getDataProvider()->getGroupOutcomes( 'sysop', $pages ) );
+		$checkUsers = $this->getDataProvider()->getGroupOutcomes( 'checkuser', $pages );
+		if ( $checkUsers ) {
+			$this->updateCUList( $checkUsers );
+		}
 
 		return TaskResult::STATUS_GOOD;
 	}
@@ -106,25 +110,24 @@ class SimpleUpdates extends Subtask {
 	/**
 	 * Update date on WP:Amministratori/Lista
 	 *
-	 * @param PageRiconferma[] $pages
+	 * @param bool[] $outcomes
 	 */
-	protected function updateAdminList( array $pages ) {
-		$this->getLogger()->info(
-			'Updating admin list: ' . implode( ', ', $pages )
-		);
+	protected function updateAdminList( array $outcomes ) {
+		$this->getLogger()->info( 'Updating admin list' );
+
 		$adminsPage = new Page( $this->getConfig()->get( 'admins-list-title' ) );
 		$newContent = $adminsPage->getContent();
 
 		$riconfNames = $removeNames = [];
-		foreach ( $pages as $page ) {
-			$user = $page->getUser();
-			$reg = '!(\{\{Amministratore\/riga\|' . $user->getRegex() . ".+\| *)\d+( *\|[ \w]*\}\}.*\n)!";
-			if ( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ) {
-				$newContent = preg_replace( $reg, '', $newContent );
-				$removeNames[] = $user->getName();
-			} else {
+		foreach ( $outcomes as $user => $confirmed ) {
+			$userReg = ( new User( $user ) )->getRegex();
+			$reg = "!(\{\{Amministratore\/riga\|$userReg.+\| *)\d+( *\|[ \w]*\}\}.*\n)!";
+			if ( $confirmed ) {
 				$newContent = preg_replace( $reg, '${1}{{subst:#time:Ymd|+1 year}}$2', $newContent );
-				$riconfNames[] = $user->getName();
+				$riconfNames[] = $user;
+			} else {
+				$newContent = preg_replace( $reg, '', $newContent );
+				$removeNames[] = $user;
 			}
 		}
 
@@ -142,30 +145,24 @@ class SimpleUpdates extends Subtask {
 	}
 
 	/**
-	 * @param PageRiconferma[] $pages
+	 * @param bool[] $outcomes
 	 */
-	protected function updateCUList( array $pages ) {
-		$this->getLogger()->info( 'Checking if CU list needs updating.' );
+	protected function updateCUList( array $outcomes ) {
+		$this->getLogger()->info( 'Updating CU list.' );
 		$cuList = new Page( $this->getConfig()->get( 'cu-list-title' ) );
 		$newContent = $cuList->getContent();
 
 		$riconfNames = $removeNames = [];
-		foreach ( $pages as $page ) {
-			$user = $page->getUser();
-			if ( $user->inGroup( 'checkuser' ) ) {
-				$reg = '!(\{\{ *Checkuser *\| *' . $user->getRegex() . " *\|[^}]+\| *)[\w \d]+(}}.*\n)!";
-				if ( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ) {
-					$newContent = preg_replace( $reg, '', $newContent );
-					$removeNames[] = $user->getName();
-				} else {
-					$newContent = preg_replace( $reg, '$1{{subst:#time:j F Y}}$2', $newContent );
-					$riconfNames[] = $user->getName();
-				}
+		foreach ( $outcomes as $user => $confirmed ) {
+			$userReg = ( new User( $user ) )->getRegex();
+			$reg = "!(\{\{ *Checkuser *\| *$userReg *\|[^}]+\| *)[\w \d]+(}}.*\n)!";
+			if ( $confirmed ) {
+				$newContent = preg_replace( $reg, '$1{{subst:#time:j F Y}}$2', $newContent );
+				$riconfNames[] = $user;
+			} else {
+				$newContent = preg_replace( $reg, '', $newContent );
+				$removeNames[] = $user;
 			}
-		}
-
-		if ( !$riconfNames && !$removeNames ) {
-			return;
 		}
 
 		$summary = $this->msg( 'cu-list-update-summary' )

@@ -18,7 +18,10 @@ class FailedUpdates extends Subtask {
 	public function runInternal() : int {
 		$failed = $this->getFailures();
 		if ( $failed ) {
-			$this->updateBurList( $failed );
+			$bureaucrats = array_keys( $this->getDataProvider()->getGroupOutcomes( 'bureaucrat', $failed ) );
+			if ( $bureaucrats ) {
+				$this->updateBurList( $bureaucrats );
+			}
 			$this->requestRemoval( $failed );
 			$this->updateAnnunci( $failed );
 			$this->updateUltimeNotizie( $failed );
@@ -44,34 +47,20 @@ class FailedUpdates extends Subtask {
 	}
 
 	/**
-	 * @param PageRiconferma[] $pages
+	 * @param string[] $users
 	 */
-	protected function updateBurList( array $pages ) {
-		$this->getLogger()->info( 'Checking if bur list needs updating.' );
+	protected function updateBurList( array $users ) {
+		$this->getLogger()->info( 'Updating bureaucrats list.' );
 
-		$remove = [];
-		foreach ( $pages as $page ) {
-			$user = $page->getUser();
-			if ( $user->inGroup( 'bureaucrat' ) &&
-				( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL )
-			) {
-				$remove[] = $user;
-			}
-		}
-
-		if ( !$remove ) {
-			return;
-		}
-
-		$this->getLogger()->info( 'Updating bur list. Removing: ' . implode( ', ', $remove ) );
-		$remList = Element::regexFromArray( $remove );
+		$this->getLogger()->info( 'Updating bur list. Removing: ' . implode( ', ', $users ) );
+		$remList = Element::regexFromArray( $users );
 		$burList = new Page( $this->getConfig()->get( 'bur-list-title' ) );
 		$content = $burList->getContent();
 		$reg = "!^\#\{\{ *Burocrate *\| *$remList.+\n!m";
 		$newContent = preg_replace( $reg, '', $content );
 
 		$summary = $this->msg( 'bur-list-update-summary' )
-			->params( [ '$remove' => Message::commaList( $remove ) ] )
+			->params( [ '$remove' => Message::commaList( $users ) ] )
 			->text();
 
 		$burList->edit( [

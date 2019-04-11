@@ -124,4 +124,22 @@ class TaskDataProvider extends ContextSource {
 	public function addCreatedPages( PageRiconferma $page ) {
 		$this->createdPages[] = $page;
 	}
+
+	/**
+	 * Given a user group and an array of PageRiconferma, get an array of users from $pages
+	 * which are in the given groups and the outcome of the procedure (true = confirmed)
+	 * @param string $group
+	 * @param PageRiconferma[] $pages
+	 * @return bool[]
+	 */
+	public function getGroupOutcomes( string $group, array $pages ) : array {
+		$ret = [];
+		foreach ( $pages as $page ) {
+			$user = $page->getUser();
+			if ( $user->inGroup( $group ) ) {
+				$ret[ $user->getName() ] = !( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL );
+			}
+		}
+		return $ret;
+	}
 }
