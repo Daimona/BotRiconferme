@@ -114,7 +114,6 @@ class SimpleUpdates extends Subtask {
 	 */
 	protected function updateAdminList( array $outcomes ) {
 		$this->getLogger()->info( 'Updating admin list' );
-
 		$adminsPage = new Page( $this->getConfig()->get( 'admins-list-title' ) );
 		$newContent = $adminsPage->getContent();
 
@@ -157,7 +156,7 @@ class SimpleUpdates extends Subtask {
 			$userReg = ( new User( $user ) )->getRegex();
 			$reg = "!(\{\{ *Checkuser *\| *$userReg *\|[^}]+\| *)[\w \d]+(}}.*\n)!";
 			if ( $confirmed ) {
-				$newContent = preg_replace( $reg, '$1{{subst:#time:j F Y}}$2', $newContent );
+				$newContent = preg_replace( $reg, '${1}{{subst:#time:j F Y}}$2', $newContent );
 				$riconfNames[] = $user;
 			} else {
 				$newContent = preg_replace( $reg, '', $newContent );

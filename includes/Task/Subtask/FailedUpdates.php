@@ -19,7 +19,7 @@ class FailedUpdates extends Subtask {
 	public function runInternal() : int {
 		$failed = $this->getFailures();
 		if ( $failed ) {
-			$bureaucrats = array_keys( $this->getFailedBureaucrats( $failed ) );
+			$bureaucrats = $this->getFailedBureaucrats( $failed );
 			if ( $bureaucrats ) {
 				$this->updateBurList( $bureaucrats );
 			}
