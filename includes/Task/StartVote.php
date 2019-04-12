@@ -108,16 +108,16 @@ class StartVote extends Task {
 		}
 		$usersReg = Element::regexFromArray( $users );
 
-		$search = "!^.+\{\{Wikipedia:Wikipediano\/Votazioni\/Riga\|riconferma tacita\|utente=$usersReg\|.+\n!m";
+		$search = "!^.+\{\{[^|}]*\/Riga\|riconferma tacita\|utente=$usersReg\|.+\n!m";
 
 		$newContent = preg_replace( $search, '', $votePage->getContent() );
 
 		$newLines = '';
 		$endDays = PageRiconferma::VOTE_DURATION;
 		foreach ( $pages as $page ) {
-			$newLines .= '{{subst:Wikipedia:Wikipediano/Votazioni/RigaCompleta|votazione riconferma|utente=' .
-				$page->getUser() . '|numero=' . $page->getNum() . "|giorno={{subst:#timel:j F|+ $endDays days}}" .
-				"|ore={{subst:LOCALTIME}}}}\n";
+			$newLines .= '{{subst:Wikipedia:Wikipediano/Votazioni/RigaCompleta|votazione riconferma' .
+				'|utente=' . $page->getUser() . '|numero=' . $page->getNum() . '|giorno=' .
+				"{{subst:#timel:j F|+ $endDays days}}|ore={{subst:LOCALTIME}}}}\n";
 		}
 
 		$newContent = preg_replace( '!\|votazioni[ _]riconferma *= *\n!', '$0' . $newLines, $newContent );

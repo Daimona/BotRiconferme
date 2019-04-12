@@ -50,7 +50,7 @@ class SimpleUpdates extends Subtask {
 		}
 		$usersReg = Element::regexFromArray( $users );
 
-		$search = "!^.+\{\{Wikipedia:Wikipediano\/Votazioni\/Riga\|[^|]*riconferma[^|]*\|utente=$usersReg\|.+\n!m";
+		$search = "!^.+\{\{[^|}]*\/Riga\|[^|]*riconferma[^|]*\|utente=$usersReg\|.+\n!m";
 
 		$newContent = preg_replace( $search, '', $votePage->getContent() );
 

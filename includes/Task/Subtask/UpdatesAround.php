@@ -72,12 +72,16 @@ class UpdatesAround extends Subtask {
 		$endDays = PageRiconferma::SIMPLE_DURATION;
 		$newLines = '';
 		foreach ( $pages as $page ) {
-			$newLines .= '{{subst:Wikipedia:Wikipediano/Votazioni/RigaCompleta|riconferma tacita|utente=' .
-				$page->getUser() . '|numero=' . $page->getNum() . "|giorno={{subst:#timel:j F|+ $endDays days}}" .
-				"|ore={{subst:LOCALTIME}}}}\n";
+			$newLines .= '{{subst:Wikipedia:Wikipediano/Votazioni/RigaCompleta|riconferma tacita' .
+				'|utente=' . $page->getUser() . '|numero=' . $page->getNum() . '|giorno=' .
+				"{{subst:#timel:j F|+ $endDays days}}|ore={{subst:LOCALTIME}}}}\n";
 		}
 
-		$newContent = preg_replace( '!\|riconferme[ _]tacite *= *\n!', '$0' . $newLines, $votePage->getContent() );
+		$newContent = preg_replace(
+			'!\|riconferme[ _]tacite *= *\n!',
+			'$0' . $newLines,
+			$votePage->getContent()
+		);
 
 		$summary = $this->msg( 'vote-page-summary' )
 			->params( [ '$num' => count( $pages ) ] )->text();
