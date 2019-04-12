@@ -83,7 +83,6 @@ class CreatePages extends Subtask {
 		foreach ( $res->query->allpages as $resPage ) {
 			$page = new PageRiconferma( $resPage->title );
 			if ( date( 'z/Y' ) === date( 'z/Y', $page->getCreationTimestamp() ) ) {
-				// Was created today
 				throw new TaskException( "Page $page was already created." );
 			}
 

@@ -98,6 +98,7 @@ abstract class TaskBase extends ContextSource {
 	 * @param string $errstr
 	 * @param string $errfile
 	 * @param int $errline
+	 * @throws \ErrorException
 	 * @protected
 	 */
 	public function handleError( $errno, $errstr, $errfile, $errline ) {

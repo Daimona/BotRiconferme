@@ -63,6 +63,7 @@ class UpdatesAround extends Subtask {
 	 * Add a line in Wikipedia:Wikipediano/Votazioni
 	 *
 	 * @param PageRiconferma[] $pages
+	 * @throws TaskException
 	 */
 	protected function addToVotazioni( array $pages ) {
 		$this->getLogger()->info(
@@ -111,6 +112,7 @@ class UpdatesAround extends Subtask {
 	 * Update the counter on Template:VotazioniRCnews
 	 *
 	 * @param int $amount
+	 * @throws TaskException
 	 */
 	protected function addToNews( int $amount ) {
 		$this->getLogger()->info( "Increasing the news counter by $amount" );

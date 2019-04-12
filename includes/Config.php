@@ -54,6 +54,7 @@ class Config {
 	/**
 	 * @param string $key
 	 * @return string
+	 * @throws ConfigException
 	 */
 	public function getWikiMessage( string $key ) : string {
 		static $messages = null;

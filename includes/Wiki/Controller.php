@@ -39,6 +39,7 @@ class Controller {
 	 * @param int|null $section
 	 * @return string
 	 * @throws MissingPageException
+	 * @throws MissingSectionException
 	 */
 	public function getPageContent( string $title, int $section = null ) : string {
 		$msg = "Retrieving content of page $title" . ( $section !== null ? ", section $section" : '' );
