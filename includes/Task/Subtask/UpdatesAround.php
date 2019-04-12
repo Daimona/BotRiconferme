@@ -2,7 +2,6 @@
 
 namespace BotRiconferme\Task\Subtask;
 
-use BotRiconferme\Message;
 use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\Exception\TaskException;
@@ -63,7 +62,6 @@ class UpdatesAround extends Subtask {
 	 * Add a line in Wikipedia:Wikipediano/Votazioni
 	 *
 	 * @param PageRiconferma[] $pages
-	 * @throws TaskException
 	 */
 	protected function addToVotazioni( array $pages ) {
 		$this->getLogger()->info(
@@ -71,31 +69,15 @@ class UpdatesAround extends Subtask {
 		);
 		$votePage = new Page( $this->getConfig()->get( 'vote-page-title' ) );
 
-		$content = $votePage->getContent();
-
-		$time = Message::getTimeWithArticle( time() + ( 3600 * 24 * PageRiconferma::SIMPLE_DURATION ) );
+		$endDays = PageRiconferma::SIMPLE_DURATION;
 		$newLines = '';
 		foreach ( $pages as $page ) {
-			$newLines .= "\n*[[Utente:" . $page->getUser() . '|]]. ' .
-				'La [[' . $page->getTitle() . "|procedura]] termina $time;\n";
+			$newLines .= '{{subst:Wikipedia:Wikipediano/Votazioni/RigaCompleta|riconferma tacita|utente=' .
+				$page->getUser() . '|numero=' . $page->getNum() . "|giorno={{subst:#timel:j F|+ $endDays days}}" .
+				"|ore={{subst:LOCALTIME}}}}\n";
 		}
 
-		$introReg = '!^;È in corso la .*riconferma tacita.* degli .*amministratori.+!m';
-		if ( preg_match( $introReg, strip_tags( $content ) ) ) {
-			// Put before the existing ones, if they're found outside comments
-			$newContent = preg_replace( $introReg, '$0' . $newLines, $content, 1 );
-		} else {
-			// Start section
-			try {
-				$matches = $votePage->getMatch( $introReg );
-			} catch ( \Exception $e ) {
-				throw new TaskException( 'Intro not found in vote page' );
-			}
-			$beforeReg = '!INSERIRE LA NOTIZIA PIÙ NUOVA IN CIMA.+!m';
-			// Replace semicolon with full stop
-			$newLines = substr( $newLines, 0, -2 ) . ".\n";
-			$newContent = preg_replace( $beforeReg, '$0' . "\n{$matches[0]}\n$newLines", $content, 1 );
-		}
+		$newContent = preg_replace( '!\|riconferme[ _]tacite *= *\n!', '$0' . $newLines, $votePage->getContent() );
 
 		$summary = $this->msg( 'vote-page-summary' )
 			->params( [ '$num' => count( $pages ) ] )->text();

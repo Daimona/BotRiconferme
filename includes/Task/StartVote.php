@@ -3,7 +3,6 @@
 namespace BotRiconferme\Task;
 
 use BotRiconferme\Exception\TaskException;
-use BotRiconferme\Message;
 use BotRiconferme\Wiki\Element;
 use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageRiconferma;
@@ -48,7 +47,7 @@ class StartVote extends Task {
 		}
 
 		if ( $actualPages ) {
-			$this->updateVotePage( $actualPages );
+			$this->updateVotazioni( $actualPages );
 			$this->updateNews( count( $actualPages ) );
 			return TaskResult::STATUS_GOOD;
 		} else {
@@ -99,44 +98,29 @@ class StartVote extends Task {
 	 * @param PageRiconferma[] $pages
 	 * @see SimpleUpdates::updateVotazioni()
 	 * @see UpdatesAround::addToVotazioni()
-	 * @throws TaskException
 	 */
-	protected function updateVotePage( array $pages ) {
+	protected function updateVotazioni( array $pages ) {
 		$votePage = new Page( $this->getConfig()->get( 'vote-page-title' ) );
-		$content = $votePage->getContent();
 
-		$titleReg = Element::regexFromArray( $pages );
-		$search = "!^\*.+ La \[\[$titleReg\|procedura]] termina.+\n!m";
+		$users = [];
+		foreach ( $pages as $page ) {
+			$users[] = $page->getUser();
+		}
+		$usersReg = Element::regexFromArray( $users );
 
-		$newContent = preg_replace( $search, '', $content );
-		// Make sure the last line ends with a full stop
-		$sectionReg = '!(^;È in corso.+riconferma tacita.+amministratori.+\n(?:\*.+[;\.]\n)+\*.+)[\.;]!m';
-		$newContent = preg_replace( $sectionReg, '$1.', $newContent );
+		$search = "!^.+\{\{Wikipedia:Wikipediano\/Votazioni\/Riga\|riconferma tacita\|utente=$usersReg\|.+\n!m";
+
+		$newContent = preg_replace( $search, '', $votePage->getContent() );
 
 		$newLines = '';
-		$time = Message::getTimeWithArticle( time() + ( 60 * 60 * 24 * PageRiconferma::VOTE_DURATION ) );
+		$endDays = PageRiconferma::VOTE_DURATION;
 		foreach ( $pages as $page ) {
-			$newLines .= '*[[Utente:' . $page->getUser() . '|]]. ' .
-				'La [[' . $page->getTitle() . "|votazione]] termina $time;\n";
+			$newLines .= '{{subst:Wikipedia:Wikipediano/Votazioni/RigaCompleta|votazione riconferma|utente=' .
+				$page->getUser() . '|numero=' . $page->getNum() . "|giorno={{subst:#timel:j F|+ $endDays days}}" .
+				"|ore={{subst:LOCALTIME}}}}\n";
 		}
 
-		$introReg = '!^;Si vota per la \[\[Wikipedia:Amministratori/Riconferma annuale.+!m';
-		// Strip comments
-		$visible = preg_replace( '/(?=<!--)([\s\S]*?)-->/', '', $newContent );
-		if ( preg_match( $introReg, $visible ) ) {
-			// Put before the existing ones, if they're found outside comments
-			$newContent = preg_replace( $introReg, '$0' . "\n$newLines", $newContent, 1 );
-		} else {
-			// Start section
-			$matches = [];
-			if ( preg_match( $introReg, $newContent, $matches ) === 0 ) {
-				throw new TaskException( 'Intro not found in vote page' );
-			}
-			$beforeReg = '!INSERIRE LA NOTIZIA PIÙ NUOVA IN CIMA.+!m';
-			// Replace semicolon with full stop
-			$newLines = substr( $newLines, 0, -2 ) . ".\n";
-			$newContent = preg_replace( $beforeReg, '$0' . "\n{$matches[0]}\n$newLines", $newContent, 1 );
-		}
+		$newContent = preg_replace( '!\|votazioni[ _]riconferma *= *\n!', '$0' . $newLines, $newContent );
 
 		$summary = $this->msg( 'vote-start-vote-page-summary' )
 			->params( [ '$num' => count( $pages ) ] )

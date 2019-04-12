@@ -44,18 +44,15 @@ class SimpleUpdates extends Subtask {
 		);
 		$votePage = new Page( $this->getConfig()->get( 'vote-page-title' ) );
 
-		$titleReg = Element::regexFromArray( $pages );
-		$search = "!^\*.+ La \[\[$titleReg\|procedura]] termina.+\n!m";
+		$users = [];
+		foreach ( $pages as $page ) {
+			$users[] = $page->getUser();
+		}
+		$usersReg = Element::regexFromArray( $users );
+
+		$search = "!^.+\{\{Wikipedia:Wikipediano\/Votazioni\/Riga\|[^|]*riconferma[^|]*\|utente=$usersReg\|.+\n!m";
 
 		$newContent = preg_replace( $search, '', $votePage->getContent() );
-		// Make sure the last line ends with a full stop in every section
-		$simpleSectReg = '!(^;È in corso.+riconferma tacita.+amministrat.+\n(?:\*.+[;\.]\n)+\*.+)[\.;]!m';
-		$voteSectReg = '!(^;Si vota per la .+riconferma .+amministratori.+\n(?:\*.+[;\.]\n)+\*.+)[\.;]!m';
-		$newContent = preg_replace( $simpleSectReg, '$1.', $newContent );
-		$newContent = preg_replace( $voteSectReg, '$1.', $newContent );
-
-		// @fixme Remove empty sections, and add the "''Nessuna riconferma o votazione in corso''" message
-		// if the page is empty! Or just wait for the page to be restyled...
 
 		$summary = $this->msg( 'close-vote-page-summary' )
 			->params( [ '$num' => count( $pages ) ] )->text();
