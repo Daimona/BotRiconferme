@@ -14,7 +14,7 @@ La pagina raccoglie dati su tutti gli admin, in particolare le date di elezione 
   * `override`: Inserendo una data in questo campo, la prossima riconferma dell'utente sarà anticipata a tale data, anziché a quella prevista di default. Il parametro verrà rimosso automaticamente all'inizio della riconferma successiva.
   * `override-perm`: Come il precedente, ma resta in vigore "per sempre" e non verrà mai tolto in automatico.
 
-**Nota**:Per override e override-perm bisogna specificare solo dd/mm, senza anno.
+**Nota**: Per `override` e `override-perm` bisogna specificare solo dd/mm, senza anno.
 
 ### https://it.wikipedia.org/wiki/Utente:BotRiconferme/Config.json
 La pagina raccoglie un insieme di opzioni di configurazione più "oggettivi", e poco soggetti a cambiamenti. Sono quasi tutti titoli delle pagine che il bot dovrà modificare o leggere, tranne i primi due:

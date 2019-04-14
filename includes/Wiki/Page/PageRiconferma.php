@@ -9,9 +9,9 @@ use BotRiconferme\Wiki\User;
  * Represents a single riconferma page
  */
 class PageRiconferma extends Page {
-	// Sections of the page. Value = section number, and depends on whether the page is a vote
-	private $supportSection = 3;
-	private $opposeSection = 4;
+	// Sections of the page, value = section number. Loaded in self::defineSections
+	private $supportSection;
+	private $opposeSection ;
 	/** @var array Counts of votes for each section */
 	private $sectionCounts = [];
 
@@ -27,10 +27,11 @@ class PageRiconferma extends Page {
 	const VOTE_DURATION = 14;
 
 	/**
-	 * @param string $title
+	 * Define the numbers of the support and oppose sections. These are lazy-loaded
+	 * because they can vary depending on whether the page is a vote, which is relatively
+	 * expensive to know since it requires parsing the content of the page.
 	 */
-	public function __construct( string $title ) {
-		parent::__construct( $title );
+	private function defineSections() {
 		$this->supportSection = $this->isVote() ? 3 : 0;
 		$this->opposeSection = $this->isVote() ? 4 : 3;
 	}
@@ -80,6 +81,7 @@ class PageRiconferma extends Page {
 	 * @return int
 	 */
 	public function getOpposingCount() : int {
+		$this->defineSections();
 		return $this->getCountForSection( $this->opposeSection );
 	}
 
@@ -93,6 +95,7 @@ class PageRiconferma extends Page {
 		if ( !$this->isVote() ) {
 			throw new \BadMethodCallException( 'Cannot get support for a non-vote page.' );
 		}
+		$this->defineSections();
 		return $this->getCountForSection( $this->supportSection );
 	}
 

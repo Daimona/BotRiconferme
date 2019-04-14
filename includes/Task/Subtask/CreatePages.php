@@ -79,18 +79,21 @@ class CreatePages extends Subtask {
 
 		$res = RequestBase::newFromParams( $params )->execute();
 
-		$last = 0;
+		$last = [ 0 => null ];
 		foreach ( $res->query->allpages as $resPage ) {
 			$page = new PageRiconferma( $resPage->title );
-			if ( date( 'z/Y' ) === date( 'z/Y', $page->getCreationTimestamp() ) ) {
-				throw new TaskException( "Page $page was already created." );
-			}
 
-			if ( $page->getNum() > $last ) {
-				$last = $page->getNum();
+			if ( $page->getNum() > array_key_first( $last ) ) {
+				$last[ $page->getNum() ] = $page;
 			}
 		}
-		return $last;
+
+		$page = reset( $last );
+		if ( date( 'z/Y' ) === date( 'z/Y', $page->getCreationTimestamp() ) ) {
+			throw new TaskException( "Page $page was already created." );
+		}
+
+		return $page;
 	}
 
 	/**
