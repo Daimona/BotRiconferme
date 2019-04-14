@@ -6,6 +6,7 @@ use BotRiconferme\Bot;
 use BotRiconferme\Exception\APIRequestException;
 use BotRiconferme\Exception\MissingPageException;
 use BotRiconferme\Exception\ProtectedPageException;
+use BotRiconferme\Exception\PermissionDeniedException;
 
 /**
  * Core wrapper for an API request. Current implementations use either cURL or file_get_contents
@@ -154,6 +155,9 @@ abstract class RequestBase {
 					break;
 				case 'protectedpage':
 					$ex = new ProtectedPageException;
+					break;
+				case 'permissiondenied':
+					$ex = new PermissionDeniedException( $res->error->info );
 					break;
 				default:
 					$ex = new APIRequestException( $res->error->code . ' - ' . $res->error->info );
