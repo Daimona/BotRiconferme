@@ -140,12 +140,15 @@ class PageRiconferma extends Page {
 			return self::OUTCOME_OK;
 		}
 		$totalVotes = $this->getOpposingCount() + $this->getSupportCount();
+
 		if ( $this->getSupportCount() < $this->getQuorum() ) {
-			return self::OUTCOME_NO_QUOR;
+			$ret = self::OUTCOME_NO_QUOR;
 		} elseif ( $this->getSupportCount() < 2 * $totalVotes / 3 ) {
-			return self::OUTCOME_FAIL_VOTES;
+			$ret = self::OUTCOME_FAIL_VOTES;
+		} else {
+			$ret = self::OUTCOME_OK;
 		}
-		return self::OUTCOME_OK;
+		return $ret;
 	}
 
 	/**
