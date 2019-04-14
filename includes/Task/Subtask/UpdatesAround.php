@@ -41,21 +41,27 @@ class UpdatesAround extends Subtask {
 			'Adding the following to main: ' . implode( ', ', $pages )
 		);
 
+		$mainPage = new Page( $this->getConfig()->get( 'main-page-title' ) );
+
 		$append = "\n";
 		foreach ( $pages as $page ) {
 			$append .= '{{' . $page->getTitle() . "}}\n";
 		}
 
+		$newContent = $mainPage->getContent() . $append;
+		$newContent = preg_replace(
+			"/^:''Nessuna riconferma in corso\.''/m",
+			'<!-- $0 -->',
+			$newContent
+		);
+
 		$summary = $this->msg( 'main-page-summary' )
 			->params( [ '$num' => count( $pages ) ] )->text();
 
-		$params = [
-			'title' => $this->getConfig()->get( 'main-page-title' ),
-			'appendtext' => $append,
+		$mainPage->edit( [
+			'text' => $newContent,
 			'summary' => $summary
-		];
-
-		$this->getController()->editPage( $params );
+		] );
 	}
 
 	/**

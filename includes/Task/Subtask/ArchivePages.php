@@ -44,12 +44,23 @@ class ArchivePages extends Subtask {
 			$remove[] = '{{' . $page->getTitle() . '}}';
 		}
 
+		$newContent = str_replace( $remove, '', $mainPage->getContent() );
+
+		$reg = '!\{\{(?:Wikipedia:Amministratori\/Riconferma annuale)?\/[^/}]+\/\d!';
+		if ( preg_match_all( $reg, $newContent ) === 1 ) {
+			$newContent = preg_replace(
+				"/<!-- (:''Nessuna riconferma in corso\.'') -->/",
+				'$1',
+				$newContent
+			);
+		}
+
 		$summary = $this->msg( 'close-main-summary' )
 			->params( [ '$num' => count( $pages ) ] )
 			->text();
 
 		$mainPage->edit( [
-			'text' => str_replace( $remove, '', $mainPage->getContent() ),
+			'text' => $newContent,
 			'summary' => $summary
 		] );
 	}
@@ -76,8 +87,12 @@ class ArchivePages extends Subtask {
 		$simpleTitle = $this->getConfig()->get( 'close-simple-archive-title' );
 		$voteTitle = $this->getConfig()->get( 'close-vote-archive-title' );
 
-		$this->reallyAddToArchive( $simpleTitle, $simple );
-		$this->reallyAddToArchive( $voteTitle, $votes );
+		if ( $simple ) {
+			$this->reallyAddToArchive( $simpleTitle, $simple );
+		}
+		if ( $votes ) {
+			$this->reallyAddToArchive( $voteTitle, $votes );
+		}
 	}
 
 	/**
