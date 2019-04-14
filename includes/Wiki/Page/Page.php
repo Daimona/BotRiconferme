@@ -3,6 +3,7 @@
 namespace BotRiconferme\Wiki\Page;
 
 use BotRiconferme\Logger;
+use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Wiki\Controller;
 use BotRiconferme\Wiki\Element;
 
@@ -66,6 +67,20 @@ class Page extends Element {
 			( new Logger )->warning( 'Resetting content cache. Params: ' . var_export( $params, true ) );
 			$this->content = null;
 		}
+	}
+
+	/**
+	 * Whether this page exists
+	 *
+	 * @return bool
+	 */
+	public function exists() : bool {
+		$res = RequestBase::newFromParams( [
+			'action' => 'query',
+			'titles' => $this->getTitle()
+		] )->execute();
+		$pages = $res->query->pages;
+		return !isset( reset( $pages )->missing );
 	}
 
 	/**

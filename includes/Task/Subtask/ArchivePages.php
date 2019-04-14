@@ -103,6 +103,7 @@ class ArchivePages extends Subtask {
 	 */
 	private function reallyAddToArchive( string $archiveTitle, array $pages ) {
 		$archivePage = new Page( "$archiveTitle/" . date( 'Y' ) );
+		$exists = $archivePage->exists();
 
 		$append = "\n";
 		$archivedList = [];
@@ -116,6 +117,28 @@ class ArchivePages extends Subtask {
 
 		$archivePage->edit( [
 			'appendtext' => $append,
+			'summary' => $summary
+		] );
+
+		if ( !$exists ) {
+			$this->addArchiveYear( $archiveTitle );
+		}
+	}
+
+	/**
+	 * Add a link to the newly-created archive for this year to the main archive page
+	 *
+	 * @param string $archiveTitle
+	 */
+	private function addArchiveYear( string $archiveTitle ) {
+		$page = new Page( $archiveTitle );
+		$year = date( 'Y' );
+
+		$summary = $this->msg( 'new-archive-summary' )
+			->params( [ '$year' => $year ] )->text();
+
+		$page->edit( [
+			'appendtext' => "\n*[[/$year|$year]]",
 			'summary' => $summary
 		] );
 	}
