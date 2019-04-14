@@ -11,7 +11,7 @@ use BotRiconferme\Wiki\User;
 class PageRiconferma extends Page {
 	// Sections of the page, value = section number. Loaded in self::defineSections
 	private $supportSection;
-	private $opposeSection ;
+	private $opposeSection;
 	/** @var array Counts of votes for each section */
 	private $sectionCounts = [];
 
