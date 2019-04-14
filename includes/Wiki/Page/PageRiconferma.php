@@ -134,11 +134,10 @@ class PageRiconferma extends Page {
 	 * Gets the outcome for the vote
 	 *
 	 * @return int One of the OUTCOME_* constants
-	 * @throws \BadMethodCallException
 	 */
 	public function getOutcome() : int {
 		if ( !$this->isVote() ) {
-			throw new \BadMethodCallException( 'Cannot get outcome for a non-vote page.' );
+			return self::OUTCOME_OK;
 		}
 		$totalVotes = $this->getOpposingCount() + $this->getSupportCount();
 		if ( $this->getSupportCount() < $this->getQuorum() ) {
