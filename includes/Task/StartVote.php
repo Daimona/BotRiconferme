@@ -38,21 +38,21 @@ class StartVote extends Task {
 	 * @return int a STATUS_* constant
 	 */
 	protected function processPages( array $pages ) : int {
-		$actualPages = [];
+		$donePages = [];
 		foreach ( $pages as $page ) {
 			if ( $page->hasOpposition() && !$page->isVote() ) {
 				$this->openVote( $page );
-				$actualPages[] = $page;
+				$donePages[] = $page;
 			}
 		}
 
-		if ( $actualPages ) {
-			$this->updateVotazioni( $actualPages );
-			$this->updateNews( count( $actualPages ) );
-			return TaskResult::STATUS_GOOD;
-		} else {
+		if ( !$donePages ) {
 			return TaskResult::STATUS_NOTHING;
 		}
+
+		$this->updateVotazioni( $donePages );
+		$this->updateNews( count( $donePages ) );
+		return TaskResult::STATUS_GOOD;
 	}
 
 	/**

@@ -77,13 +77,10 @@ class SimpleUpdates extends Subtask {
 			}
 		}
 
-		$this->getLogger()->info(
-			"Decreasing the news counter: $simpleAmount simple, $voteAmount votes."
-		);
+		$this->getLogger()->info( "Updating news counter: -$simpleAmount simple, -$voteAmount votes." );
 
 		$newsPage = new Page( $this->getConfig()->get( 'news-page-title' ) );
 
-		$content = $newsPage->getContent();
 		$simpleReg = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d*)(?=\s*[}|])!';
 		$voteReg = '!(\| *riconferme[ _]voto[ _]amministratori *= *)(\d*)(?=\s*[}|])!';
 
@@ -92,7 +89,7 @@ class SimpleUpdates extends Subtask {
 
 		$newSimp = (int)$simpleMatches[2] - $simpleAmount ?: '';
 		$newVote = (int)$voteMatches[2] - $voteAmount ?: '';
-		$newContent = preg_replace( $simpleReg, '${1}' . $newSimp, $content );
+		$newContent = preg_replace( $simpleReg, '${1}' . $newSimp, $newsPage->getContent() );
 		$newContent = preg_replace( $voteReg, '${1}' . $newVote, $newContent );
 
 		$summary = $this->msg( 'close-news-page-summary' )

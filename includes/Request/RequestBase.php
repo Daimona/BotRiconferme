@@ -142,27 +142,37 @@ abstract class RequestBase {
 	}
 
 	/**
+	 * Get a specific exception class depending on the error code
+	 *
+	 * @param \stdClass $res
+	 * @return APIRequestException
+	 */
+	private function getException( \stdClass $res ) : APIRequestException {
+		switch ( $res->error->code ) {
+			case 'missingtitle':
+				$ex = new MissingPageException;
+				break;
+			case 'protectedpage':
+				$ex = new ProtectedPageException;
+				break;
+			case 'permissiondenied':
+				$ex = new PermissionDeniedException( $res->error->info );
+				break;
+			default:
+				$ex = new APIRequestException( $res->error->code . ' - ' . $res->error->info );
+		}
+		return $ex;
+	}
+
+	/**
 	 * Handle known warning and errors from an API request
 	 *
 	 * @param \stdClass $res
 	 * @throws APIRequestException
 	 */
-	protected function handleErrorAndWarnings( $res ) {
+	protected function handleErrorAndWarnings( \stdClass $res ) {
 		if ( isset( $res->error ) ) {
-			switch ( $res->error->code ) {
-				case 'missingtitle':
-					$ex = new MissingPageException;
-					break;
-				case 'protectedpage':
-					$ex = new ProtectedPageException;
-					break;
-				case 'permissiondenied':
-					$ex = new PermissionDeniedException( $res->error->info );
-					break;
-				default:
-					$ex = new APIRequestException( $res->error->code . ' - ' . $res->error->info );
-			}
-			throw $ex;
+			throw $this->getException( $res );
 		} elseif ( isset( $res->warnings ) ) {
 			$act = $this->params[ 'action' ];
 			$warning = $res->warnings->$act ?? $res->warnings->main;

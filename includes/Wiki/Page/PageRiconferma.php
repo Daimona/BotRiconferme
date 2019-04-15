@@ -109,7 +109,7 @@ class PageRiconferma extends Page {
 		if ( !isset( $this->sectionCounts[ $secNum ] ) ) {
 			$content = $this->controller->getPageContent( $this->title, $secNum );
 			// Let's hope that this is good enough...
-			$this->sectionCounts[$secNum] = preg_match_all( "/^\# *(?![# *]|\.\.\.$)/m", $content );
+			$this->sectionCounts[$secNum] = preg_match_all( "/^\# *(?![# *:]|\.\.\.$)/m", $content );
 		}
 		return $this->sectionCounts[$secNum];
 	}

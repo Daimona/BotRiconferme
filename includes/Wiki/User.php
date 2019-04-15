@@ -5,7 +5,7 @@ namespace BotRiconferme\Wiki;
 use BotRiconferme\Wiki\Page\PageBotList;
 
 /**
- * Class representing a single user.
+ * Class representing a single user. NOTE this can only represent users stored in the JSON list
  */
 class User extends Element {
 	/** @var string */

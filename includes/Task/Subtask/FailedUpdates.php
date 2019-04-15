@@ -115,11 +115,10 @@ class FailedUpdates extends Subtask {
 
 		$names = [];
 		$text = '';
-		$msg = $this->msg( 'annunci-text' );
 		foreach ( $pages as $page ) {
 			$user = $page->getUser()->getName();
 			$names[] = $user;
-			$text .= $msg->params( [ '$user' => $user ] )->text();
+			$text .= $this->msg( 'annunci-text' )->params( [ '$user' => $user ] )->text();
 		}
 
 		$month = ucfirst( Message::MONTHS[ date( 'F' ) ] );
@@ -127,7 +126,7 @@ class FailedUpdates extends Subtask {
 		$annunciPage = new Page( $this->getConfig()->get( 'annunci-page-title' ) );
 		$content = $annunciPage->getContent( $section );
 		$secReg = "!=== *$month *===!";
-		if ( preg_match( $secReg, $content ) ) {
+		if ( $annunciPage->matches( $secReg ) ) {
 			$newContent = preg_replace( $secReg, '$0' . "\n" . $text, $content );
 		} else {
 			$before = '!</div>\s*}}\s*</includeonly>!';
