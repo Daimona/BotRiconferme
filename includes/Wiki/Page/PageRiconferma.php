@@ -25,7 +25,7 @@ class PageRiconferma extends Page {
 	const REQUIRED_OPPOSE = 15;
 	const SIMPLE_DURATION = 7;
 	const VOTE_DURATION = 14;
-	const SUCCESS_RATIO = 2/3;
+	const SUCCESS_RATIO = 2 / 3;
 
 	/**
 	 * Define the numbers of the support and oppose sections. These are lazy-loaded
