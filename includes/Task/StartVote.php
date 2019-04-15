@@ -100,7 +100,7 @@ class StartVote extends Task {
 	 * @see UpdatesAround::addToVotazioni()
 	 */
 	protected function updateVotazioni( array $pages ) {
-		$votePage = new Page( $this->getConfig()->get( 'vote-page-title' ) );
+		$votePage = new Page( $this->getOpt( 'vote-page-title' ) );
 
 		$users = [];
 		foreach ( $pages as $page ) {
@@ -144,7 +144,7 @@ class StartVote extends Task {
 	 */
 	protected function updateNews( int $amount ) {
 		$this->getLogger()->info( "Turning $amount pages into votes" );
-		$newsPage = new Page( $this->getConfig()->get( 'news-page-title' ) );
+		$newsPage = new Page( $this->getOpt( 'news-page-title' ) );
 
 		$content = $newsPage->getContent();
 		$regTac = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d*)(?=\s*[}|])!';

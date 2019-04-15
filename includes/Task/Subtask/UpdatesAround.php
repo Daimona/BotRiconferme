@@ -41,7 +41,7 @@ class UpdatesAround extends Subtask {
 			'Adding the following to main: ' . implode( ', ', $pages )
 		);
 
-		$mainPage = new Page( $this->getConfig()->get( 'main-page-title' ) );
+		$mainPage = new Page( $this->getOpt( 'main-page-title' ) );
 
 		$append = "\n";
 		foreach ( $pages as $page ) {
@@ -73,7 +73,7 @@ class UpdatesAround extends Subtask {
 		$this->getLogger()->info(
 			'Adding the following to votes: ' . implode( ', ', $pages )
 		);
-		$votePage = new Page( $this->getConfig()->get( 'vote-page-title' ) );
+		$votePage = new Page( $this->getOpt( 'vote-page-title' ) );
 
 		$endDays = PageRiconferma::SIMPLE_DURATION;
 		$newLines = '';
@@ -108,7 +108,7 @@ class UpdatesAround extends Subtask {
 	 */
 	protected function addToNews( int $amount ) {
 		$this->getLogger()->info( "Increasing the news counter by $amount" );
-		$newsPage = new Page( $this->getConfig()->get( 'news-page-title' ) );
+		$newsPage = new Page( $this->getOpt( 'news-page-title' ) );
 
 		$content = $newsPage->getContent();
 		$reg = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d*)(?=\s*[}|])!';

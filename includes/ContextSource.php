@@ -40,6 +40,16 @@ abstract class ContextSource implements LoggerAwareInterface {
 	}
 
 	/**
+	 * Shorthand to $this->getConfig()->get
+	 *
+	 * @param string $optname
+	 * @return mixed
+	 */
+	protected function getOpt( string $optname ) {
+		return $this->getConfig()->get( $optname );
+	}
+
+	/**
 	 * @return Config
 	 */
 	protected function getConfig() : Config {

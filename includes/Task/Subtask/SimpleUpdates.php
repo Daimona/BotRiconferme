@@ -42,7 +42,7 @@ class SimpleUpdates extends Subtask {
 		$this->getLogger()->info(
 			'Updating votazioni: ' . implode( ', ', $pages )
 		);
-		$votePage = new Page( $this->getConfig()->get( 'vote-page-title' ) );
+		$votePage = new Page( $this->getOpt( 'vote-page-title' ) );
 
 		$users = [];
 		foreach ( $pages as $page ) {
@@ -79,7 +79,7 @@ class SimpleUpdates extends Subtask {
 
 		$this->getLogger()->info( "Updating news counter: -$simpleAmount simple, -$voteAmount votes." );
 
-		$newsPage = new Page( $this->getConfig()->get( 'news-page-title' ) );
+		$newsPage = new Page( $this->getOpt( 'news-page-title' ) );
 
 		$simpleReg = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d*)(?=\s*[}|])!';
 		$voteReg = '!(\| *riconferme[ _]voto[ _]amministratori *= *)(\d*)(?=\s*[}|])!';
@@ -108,7 +108,7 @@ class SimpleUpdates extends Subtask {
 	 */
 	protected function updateAdminList( array $outcomes ) {
 		$this->getLogger()->info( 'Updating admin list' );
-		$adminsPage = new Page( $this->getConfig()->get( 'admins-list-title' ) );
+		$adminsPage = new Page( $this->getOpt( 'admins-list-title' ) );
 		$newContent = $adminsPage->getContent();
 
 		$riconfNames = $removeNames = [];
@@ -142,7 +142,7 @@ class SimpleUpdates extends Subtask {
 	 */
 	protected function updateCUList( array $outcomes ) {
 		$this->getLogger()->info( 'Updating CU list.' );
-		$cuList = new Page( $this->getConfig()->get( 'cu-list-title' ) );
+		$cuList = new Page( $this->getOpt( 'cu-list-title' ) );
 		$newContent = $cuList->getContent();
 
 		$riconfNames = $removeNames = [];

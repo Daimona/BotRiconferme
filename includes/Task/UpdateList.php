@@ -73,7 +73,7 @@ class UpdateList extends Task {
 	 */
 	protected function extractAdmins( \stdClass $data ) : array {
 		$ret = [];
-		$blacklist = $this->getConfig()->get( 'exclude-admins' );
+		$blacklist = $this->getOpt( 'exclude-admins' );
 		foreach ( $data->query->allusers as $u ) {
 			if ( in_array( $u->name, $blacklist ) ) {
 				continue;

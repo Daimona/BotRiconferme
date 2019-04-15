@@ -25,6 +25,7 @@ class PageRiconferma extends Page {
 	const REQUIRED_OPPOSE = 15;
 	const SIMPLE_DURATION = 7;
 	const VOTE_DURATION = 14;
+	const SUCCESS_RATIO = 2/3;
 
 	/**
 	 * Define the numbers of the support and oppose sections. These are lazy-loaded
@@ -146,7 +147,7 @@ class PageRiconferma extends Page {
 
 		if ( $this->getSupportCount() < $this->getQuorum() ) {
 			$ret = self::OUTCOME_NO_QUOR;
-		} elseif ( $this->getSupportCount() < 2 * $totalVotes / 3 ) {
+		} elseif ( $this->getSupportCount() < self::SUCCESS_RATIO * $totalVotes ) {
 			$ret = self::OUTCOME_FAIL_VOTES;
 		} else {
 			$ret = self::OUTCOME_OK;
@@ -180,9 +181,9 @@ class PageRiconferma extends Page {
 			/** @noinspection PhpMissingBreakStatementInspection */
 			case self::OUTCOME_NO_QUOR:
 				$text .= ', non raggiungendo il quorum,';
-				// Fall through intended
+				// Fall-through intended
 			case self::OUTCOME_FAIL:
-				$text .= " $user non viene riconfermato amministratore";
+				$text .= " $user non viene riconfermato amministratore.";
 				break;
 			default:
 				throw new \LogicException( 'Invalid outcome: ' . $this->getOutcome() );
@@ -208,6 +209,7 @@ class PageRiconferma extends Page {
 	public function getCreationTimestamp() : int {
 		return $this->controller->getPageCreationTS( $this->title );
 	}
+
 	/**
 	 * Get the end time
 	 *
@@ -218,7 +220,7 @@ class PageRiconferma extends Page {
 			$reg = "!La votazione ha inizio il.+ alle ore ([\d:]+) e ha termine il (.+) alla stessa ora!";
 			list( , $hours, $day ) = $this->getMatch( $reg );
 			$day = preg_replace( '![^\d \w]!', '', $day );
-			return Message::getTimestampFromLocalTime( $day . " alle " . $hours );
+			return Message::getTimestampFromLocalTime( "$day $hours" );
 		} else {
 			return $this->getCreationTimestamp() + 60 * 60 * 24 * self::SIMPLE_DURATION;
 		}

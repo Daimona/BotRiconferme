@@ -88,7 +88,7 @@ class Message {
 	/**
 	 * Get a timestamp from a localized time string
 	 *
-	 * @param string $timeString
+	 * @param string $timeString Full format, e.g. "15 aprile 2019 18:27"
 	 * @return int
 	 */
 	public static function getTimestampFromLocalTime( string $timeString ) : int {
@@ -97,7 +97,6 @@ class Message {
 			array_keys( self::MONTHS ),
 			$timeString
 		);
-		$englishTime = str_replace( ' alle ', ' ', $englishTime );
 
 		return strtotime( $englishTime );
 	}

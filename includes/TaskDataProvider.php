@@ -63,7 +63,7 @@ class TaskDataProvider extends ContextSource {
 		static $list = null;
 		if ( $list === null ) {
 			$list = [];
-			$mainTitle = $this->getConfig()->get( 'main-page-title' );
+			$mainTitle = $this->getOpt( 'main-page-title' );
 			$params = [
 				'action' => 'query',
 				'prop' => 'templates',

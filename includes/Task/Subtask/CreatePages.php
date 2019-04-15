@@ -44,7 +44,7 @@ class CreatePages extends Subtask {
 			return;
 		}
 
-		$baseTitle = $this->getConfig()->get( 'main-page-title' ) . "/$user";
+		$baseTitle = $this->getOpt( 'main-page-title' ) . "/$user";
 		$pageTitle = "$baseTitle/$num";
 		$this->createPage( $pageTitle, $user, $groups );
 
@@ -68,7 +68,7 @@ class CreatePages extends Subtask {
 	 */
 	protected function getLastPageNum( string $user ) : int {
 		$this->getLogger()->debug( "Retrieving previous pages for $user" );
-		$unprefixedTitle = explode( ':', $this->getConfig()->get( 'main-page-title' ), 2 )[1];
+		$unprefixedTitle = explode( ':', $this->getOpt( 'main-page-title' ), 2 )[1];
 		$params = [
 			'action' => 'query',
 			'list' => 'allpages',

@@ -38,7 +38,7 @@ class ArchivePages extends Subtask {
 			'Removing from main: ' . implode( ', ', $pages )
 		);
 
-		$mainPage = new Page( $this->getConfig()->get( 'main-page-title' ) );
+		$mainPage = new Page( $this->getOpt( 'main-page-title' ) );
 		$remove = [];
 		foreach ( $pages as $page ) {
 			$remove[] = '{{' . $page->getTitle() . '}}';
@@ -84,8 +84,8 @@ class ArchivePages extends Subtask {
 			}
 		}
 
-		$simpleTitle = $this->getConfig()->get( 'close-simple-archive-title' );
-		$voteTitle = $this->getConfig()->get( 'close-vote-archive-title' );
+		$simpleTitle = $this->getOpt( 'close-simple-archive-title' );
+		$voteTitle = $this->getOpt( 'close-vote-archive-title' );
 
 		if ( $simple ) {
 			$this->reallyAddToArchive( $simpleTitle, $simple );
