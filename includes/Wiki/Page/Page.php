@@ -2,7 +2,6 @@
 
 namespace BotRiconferme\Wiki\Page;
 
-use BotRiconferme\Logger;
 use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Wiki\Controller;
 use BotRiconferme\Wiki\Element;
