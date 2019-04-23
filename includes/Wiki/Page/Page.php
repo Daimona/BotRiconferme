@@ -51,6 +51,7 @@ class Page extends Element {
 	 * Edit this page and update content
 	 *
 	 * @param array $params
+	 * @throws \LogicException
 	 */
 	public function edit( array $params ) {
 		$params = [
@@ -62,10 +63,12 @@ class Page extends Element {
 			$this->content = $params['text'];
 		} elseif ( isset( $params['appendtext'] ) ) {
 			$this->content .= $params['appendtext'];
+		} elseif ( isset( $params['prependtext'] ) ) {
+			$this->content = $params['prependtext'] . $this->content;
 		} else {
-			// Clear the cache anyway
-			( new Logger )->warning( 'Resetting content cache. Params: ' . var_export( $params, true ) );
-			$this->content = null;
+			throw new \LogicException(
+				'Unrecognized text param for edit. Params: ' . var_export( $params, true )
+			);
 		}
 	}
 

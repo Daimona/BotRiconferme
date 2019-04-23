@@ -83,8 +83,11 @@ class Controller {
 		$params = [
 			'action' => 'edit',
 			'token' => $this->getToken( 'csrf' ),
-			'bot' => Config::getInstance()->get( 'bot-edits' )
 		] + $params;
+
+		if ( Config::getInstance()->get( 'bot-edits' ) ) {
+			$params['bot'] = 1;
+		}
 
 		$res = RequestBase::newFromParams( $params )
 			->setUrl( $this->domain )
@@ -109,7 +112,8 @@ class Controller {
 			return;
 		}
 
-		$this->logger->info( 'Logging in' );
+		// Yes, this is an easter egg.
+		$this->logger->info( 'Logging in. Username: BotRiconferme, password: correctHorseBatteryStaple' );
 
 		$params = [
 			'action' => 'login',
