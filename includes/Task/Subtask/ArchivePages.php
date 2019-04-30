@@ -46,8 +46,8 @@ class ArchivePages extends Subtask {
 
 		$newContent = str_replace( $remove, '', $mainPage->getContent() );
 
-		$reg = '!\{\{(?:Wikipedia:Amministratori\/Riconferma annuale)?\/[^/}]+\/\d!';
-		if ( preg_match_all( $reg, $newContent ) === 1 ) {
+		$reg = '!\{\{(?:Wikipedia:Amministratori\/Riconferma annuale)?\/[^\/}]+\/\d+}}!';
+		if ( preg_match_all( $reg, $newContent ) === 0 ) {
 			$newContent = preg_replace(
 				"/<!-- (:''Nessuna riconferma in corso\.'') -->/",
 				'$1',
