@@ -116,7 +116,7 @@ class SimpleUpdates extends Subtask {
 			$userReg = ( new User( $user ) )->getRegex();
 			$reg = "!(\{\{Amministratore\/riga\|$userReg.+\| *)\d+( *\|[ \w]*\}\}.*\n)!";
 			if ( $confirmed ) {
-				$newContent = preg_replace( $reg, '${1}{{subst:#time:Ymd|+1 year}}$2', $newContent );
+				$newContent = preg_replace( $reg, '${1}{{subst:#time:Ymd}}$2', $newContent );
 				$riconfNames[] = $user;
 			} else {
 				$newContent = preg_replace( $reg, '', $newContent );
