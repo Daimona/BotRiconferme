@@ -147,10 +147,22 @@ class SimpleUpdates extends Subtask {
 	 * @return int
 	 */
 	private function getNextTs( User $user ) : int {
-		// If an "override" was used for this time, it's already been removed in
-		// UpdateList. If there's another, then it's valid for the next one.
-		return PageBotList::getOverrideTimestamp( $user->getGroups() ) ??
-			PageBotList::getValidFlagTimestamp( $user->getGroups() );
+		// If there's an "override", we ignore it, supposing that it's been already used for
+		// this time, but not yet removed in UpdateList. This will also discard "override"s added
+		// for the next year before the procedure is closed.
+		// @todo Avoid the limitation above
+		$groups = $user->getGroups();
+		if ( isset( $groups['override-perm'] ) ) {
+			$date = \DateTime::createFromFormat(
+				'd/m/Y',
+				$groups['override-perm'] . '/' . date( 'Y' )
+			);
+			if ( $date < new \DateTime ) {
+				$date->modify( '+1 year' );
+			}
+			return $date->getTimestamp();
+		}
+		return PageBotList::getValidFlagTimestamp( $groups );
 	}
 
 	/**

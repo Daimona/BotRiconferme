@@ -15,6 +15,7 @@ La pagina raccoglie dati su tutti gli admin, in particolare le date di elezione 
   * `override-perm`: Come il precedente, ma resta in vigore "per sempre" e non verrà mai tolto in automatico.
 
 **Nota**: Per `override` e `override-perm` bisogna specificare solo dd/mm, senza anno, e facendo attenzione ad includere zeri di padding (ovvero, 07/05 va bene, 7/05, 7/5 e 07/5 no).
+**Nota2**: A causa di una limitazione tecnica, gli `override` aggiunti durante una procedura in corso validi per l'anno successivo saranno ignorati nell'aggiornamento della lista degli admin.
 
 ### https://it.wikipedia.org/wiki/Utente:BotRiconferme/Config.json
 La pagina raccoglie un insieme di opzioni di configurazione più "oggettivi", e poco soggetti a cambiamenti. Sono quasi tutti titoli delle pagine che il bot dovrà modificare o leggere, tranne i primi due:
