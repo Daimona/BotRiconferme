@@ -36,7 +36,7 @@ class SimpleUpdates extends Subtask {
 
 	/**
 	 * @param PageRiconferma[] $pages
-	 * @see UpdatesAround::addToVotazioni()
+	 * @see OpenUpdates::addToVotazioni()
 	 */
 	protected function updateVotazioni( array $pages ) {
 		$this->getLogger()->info(
@@ -65,7 +65,7 @@ class SimpleUpdates extends Subtask {
 
 	/**
 	 * @param array $pages
-	 * @see UpdatesAround::addToNews()
+	 * @see OpenUpdates::addToNews()
 	 */
 	protected function updateNews( array $pages ) {
 		$simpleAmount = $voteAmount = 0;

@@ -10,7 +10,7 @@ use BotRiconferme\TaskResult;
 /**
  * Do some updates around to notify people of the newly created pages
  */
-class UpdatesAround extends Subtask {
+class OpenUpdates extends Subtask {
 	/**
 	 * @inheritDoc
 	 */

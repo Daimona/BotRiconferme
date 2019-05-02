@@ -97,7 +97,7 @@ class StartVote extends Task {
 	 *
 	 * @param PageRiconferma[] $pages
 	 * @see SimpleUpdates::updateVotazioni()
-	 * @see UpdatesAround::addToVotazioni()
+	 * @see OpenUpdates::addToVotazioni()
 	 */
 	protected function updateVotazioni( array $pages ) {
 		$votePage = new Page( $this->getOpt( 'vote-page-title' ) );
@@ -138,9 +138,9 @@ class StartVote extends Task {
 	 * Template:VotazioniRCnews
 	 *
 	 * @param int $amount Of pages to move
-	 * @see UpdatesAround::addToNews()
-	 * @see SimpleUpdates::updateNews()
 	 * @throws TaskException
+	 *@see SimpleUpdates::updateNews()
+	 * @see OpenUpdates::addToNews()
 	 */
 	protected function updateNews( int $amount ) {
 		$this->getLogger()->info( "Turning $amount pages into votes" );

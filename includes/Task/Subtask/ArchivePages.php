@@ -31,7 +31,7 @@ class ArchivePages extends Subtask {
 	 * Removes pages from WP:A/Riconferme annuali
 	 *
 	 * @param PageRiconferma[] $pages
-	 * @see UpdatesAround::addToMainPage()
+	 * @see OpenUpdates::addToMainPage()
 	 */
 	protected function removeFromMainPage( array $pages ) {
 		$this->getLogger()->info(

@@ -3,7 +3,7 @@
 namespace BotRiconferme\Task;
 
 use BotRiconferme\Task\Subtask\CreatePages;
-use BotRiconferme\Task\Subtask\UpdatesAround;
+use BotRiconferme\Task\Subtask\OpenUpdates;
 use BotRiconferme\Task\Subtask\UserNotice;
 use BotRiconferme\TaskResult;
 
@@ -17,7 +17,7 @@ class StartNew extends Task {
 	public function runInternal() : int {
 		$orderedList = [
 			'create-pages',
-			'updates-around',
+			'open-updates',
 			'user-notice'
 		];
 
@@ -35,7 +35,7 @@ class StartNew extends Task {
 	protected function getSubtasksMap() : array {
 		return [
 			'create-pages' => CreatePages::class,
-			'updates-around' => UpdatesAround::class,
+			'open-updates' => OpenUpdates::class,
 			'user-notice' => UserNotice::class,
 		];
 	}

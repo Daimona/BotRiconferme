@@ -11,7 +11,7 @@ use BotRiconferme\Task\Subtask\CreatePages;
 use BotRiconferme\Task\Subtask\FailedUpdates;
 use BotRiconferme\Task\Subtask\SimpleUpdates;
 use BotRiconferme\Task\Subtask\Subtask;
-use BotRiconferme\Task\Subtask\UpdatesAround;
+use BotRiconferme\Task\Subtask\OpenUpdates;
 use BotRiconferme\Task\Subtask\UserNotice;
 use BotRiconferme\Task\Task;
 use BotRiconferme\Task\UpdateList;
@@ -39,7 +39,7 @@ class TaskManager {
 		'create-pages' => CreatePages::class,
 		'failed-updates' => FailedUpdates::class,
 		'simple-updates' => SimpleUpdates::class,
-		'updates-around' => UpdatesAround::class,
+		'open-updates' => OpenUpdates::class,
 		'user-notice' => UserNotice::class
 	];
 	/** @var TaskDataProvider */
