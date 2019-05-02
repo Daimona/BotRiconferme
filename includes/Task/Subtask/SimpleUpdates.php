@@ -5,6 +5,7 @@ namespace BotRiconferme\Task\Subtask;
 use BotRiconferme\Message;
 use BotRiconferme\Wiki\Element;
 use BotRiconferme\Wiki\Page\Page;
+use BotRiconferme\Wiki\Page\PageBotList;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\TaskResult;
 use BotRiconferme\Wiki\User;
@@ -112,15 +113,17 @@ class SimpleUpdates extends Subtask {
 		$newContent = $adminsPage->getContent();
 
 		$riconfNames = $removeNames = [];
-		foreach ( $outcomes as $user => $confirmed ) {
-			$userReg = ( new User( $user ) )->getRegex();
-			$reg = "!(\{\{Amministratore\/riga\|$userReg.+\| *)\d+( *\|[ \w]*\}\}.*\n)!";
+		foreach ( $outcomes as $username => $confirmed ) {
+			$user = new User( $username );
+			$userReg = $user->getRegex();
+			$reg = "!({{Amministratore\/riga\|$userReg\|\D+\|\d{8}\|(?:\d{8})?\|)\d{8}((?:\|[a-z]*)?}}.*\n)!";
 			if ( $confirmed ) {
-				$newContent = preg_replace( $reg, '${1}{{subst:#time:Ymd}}$2', $newContent );
-				$riconfNames[] = $user;
+				$nextDate = date( 'Ymd', $this->getNextTs( $user ) );
+				$newContent = preg_replace( $reg, '${1}' . $nextDate . '$2', $newContent );
+				$riconfNames[] = $username;
 			} else {
 				$newContent = preg_replace( $reg, '', $newContent );
-				$removeNames[] = $user;
+				$removeNames[] = $username;
 			}
 		}
 
@@ -135,6 +138,19 @@ class SimpleUpdates extends Subtask {
 			'text' => $newContent,
 			'summary' => $summary
 		] );
+	}
+
+	/**
+	 * Get the next valid timestamp for the given user
+	 *
+	 * @param User $user
+	 * @return int
+	 */
+	private function getNextTs( User $user ) : int {
+		// If an "override" was used for this time, it's already been removed in
+		// UpdateList. If there's another, then it's valid for the next one.
+		return PageBotList::getOverrideTimestamp( $user->getGroups() ) ??
+			PageBotList::getValidFlagTimestamp( $user->getGroups() );
 	}
 
 	/**
