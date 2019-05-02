@@ -139,7 +139,7 @@ class StartVote extends Task {
 	 *
 	 * @param int $amount Of pages to move
 	 * @throws TaskException
-	 *@see SimpleUpdates::updateNews()
+	 * @see SimpleUpdates::updateNews()
 	 * @see OpenUpdates::addToNews()
 	 */
 	protected function updateNews( int $amount ) {
