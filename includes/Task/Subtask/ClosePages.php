@@ -16,6 +16,11 @@ class ClosePages extends Subtask {
 	 */
 	public function runInternal() : int {
 		$pages = $this->getDataProvider()->getPagesToClose();
+
+		if ( !$pages ) {
+			return TaskResult::STATUS_NOTHING;
+		}
+
 		$protectReason = $this->msg( 'close-protect-summary' )->text();
 		foreach ( $pages as $page ) {
 			if ( $page->isVote() ) {

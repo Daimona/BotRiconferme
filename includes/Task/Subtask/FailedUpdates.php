@@ -18,15 +18,17 @@ class FailedUpdates extends Subtask {
 	 */
 	public function runInternal() : int {
 		$failed = $this->getFailures();
-		if ( $failed ) {
-			$bureaucrats = $this->getFailedBureaucrats( $failed );
-			if ( $bureaucrats ) {
-				$this->updateBurList( $bureaucrats );
-			}
-			$this->requestRemoval( $failed );
-			$this->updateAnnunci( $failed );
-			$this->updateUltimeNotizie( $failed );
+		if ( !$failed ) {
+			return TaskResult::STATUS_NOTHING;
 		}
+
+		$bureaucrats = $this->getFailedBureaucrats( $failed );
+		if ( $bureaucrats ) {
+			$this->updateBurList( $bureaucrats );
+		}
+		$this->requestRemoval( $failed );
+		$this->updateAnnunci( $failed );
+		$this->updateUltimeNotizie( $failed );
 
 		return TaskResult::STATUS_GOOD;
 	}

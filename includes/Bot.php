@@ -26,11 +26,15 @@ class Bot {
 		$this->logger->info( "Running $activity" );
 		$manager = new TaskManager;
 		$res = $manager->run( $mode, $name );
-		$line = '---------------------------------------------------';
+		$line = '------------------------------------------------------------------';
+		$base = "Execution of $activity";
 		if ( $res->isOK() ) {
-			$this->logger->info( "Execution of $activity completed successfully.\n$line\n\n" );
+			$msg = $res->getStatus() === TaskResult::STATUS_NOTHING ?
+				': nothing to do' :
+				' completed successfully';
+			$this->logger->info( $base . $msg . ".\n$line\n\n" );
 		} else {
-			$this->logger->error( "Execution of $activity failed.\n$res\n$line\n\n" );
+			$this->logger->error(  "$base failed.\n$res\n$line\n\n" );
 		}
 	}
 

@@ -42,7 +42,7 @@ class Controller {
 	 * @throws MissingSectionException
 	 */
 	public function getPageContent( string $title, int $section = null ) : string {
-		$msg = "Retrieving content of page $title" . ( $section !== null ? ", section $section" : '' );
+		$msg = "Retrieving content of $title" . ( $section !== null ? ", section $section" : '' );
 		$this->logger->debug( $msg );
 		$params = [
 			'action' => 'query',

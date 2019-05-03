@@ -54,7 +54,6 @@ class UpdateList extends Task {
 	 * @return array
 	 */
 	protected function getActualAdmins() : array {
-		$this->getLogger()->debug( 'Retrieving admins - API' );
 		$params = [
 			'action' => 'query',
 			'list' => 'allusers',
@@ -227,8 +226,6 @@ class UpdateList extends Task {
 
 		if ( $removed ) {
 			$this->getLogger()->info( 'Removing overrides for users: ' . implode( ', ', $removed ) );
-		} else {
-			$this->getLogger()->debug( 'No overrides to remove' );
 		}
 
 		return $newContent;
