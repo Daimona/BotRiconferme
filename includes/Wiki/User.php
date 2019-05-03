@@ -31,9 +31,13 @@ class User extends Element {
 	 * @return string[]
 	 */
 	public function getGroups() : array {
+		return array_keys( $this->getGroupsWithDates() );
+	}
+
+	public function getGroupsWithDates() : array {
 		if ( $this->groups === null ) {
 			$usersList = PageBotList::get()->getAdminsList();
-			$this->groups = array_keys( $usersList[ $this->name ] );
+			$this->groups = $usersList[ $this->name ];
 		}
 		return $this->groups;
 	}

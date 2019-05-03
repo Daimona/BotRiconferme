@@ -155,7 +155,7 @@ class SimpleUpdates extends Subtask {
 		// this time, but not yet removed in UpdateList. This will also discard "override"s added
 		// for the next year before the procedure is closed.
 		// @todo Avoid the limitation above
-		$groups = $user->getGroups();
+		$groups = $user->getGroupsWithDates();
 		if ( isset( $groups['override-perm'] ) ) {
 			$date = \DateTime::createFromFormat(
 				'd/m/Y',
