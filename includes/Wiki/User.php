@@ -40,7 +40,7 @@ class User extends Element {
 	 * Get a list of groups this user belongs to with flag dates,
 	 * same format as the JSON list.
 	 *
-	 * @return array[]
+	 * @return string[]
 	 */
 	public function getGroupsWithDates() : array {
 		if ( $this->groups === null ) {
