@@ -116,10 +116,14 @@ class SimpleUpdates extends Subtask {
 		foreach ( $outcomes as $username => $confirmed ) {
 			$user = new User( $username );
 			$userReg = $user->getRegex();
-			$reg = "!({{Ammini\w+\/riga\|$userReg\|\D+\|\d{8}\|(?:\d{8})?\|)\d{8}((?:\|[a-z]*)?}}.*\n)!";
+			$reg = "!({{Ammini\w+\/riga\|$userReg\|\D+\|\d{8}\|)(?:\d{8})?\|\d{8}((?:\|[a-z]*)?}}.*\n)!";
 			if ( $confirmed ) {
 				$nextDate = date( 'Ymd', $this->getNextTs( $user ) );
-				$newContent = preg_replace( $reg, '${1}' . $nextDate . '$2', $newContent );
+				$newContent = preg_replace(
+					$reg,
+					'${1}' . date( 'Ymd' ) . '|' . $nextDate . '$2',
+					$newContent
+				);
 				$riconfNames[] = $username;
 			} else {
 				$newContent = preg_replace( $reg, '', $newContent );
