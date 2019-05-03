@@ -28,12 +28,20 @@ class User extends Element {
 	}
 
 	/**
+	 * Get a list of groups this user belongs to
+	 *
 	 * @return string[]
 	 */
 	public function getGroups() : array {
 		return array_keys( $this->getGroupsWithDates() );
 	}
 
+	/**
+	 * Get a list of groups this user belongs to with flag dates,
+	 * same format as the JSON list.
+	 *
+	 * @return array[]
+	 */
 	public function getGroupsWithDates() : array {
 		if ( $this->groups === null ) {
 			$usersList = PageBotList::get()->getAdminsList();
