@@ -34,7 +34,7 @@ class Bot {
 				' completed successfully';
 			$this->logger->info( $base . $msg . ".\n$line\n\n" );
 		} else {
-			$this->logger->error(  "$base failed.\n$res\n$line\n\n" );
+			$this->logger->error( "$base failed.\n$res\n$line\n\n" );
 		}
 	}
 
