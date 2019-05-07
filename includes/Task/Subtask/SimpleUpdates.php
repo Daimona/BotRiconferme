@@ -164,9 +164,12 @@ class SimpleUpdates extends Subtask {
 			if ( $date < new \DateTime ) {
 				$date->modify( '+1 year' );
 			}
-			return $date->getTimestamp();
+			$res = $date->getTimestamp();
+		} else {
+			$ts = PageBotList::getValidFlagTimestamp( $groups );
+			$res = strtotime( date( 'Y' ) . date( '-m-d', $ts ) );
 		}
-		return PageBotList::getValidFlagTimestamp( $groups );
+		return $res;
 	}
 
 	/**
