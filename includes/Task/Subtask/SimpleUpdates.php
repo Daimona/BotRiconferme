@@ -167,7 +167,7 @@ class SimpleUpdates extends Subtask {
 			$res = $date->getTimestamp();
 		} else {
 			$ts = PageBotList::getValidFlagTimestamp( $groups );
-			$res = strtotime( date( 'Y' ) . date( '-m-d', $ts ) );
+			$res = strtotime( date( 'Y', strtotime( '+1 year' ) ) . date( '-m-d', $ts ) );
 		}
 		return $res;
 	}
