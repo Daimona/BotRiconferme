@@ -71,6 +71,7 @@ class Config {
 		}
 		return $messages[$key];
 	}
+
 	/**
 	 * Set a config value.
 	 *
