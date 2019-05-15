@@ -26,7 +26,7 @@ class Bot {
 		$this->logger->info( "Running $activity" );
 		$manager = new TaskManager;
 		$res = $manager->run( $mode, $name );
-		$line = '------------------------------------------------------------------';
+		$line = str_repeat( '-', 80 );
 		$base = "Execution of $activity";
 		if ( $res->isOK() ) {
 			$msg = $res->getStatus() === TaskResult::STATUS_NOTHING ?
