@@ -222,7 +222,7 @@ class UpdateList extends Task {
 			$usualTS = strtotime( date( 'd/m', $flagTS ) . date( 'Y' ) );
 			$overrideTS = \DateTime::createFromFormat( 'd/m/Y', $groups['override'] )->getTimestamp();
 
-			if ( time() > $usualTS && time () > $overrideTS ) {
+			if ( time() > $usualTS && time() > $overrideTS ) {
 				unset( $newContent[ $user ][ 'override' ] );
 				$removed[] = $user;
 			}
