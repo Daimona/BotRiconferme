@@ -15,6 +15,8 @@ return [
 	'enable_extended_internal_return_type_plugins' => true,
 	'enable_include_path_checks' => true,
 
+	'redundant_condition_detection' => true,
+
 	'plugins' => [
 		'UnreachableCodePlugin',
 		'PregRegexCheckerPlugin',

@@ -20,7 +20,7 @@
 	},
 	"require-dev": {
 		"mediawiki/mediawiki-codesniffer": "26.0.0",
-		"phan/phan": "1.3.4"
+		"phan/phan": "2.2.2"
 	},
 	"autoload": {
 		"psr-4": {
