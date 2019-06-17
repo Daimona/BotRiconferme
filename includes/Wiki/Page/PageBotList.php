@@ -33,13 +33,17 @@ class PageBotList extends Page {
 	 * @return int|null
 	 */
 	public static function getOverrideTimestamp( array $groups ) : ?int {
-		if ( array_intersect_key( $groups, [ 'override-perm' => true, 'override' => true ] ) ) {
-			// A one-time override takes precedence
-			$day = $groups[ 'override' ] ?? $groups[ 'override-perm' ];
-			$date = "$day/" . date( 'Y' );
-			return \DateTime::createFromFormat( 'd/m/Y', $date )->getTimestamp();
+		if ( !array_intersect_key( $groups, [ 'override-perm' => true, 'override' => true ] ) ) {
+			return null;
 		}
-		return null;
+
+		// A one-time override takes precedence
+		if ( array_key_exists( 'override', $groups ) ) {
+			$date = $groups['override'];
+		} else {
+			$date = $groups['override-prem'] . '/' . date( 'Y' );
+		}
+		return \DateTime::createFromFormat( 'd/m/Y', $date )->getTimestamp();
 	}
 
 	/**
