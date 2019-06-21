@@ -219,7 +219,7 @@ class UpdateList extends Task {
 			}
 
 			$flagTS = PageBotList::getValidFlagTimestamp( $groups );
-			$usualTS = strtotime( date( 'd/m', $flagTS ) . date( 'Y' ) );
+			$usualTS = strtotime( date( 'Y' ) . '-' . date( 'm-d', $flagTS ) );
 			$overrideTS = \DateTime::createFromFormat( 'd/m/Y', $groups['override'] )->getTimestamp();
 
 			if ( time() > $usualTS && time() > $overrideTS ) {
