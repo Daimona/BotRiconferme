@@ -41,7 +41,10 @@ class ArchivePages extends Subtask {
 		$mainPage = new Page( $this->getOpt( 'main-page-title' ) );
 		$remove = [];
 		foreach ( $pages as $page ) {
+			// Order matters here. It's not guaranteed that there'll be a newline, but avoid
+			// regexps for that single character.
 			$remove[] = '{{' . $page->getTitle() . "}}\n";
+			$remove[] = '{{' . $page->getTitle() . '}}';
 		}
 
 		$newContent = str_replace( $remove, '', $mainPage->getContent() );
