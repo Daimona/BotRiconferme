@@ -206,7 +206,7 @@ class UpdateList extends Task {
 
 	/**
 	 * Remove expired overrides. This must happen after the override date has been used AND
-	 * after the "normal" date has passed.
+	 * after the "normal" date has passed. We do it 3 days later to be sure.
 	 *
 	 * @param array[] $newContent
 	 * @return array[]
@@ -219,10 +219,11 @@ class UpdateList extends Task {
 			}
 
 			$flagTS = PageBotList::getValidFlagTimestamp( $groups );
-			$usualTS = strtotime( date( 'Y' ) . '-' . date( 'm-d', $flagTS ) );
+			$usualDay = strtotime( date( 'Y' ) . '-' . date( 'm-d', $flagTS ) );
 			$overrideTS = \DateTime::createFromFormat( 'd/m/Y', $groups['override'] )->getTimestamp();
+			$delay = 60 * 60 * 24 * 3;
 
-			if ( time() > $usualTS && time() > $overrideTS ) {
+			if ( time() > $usualTS + $delay && time() > $overrideTS + $delay ) {
 				unset( $newContent[ $user ][ 'override' ] );
 				$removed[] = $user;
 			}
