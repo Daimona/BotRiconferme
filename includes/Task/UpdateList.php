@@ -219,7 +219,7 @@ class UpdateList extends Task {
 			}
 
 			$flagTS = PageBotList::getValidFlagTimestamp( $groups );
-			$usualDay = strtotime( date( 'Y' ) . '-' . date( 'm-d', $flagTS ) );
+			$usualTS = strtotime( date( 'Y' ) . '-' . date( 'm-d', $flagTS ) );
 			$overrideTS = \DateTime::createFromFormat( 'd/m/Y', $groups['override'] )->getTimestamp();
 			$delay = 60 * 60 * 24 * 3;
 
