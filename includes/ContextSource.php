@@ -20,6 +20,10 @@ abstract class ContextSource implements LoggerAwareInterface {
 	/** @var Controller */
 	private $controller;
 
+	/**
+	 * @param Logger $logger
+	 * @param Controller $controller
+	 */
 	public function __construct( Logger $logger, Controller $controller ) {
 		$this->setLogger( $logger );
 		$this->setConfig( Config::getInstance() );

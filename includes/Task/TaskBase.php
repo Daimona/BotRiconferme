@@ -24,7 +24,11 @@ abstract class TaskBase extends ContextSource {
 	 * @param Controller $controller
 	 * @param TaskDataProvider $dataProvider
 	 */
-	final public function __construct( Logger $logger, Controller $controller, TaskDataProvider $dataProvider ) {
+	final public function __construct(
+		Logger $logger,
+		Controller $controller,
+		TaskDataProvider $dataProvider
+	) {
 		parent::__construct( $logger, $controller );
 		set_exception_handler( [ $this, 'handleException' ] );
 		set_error_handler( [ $this, 'handleError' ] );
