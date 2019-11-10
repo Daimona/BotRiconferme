@@ -29,7 +29,8 @@ class UpdateList extends Task {
 	 */
 	public function runInternal() : int {
 		$this->actualList = $this->getActualAdmins();
-		$this->botList = PageBotList::get()->getAdminsList();
+		$pageBotList = PageBotList::get( $this->getController() );
+		$this->botList = $pageBotList->getAdminsList();
 
 		$missing = $this->getMissingGroups();
 		$extra = $this->getExtraGroups();
@@ -42,7 +43,7 @@ class UpdateList extends Task {
 
 		$this->getLogger()->info( 'Updating admin list' );
 
-		PageBotList::get()->edit( [
+		$pageBotList->edit( [
 			'text' => json_encode( $newContent ),
 			'summary' => $this->msg( 'list-update-summary' )->text()
 		] );

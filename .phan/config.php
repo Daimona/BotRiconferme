@@ -14,6 +14,7 @@ return [
 
 	'enable_extended_internal_return_type_plugins' => true,
 	'enable_include_path_checks' => true,
+	'generic_types_enabled' => true,
 
 	'redundant_condition_detection' => true,
 

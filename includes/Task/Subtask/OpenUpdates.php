@@ -2,7 +2,6 @@
 
 namespace BotRiconferme\Task\Subtask;
 
-use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\Exception\TaskException;
 use BotRiconferme\TaskResult;
@@ -41,7 +40,7 @@ class OpenUpdates extends Subtask {
 			'Adding the following to main: ' . implode( ', ', $pages )
 		);
 
-		$mainPage = new Page( $this->getOpt( 'main-page-title' ) );
+		$mainPage = $this->getPage( $this->getOpt( 'main-page-title' ) );
 
 		$append = "\n";
 		foreach ( $pages as $page ) {
@@ -73,7 +72,7 @@ class OpenUpdates extends Subtask {
 		$this->getLogger()->info(
 			'Adding the following to votes: ' . implode( ', ', $pages )
 		);
-		$votePage = new Page( $this->getOpt( 'vote-page-title' ) );
+		$votePage = $this->getPage( $this->getOpt( 'vote-page-title' ) );
 
 		$endDays = PageRiconferma::SIMPLE_DURATION;
 		$newLines = '';
@@ -108,7 +107,7 @@ class OpenUpdates extends Subtask {
 	 */
 	protected function addToNews( int $amount ) {
 		$this->getLogger()->info( "Increasing the news counter by $amount" );
-		$newsPage = new Page( $this->getOpt( 'news-page-title' ) );
+		$newsPage = $this->getPage( $this->getOpt( 'news-page-title' ) );
 
 		$content = $newsPage->getContent();
 		$reg = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d*)(?=\s*[}|])!';

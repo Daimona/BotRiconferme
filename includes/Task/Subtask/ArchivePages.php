@@ -3,7 +3,6 @@
 namespace BotRiconferme\Task\Subtask;
 
 use BotRiconferme\Message;
-use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\TaskResult;
 
@@ -38,7 +37,7 @@ class ArchivePages extends Subtask {
 			'Removing from main: ' . implode( ', ', $pages )
 		);
 
-		$mainPage = new Page( $this->getOpt( 'main-page-title' ) );
+		$mainPage = $this->getPage( $this->getOpt( 'main-page-title' ) );
 		$remove = [];
 		foreach ( $pages as $page ) {
 			// Order matters here. It's not guaranteed that there'll be a newline, but avoid
@@ -105,7 +104,7 @@ class ArchivePages extends Subtask {
 	 * @param array $pages
 	 */
 	private function reallyAddToArchive( string $archiveTitle, array $pages ) {
-		$archivePage = new Page( "$archiveTitle/" . date( 'Y' ) );
+		$archivePage = $this->getPage( "$archiveTitle/" . date( 'Y' ) );
 		$exists = $archivePage->exists();
 
 		$append = "\n";
@@ -134,7 +133,7 @@ class ArchivePages extends Subtask {
 	 * @param string $archiveTitle
 	 */
 	private function addArchiveYear( string $archiveTitle ) {
-		$page = new Page( $archiveTitle );
+		$page = $this->getPage( $archiveTitle );
 		$year = date( 'Y' );
 
 		$summary = $this->msg( 'new-archive-summary' )

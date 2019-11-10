@@ -25,10 +25,28 @@ class Controller {
 	private $tokens;
 
 	/**
+	 * @param Logger $logger
 	 * @param string $domain The URL of the wiki, if different from default
 	 */
-	public function __construct( string $domain = DEFAULT_URL ) {
-		$this->logger = new Logger;
+	public function __construct( Logger $logger, string $domain = DEFAULT_URL ) {
+		$this->logger = $logger;
+		$this->setDomain( $domain );
+	}
+
+	/**
+	 * @param string $domain
+	 * @return Controller
+	 */
+	public function cloneWithDomain( string $domain ) {
+		$ret = clone $this;
+		$ret->setDomain( $domain );
+		return $ret;
+	}
+
+	/**
+	 * @param string $domain
+	 */
+	public function setDomain( string $domain ) {
 		$this->domain = $domain;
 	}
 

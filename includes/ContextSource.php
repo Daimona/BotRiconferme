@@ -3,6 +3,7 @@
 namespace BotRiconferme;
 
 use BotRiconferme\Wiki\Controller;
+use BotRiconferme\Wiki\Page\Page;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 
@@ -19,10 +20,10 @@ abstract class ContextSource implements LoggerAwareInterface {
 	/** @var Controller */
 	private $controller;
 
-	public function __construct() {
-		$this->setLogger( new Logger );
+	public function __construct( Logger $logger, Controller $controller ) {
+		$this->setLogger( $logger );
 		$this->setConfig( Config::getInstance() );
-		$this->setController( new Controller );
+		$this->setController( $controller );
 	}
 
 	/**
@@ -85,5 +86,15 @@ abstract class ContextSource implements LoggerAwareInterface {
 	 */
 	protected function msg( string $key ) : Message {
 		return new Message( $key );
+	}
+
+	/**
+	 * Shorthand to get a page using the local controller
+	 *
+	 * @param string $title
+	 * @return Page
+	 */
+	protected function getPage( string $title ) : Page {
+		return new Page( $title, $this->getController() );
 	}
 }

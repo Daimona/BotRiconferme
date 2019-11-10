@@ -15,8 +15,10 @@ class User extends Element {
 
 	/**
 	 * @param string $name
+	 * @param Controller $controller
 	 */
-	public function __construct( string $name ) {
+	public function __construct( string $name, Controller $controller ) {
+		parent::__construct( $controller );
 		$this->name = $name;
 	}
 
@@ -44,7 +46,7 @@ class User extends Element {
 	 */
 	public function getGroupsWithDates() : array {
 		if ( $this->groups === null ) {
-			$usersList = PageBotList::get()->getAdminsList();
+			$usersList = PageBotList::get( $this->controller )->getAdminsList();
 			$this->groups = $usersList[ $this->name ];
 		}
 		return $this->groups;

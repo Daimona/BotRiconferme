@@ -6,6 +6,16 @@ namespace BotRiconferme\Wiki;
  * Base class for wiki elements
  */
 abstract class Element {
+	/** @var Controller */
+	protected $controller;
+
+	/**
+	 * @param Controller $controller
+	 */
+	public function __construct( Controller $controller ) {
+		$this->controller = $controller;
+	}
+
 	/**
 	 * Return a regex for matching the name of the element
 	 *

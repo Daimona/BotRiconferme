@@ -44,7 +44,7 @@ class PageRiconferma extends Page {
 	 */
 	public function getUser() : User {
 		$name = explode( '/', $this->title )[2];
-		return new User( $name );
+		return new User( $name, $this->controller );
 	}
 
 	/**

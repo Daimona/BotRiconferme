@@ -2,7 +2,6 @@
 
 namespace BotRiconferme\Task\Subtask;
 
-use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\TaskResult;
 
@@ -54,7 +53,7 @@ class ClosePages extends Subtask {
 	protected function updateBasePage( PageRiconferma $page ) {
 		$this->getLogger()->info( "Updating base page for $page" );
 
-		$basePage = new Page( $page->getBaseTitle() );
+		$basePage = $this->getPage( $page->getBaseTitle() );
 		$current = $basePage->getContent();
 
 		$outcomeText = $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ?

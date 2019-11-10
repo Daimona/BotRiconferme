@@ -55,7 +55,7 @@ class FailedUpdates extends Subtask {
 	protected function updateBurList( array $users ) {
 		$this->getLogger()->info( 'Updating bur list. Removing: ' . implode( ', ', $users ) );
 		$remList = Element::regexFromArray( $users );
-		$burList = new Page( $this->getOpt( 'bur-list-title' ) );
+		$burList = $this->getPage( $this->getOpt( 'bur-list-title' ) );
 		$content = $burList->getContent();
 		$reg = "!^\#\{\{ *Burocrate *\| *$remList.+\n!m";
 		$newContent = preg_replace( $reg, '', $content );
@@ -78,9 +78,10 @@ class FailedUpdates extends Subtask {
 	protected function requestRemoval( array $pages ) {
 		$this->getLogger()->info( 'Requesting flag removal for: ' . implode( ', ', $pages ) );
 
+		$metaController = $this->getController()->cloneWithDomain( META_URL );
 		$flagRemPage = new Page(
 			$this->getOpt( 'flag-removal-page-title' ),
-			'https://meta.wikimedia.org/w/api.php'
+			$metaController
 		);
 		$baseText = $this->msg( 'flag-removal-text' );
 
@@ -125,7 +126,7 @@ class FailedUpdates extends Subtask {
 
 		$month = ucfirst( Message::MONTHS[ date( 'F' ) ] );
 
-		$annunciPage = new Page( $this->getOpt( 'annunci-page-title' ) );
+		$annunciPage = $this->getPage( $this->getOpt( 'annunci-page-title' ) );
 		$content = $annunciPage->getContent( $section );
 		$secReg = "!=== *$month *===!";
 		if ( $annunciPage->matches( $secReg ) ) {
@@ -153,7 +154,7 @@ class FailedUpdates extends Subtask {
 	 */
 	protected function updateUltimeNotizie( array $pages ) {
 		$this->getLogger()->info( 'Updating ultime notizie' );
-		$notiziePage = new Page( $this->getOpt( 'ultimenotizie-page-title' ) );
+		$notiziePage = $this->getPage( $this->getOpt( 'ultimenotizie-page-title' ) );
 
 		$names = [];
 		$text = '';

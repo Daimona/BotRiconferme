@@ -15,6 +15,7 @@ use BotRiconferme\Task\Subtask\OpenUpdates;
 use BotRiconferme\Task\Subtask\UserNotice;
 use BotRiconferme\Task\Task;
 use BotRiconferme\Task\UpdateList;
+use BotRiconferme\Wiki\Controller;
 
 /**
  * Wrapper for single tasks
@@ -44,6 +45,20 @@ class TaskManager {
 	];
 	/** @var TaskDataProvider */
 	private $provider;
+	/** @var Logger */
+	private $logger;
+	/** @var Controller */
+	private $controller;
+
+	/**
+	 * @param Logger $logger
+	 * @param Controller $controller
+	 */
+	public function __construct( Logger $logger, Controller $controller ) {
+		$this->logger = $logger;
+		$this->controller = $controller;
+		$this->provider = new TaskDataProvider( $this->logger, $this->controller );
+	}
 
 	/**
 	 * Main entry point
@@ -53,8 +68,6 @@ class TaskManager {
 	 * @return TaskResult
 	 */
 	public function run( string $mode, string $name = null ) : TaskResult {
-		$this->provider = new TaskDataProvider;
-
 		if ( $mode === self::MODE_COMPLETE ) {
 			return $this->runAllTasks();
 		} elseif ( $name === null ) {
@@ -122,7 +135,7 @@ class TaskManager {
 	 * @return Task
 	 */
 	private function getTaskInstance( string $class ) : Task {
-		return new $class( $this->provider );
+		return new $class( $this->logger, $this->controller, $this->provider );
 	}
 
 	/**
@@ -132,6 +145,6 @@ class TaskManager {
 	 * @return Subtask
 	 */
 	private function getSubtaskInstance( string $class ) : Subtask {
-		return new $class( $this->provider );
+		return new $class( $this->logger, $this->controller, $this->provider );
 	}
 }

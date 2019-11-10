@@ -40,7 +40,7 @@ class CreatePages extends Subtask {
 		} catch ( TaskException $e ) {
 			// The page was already created today. PLZ let this poor bot work!
 			$this->getDataProvider()->removeUser( $user );
-			$this->getLogger()->warning( $e->getMessage() . "\nRemoving $user from the list." );
+			$this->getLogger()->warning( $e->getMessage() . " - User $user won't be processed." );
 			return;
 		}
 
@@ -55,7 +55,7 @@ class CreatePages extends Subtask {
 			$this->updateBasePage( $baseTitle, $newText );
 		}
 
-		$pageObj = new PageRiconferma( $pageTitle );
+		$pageObj = new PageRiconferma( $pageTitle, $this->getController() );
 		$this->getDataProvider()->addCreatedPages( $pageObj );
 	}
 
@@ -80,9 +80,9 @@ class CreatePages extends Subtask {
 		$res = RequestBase::newFromParams( $params )->execute();
 
 		// Little hack to have getNum() return 0
-		$last = new PageRiconferma( 'X/Y/Z/0' );
+		$last = new PageRiconferma( 'X/Y/Z/0', $this->getController() );
 		foreach ( $res->query->allpages as $resPage ) {
-			$page = new PageRiconferma( $resPage->title );
+			$page = new PageRiconferma( $resPage->title, $this->getController() );
 
 			if ( $page->getNum() > $last->getNum() ) {
 				$last = $page;

@@ -4,7 +4,6 @@ namespace BotRiconferme\Task;
 
 use BotRiconferme\Exception\TaskException;
 use BotRiconferme\Wiki\Element;
-use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\TaskResult;
 
@@ -100,7 +99,7 @@ class StartVote extends Task {
 	 * @see OpenUpdates::addToVotazioni()
 	 */
 	protected function updateVotazioni( array $pages ) {
-		$votePage = new Page( $this->getOpt( 'vote-page-title' ) );
+		$votePage = $this->getPage( $this->getOpt( 'vote-page-title' ) );
 
 		$users = [];
 		foreach ( $pages as $page ) {
@@ -144,7 +143,7 @@ class StartVote extends Task {
 	 */
 	protected function updateNews( int $amount ) {
 		$this->getLogger()->info( "Turning $amount pages into votes" );
-		$newsPage = new Page( $this->getOpt( 'news-page-title' ) );
+		$newsPage = $this->getPage( $this->getOpt( 'news-page-title' ) );
 
 		$content = $newsPage->getContent();
 		$regTac = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d*)(?=\s*[}|])!';

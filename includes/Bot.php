@@ -2,17 +2,26 @@
 
 namespace BotRiconferme;
 
+use BotRiconferme\Wiki\Controller;
+
 /**
  * Higher-level class. It only wraps tasks executions, and contains generic data
  */
 class Bot {
 	/** @var Logger */
 	private $logger;
+	/** @var Controller */
+	private $controller;
 
 	public const VERSION = '1.0';
 
-	public function __construct() {
-		$this->logger = new Logger;
+	/**
+	 * @param Logger $logger
+	 * @param Controller $controller
+	 */
+	public function __construct( Logger $logger, Controller $controller ) {
+		$this->logger = $logger;
+		$this->controller = $controller;
 	}
 
 	/**
@@ -24,7 +33,7 @@ class Bot {
 	private function run( string $mode = TaskManager::MODE_COMPLETE, string $name = null ) {
 		$activity = $mode === TaskManager::MODE_COMPLETE ? TaskManager::MODE_COMPLETE : "$mode $name";
 		$this->logger->info( "Running $activity" );
-		$manager = new TaskManager;
+		$manager = new TaskManager( $this->logger, $this->controller );
 		$res = $manager->run( $mode, $name );
 		$line = str_repeat( '-', 80 );
 		$base = "Execution of $activity";

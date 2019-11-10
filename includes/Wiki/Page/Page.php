@@ -12,18 +12,16 @@ use BotRiconferme\Wiki\Element;
 class Page extends Element {
 	/** @var string */
 	protected $title;
-	/** @var Controller */
-	protected $controller;
 	/** @var string|null */
 	protected $content;
 
 	/**
 	 * @param string $title
-	 * @param string $domain The site where the page lives, if different from default
+	 * @param Controller $controller For the site where the page lives
 	 */
-	public function __construct( string $title, string $domain = DEFAULT_URL ) {
+	public function __construct( string $title, Controller $controller ) {
+		parent::__construct( $controller );
 		$this->title = $title;
-		$this->controller = new Controller( $domain );
 	}
 
 	/**
@@ -106,7 +104,7 @@ class Page extends Element {
 	public function getMatch( string $regex ) : array {
 		$ret = [];
 		if ( preg_match( $regex, $this->getContent(), $ret ) === 0 ) {
-			throw new \Exception( 'The content does not match the given regex' );
+			throw new \Exception( "The content of $this does not match the given regex $regex" );
 		}
 		return $ret;
 	}

@@ -42,6 +42,7 @@ $urlParam = getopt( '', [ 'force-url:' ] );
 $url = $urlParam['force-url'] ?? 'https://it.wikipedia.org/w/api.php';
 
 define( 'DEFAULT_URL', $url );
+define( 'META_URL', 'https://meta.wikimedia.org/w/api.php' );
 
 /* PASSWORD */
 
@@ -74,9 +75,12 @@ $vals[ 'password' ] = $pw;
 
 /* START */
 
-Config::init( $vals );
+$logger = new \BotRiconferme\Logger();
+$controller = new \BotRiconferme\Wiki\Controller( $logger );
 
-$bot = new Bot();
+Config::init( $vals, $controller );
+
+$bot = new Bot( $logger, $controller );
 
 /*
  * E.g.

@@ -14,25 +14,31 @@ class Config {
 	private static $instance;
 	/** @var array */
 	private $opts = [];
+	/** @var Controller */
+	private $controller;
 
 	/**
 	 * Use self::init() and self::getInstance()
+	 *
+	 * @param Controller $controller
 	 */
-	private function __construct() {
+	private function __construct( Controller $controller ) {
+		$this->controller = $controller;
 	}
 
 	/**
 	 * Initialize a new self instance with CLI params set and retrieve on-wiki config.
 	 *
 	 * @param array $defaults
+	 * @param Controller $controller
 	 * @throws ConfigException
 	 */
-	public static function init( array $defaults ) {
+	public static function init( array $defaults, Controller $controller ) {
 		if ( self::$instance ) {
 			throw new ConfigException( 'Config was already initialized' );
 		}
 
-		$inst = new self;
+		$inst = new self( $controller );
 		$inst->set( 'list-title', $defaults['list-title'] );
 		$inst->set( 'msg-title', $defaults['msg-title'] );
 		$inst->set( 'username', $defaults['username'] );
@@ -41,7 +47,7 @@ class Config {
 
 		// On-wiki values
 		try {
-			$conf = ( new Controller )->getPageContent( $defaults[ 'config-title' ] );
+			$conf = $inst->controller->getPageContent( $defaults[ 'config-title' ] );
 		} catch ( MissingPageException $e ) {
 			throw new ConfigException( 'Please create a config page.' );
 		}
@@ -60,7 +66,7 @@ class Config {
 		static $messages = null;
 		if ( $messages === null ) {
 			try {
-				$cont = ( new Controller )->getPageContent( $this->opts[ 'msg-title' ] );
+				$cont = $this->controller->getPageContent( $this->opts[ 'msg-title' ] );
 				$messages = json_decode( $cont, true );
 			} catch ( MissingPageException $e ) {
 				throw new ConfigException( 'Please create a messages page.' );

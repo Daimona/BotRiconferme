@@ -4,7 +4,6 @@ namespace BotRiconferme\Task\Subtask;
 
 use BotRiconferme\Message;
 use BotRiconferme\Wiki\Element;
-use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageBotList;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\TaskResult;
@@ -43,7 +42,7 @@ class SimpleUpdates extends Subtask {
 		$this->getLogger()->info(
 			'Updating votazioni: ' . implode( ', ', $pages )
 		);
-		$votePage = new Page( $this->getOpt( 'vote-page-title' ) );
+		$votePage = $this->getPage( $this->getOpt( 'vote-page-title' ) );
 
 		$users = [];
 		foreach ( $pages as $page ) {
@@ -80,7 +79,7 @@ class SimpleUpdates extends Subtask {
 
 		$this->getLogger()->info( "Updating news counter: -$simpleAmount simple, -$voteAmount votes." );
 
-		$newsPage = new Page( $this->getOpt( 'news-page-title' ) );
+		$newsPage = $this->getPage( $this->getOpt( 'news-page-title' ) );
 
 		$simpleReg = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d*)(?=\s*[}|])!';
 		$voteReg = '!(\| *riconferme[ _]voto[ _]amministratori *= *)(\d*)(?=\s*[}|])!';
@@ -109,12 +108,12 @@ class SimpleUpdates extends Subtask {
 	 */
 	protected function updateAdminList( array $outcomes ) {
 		$this->getLogger()->info( 'Updating admin list' );
-		$adminsPage = new Page( $this->getOpt( 'admins-list-title' ) );
+		$adminsPage = $this->getPage( $this->getOpt( 'admins-list-title' ) );
 		$newContent = $adminsPage->getContent();
 
 		$riconfNames = $removeNames = [];
 		foreach ( $outcomes as $username => $confirmed ) {
-			$user = new User( $username );
+			$user = new User( $username, $this->getController() );
 			$userReg = $user->getRegex();
 			$reg = "!({{Ammini\w+\/riga\|$userReg\|\D+\|\d{8}\|)(?:\d{8})?\|\d{8}((?:\|[a-z]*)?}}.*\n)!";
 			if ( $confirmed ) {
@@ -179,12 +178,12 @@ class SimpleUpdates extends Subtask {
 	 */
 	protected function updateCUList( array $outcomes ) {
 		$this->getLogger()->info( 'Updating CU list.' );
-		$cuList = new Page( $this->getOpt( 'cu-list-title' ) );
+		$cuList = $this->getPage( $this->getOpt( 'cu-list-title' ) );
 		$newContent = $cuList->getContent();
 
 		$riconfNames = $removeNames = [];
 		foreach ( $outcomes as $user => $confirmed ) {
-			$userReg = ( new User( $user ) )->getRegex();
+			$userReg = ( new User( $user, $this->getController() ) )->getRegex();
 			$reg = "!(\{\{ *Checkuser *\| *$userReg *\|[^}]+\| *)[\w \d]+(}}.*\n)!";
 			if ( $confirmed ) {
 				$newContent = preg_replace( $reg, '${1}{{subst:#time:j F Y}}$2', $newContent );
