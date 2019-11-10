@@ -6,7 +6,7 @@ namespace BotRiconferme;
  *
  */
 class Message {
-	const MONTHS = [
+	public const MONTHS = [
 		'January' => 'gennaio',
 		'February' => 'febbraio',
 		'March' => 'marzo',

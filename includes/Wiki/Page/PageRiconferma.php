@@ -16,16 +16,16 @@ class PageRiconferma extends Page {
 	private $sectionCounts = [];
 
 	// Possible outcomes of a vote
-	const OUTCOME_OK = 0;
-	const OUTCOME_FAIL_VOTES = 1;
-	const OUTCOME_NO_QUOR = 2;
-	const OUTCOME_FAIL = self::OUTCOME_FAIL_VOTES | self::OUTCOME_NO_QUOR;
+	public const OUTCOME_OK = 0;
+	public const OUTCOME_FAIL_VOTES = 1;
+	public const OUTCOME_NO_QUOR = 2;
+	public const OUTCOME_FAIL = self::OUTCOME_FAIL_VOTES | self::OUTCOME_NO_QUOR;
 
 	// Values depending on bureaucracy
-	const REQUIRED_OPPOSE = 15;
-	const SIMPLE_DURATION = 7;
-	const VOTE_DURATION = 14;
-	const SUCCESS_RATIO = 2 / 3;
+	public const REQUIRED_OPPOSE = 15;
+	public const SIMPLE_DURATION = 7;
+	public const VOTE_DURATION = 14;
+	public const SUCCESS_RATIO = 2 / 3;
 
 	/**
 	 * Define the numbers of the support and oppose sections. These are lazy-loaded

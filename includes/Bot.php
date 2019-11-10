@@ -9,7 +9,7 @@ class Bot {
 	/** @var Logger */
 	private $logger;
 
-	const VERSION = '1.0';
+	public const VERSION = '1.0';
 
 	public function __construct() {
 		$this->logger = new Logger;

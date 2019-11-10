@@ -12,14 +12,14 @@ use BotRiconferme\Exception\PermissionDeniedException;
  * Core wrapper for an API request. Current implementations use either cURL or file_get_contents
  */
 abstract class RequestBase {
-	const USER_AGENT = 'Daimona - BotRiconferme ' . Bot::VERSION .
+	protected const USER_AGENT = 'Daimona - BotRiconferme ' . Bot::VERSION .
 		' (https://github.com/Daimona/BotRiconferme)';
-	const HEADERS = [
+	protected const HEADERS = [
 		'Content-Type: application/x-www-form-urlencoded',
 		'User-Agent: ' . self::USER_AGENT
 	];
 	// In seconds
-	const MAXLAG = 5;
+	protected const MAXLAG = 5;
 
 	/** @var string */
 	protected $url;

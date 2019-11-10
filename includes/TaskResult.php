@@ -7,9 +7,9 @@ namespace BotRiconferme;
  */
 class TaskResult {
 	// Status codes. GOOD = everything fine, NOTHING = nothing to do, ERROR = found non-fatal errors
-	const STATUS_NOTHING = 0;
-	const STATUS_GOOD = 1;
-	const STATUS_ERROR = 3;
+	public const STATUS_NOTHING = 0;
+	public const STATUS_GOOD = 1;
+	public const STATUS_ERROR = 3;
 
 	/** @var string[] */
 	private $errors;

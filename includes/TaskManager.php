@@ -22,18 +22,18 @@ use BotRiconferme\Task\UpdateList;
  */
 class TaskManager {
 	// Run modes
-	const MODE_COMPLETE = 'full process';
-	const MODE_TASK = 'single task';
-	const MODE_SUBTASK = 'single subtask';
+	public const MODE_COMPLETE = 'full process';
+	public const MODE_TASK = 'single task';
+	public const MODE_SUBTASK = 'single subtask';
 
 	/** @var string[] */
-	const TASKS_MAP = [
+	private const TASKS_MAP = [
 		'start-new' => StartNew::class,
 		'close-old' => CloseOld::class,
 		'update-list' => UpdateList::class,
 		'start-vote' => StartVote::class
 	];
-	const SUBTASKS_MAP = [
+	private const SUBTASKS_MAP = [
 		'archive-pages' => ArchivePages::class,
 		'close-pages' => ClosePages::class,
 		'create-pages' => CreatePages::class,
