@@ -6,15 +6,15 @@ php:
   - 7.4snapshot
 
 dist: xenial
-  
+
+before_install:
+  - if [ $TRAVIS_PHP_VERSION != "7.4snapshot" ]; then phpenv config-rm xdebug.ini ; fi
+  - pecl channel-update pecl.php.net
+  - pecl install ast
+
 install:
   - composer install
   - composer validate
-  
-before_script:
-  - pecl channel-update pecl.php.net
-  - pecl install ast
-  - phpenv config-rm xdebug.ini
 
 script:
   - composer test
