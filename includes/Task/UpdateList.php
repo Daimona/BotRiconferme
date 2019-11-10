@@ -130,6 +130,7 @@ class UpdateList extends Task {
 			'lelimit' => 'max'
 		];
 
+		// @phan-suppress-next-line PhanTypeMismatchArgumentNullable $url is never null
 		$data = RequestBase::newFromParams( $params )->setUrl( $url )->execute();
 		$ts = $this->extractTimestamp( $data, $group );
 

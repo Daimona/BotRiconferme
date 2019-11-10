@@ -72,7 +72,6 @@ class PageRiconferma extends Page {
 	 * @return string
 	 */
 	public function getBaseTitle() : string {
-		// @phan-suppress-next-line PhanTypeMismatchArgumentInternal Phan bug
 		return substr( $this->getTitle(), 0, strrpos( $this->getTitle(), '/' ) );
 	}
 

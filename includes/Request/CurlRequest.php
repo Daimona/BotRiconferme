@@ -59,7 +59,7 @@ class CurlRequest extends RequestBase {
 		if ( trim( $bits[0] ) === 'Set-Cookie' ) {
 			$this->newCookies[] = $bits[1];
 		}
-		// @phan-suppress-next-line PhanTypeMismatchReturn WTF? Why does phan thinks this is a string?
+
 		return strlen( $header );
 	}
 }
