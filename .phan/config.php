@@ -20,7 +20,7 @@ return [
 	'scalar_implicit_cast' => false,
 	'dead_code_detection' => true,
 	'dead_code_detection_prefer_false_negative' => true,
-	
+
 	'redundant_condition_detection' => true,
 
 	'plugins' => [
