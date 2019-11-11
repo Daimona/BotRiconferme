@@ -16,6 +16,11 @@ return [
 	'enable_include_path_checks' => true,
 	'generic_types_enabled' => true,
 
+	'null_casts_as_any_type' => false,
+	'scalar_implicit_cast' => false,
+	'dead_code_detection' => true,
+	'dead_code_detection_prefer_false_negative' => true,
+	
 	'redundant_condition_detection' => true,
 
 	'plugins' => [
