@@ -42,6 +42,7 @@ class Logger extends AbstractLogger {
 
 	/**
 	 * @inheritDoc
+	 * @suppress PhanUnusedPublicMethodParameter
 	 */
 	public function log( $level, $message, array $context = [] ) {
 		if ( $this->levelToInt( $level ) >= $this->minLevel ) {

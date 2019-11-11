@@ -21,15 +21,12 @@ class Message {
 		'December' => 'dicembre'
 	];
 	/** @var string */
-	private $key;
-	/** @var string */
 	private $value;
 
 	/**
 	 * @param string $key
 	 */
 	public function __construct( string $key ) {
-		$this->key = $key;
 		$this->value = Config::getInstance()->getWikiMessage( $key );
 	}
 
@@ -73,6 +70,8 @@ class Message {
 	 *
 	 * @param int $timestamp
 	 * @return string
+	 * @suppress PhanUnreferencedPublicMethod
+	 * @fixme Is this necessary?
 	 */
 	public static function getTimeWithArticle( int $timestamp ) : string {
 		$oldLoc = setlocale( LC_TIME, 'it_IT', 'Italian_Italy', 'Italian' );

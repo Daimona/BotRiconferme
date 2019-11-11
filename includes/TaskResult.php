@@ -35,6 +35,7 @@ class TaskResult {
 
 	/**
 	 * @return string[]
+	 * @suppress PhanUnreferencedPublicMethod
 	 */
 	public function getErrors() {
 		return $this->errors;

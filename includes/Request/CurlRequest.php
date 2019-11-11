@@ -52,7 +52,8 @@ class CurlRequest extends RequestBase {
 	 * @param Resource $ch
 	 * @param string $header
 	 * @return int
-	 * @internal Only used as CB for cURL
+	 * @internal Only used as CB for cURL (CURLOPT_HEADERFUNCTION)
+	 * @suppress PhanUnreferencedPublicMethod,PhanUnusedPublicNoOverrideMethodParameter
 	 */
 	public function headersHandler( $ch, string $header ) : int {
 		$bits = explode( ':', $header, 2 );

@@ -112,11 +112,11 @@ class OpenUpdates extends Subtask {
 		$content = $newsPage->getContent();
 		$reg = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d*)(?=\s*[}|])!';
 
-		try {
-			$matches = $newsPage->getMatch( $reg );
-		} catch ( \Exception $e ) {
+		if ( !$newsPage->matches( $reg ) ) {
 			throw new TaskException( 'Param not found in news page' );
 		}
+
+		$matches = $newsPage->getMatch( $reg );
 
 		$newNum = (int)$matches[2] + $amount;
 		$newContent = preg_replace( $reg, '${1}' . $newNum, $content );

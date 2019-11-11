@@ -48,7 +48,7 @@ class Config {
 		// On-wiki values
 		try {
 			$conf = $inst->controller->getPageContent( $defaults[ 'config-title' ] );
-		} catch ( MissingPageException $e ) {
+		} catch ( MissingPageException $_ ) {
 			throw new ConfigException( 'Please create a config page.' );
 		}
 
@@ -68,7 +68,7 @@ class Config {
 			try {
 				$cont = $this->controller->getPageContent( $this->opts[ 'msg-title' ] );
 				$messages = json_decode( $cont, true );
-			} catch ( MissingPageException $e ) {
+			} catch ( MissingPageException $_ ) {
 				throw new ConfigException( 'Please create a messages page.' );
 			}
 		}
