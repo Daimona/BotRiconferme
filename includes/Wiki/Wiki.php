@@ -30,13 +30,6 @@ class Wiki {
 	 */
 	public function __construct( LoggerInterface $logger, string $domain = DEFAULT_URL ) {
 		$this->logger = $logger;
-		$this->setDomain( $domain );
-	}
-
-	/**
-	 * @param string $domain
-	 */
-	public function setDomain( string $domain ) {
 		$this->domain = $domain;
 	}
 
