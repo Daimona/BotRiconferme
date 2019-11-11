@@ -35,16 +35,6 @@ class Wiki {
 
 	/**
 	 * @param string $domain
-	 * @return Wiki
-	 */
-	public function cloneWithDomain( string $domain ) {
-		$ret = clone $this;
-		$ret->setDomain( $domain );
-		return $ret;
-	}
-
-	/**
-	 * @param string $domain
 	 */
 	public function setDomain( string $domain ) {
 		$this->domain = $domain;

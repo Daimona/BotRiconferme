@@ -75,7 +75,7 @@ $vals[ 'password' ] = $pw;
 
 /* START */
 
-$logger = new \BotRiconferme\Logger();
+$logger = new \BotRiconferme\SimpleLogger();
 $controller = new \BotRiconferme\Wiki\Wiki( $logger );
 
 Config::init( $vals, $controller );
