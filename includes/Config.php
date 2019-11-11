@@ -14,6 +14,8 @@ class Config {
 	private static $instance;
 	/** @var array */
 	private $opts = [];
+	/** @var array|null Lazy-loaded to avoid unnecessary requests */
+	private $messages;
 	/** @var Wiki */
 	private $wiki;
 
@@ -43,7 +45,6 @@ class Config {
 		$inst->set( 'msg-title', $defaults['msg-title'] );
 		$inst->set( 'username', $defaults['username'] );
 		$inst->set( 'password', $defaults['password'] );
-		self::$instance = $inst;
 
 		// On-wiki values
 		try {
@@ -53,8 +54,9 @@ class Config {
 		}
 
 		foreach ( json_decode( $conf, true ) as $key => $val ) {
-			self::$instance->set( $key, $val );
+			$inst->set( $key, $val );
 		}
+		self::$instance = $inst;
 	}
 
 	/**
@@ -63,19 +65,18 @@ class Config {
 	 * @throws ConfigException
 	 */
 	public function getWikiMessage( string $key ) : string {
-		static $messages = null;
-		if ( $messages === null ) {
+		if ( $this->messages === null ) {
 			try {
 				$cont = $this->wiki->getPageContent( $this->opts[ 'msg-title' ] );
-				$messages = json_decode( $cont, true );
+				$this->messages = json_decode( $cont, true );
 			} catch ( MissingPageException $_ ) {
 				throw new ConfigException( 'Please create a messages page.' );
 			}
 		}
-		if ( !isset( $messages[ $key ] ) ) {
+		if ( !isset( $this->messages[ $key ] ) ) {
 			throw new ConfigException( "Message '$key' does not exist." );
 		}
-		return $messages[$key];
+		return $this->messages[$key];
 	}
 
 	/**

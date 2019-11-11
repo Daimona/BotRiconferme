@@ -57,7 +57,7 @@ class Wiki {
 			$params['rvsection'] = $section;
 		}
 
-		$req = RequestBase::newFromParams( $params )->setUrl( $this->domain );
+		$req = $this->buildRequest( $params );
 		$data = $req->execute();
 		$page = reset( $data->query->pages );
 		if ( isset( $page->missing ) ) {
@@ -91,10 +91,7 @@ class Wiki {
 			$params['bot'] = 1;
 		}
 
-		$res = RequestBase::newFromParams( $params )
-			->setUrl( $this->domain )
-			->setPost()
-			->execute();
+		$res = $this->buildRequest( $params )->setPost()->execute();
 
 		$editData = $res->edit;
 		if ( $editData->result !== 'Success' ) {
@@ -125,7 +122,7 @@ class Wiki {
 		];
 
 		try {
-			$res = RequestBase::newFromParams( $params )->setUrl( $this->domain )->setPost()->execute();
+			$res = $this->buildRequest( $params )->setPost()->execute();
 		} catch ( APIRequestException $e ) {
 			throw new LoginException( $e->getMessage() );
 		}
@@ -154,7 +151,7 @@ class Wiki {
 				'type'   => $type
 			];
 
-			$req = RequestBase::newFromParams( $params )->setUrl( $this->domain );
+			$req = $this->buildRequest( $params );
 			$res = $req->execute();
 
 			$this->tokens[ $type ] = $res->query->tokens->{ "{$type}token" };
@@ -180,7 +177,7 @@ class Wiki {
 			'rvdir' => 'newer'
 		];
 
-		$res = RequestBase::newFromParams( $params )->setUrl( $this->domain )->execute();
+		$res = $this->buildRequest( $params )->execute();
 		$data = $res->query->pages;
 		return strtotime( reset( $data )->revisions[0]->timestamp );
 	}
@@ -204,6 +201,15 @@ class Wiki {
 			'token' => $this->getToken( 'csrf' )
 		];
 
-		RequestBase::newFromParams( $params )->setUrl( $this->domain )->setPost()->execute();
+		$this->buildRequest( $params )->setPost()->execute();
+	}
+
+	/**
+	 * Shorthand
+	 * @param array $params
+	 * @return RequestBase
+	 */
+	private function buildRequest( array $params ) : RequestBase {
+		return RequestBase::newFromParams( $params )->setUrl( $this->domain );
 	}
 }
