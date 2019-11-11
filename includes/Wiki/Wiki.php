@@ -8,8 +8,8 @@ use BotRiconferme\Exception\LoginException;
 use BotRiconferme\Exception\APIRequestException;
 use BotRiconferme\Exception\MissingPageException;
 use BotRiconferme\Exception\MissingSectionException;
-use BotRiconferme\Logger;
 use BotRiconferme\Request\RequestBase;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class for wiki interaction, contains some requests shorthands
@@ -17,7 +17,7 @@ use BotRiconferme\Request\RequestBase;
 class Wiki {
 	/** @var bool */
 	private static $loggedIn = false;
-	/** @var Logger */
+	/** @var LoggerInterface */
 	private $logger;
 	/** @var string */
 	private $domain;
@@ -25,10 +25,10 @@ class Wiki {
 	private $tokens;
 
 	/**
-	 * @param Logger $logger
+	 * @param LoggerInterface $logger
 	 * @param string $domain The URL of the wiki, if different from default
 	 */
-	public function __construct( Logger $logger, string $domain = DEFAULT_URL ) {
+	public function __construct( LoggerInterface $logger, string $domain = DEFAULT_URL ) {
 		$this->logger = $logger;
 		$this->setDomain( $domain );
 	}

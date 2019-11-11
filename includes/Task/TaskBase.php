@@ -2,11 +2,11 @@
 
 namespace BotRiconferme\Task;
 
-use BotRiconferme\Logger;
 use BotRiconferme\TaskResult;
 use BotRiconferme\ContextSource;
 use BotRiconferme\TaskDataProvider;
 use BotRiconferme\Wiki\Wiki;
+use Psr\Log\LoggerInterface;
 
 /**
  * Base framework for all kind of tasks and subtasks
@@ -20,12 +20,12 @@ abstract class TaskBase extends ContextSource {
 	/**
 	 * Final to keep calls linear in the TaskManager
 	 *
-	 * @param Logger $logger
+	 * @param LoggerInterface $logger
 	 * @param Wiki $wiki
 	 * @param TaskDataProvider $dataProvider
 	 */
 	final public function __construct(
-		Logger $logger,
+		LoggerInterface $logger,
 		Wiki $wiki,
 		TaskDataProvider $dataProvider
 	) {

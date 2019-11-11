@@ -16,6 +16,7 @@ use BotRiconferme\Task\Subtask\UserNotice;
 use BotRiconferme\Task\Task;
 use BotRiconferme\Task\UpdateList;
 use BotRiconferme\Wiki\Wiki;
+use Psr\Log\LoggerInterface;
 
 /**
  * Wrapper for single tasks
@@ -45,16 +46,16 @@ class TaskManager {
 	];
 	/** @var TaskDataProvider */
 	private $provider;
-	/** @var Logger */
+	/** @var LoggerInterface */
 	private $logger;
 	/** @var Wiki */
 	private $wiki;
 
 	/**
-	 * @param Logger $logger
+	 * @param LoggerInterface $logger
 	 * @param Wiki $wiki
 	 */
-	public function __construct( Logger $logger, Wiki $wiki ) {
+	public function __construct( LoggerInterface $logger, Wiki $wiki ) {
 		$this->logger = $logger;
 		$this->wiki = $wiki;
 		$this->provider = new TaskDataProvider( $this->logger, $this->wiki );

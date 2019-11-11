@@ -8,6 +8,7 @@ use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\TaskResult;
 use BotRiconferme\Wiki\User;
+use BotRiconferme\Wiki\Wiki;
 
 /**
  * Update various pages around, to be done for all failed procedures
@@ -78,7 +79,7 @@ class FailedUpdates extends Subtask {
 	protected function requestRemoval( array $pages ) {
 		$this->getLogger()->info( 'Requesting flag removal for: ' . implode( ', ', $pages ) );
 
-		$metaWiki = $this->getWiki()->cloneWithDomain( META_URL );
+		$metaWiki = new Wiki( $this->getLogger(), META_URL );
 		$flagRemPage = new Page(
 			$this->getOpt( 'flag-removal-page-title' ),
 			$metaWiki

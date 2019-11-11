@@ -3,12 +3,13 @@
 namespace BotRiconferme;
 
 use BotRiconferme\Wiki\Wiki;
+use Psr\Log\LoggerInterface;
 
 /**
  * Higher-level class. It only wraps tasks executions, and contains generic data
  */
 class Bot {
-	/** @var Logger */
+	/** @var LoggerInterface */
 	private $logger;
 	/** @var Wiki */
 	private $wiki;
@@ -16,10 +17,10 @@ class Bot {
 	public const VERSION = '1.0';
 
 	/**
-	 * @param Logger $logger
+	 * @param LoggerInterface $logger
 	 * @param Wiki $wiki
 	 */
-	public function __construct( Logger $logger, Wiki $wiki ) {
+	public function __construct( LoggerInterface $logger, Wiki $wiki ) {
 		$this->logger = $logger;
 		$this->wiki = $wiki;
 	}

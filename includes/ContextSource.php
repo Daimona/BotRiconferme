@@ -21,10 +21,10 @@ abstract class ContextSource implements LoggerAwareInterface {
 	private $wiki;
 
 	/**
-	 * @param Logger $logger
+	 * @param LoggerInterface $logger
 	 * @param Wiki $wiki
 	 */
-	public function __construct( Logger $logger, Wiki $wiki ) {
+	public function __construct( LoggerInterface $logger, Wiki $wiki ) {
 		$this->setLogger( $logger );
 		$this->setConfig( Config::getInstance() );
 		$this->setWiki( $wiki );
