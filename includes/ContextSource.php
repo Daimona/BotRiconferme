@@ -2,13 +2,13 @@
 
 namespace BotRiconferme;
 
-use BotRiconferme\Wiki\Controller;
+use BotRiconferme\Wiki\Wiki;
 use BotRiconferme\Wiki\Page\Page;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 
 /**
- * Base class with a few utility methods available to get a logger, the config and a wiki controller
+ * Base class with a few utility methods available to get a logger, the config and a wiki
  */
 abstract class ContextSource implements LoggerAwareInterface {
 	/** @var LoggerInterface */
@@ -17,17 +17,17 @@ abstract class ContextSource implements LoggerAwareInterface {
 	/** @var Config */
 	private $config;
 
-	/** @var Controller */
-	private $controller;
+	/** @var Wiki */
+	private $wiki;
 
 	/**
 	 * @param Logger $logger
-	 * @param Controller $controller
+	 * @param Wiki $wiki
 	 */
-	public function __construct( Logger $logger, Controller $controller ) {
+	public function __construct( Logger $logger, Wiki $wiki ) {
 		$this->setLogger( $logger );
 		$this->setConfig( Config::getInstance() );
-		$this->setController( $controller );
+		$this->setWiki( $wiki );
 	}
 
 	/**
@@ -69,17 +69,17 @@ abstract class ContextSource implements LoggerAwareInterface {
 	}
 
 	/**
-	 * @return Controller
+	 * @return Wiki
 	 */
-	protected function getController() : Controller {
-		return $this->controller;
+	protected function getWiki() : Wiki {
+		return $this->wiki;
 	}
 
 	/**
-	 * @param Controller $controller
+	 * @param Wiki $wiki
 	 */
-	protected function setController( Controller $controller ) {
-		$this->controller = $controller;
+	protected function setWiki( Wiki $wiki ) {
+		$this->wiki = $wiki;
 	}
 
 	/**
@@ -93,12 +93,12 @@ abstract class ContextSource implements LoggerAwareInterface {
 	}
 
 	/**
-	 * Shorthand to get a page using the local controller
+	 * Shorthand to get a page using the local wiki
 	 *
 	 * @param string $title
 	 * @return Page
 	 */
 	protected function getPage( string $title ) : Page {
-		return new Page( $title, $this->getController() );
+		return new Page( $title, $this->getWiki() );
 	}
 }

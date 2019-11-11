@@ -6,7 +6,7 @@ use BotRiconferme\Logger;
 use BotRiconferme\TaskResult;
 use BotRiconferme\ContextSource;
 use BotRiconferme\TaskDataProvider;
-use BotRiconferme\Wiki\Controller;
+use BotRiconferme\Wiki\Wiki;
 
 /**
  * Base framework for all kind of tasks and subtasks
@@ -21,15 +21,15 @@ abstract class TaskBase extends ContextSource {
 	 * Final to keep calls linear in the TaskManager
 	 *
 	 * @param Logger $logger
-	 * @param Controller $controller
+	 * @param Wiki $wiki
 	 * @param TaskDataProvider $dataProvider
 	 */
 	final public function __construct(
 		Logger $logger,
-		Controller $controller,
+		Wiki $wiki,
 		TaskDataProvider $dataProvider
 	) {
-		parent::__construct( $logger, $controller );
+		parent::__construct( $logger, $wiki );
 		set_exception_handler( [ $this, 'handleException' ] );
 		set_error_handler( [ $this, 'handleError' ] );
 		$this->dataProvider = $dataProvider;

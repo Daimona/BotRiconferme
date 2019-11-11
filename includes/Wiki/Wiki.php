@@ -14,7 +14,7 @@ use BotRiconferme\Request\RequestBase;
 /**
  * Class for wiki interaction, contains some requests shorthands
  */
-class Controller {
+class Wiki {
 	/** @var bool */
 	private static $loggedIn = false;
 	/** @var Logger */
@@ -35,7 +35,7 @@ class Controller {
 
 	/**
 	 * @param string $domain
-	 * @return Controller
+	 * @return Wiki
 	 */
 	public function cloneWithDomain( string $domain ) {
 		$ret = clone $this;

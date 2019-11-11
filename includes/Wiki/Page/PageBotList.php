@@ -3,7 +3,7 @@
 namespace BotRiconferme\Wiki\Page;
 
 use BotRiconferme\Config;
-use BotRiconferme\Wiki\Controller;
+use BotRiconferme\Wiki\Wiki;
 
 /**
  * Singleton class representing the JSON list of admins
@@ -11,22 +11,22 @@ use BotRiconferme\Wiki\Controller;
 class PageBotList extends Page {
 	/**
 	 * @private Use self::get()
-	 * @param Controller $controller
+	 * @param Wiki $wiki
 	 */
-	public function __construct( Controller $controller ) {
-		parent::__construct( Config::getInstance()->get( 'list-title' ), $controller );
+	public function __construct( Wiki $wiki ) {
+		parent::__construct( Config::getInstance()->get( 'list-title' ), $wiki );
 	}
 
 	/**
 	 * Instance getter
 	 *
-	 * @param Controller $controller
+	 * @param Wiki $wiki
 	 * @return self
 	 */
-	public static function get( Controller $controller ) : self {
+	public static function get( Wiki $wiki ) : self {
 		static $instance = null;
 		if ( $instance === null ) {
-			$instance = new self( $controller );
+			$instance = new self( $wiki );
 		}
 		return $instance;
 	}

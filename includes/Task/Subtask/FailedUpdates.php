@@ -78,10 +78,10 @@ class FailedUpdates extends Subtask {
 	protected function requestRemoval( array $pages ) {
 		$this->getLogger()->info( 'Requesting flag removal for: ' . implode( ', ', $pages ) );
 
-		$metaController = $this->getController()->cloneWithDomain( META_URL );
+		$metaWiki = $this->getWiki()->cloneWithDomain( META_URL );
 		$flagRemPage = new Page(
 			$this->getOpt( 'flag-removal-page-title' ),
-			$metaController
+			$metaWiki
 		);
 		$baseText = $this->msg( 'flag-removal-text' );
 

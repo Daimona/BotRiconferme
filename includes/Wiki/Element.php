@@ -6,14 +6,14 @@ namespace BotRiconferme\Wiki;
  * Base class for wiki elements
  */
 abstract class Element {
-	/** @var Controller */
-	protected $controller;
+	/** @var Wiki */
+	protected $wiki;
 
 	/**
-	 * @param Controller $controller
+	 * @param Wiki $wiki
 	 */
-	public function __construct( Controller $controller ) {
-		$this->controller = $controller;
+	public function __construct( Wiki $wiki ) {
+		$this->wiki = $wiki;
 	}
 
 	/**

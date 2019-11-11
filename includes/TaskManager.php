@@ -15,7 +15,7 @@ use BotRiconferme\Task\Subtask\OpenUpdates;
 use BotRiconferme\Task\Subtask\UserNotice;
 use BotRiconferme\Task\Task;
 use BotRiconferme\Task\UpdateList;
-use BotRiconferme\Wiki\Controller;
+use BotRiconferme\Wiki\Wiki;
 
 /**
  * Wrapper for single tasks
@@ -47,17 +47,17 @@ class TaskManager {
 	private $provider;
 	/** @var Logger */
 	private $logger;
-	/** @var Controller */
-	private $controller;
+	/** @var Wiki */
+	private $wiki;
 
 	/**
 	 * @param Logger $logger
-	 * @param Controller $controller
+	 * @param Wiki $wiki
 	 */
-	public function __construct( Logger $logger, Controller $controller ) {
+	public function __construct( Logger $logger, Wiki $wiki ) {
 		$this->logger = $logger;
-		$this->controller = $controller;
-		$this->provider = new TaskDataProvider( $this->logger, $this->controller );
+		$this->wiki = $wiki;
+		$this->provider = new TaskDataProvider( $this->logger, $this->wiki );
 	}
 
 	/**
@@ -135,7 +135,7 @@ class TaskManager {
 	 * @return Task
 	 */
 	private function getTaskInstance( string $class ) : Task {
-		return new $class( $this->logger, $this->controller, $this->provider );
+		return new $class( $this->logger, $this->wiki, $this->provider );
 	}
 
 	/**
@@ -145,6 +145,6 @@ class TaskManager {
 	 * @return Subtask
 	 */
 	private function getSubtaskInstance( string $class ) : Subtask {
-		return new $class( $this->logger, $this->controller, $this->provider );
+		return new $class( $this->logger, $this->wiki, $this->provider );
 	}
 }

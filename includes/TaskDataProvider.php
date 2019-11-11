@@ -23,7 +23,7 @@ class TaskDataProvider extends ContextSource {
 	public function getUsersToProcess() : array {
 		if ( $this->processUsers === null ) {
 			$this->processUsers = [];
-			foreach ( PageBotList::get( $this->getController() )->getAdminsList() as $user => $groups ) {
+			foreach ( PageBotList::get( $this->getWiki() )->getAdminsList() as $user => $groups ) {
 				if ( $this->shouldAddUser( $groups ) ) {
 					$this->processUsers[ $user ] = $groups;
 				}
@@ -75,7 +75,7 @@ class TaskDataProvider extends ContextSource {
 			$pages = RequestBase::newFromParams( $params )->execute()->query->pages;
 			foreach ( reset( $pages )->templates as $page ) {
 				if ( preg_match( "!$titleReg\/[^\/]+\/\d!", $page->title ) ) {
-					$list[] = new PageRiconferma( $page->title, $this->getController() );
+					$list[] = new PageRiconferma( $page->title, $this->getWiki() );
 				}
 			}
 		}

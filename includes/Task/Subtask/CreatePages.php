@@ -55,7 +55,7 @@ class CreatePages extends Subtask {
 			$this->updateBasePage( $baseTitle, $newText );
 		}
 
-		$pageObj = new PageRiconferma( $pageTitle, $this->getController() );
+		$pageObj = new PageRiconferma( $pageTitle, $this->getWiki() );
 		$this->getDataProvider()->addCreatedPages( $pageObj );
 	}
 
@@ -80,9 +80,9 @@ class CreatePages extends Subtask {
 		$res = RequestBase::newFromParams( $params )->execute();
 
 		// Little hack to have getNum() return 0
-		$last = new PageRiconferma( 'X/Y/Z/0', $this->getController() );
+		$last = new PageRiconferma( 'X/Y/Z/0', $this->getWiki() );
 		foreach ( $res->query->allpages as $resPage ) {
-			$page = new PageRiconferma( $resPage->title, $this->getController() );
+			$page = new PageRiconferma( $resPage->title, $this->getWiki() );
 
 			if ( $page->getNum() > $last->getNum() ) {
 				$last = $page;
@@ -118,7 +118,7 @@ class CreatePages extends Subtask {
 			'summary' => $this->msg( 'ric-page-summary' )->text()
 		];
 
-		$this->getController()->editPage( $params );
+		$this->getWiki()->editPage( $params );
 	}
 
 	/**
@@ -136,7 +136,7 @@ class CreatePages extends Subtask {
 			'summary' => $this->msg( 'base-page-summary' )->text()
 		];
 
-		$this->getController()->editPage( $params );
+		$this->getWiki()->editPage( $params );
 	}
 
 	/**
@@ -153,6 +153,6 @@ class CreatePages extends Subtask {
 			'summary' => $this->msg( 'base-page-summary-update' )->text()
 		];
 
-		$this->getController()->editPage( $params );
+		$this->getWiki()->editPage( $params );
 	}
 }

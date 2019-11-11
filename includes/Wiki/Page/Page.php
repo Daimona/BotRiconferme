@@ -3,7 +3,7 @@
 namespace BotRiconferme\Wiki\Page;
 
 use BotRiconferme\Request\RequestBase;
-use BotRiconferme\Wiki\Controller;
+use BotRiconferme\Wiki\Wiki;
 use BotRiconferme\Wiki\Element;
 
 /**
@@ -17,10 +17,10 @@ class Page extends Element {
 
 	/**
 	 * @param string $title
-	 * @param Controller $controller For the site where the page lives
+	 * @param Wiki $wiki For the site where the page lives
 	 */
-	public function __construct( string $title, Controller $controller ) {
-		parent::__construct( $controller );
+	public function __construct( string $title, Wiki $wiki ) {
+		parent::__construct( $wiki );
 		$this->title = $title;
 	}
 
@@ -39,7 +39,7 @@ class Page extends Element {
 	 */
 	public function getContent( int $section = null ) : string {
 		if ( $this->content === null ) {
-			$this->content = $this->controller->getPageContent( $this->title, $section );
+			$this->content = $this->wiki->getPageContent( $this->title, $section );
 		}
 		return $this->content;
 	}
@@ -55,7 +55,7 @@ class Page extends Element {
 			'title' => $this->getTitle()
 		] + $params;
 
-		$this->controller->editPage( $params );
+		$this->wiki->editPage( $params );
 		if ( isset( $params['text'] ) ) {
 			$this->content = $params['text'];
 		} elseif ( isset( $params['appendtext'] ) ) {

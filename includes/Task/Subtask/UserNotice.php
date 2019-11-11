@@ -49,6 +49,6 @@ class UserNotice extends Subtask {
 			'summary' => $this->msg( 'user-notice-summary' )->text()
 		];
 
-		$this->getController()->editPage( $params );
+		$this->getWiki()->editPage( $params );
 	}
 }

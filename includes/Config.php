@@ -4,7 +4,7 @@ namespace BotRiconferme;
 
 use BotRiconferme\Exception\ConfigException;
 use BotRiconferme\Exception\MissingPageException;
-use BotRiconferme\Wiki\Controller;
+use BotRiconferme\Wiki\Wiki;
 
 /**
  * Singleton class holding user-defined config
@@ -14,31 +14,31 @@ class Config {
 	private static $instance;
 	/** @var array */
 	private $opts = [];
-	/** @var Controller */
-	private $controller;
+	/** @var Wiki */
+	private $wiki;
 
 	/**
 	 * Use self::init() and self::getInstance()
 	 *
-	 * @param Controller $controller
+	 * @param Wiki $wiki
 	 */
-	private function __construct( Controller $controller ) {
-		$this->controller = $controller;
+	private function __construct( Wiki $wiki ) {
+		$this->wiki = $wiki;
 	}
 
 	/**
 	 * Initialize a new self instance with CLI params set and retrieve on-wiki config.
 	 *
 	 * @param array $defaults
-	 * @param Controller $controller
+	 * @param Wiki $wiki
 	 * @throws ConfigException
 	 */
-	public static function init( array $defaults, Controller $controller ) {
+	public static function init( array $defaults, Wiki $wiki ) {
 		if ( self::$instance ) {
 			throw new ConfigException( 'Config was already initialized' );
 		}
 
-		$inst = new self( $controller );
+		$inst = new self( $wiki );
 		$inst->set( 'list-title', $defaults['list-title'] );
 		$inst->set( 'msg-title', $defaults['msg-title'] );
 		$inst->set( 'username', $defaults['username'] );
@@ -47,7 +47,7 @@ class Config {
 
 		// On-wiki values
 		try {
-			$conf = $inst->controller->getPageContent( $defaults[ 'config-title' ] );
+			$conf = $inst->wiki->getPageContent( $defaults[ 'config-title' ] );
 		} catch ( MissingPageException $_ ) {
 			throw new ConfigException( 'Please create a config page.' );
 		}
@@ -66,7 +66,7 @@ class Config {
 		static $messages = null;
 		if ( $messages === null ) {
 			try {
-				$cont = $this->controller->getPageContent( $this->opts[ 'msg-title' ] );
+				$cont = $this->wiki->getPageContent( $this->opts[ 'msg-title' ] );
 				$messages = json_decode( $cont, true );
 			} catch ( MissingPageException $_ ) {
 				throw new ConfigException( 'Please create a messages page.' );

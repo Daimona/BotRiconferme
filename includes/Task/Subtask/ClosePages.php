@@ -25,7 +25,7 @@ class ClosePages extends Subtask {
 			if ( $page->isVote() ) {
 				$this->addVoteCloseText( $page );
 			}
-			$this->getController()->protectPage( $page->getTitle(), $protectReason );
+			$this->getWiki()->protectPage( $page->getTitle(), $protectReason );
 			$this->updateBasePage( $page );
 		}
 

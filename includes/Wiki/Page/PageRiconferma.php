@@ -44,7 +44,7 @@ class PageRiconferma extends Page {
 	 */
 	public function getUser() : User {
 		$name = explode( '/', $this->title )[2];
-		return new User( $name, $this->controller );
+		return new User( $name, $this->wiki );
 	}
 
 	/**
@@ -107,7 +107,7 @@ class PageRiconferma extends Page {
 	 */
 	protected function getCountForSection( int $secNum ) : int {
 		if ( !isset( $this->sectionCounts[ $secNum ] ) ) {
-			$content = $this->controller->getPageContent( $this->title, $secNum );
+			$content = $this->wiki->getPageContent( $this->title, $secNum );
 			// Let's hope that this is good enough...
 			$this->sectionCounts[$secNum] = preg_match_all( "/^\# *(?![# *:]|\.\.\.$)/m", $content );
 		}
@@ -206,7 +206,7 @@ class PageRiconferma extends Page {
 	 * @return int
 	 */
 	public function getCreationTimestamp() : int {
-		return $this->controller->getPageCreationTS( $this->title );
+		return $this->wiki->getPageCreationTS( $this->title );
 	}
 
 	/**

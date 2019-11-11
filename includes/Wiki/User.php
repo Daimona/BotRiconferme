@@ -15,10 +15,10 @@ class User extends Element {
 
 	/**
 	 * @param string $name
-	 * @param Controller $controller
+	 * @param Wiki $wiki
 	 */
-	public function __construct( string $name, Controller $controller ) {
-		parent::__construct( $controller );
+	public function __construct( string $name, Wiki $wiki ) {
+		parent::__construct( $wiki );
 		$this->name = $name;
 	}
 
@@ -46,7 +46,7 @@ class User extends Element {
 	 */
 	public function getGroupsWithDates() : array {
 		if ( $this->groups === null ) {
-			$usersList = PageBotList::get( $this->controller )->getAdminsList();
+			$usersList = PageBotList::get( $this->wiki )->getAdminsList();
 			$this->groups = $usersList[ $this->name ];
 		}
 		return $this->groups;
