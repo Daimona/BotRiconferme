@@ -10,6 +10,14 @@ use BotRiconferme\Wiki\Wiki;
  * Singleton class holding user-defined config
  */
 class Config {
+	public const REQUIRED_OPTS = [
+		'username',
+		'list-title',
+		'config-title',
+		'msg-title',
+		'password'
+	];
+
 	/** @var self */
 	private static $instance;
 	/** @var array */

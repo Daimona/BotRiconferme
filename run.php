@@ -7,81 +7,30 @@ require __DIR__ . '/vendor/autoload.php';
 
 use BotRiconferme\Config;
 use BotRiconferme\Bot;
+use BotRiconferme\CLI;
 
-if ( PHP_SAPI !== 'cli' ) {
+if ( !CLI::isCLI() ) {
 	exit( 'CLI only!' );
 }
 
 date_default_timezone_set( 'Europe/Rome' );
 
-/** MAIN PARAMS */
-
-/*
-	Example
-
-	'username' => 'BotRiconferme'
-	'list-title' => 'Utente:BotRiconferme/List.json',
-	'config-title' => 'Utente:BotRiconferme/Config.json',
-	'msg-title' => 'Utente:BotRiconferme/Messages.json"
-*/
-
-$params = [
-	'username:',
-	'list-title:',
-	'config-title:',
-	'msg-title:',
-];
-
-$vals = getopt( '', $params );
-if ( count( $vals ) !== count( $params ) ) {
-	exit( 'Not enough params!' );
-}
+$cli = new CLI();
 
 /* URL (for debugging purpose) */
-$urlParam = getopt( '', [ 'force-url:' ] );
-$url = $urlParam['force-url'] ?? 'https://it.wikipedia.org/w/api.php';
+$url = $cli->getURL() ?? 'https://it.wikipedia.org/w/api.php';
 
 define( 'DEFAULT_URL', $url );
 define( 'META_URL', 'https://meta.wikimedia.org/w/api.php' );
 
-/* PASSWORD */
-
-$PWFILE = __DIR__ . '/password.txt';
-/*
- * Either
- * --password=(BotPassword)
- * or
- * --use-password-file
- * which will look for a $PWFILE file in the current directory containing only the plain password
- */
-$pwParams = getopt( '', [
-	'password:',
-	'use-password-file'
-] );
-
-if ( isset( $pwParams[ 'password' ] ) ) {
-	$pw = $pwParams[ 'password' ];
-} elseif ( isset( $pwParams[ 'use-password-file' ] ) ) {
-	if ( file_exists( $PWFILE ) ) {
-		$pw = trim( file_get_contents( $PWFILE ) );
-	} else {
-		exit( 'Please create a password.txt file to use with use-password-file' );
-	}
-} else {
-	exit( 'Please provide a password or use a password file' );
-}
-
-$vals[ 'password' ] = $pw;
-
 /* START */
 
-$errParam = getopt( '', [ 'error-title::' ] );
-$errTitle = $errParam['error-title'] ?? null;
+$errTitle = $cli->getOpt( 'error-title' );
 
 $simpleLogger = new \BotRiconferme\Logger\SimpleLogger();
 // @fixme
 $wiki = new \BotRiconferme\Wiki\Wiki( $simpleLogger );
-Config::init( $vals, $wiki );
+Config::init( $cli->getMainOpts(), $wiki );
 
 if ( $errTitle !== null ) {
 	// Use a different Wiki with higher min level.
@@ -94,42 +43,20 @@ if ( $errTitle !== null ) {
 	$mainLogger = $simpleLogger;
 }
 
-$bot = new Bot( $mainLogger, $wiki );
-
-/**
- * Error handler. As default, always throw
- *
- * @param int $errno
- * @param string $errstr
- * @param string $errfile
- * @param int $errline
- * @throws \ErrorException
- */
 $errorHandler = function ( $errno, $errstr, $errfile, $errline ) {
 	throw new \ErrorException( $errstr, 0, $errno, $errfile, $errline );
 };
-
 // @phan-suppress-next-line PhanTypeMismatchArgumentInternal
 set_error_handler( $errorHandler );
 
-/*
- * E.g.
- *
- * --task=update-list
- * or
- * --subtask=user-notice
- */
-$taskOpts = getopt( '', [ 'task:', 'subtask:' ] );
-
-if ( count( $taskOpts ) === 2 ) {
-	throw new InvalidArgumentException( 'Cannot specify both task and subtask.' );
-}
-
+$bot = new Bot( $mainLogger, $wiki );
+$taskOpt = $cli->getTaskOpt();
+$type = current( array_keys( $taskOpt ) );
 try {
-	if ( isset( $taskOpts['task'] ) ) {
-		$bot->runTask( $taskOpts['task'] );
-	} elseif ( isset( $taskOpts['subtask'] ) ) {
-		$bot->runSubtask( $taskOpts['subtask'] );
+	if ( $type === 'task' ) {
+		$bot->runTask( $taskOpt['task'] );
+	} elseif ( $type === 'subtask' ) {
+		$bot->runSubtask( $taskOpt['subtask'] );
 	} else {
 		$bot->runAll();
 	}
