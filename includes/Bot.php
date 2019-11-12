@@ -36,16 +36,14 @@ class Bot {
 		$this->logger->info( "Running $activity" );
 		$manager = new TaskManager( $this->logger, $this->wiki );
 		$res = $manager->run( $mode, $name );
-		// @fixme Move this elsewhere
-		$line = str_repeat( '-', 80 );
 		$base = "Execution of $activity";
 		if ( $res->isOK() ) {
 			$msg = $res->getStatus() === TaskResult::STATUS_NOTHING ?
 				': nothing to do' :
 				' completed successfully';
-			$this->logger->info( $base . $msg . ".\n$line\n\n" );
+			$this->logger->info( $base . $msg );
 		} else {
-			$this->logger->error( "$base failed.\n$res\n$line\n\n" );
+			$this->logger->error( "$base failed.\n$res" );
 		}
 	}
 

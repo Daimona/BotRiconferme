@@ -32,6 +32,6 @@ trait LoggerTrait {
 	 * @return string
 	 */
 	protected function getFormattedMessage( string $level, string $message ) {
-		return sprintf( "%s [%s] - %s\n", date( 'd M H:i:s' ), $level, $message );
+		return sprintf( "%s [%s] - %s", date( 'd M H:i:s' ), $level, $message );
 	}
 }

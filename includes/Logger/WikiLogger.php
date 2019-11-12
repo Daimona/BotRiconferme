@@ -10,25 +10,25 @@ use Psr\Log\LogLevel;
 /**
  * Logger that sends messages on-wiki
  */
-class WikiLogger extends AbstractLogger {
+class WikiLogger extends AbstractLogger implements IFlushingAwareLogger {
 	use LoggerTrait;
-
-	/** @var int */
-	private $minLevel;
 
 	/** @var Page */
 	private $logPage;
 
+	/** @var int */
+	protected $minLevel;
+
 	/** @var string[] */
-	private $buffer;
+	protected $buffer;
 
 	/**
 	 * @param Page $logPage
 	 * @param string $minlevel
 	 */
 	public function __construct( Page $logPage, $minlevel = LogLevel::INFO ) {
-		$this->logPage = $logPage;
 		$this->minLevel = $this->levelToInt( $minlevel );
+		$this->logPage = $logPage;
 	}
 
 	/**
@@ -42,22 +42,22 @@ class WikiLogger extends AbstractLogger {
 	}
 
 	/**
-	 * Actually writes data to the wiki
+	 * @return string
 	 */
-	public function doOutput() {
-		if ( $this->buffer ) {
-			$this->logPage->edit( [
-				// @todo Print a line à la Bot.php
-				'appendtext' => implode( "\n", $this->buffer ),
-				'summary' => Config::getInstance()->getWikiMessage( 'error-page-summary' )
-			] );
-		}
+	protected function getOutput() : string {
+		$line = str_repeat( '-', 80 );
+		return implode( "\n", $this->buffer ) . "\n$line\n\n";
 	}
 
 	/**
-	 * @todo Can we move this?
+	 * @inheritDoc
 	 */
-	public function __destruct() {
-		$this->doOutput();
+	public function flush() : void {
+		if ( $this->buffer ) {
+			$this->logPage->edit( [
+				'appendtext' => $this->getOutput(),
+				'summary' => Config::getInstance()->getWikiMessage( 'error-page-summary' )
+			] );
+		}
 	}
 }

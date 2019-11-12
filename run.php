@@ -84,8 +84,10 @@ $wiki = new \BotRiconferme\Wiki\Wiki( $simpleLogger );
 Config::init( $vals, $wiki );
 
 if ( $errTitle !== null ) {
-	$errPage = new \BotRiconferme\Wiki\Page\Page( $errTitle, $wiki );
-	// @fixme this will log the login
+	// Use a different Wiki with higher min level.
+	$wikiLoggerLogger = new \BotRiconferme\Logger\SimpleLogger( \Psr\Log\LogLevel::ERROR );
+	$wikiLoggerWiki = new \BotRiconferme\Wiki\Wiki( $wikiLoggerLogger );
+	$errPage = new \BotRiconferme\Wiki\Page\Page( $errTitle, $wikiLoggerWiki );
 	$wikiLogger = new \BotRiconferme\Logger\WikiLogger( $errPage, \Psr\Log\LogLevel::ERROR );
 	$mainLogger = new \BotRiconferme\Logger\MultiLogger( $simpleLogger, $wikiLogger );
 } else {
@@ -93,6 +95,21 @@ if ( $errTitle !== null ) {
 }
 
 $bot = new Bot( $mainLogger, $wiki );
+
+/**
+ * Error handler. As default, always throw
+ *
+ * @param int $errno
+ * @param string $errstr
+ * @param string $errfile
+ * @param int $errline
+ * @throws \ErrorException
+ */
+$errorHandler = function ( $errno, $errstr, $errfile, $errline ) {
+	throw new \ErrorException( $errstr, 0, $errno, $errfile, $errline );
+};
+
+set_error_handler( $errorHandler );
 
 /*
  * E.g.
@@ -105,10 +122,18 @@ $taskOpts = getopt( '', [ 'task:', 'subtask:' ] );
 
 if ( count( $taskOpts ) === 2 ) {
 	throw new InvalidArgumentException( 'Cannot specify both task and subtask.' );
-} elseif ( isset( $taskOpts['task'] ) ) {
-	$bot->runTask( $taskOpts[ 'task' ] );
-} elseif ( isset( $taskOpts['subtask'] ) ) {
-	$bot->runSubtask( $taskOpts[ 'subtask' ] );
-} else {
-	$bot->runAll();
+}
+
+try {
+	if ( isset( $taskOpts['task'] ) ) {
+		$bot->runTask( $taskOpts['task'] );
+	} elseif ( isset( $taskOpts['subtask'] ) ) {
+		$bot->runSubtask( $taskOpts['subtask'] );
+	} else {
+		$bot->runAll();
+	}
+} catch ( Throwable $e ) {
+	$mainLogger->error( "$e" );
+} finally {
+	$mainLogger->flush();
 }

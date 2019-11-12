@@ -30,14 +30,7 @@ abstract class TaskBase extends ContextSource {
 		TaskDataProvider $dataProvider
 	) {
 		parent::__construct( $logger, $wiki );
-		set_exception_handler( [ $this, 'handleException' ] );
-		set_error_handler( [ $this, 'handleError' ] );
 		$this->dataProvider = $dataProvider;
-	}
-
-	public function __destruct() {
-		restore_error_handler();
-		restore_exception_handler();
 	}
 
 	/**
@@ -84,30 +77,6 @@ abstract class TaskBase extends ContextSource {
 	 * @return string
 	 */
 	abstract public function getOperationName() : string;
-
-	/**
-	 * Exception handler.
-	 *
-	 * @param \Throwable $ex
-	 * @protected
-	 */
-	public function handleException( \Throwable $ex ) {
-		$this->getLogger()->error( "$ex" );
-	}
-
-	/**
-	 * Error handler. As default, always throw
-	 *
-	 * @param int $errno
-	 * @param string $errstr
-	 * @param string $errfile
-	 * @param int $errline
-	 * @throws \ErrorException
-	 * @protected
-	 */
-	public function handleError( $errno, $errstr, $errfile, $errline ) {
-		throw new \ErrorException( $errstr, 0, $errno, $errfile, $errline );
-	}
 
 	/**
 	 * @return TaskDataProvider

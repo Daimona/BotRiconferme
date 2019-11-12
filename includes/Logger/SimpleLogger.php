@@ -8,11 +8,11 @@ use Psr\Log\LogLevel;
 /**
  * Logger that just prints stuff to stdout
  */
-class SimpleLogger extends AbstractLogger {
+class SimpleLogger extends AbstractLogger implements IFlushingAwareLogger {
 	use LoggerTrait;
 
 	/** @var int */
-	private $minLevel;
+	protected $minLevel;
 
 	/**
 	 * @param string $minlevel
@@ -27,7 +27,15 @@ class SimpleLogger extends AbstractLogger {
 	 */
 	public function log( $level, $message, array $context = [] ) {
 		if ( $this->levelToInt( $level ) >= $this->minLevel ) {
-			echo $this->getFormattedMessage( $level, $message );
+			echo $this->getFormattedMessage( $level, $message ) . "\n";
 		}
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function flush() : void {
+		// Everything else is printed immediately
+		echo "\n" . str_repeat( '-', 80 ) . "\n\n";
 	}
 }

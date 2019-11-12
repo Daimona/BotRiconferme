@@ -8,14 +8,14 @@ use Psr\Log\LoggerInterface;
 /**
  * Proxies calls to multiple loggers
  */
-class MultiLogger extends AbstractLogger {
-	/** @var LoggerInterface[] */
+class MultiLogger extends AbstractLogger implements IFlushingAwareLogger {
+	/** @var IFlushingAwareLogger[] */
 	private $loggers = [];
 
 	/**
-	 * @param LoggerInterface ...$loggers
+	 * @param IFlushingAwareLogger ...$loggers
 	 */
-	public function __construct( LoggerInterface ...$loggers ) {
+	public function __construct( IFlushingAwareLogger ...$loggers ) {
 		$this->loggers = $loggers;
 	}
 
@@ -26,6 +26,15 @@ class MultiLogger extends AbstractLogger {
 	public function log( $level, $message, array $context = [] ) {
 		foreach ( $this->loggers as $logger ) {
 			$logger->log( $level, $message );
+		}
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function flush() : void {
+		foreach ( $this->loggers as $logger ) {
+			$logger->flush();
 		}
 	}
 }
