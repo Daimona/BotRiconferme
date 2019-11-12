@@ -17,10 +17,10 @@ class WikiLogger extends AbstractLogger implements IFlushingAwareLogger {
 	private $logPage;
 
 	/** @var int */
-	protected $minLevel;
+	private $minLevel;
 
 	/** @var string[] */
-	protected $buffer;
+	private $buffer;
 
 	/**
 	 * @param Page $logPage

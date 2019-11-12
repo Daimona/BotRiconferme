@@ -12,7 +12,7 @@ class SimpleLogger extends AbstractLogger implements IFlushingAwareLogger {
 	use LoggerTrait;
 
 	/** @var int */
-	protected $minLevel;
+	private $minLevel;
 
 	/**
 	 * @param string $minlevel

@@ -3,7 +3,6 @@
 namespace BotRiconferme\Logger;
 
 use Psr\Log\AbstractLogger;
-use Psr\Log\LoggerInterface;
 
 /**
  * Proxies calls to multiple loggers
