@@ -81,9 +81,15 @@ class CLI {
 			}
 		}
 
-		if ( count( array_intersect_key( [ 'password' => true, 'use-password-file' => true ] , $opts ) ) === 0 ) {
+		if (
+			!array_key_exists( 'password', $opts ) &&
+			!array_key_exists( 'use-password-file', $opts )
+		) {
 			exit( 'Please provide a password or use a password file' );
-		} elseif ( count( array_intersect_key( [ 'password' => true, 'use-password-file' => true ] , $opts ) ) === 2 ) {
+		} elseif (
+			array_key_exists( 'password', $opts ) &&
+			array_key_exists( 'use-password-file', $opts )
+		) {
 			exit( 'Can only use one of "password" and "use-password-file"' );
 		}
 
