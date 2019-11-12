@@ -21,8 +21,11 @@ La pagina raccoglie un insieme di opzioni di configurazione più "oggettivi", e 
  * `exclude-admins` contiene una lista di admin da non includere nella lista e quindi da ignorare completamente.
  * `bot-edits` serve a decidere se contrassegnare gli edit del bot come bot-edit o meno.
  
- ### https://it.wikipedia.org/wiki/Utente:BotRiconferme/Messages.json
- Questa è l'unica pagina che potrebbe aver bisogno di qualche aggiornamento. Contiene (quasi) tutti i messaggi utilizzati dal bot: sostanzialmente, testo da aggiungere alle pagine e campi oggetto da utilizzare. In alcuni messaggi sono presenti stringhe come `$num`. Queste rappresentano variabili sostituite al momento di utilizzare il messaggio. Inoltre, alcuni usano il costrutto `{{$plur|$num|a|e}}`. Esso funziona esattamente come il `{{PLURAL}}` di MediaWiki, e viene utilizzato nei campi oggetto.
+### https://it.wikipedia.org/wiki/Utente:BotRiconferme/Messages.json
+Questa è l'unica pagina che potrebbe aver bisogno di qualche aggiornamento. Contiene (quasi) tutti i messaggi utilizzati dal bot: sostanzialmente, testo da aggiungere alle pagine e campi oggetto da utilizzare. In alcuni messaggi sono presenti stringhe come `$num`. Queste rappresentano variabili sostituite al momento di utilizzare il messaggio. Inoltre, alcuni usano il costrutto `{{$plur|$num|a|e}}`. Esso funziona esattamente come il `{{PLURAL}}` di MediaWiki, e viene utilizzato nei campi oggetto.
  
- ## Bug e altre creature mitologiche
- ...Ce ne sono sicuramente! Se ne trovi uno, non esitare! Fammelo presente dove ti è più comodo, va bene sia on-wiki che aprendo un Issue qui su Github. Lo stesso vale per proposte di nuove funzionalità.
+## Bug e altre creature mitologiche
+...Ce ne sono sicuramente! Se ne trovi uno, non esitare! Fammelo presente dove ti è più comodo, va bene sia on-wiki che aprendo un Issue qui su Github. Lo stesso vale per proposte di nuove funzionalità.
+
+## TODO
+Decoupling decoupling decoupling!
