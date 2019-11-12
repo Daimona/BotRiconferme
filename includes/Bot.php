@@ -36,6 +36,7 @@ class Bot {
 		$this->logger->info( "Running $activity" );
 		$manager = new TaskManager( $this->logger, $this->wiki );
 		$res = $manager->run( $mode, $name );
+		// @fixme Move this elsewhere
 		$line = str_repeat( '-', 80 );
 		$base = "Execution of $activity";
 		if ( $res->isOK() ) {

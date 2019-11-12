@@ -47,6 +47,7 @@ class WikiLogger extends AbstractLogger {
 	public function doOutput() {
 		if ( $this->buffer ) {
 			$this->logPage->edit( [
+				// @todo Print a line à la Bot.php
 				'appendtext' => implode( "\n", $this->buffer ),
 				'summary' => Config::getInstance()->getWikiMessage( 'error-page-summary' )
 			] );

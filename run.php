@@ -85,7 +85,8 @@ Config::init( $vals, $wiki );
 
 if ( $errTitle !== null ) {
 	$errPage = new \BotRiconferme\Wiki\Page\Page( $errTitle, $wiki );
-	$wikiLogger = new \BotRiconferme\Logger\WikiLogger( $errPage, \Psr\Log\LogLevel::ERROR );// Fixme this will log the login
+	// @fixme this will log the login
+	$wikiLogger = new \BotRiconferme\Logger\WikiLogger( $errPage, \Psr\Log\LogLevel::ERROR );
 	$mainLogger = new \BotRiconferme\Logger\MultiLogger( $simpleLogger, $wikiLogger );
 } else {
 	$mainLogger = $simpleLogger;
