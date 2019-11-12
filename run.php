@@ -29,7 +29,7 @@ $params = [
 	'username:',
 	'list-title:',
 	'config-title:',
-	'msg-title:'
+	'msg-title:',
 ];
 
 $vals = getopt( '', $params );
@@ -75,12 +75,23 @@ $vals[ 'password' ] = $pw;
 
 /* START */
 
-$logger = new \BotRiconferme\Logger\SimpleLogger();
-$controller = new \BotRiconferme\Wiki\Wiki( $logger );
+$errParam = getopt( '', [ 'error-title::' ] );
+$errTitle = $errParam['error-title'] ?? null;
 
-Config::init( $vals, $controller );
+$simpleLogger = new \BotRiconferme\Logger\SimpleLogger();
+// @fixme
+$wiki = new \BotRiconferme\Wiki\Wiki( $simpleLogger );
+Config::init( $vals, $wiki );
 
-$bot = new Bot( $logger, $controller );
+if ( $errTitle !== null ) {
+	$errPage = new \BotRiconferme\Wiki\Page\Page( $errTitle, $wiki );
+	$wikiLogger = new \BotRiconferme\Logger\WikiLogger( $errPage, \Psr\Log\LogLevel::ERROR );// Fixme this will log the login
+	$mainLogger = new \BotRiconferme\Logger\MultiLogger( $simpleLogger, $wikiLogger );
+} else {
+	$mainLogger = $simpleLogger;
+}
+
+$bot = new Bot( $mainLogger, $wiki );
 
 /*
  * E.g.

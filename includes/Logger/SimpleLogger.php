@@ -6,9 +6,11 @@ use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
 
 /**
- * Implementation for a PSR-3 logger
+ * Logger that just prints stuff to stdout
  */
 class SimpleLogger extends AbstractLogger {
+	use LoggerTrait;
+
 	/** @var int */
 	private $minLevel;
 
@@ -20,33 +22,12 @@ class SimpleLogger extends AbstractLogger {
 	}
 
 	/**
-	 * Translate a LogLevel constant to an integer
-	 *
-	 * @param string $level
-	 * @return int
-	 */
-	private function levelToInt( string $level ) : int {
-		// Order matters
-		$mapping = [
-			LogLevel::DEBUG,
-			LogLevel::INFO,
-			LogLevel::NOTICE,
-			LogLevel::WARNING,
-			LogLevel::ERROR,
-			LogLevel::CRITICAL,
-			LogLevel::ALERT,
-			LogLevel::EMERGENCY
-		];
-		return array_search( $level, $mapping );
-	}
-
-	/**
 	 * @inheritDoc
 	 * @suppress PhanUnusedPublicMethodParameter
 	 */
 	public function log( $level, $message, array $context = [] ) {
 		if ( $this->levelToInt( $level ) >= $this->minLevel ) {
-			printf( "%s [%s] - %s\n", date( 'd M H:i:s' ), $level, $message );
+			echo $this->getFormattedMessage( $level, $message );
 		}
 	}
 }
