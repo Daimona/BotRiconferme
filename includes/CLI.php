@@ -49,7 +49,7 @@ class CLI {
 	];
 
 	/** @todo Make it customizable? */
-	public const PASSWORD_FILE = __DIR__ . '/password.txt';
+	public const PASSWORD_FILE = __DIR__ . '/../password.txt';
 
 	/** @var array */
 	private $opts;
