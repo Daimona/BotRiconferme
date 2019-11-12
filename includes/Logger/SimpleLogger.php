@@ -1,6 +1,6 @@
 <?php declare( strict_types=1 );
 
-namespace BotRiconferme;
+namespace BotRiconferme\Logger;
 
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
