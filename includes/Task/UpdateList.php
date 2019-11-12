@@ -36,7 +36,7 @@ class UpdateList extends Task {
 		$extra = $this->getExtraGroups();
 
 		$newContent = $this->getNewContent( $missing, $extra );
-throw new \Exception('foo');
+
 		if ( $newContent === $this->botList ) {
 			return TaskResult::STATUS_NOTHING;
 		}
