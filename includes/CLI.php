@@ -81,9 +81,9 @@ class CLI {
 			}
 		}
 
-		if ( !array_key_exists( 'password', $opts ) && !array_key_exists( 'use-password-file', $opts ) ) {
+		if ( count( array_intersect_key( [ 'password' => true, 'use-password-file' => true ] , $opts ) ) === 0 ) {
 			exit( 'Please provide a password or use a password file' );
-		} elseif ( array_key_exists( 'password', $opts ) && array_key_exists( 'use-password-file', $opts ) ) {
+		} elseif ( count( array_intersect_key( [ 'password' => true, 'use-password-file' => true ] , $opts ) ) === 2 ) {
 			exit( 'Can only use one of "password" and "use-password-file"' );
 		}
 
@@ -120,7 +120,7 @@ class CLI {
 
 	/**
 	 * @param string $opt
-	 * @param mixed $default
+	 * @param mixed|null $default
 	 * @return mixed
 	 */
 	public function getOpt( string $opt, $default = null ) {
