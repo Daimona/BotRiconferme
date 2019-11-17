@@ -107,7 +107,7 @@ class CLI {
 	 */
 	private function canonicalize( array &$opts ) {
 		if ( array_key_exists( 'use-password-file', $opts ) ) {
-			$pw = file_get_contents( self::PASSWORD_FILE );
+			$pw = trim( file_get_contents( self::PASSWORD_FILE ) );
 			$opts['password'] = $pw;
 			unset( $opts['use-password-file'] );
 		}

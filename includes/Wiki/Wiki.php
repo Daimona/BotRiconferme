@@ -128,7 +128,7 @@ class Wiki {
 		}
 
 		if ( !isset( $res->login->result ) || $res->login->result !== 'Success' ) {
-			throw new LoginException( 'Unknown error' );
+			throw new LoginException( $res->login->reason ?? 'Unknown error' );
 		}
 
 		self::$loggedIn = true;
