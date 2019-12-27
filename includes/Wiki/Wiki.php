@@ -66,7 +66,6 @@ class Wiki {
 
 		$mainSlot = $page->revisions[0]->slots->main;
 
-		// @phan-suppress-next-line PhanImpossibleTypeComparison $section can be null
 		if ( $section !== null && isset( $mainSlot->nosuchsection ) ) {
 			throw new MissingSectionException( $title, $section );
 		}

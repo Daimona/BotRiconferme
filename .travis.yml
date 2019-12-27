@@ -8,6 +8,7 @@ php:
 dist: xenial
 
 before_install:
+  - phpenv config-rm xdebug.ini
   - pecl channel-update pecl.php.net
   - pecl install ast
 
