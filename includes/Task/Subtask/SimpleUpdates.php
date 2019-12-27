@@ -150,21 +150,21 @@ class SimpleUpdates extends Subtask {
 	 * @return int
 	 */
 	private function getNextTs( User $user ) : int {
-		$groups = $user->getGroupsWithDates();
-		if ( isset( $groups['override-perm'] ) ) {
+		$userInfo = $user->getUserInfo();
+		if ( isset( $userInfo['override-perm'] ) ) {
 			$date = \DateTime::createFromFormat(
 				'd/m/Y',
-				$groups['override-perm'] . '/' . date( 'Y' )
+				$userInfo['override-perm'] . '/' . date( 'Y' )
 			);
 			if ( $date < new \DateTime ) {
 				$date->modify( '+1 year' );
 			}
 			$res = $date->getTimestamp();
 		} else {
-			$ts = PageBotList::getValidFlagTimestamp( $groups );
+			$ts = PageBotList::getValidFlagTimestamp( $userInfo );
 			$res = strtotime( date( 'Y', strtotime( '+1 year' ) ) . date( '-m-d', $ts ) );
-			if ( isset( $groups['override'] ) ) {
-				$date = \DateTime::createFromFormat( 'd/m/Y', $groups['override'] );
+			if ( isset( $userInfo['override'] ) ) {
+				$date = \DateTime::createFromFormat( 'd/m/Y', $userInfo['override'] );
 				if ( $date > new \DateTime ) {
 					$res = $date->getTimestamp();
 				}

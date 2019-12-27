@@ -171,8 +171,7 @@ class UpdateList extends Task {
 	protected function getExtraGroups() : array {
 		$extra = [];
 		foreach ( $this->botList as $name => $groups ) {
-			// These are not groups
-			unset( $groups[ 'override' ], $groups[ 'override-perm' ] );
+			$groups = array_diff_key( $groups, PageBotList::NON_GROUP_KEYS );
 			if ( !isset( $this->actualList[ $name ] ) ) {
 				$extra[ $name ] = $groups;
 			} elseif ( count( $groups ) > count( $this->actualList[ $name ] ) ) {
@@ -180,6 +179,39 @@ class UpdateList extends Task {
 			}
 		}
 		return $extra;
+	}
+
+	/**
+	 * Given a list of (old) usernames, check if these people have been renamed recently.
+	 *
+	 * @param string[] $names
+	 * @return string[] [ new_name => old_name ]
+	 */
+	protected function checkRenamedUsers( array $names ) : array {
+		$titles = array_map( function ( $x ) {
+			return "Utente:$x";
+		}, $names );
+		$params = [
+			'action' => 'query',
+			'list' => 'logevents',
+			'leprop' => 'title|details|timestamp',
+			'letype' => 'renameuser',
+			'letitle' => implode( '|', $titles ),
+			'lelimit' => 'max',
+			// lestart seems to be broken, so we check below
+		];
+
+		$data = RequestBase::newFromParams( $params )->execute();
+		$ret = [];
+		foreach ( $data->query->logevents as $entry ) {
+			$time = strtotime( $entry->timestamp );
+			// 1 month is arbitrary
+			if ( $time > strtotime( '-1 month' ) ) {
+				$par = $entry->params;
+				$ret[ $par->newuser ] = $par->olduser;
+			}
+		}
+		return $ret;
 	}
 
 	/**
@@ -191,16 +223,40 @@ class UpdateList extends Task {
 	 */
 	protected function getNewContent( array $missing, array $extra ) : array {
 		$newContent = $this->botList;
+		$renameMap = $this->checkRenamedUsers( array_keys( $extra ) );
+		$removed = [];
 		foreach ( $newContent as $user => $groups ) {
 			if ( isset( $missing[ $user ] ) ) {
 				$newContent[ $user ] = array_merge( $groups, $missing[ $user ] );
 				unset( $missing[ $user ] );
 			} elseif ( isset( $extra[ $user ] ) ) {
-				$newContent[ $user ] = array_diff_key( $groups, $extra[ $user ] );
+				$newGroups = array_diff_key( $groups, $extra[ $user ] );
+				if ( $newGroups ) {
+					$newContent[ $user ] = $newGroups;
+				} else {
+					unset( $newContent[ $user ] );
+					$removed[] = $user;
+				}
 			}
 		}
 		// Add users which don't have an entry at all, and remove empty users
+		// @todo Is the array_filter still necessary?
 		$newContent = array_filter( array_merge( $newContent, $missing ) );
+
+		foreach ( $removed as $oldName ) {
+			if ( array_key_exists( $oldName, $renameMap ) && array_key_exists( $renameMap[$oldName], $newContent ) ) {
+				$newName = $renameMap[ $oldName ];
+				// This user was renamed! Add this name as alias... If they're still listed!
+				if ( array_key_exists( 'aliases', $newContent[ $newName ] ) ) {
+					if ( !in_array( $oldName, $newContent[ $newName ]['aliases'] ) ) {
+						$newContent[ $newName ]['aliases'][] = $oldName;
+					}
+				} else {
+					$newContent[ $newName ]['aliases'] = [ $oldName ];
+				}
+			}
+		}
+
 		$newContent = $this->removeOverrides( $newContent );
 		ksort( $newContent, SORT_STRING | SORT_FLAG_CASE );
 		return $newContent;

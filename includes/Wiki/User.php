@@ -10,8 +10,10 @@ use BotRiconferme\Wiki\Page\PageBotList;
 class User extends Element {
 	/** @var string */
 	private $name;
-	/** @var string[] */
+	/** @var string[]|null */
 	private $groups;
+	/** @var string[]|null */
+	private $aliases;
 
 	/**
 	 * @param string $name
@@ -35,16 +37,15 @@ class User extends Element {
 	 * @return string[]
 	 */
 	public function getGroups() : array {
-		return array_keys( $this->getGroupsWithDates() );
+		return array_keys( array_diff_key( $this->getUserInfo(), PageBotList::NON_GROUP_KEYS ) );
 	}
 
 	/**
-	 * Get a list of groups this user belongs to with flag dates,
-	 * same format as the JSON list.
+	 * Get some info about this user, including flag dates.
 	 *
 	 * @return string[]
 	 */
-	public function getGroupsWithDates() : array {
+	public function getUserInfo() : array {
 		if ( $this->groups === null ) {
 			$usersList = PageBotList::get( $this->wiki )->getAdminsList();
 			$this->groups = $usersList[ $this->name ];
@@ -69,6 +70,19 @@ class User extends Element {
 	 */
 	public function getRegex() : string {
 		return str_replace( ' ', '[ _]', preg_quote( $this->name ) );
+	}
+
+	/**
+	 * Get a list of aliases for this user.
+	 *
+	 * @return string[]
+	 */
+	public function getAliases() : array {
+		if ( $this->aliases === null ) {
+			$usersList = PageBotList::get( $this->wiki )->getAdminsList();
+			$this->aliases = $usersList[ $this->name ];
+		}
+		return $this->aliases;
 	}
 
 	/**

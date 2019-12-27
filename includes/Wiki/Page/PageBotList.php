@@ -9,6 +9,8 @@ use BotRiconferme\Wiki\Wiki;
  * Singleton class representing the JSON list of admins
  */
 class PageBotList extends Page {
+	public const NON_GROUP_KEYS = [ 'override', 'override-perm', 'aliases' ];
+
 	/**
 	 * @private Use self::get()
 	 * @param Wiki $wiki
@@ -77,5 +79,15 @@ class PageBotList extends Page {
 	 */
 	public function getAdminsList() : array {
 		return json_decode( $this->getContent(), true );
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function edit( array $params ) {
+		parent::edit( $params );
+		if ( array_key_exists( 'text', $params ) ) {
+			$this->content = $params['text'];
+		}
 	}
 }

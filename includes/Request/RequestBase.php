@@ -82,6 +82,8 @@ abstract class RequestBase {
 	 * Entry point for an API request
 	 *
 	 * @return \stdClass
+	 * @todo Return an iterable object which automatically continues the query only if the last
+	 *   entry available is reached.
 	 */
 	public function execute() : \stdClass {
 		$curParams = $this->params;
