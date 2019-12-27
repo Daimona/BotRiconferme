@@ -244,7 +244,10 @@ class UpdateList extends Task {
 		$newContent = array_filter( array_merge( $newContent, $missing ) );
 
 		foreach ( $removed as $oldName ) {
-			if ( array_key_exists( $oldName, $renameMap ) && array_key_exists( $renameMap[$oldName], $newContent ) ) {
+			if (
+				array_key_exists( $oldName, $renameMap ) &&
+				array_key_exists( $renameMap[$oldName], $newContent )
+			) {
 				$newName = $renameMap[ $oldName ];
 				// This user was renamed! Add this name as alias... If they're still listed!
 				if ( array_key_exists( 'aliases', $newContent[ $newName ] ) ) {

@@ -3,12 +3,11 @@ language: php
 php:
   - 7.2
   - 7.3
-  - 7.4snapshot
+  - 7.4
 
 dist: xenial
 
 before_install:
-  - if [ $TRAVIS_PHP_VERSION != "7.4snapshot" ]; then phpenv config-rm xdebug.ini ; fi
   - pecl channel-update pecl.php.net
   - pecl install ast
 

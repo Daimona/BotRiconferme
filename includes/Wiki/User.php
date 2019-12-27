@@ -12,8 +12,6 @@ class User extends Element {
 	private $name;
 	/** @var string[]|null */
 	private $groups;
-	/** @var string[]|null */
-	private $aliases;
 
 	/**
 	 * @param string $name
@@ -78,11 +76,7 @@ class User extends Element {
 	 * @return string[]
 	 */
 	public function getAliases() : array {
-		if ( $this->aliases === null ) {
-			$usersList = PageBotList::get( $this->wiki )->getAdminsList();
-			$this->aliases = $usersList[ $this->name ];
-		}
-		return $this->aliases;
+		return $this->getUserInfo()['aliases'] ?? [];
 	}
 
 	/**
