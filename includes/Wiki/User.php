@@ -35,7 +35,7 @@ class User extends Element {
 	 * @return string[]
 	 */
 	public function getGroups() : array {
-		return array_keys( array_diff_key( $this->getUserInfo(), array_fill_keys( PageBotList::NON_GROUP_KEYS, 1 ) ) );
+		return array_diff( array_keys( $this->getUserInfo() ), PageBotList::NON_GROUP_KEYS );
 	}
 
 	/**
@@ -69,7 +69,7 @@ class User extends Element {
 	public function getRegex() : string {
 		$bits = $this->getAliases();
 		$bits[] = $this->name;
-		$regexify = function( $el ) {
+		$regexify = function ( $el ) {
 			return str_replace( ' ', '[ _]', preg_quote( $el ) );
 		};
 		return '(?:' . implode( '|', array_map( $regexify, $bits ) ) . ')';
