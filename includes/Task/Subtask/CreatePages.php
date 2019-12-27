@@ -6,6 +6,7 @@ use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Exception\TaskException;
 use BotRiconferme\TaskResult;
+use BotRiconferme\Wiki\User;
 
 /**
  * For each user, create the WP:A/Riconferma_annuale/USERNAME/XXX page and add it to its base page
@@ -68,12 +69,20 @@ class CreatePages extends Subtask {
 	 */
 	protected function getLastPageNum( string $user ) : int {
 		$this->getLogger()->debug( "Retrieving previous pages for $user" );
+		$userObj = new User( $user, $this->getWiki() );
+
 		$unprefixedTitle = explode( ':', $this->getOpt( 'main-page-title' ), 2 )[1];
+
+		$prefixes = [ "$unprefixedTitle/$user/" ];
+		foreach ( $userObj->getAliases() as $alias ) {
+			$prefixes[] = "$unprefixedTitle/$alias/";
+		}
+
 		$params = [
 			'action' => 'query',
 			'list' => 'allpages',
 			'apnamespace' => 4,
-			'apprefix' => "$unprefixedTitle/$user/",
+			'apprefix' => implode( '|', $prefixes ),
 			'aplimit' => 'max'
 		];
 

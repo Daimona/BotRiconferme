@@ -171,7 +171,7 @@ class UpdateList extends Task {
 	protected function getExtraGroups() : array {
 		$extra = [];
 		foreach ( $this->botList as $name => $groups ) {
-			$groups = array_diff_key( $groups, PageBotList::NON_GROUP_KEYS );
+			$groups = array_diff_key( $groups, array_fill_keys( PageBotList::NON_GROUP_KEYS, 1 ) );
 			if ( !isset( $this->actualList[ $name ] ) ) {
 				$extra[ $name ] = $groups;
 			} elseif ( count( $groups ) > count( $this->actualList[ $name ] ) ) {
@@ -231,25 +231,24 @@ class UpdateList extends Task {
 				unset( $missing[ $user ] );
 			} elseif ( isset( $extra[ $user ] ) ) {
 				$newGroups = array_diff_key( $groups, $extra[ $user ] );
-				if ( $newGroups ) {
+				if ( array_diff_key( $newGroups, array_fill_keys( PageBotList::NON_GROUP_KEYS, 1 ) ) ) {
 					$newContent[ $user ] = $newGroups;
 				} else {
+					$removed[$user] = $newContent[$user];
 					unset( $newContent[ $user ] );
-					$removed[] = $user;
 				}
 			}
 		}
-		// Add users which don't have an entry at all, and remove empty users
-		// @todo Is the array_filter still necessary?
-		$newContent = array_filter( array_merge( $newContent, $missing ) );
+		// Add users which don't have an entry at all
+		$newContent = array_merge( $newContent, $missing );
 
-		foreach ( $removed as $oldName ) {
+		foreach ( $removed as $oldName => $info ) {
 			if (
 				array_key_exists( $oldName, $renameMap ) &&
 				array_key_exists( $renameMap[$oldName], $newContent )
 			) {
+				// This user was renamed! Add this name as alias, if they're still listed
 				$newName = $renameMap[ $oldName ];
-				// This user was renamed! Add this name as alias... If they're still listed!
 				if ( array_key_exists( 'aliases', $newContent[ $newName ] ) ) {
 					if ( !in_array( $oldName, $newContent[ $newName ]['aliases'] ) ) {
 						$newContent[ $newName ]['aliases'][] = $oldName;
@@ -257,6 +256,9 @@ class UpdateList extends Task {
 				} else {
 					$newContent[ $newName ]['aliases'] = [ $oldName ];
 				}
+				// Transfer overrides to the new name.
+				$overrides = array_diff_key( $info, [ 'override' => 1, 'override-perm' => 1 ] );
+				$newContent[ $newName ] = array_merge( $newContent[ $newName ], $overrides );
 			}
 		}
 

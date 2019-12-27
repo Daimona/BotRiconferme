@@ -35,7 +35,7 @@ class User extends Element {
 	 * @return string[]
 	 */
 	public function getGroups() : array {
-		return array_keys( array_diff_key( $this->getUserInfo(), PageBotList::NON_GROUP_KEYS ) );
+		return array_keys( array_diff_key( $this->getUserInfo(), array_fill_keys( PageBotList::NON_GROUP_KEYS, 1 ) ) );
 	}
 
 	/**
@@ -67,7 +67,12 @@ class User extends Element {
 	 * @inheritDoc
 	 */
 	public function getRegex() : string {
-		return str_replace( ' ', '[ _]', preg_quote( $this->name ) );
+		$bits = $this->getAliases();
+		$bits[] = $this->name;
+		$regexify = function( $el ) {
+			return str_replace( ' ', '[ _]', preg_quote( $el ) );
+		};
+		return '(?:' . implode( '|', array_map( $regexify, $bits ) ) . ')';
 	}
 
 	/**
