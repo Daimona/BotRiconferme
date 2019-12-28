@@ -191,6 +191,7 @@ class UpdateList extends Task {
 		if ( !$names ) {
 			return [];
 		}
+		$this->getLogger()->info( 'Checking rename for ' . implode( ', ', $names ) );
 
 		$titles = array_map( function ( $x ) {
 			return "Utente:$x";
@@ -253,6 +254,7 @@ class UpdateList extends Task {
 			) {
 				// This user was renamed! Add this name as alias, if they're still listed
 				$newName = $renameMap[ $oldName ];
+				$this->getLogger()->info( "Found rename $oldName -> $newName" );
 				if ( array_key_exists( 'aliases', $newContent[ $newName ] ) ) {
 					if ( !in_array( $oldName, $newContent[ $newName ]['aliases'] ) ) {
 						$newContent[ $newName ]['aliases'][] = $oldName;
