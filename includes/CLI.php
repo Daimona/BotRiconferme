@@ -74,11 +74,10 @@ class CLI {
 	/**
 	 * @param array $opts
 	 */
-	private function checkRequired( array $opts ) {
-		foreach ( self::REQUIRED_OPTS as $opt ) {
-			if ( !array_key_exists( $opt, $opts ) ) {
-				exit( "Required option $opt missing." );
-			}
+	private function checkRequired( array $opts ) : void {
+		$missing = array_diff( self::REQUIRED_OPTS, array_keys( $opts ) );
+		if ( $missing ) {
+			exit( "Required options missing: " . implode( ', ', $missing ) );
 		}
 
 		$hasPw = array_key_exists( 'password', $opts );
@@ -87,9 +86,7 @@ class CLI {
 			exit( 'Please provide a password or use a password file' );
 		} elseif ( $hasPw && $hasPwFile ) {
 			exit( 'Can only use one of "password" and "use-password-file"' );
-		}
-
-		if ( $hasPwFile && !file_exists( self::PASSWORD_FILE ) ) {
+		} elseif ( $hasPwFile && !file_exists( self::PASSWORD_FILE ) ) {
 			exit( 'Please create the password file (' . self::PASSWORD_FILE . ')' );
 		}
 
@@ -101,7 +98,7 @@ class CLI {
 	/**
 	 * @param array &$opts
 	 */
-	private function canonicalize( array &$opts ) {
+	private function canonicalize( array &$opts ) : void {
 		if ( array_key_exists( 'use-password-file', $opts ) ) {
 			$pw = trim( file_get_contents( self::PASSWORD_FILE ) );
 			$opts['password'] = $pw;
