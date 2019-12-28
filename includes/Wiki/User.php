@@ -2,16 +2,17 @@
 
 namespace BotRiconferme\Wiki;
 
+use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageBotList;
 
 /**
- * Class representing a single user. NOTE this can only represent users stored in the JSON list
+ * Class representing a single user. NOTE: this can only represent users stored in the JSON list
  */
 class User extends Element {
 	/** @var string */
 	private $name;
-	/** @var string[]|null */
-	private $groups;
+	/** @var string[]|null Info contained in the JSON page */
+	private $info;
 
 	/**
 	 * @param string $name
@@ -44,11 +45,18 @@ class User extends Element {
 	 * @return string[]
 	 */
 	public function getUserInfo() : array {
-		if ( $this->groups === null ) {
+		if ( $this->info === null ) {
 			$usersList = PageBotList::get( $this->wiki )->getAdminsList();
-			$this->groups = $usersList[ $this->name ];
+			$this->info = $usersList[ $this->name ]->getUserInfo();
 		}
-		return $this->groups;
+		return $this->info;
+	}
+
+	/**
+	 * @param array|null $info
+	 */
+	public function setInfo( ?array $info ) : void {
+		$this->info = $info;
 	}
 
 	/**
@@ -82,6 +90,13 @@ class User extends Element {
 	 */
 	public function getAliases() : array {
 		return $this->getUserInfo()['aliases'] ?? [];
+	}
+
+	/**
+	 * @return Page
+	 */
+	public function getTalkPage() : Page {
+		return new Page( "User talk:{$this->name}", $this->wiki );
 	}
 
 	/**

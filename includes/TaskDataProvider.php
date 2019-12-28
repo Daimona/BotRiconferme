@@ -5,12 +5,13 @@ namespace BotRiconferme;
 use BotRiconferme\Wiki\Page\PageBotList;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\Request\RequestBase;
+use BotRiconferme\Wiki\User;
 
 /**
  * Object holding data to be shared between different tasks.
  */
 class TaskDataProvider extends ContextSource {
-	/** @var array[] */
+	/** @var User[]|null */
 	private $processUsers;
 	/** @var PageRiconferma[] */
 	private $createdPages = [];
@@ -18,14 +19,14 @@ class TaskDataProvider extends ContextSource {
 	/**
 	 * Get a list of users to execute tasks on.
 	 *
-	 * @return array[]
+	 * @return User[]
 	 */
 	public function getUsersToProcess() : array {
 		if ( $this->processUsers === null ) {
 			$this->processUsers = [];
-			foreach ( PageBotList::get( $this->getWiki() )->getAdminsList() as $user => $groups ) {
-				if ( $this->shouldAddUser( $groups ) ) {
-					$this->processUsers[ $user ] = $groups;
+			foreach ( PageBotList::get( $this->getWiki() )->getAdminsList() as $name => $user ) {
+				if ( $this->shouldAddUser( $user ) ) {
+					$this->processUsers[ $name ] = $user;
 				}
 			}
 		}
@@ -34,12 +35,13 @@ class TaskDataProvider extends ContextSource {
 	}
 
 	/**
-	 * Whether a user with the given groups should be processed
+	 * Whether the given user should be processed
 	 *
-	 * @param string[] $groups
+	 * @param User $user
 	 * @return bool
 	 */
-	private function shouldAddUser( array $groups ) : bool {
+	private function shouldAddUser( User $user ) : bool {
+		$groups = $user->getGroups();
 		$override = true;
 		$timestamp = PageBotList::getOverrideTimestamp( $groups );
 

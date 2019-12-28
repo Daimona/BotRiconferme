@@ -30,7 +30,7 @@ class UpdateList extends Task {
 	public function runInternal() : int {
 		$this->actualList = $this->getActualAdmins();
 		$pageBotList = PageBotList::get( $this->getWiki() );
-		$this->botList = $pageBotList->getAdminsList();
+		$this->botList = $pageBotList->getDecodedContent();
 
 		$missing = $this->getMissingGroups();
 		$extra = $this->getExtraGroups();

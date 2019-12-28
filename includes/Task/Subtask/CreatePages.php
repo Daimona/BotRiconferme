@@ -22,8 +22,8 @@ class CreatePages extends Subtask {
 			return TaskResult::STATUS_NOTHING;
 		}
 
-		foreach ( $users as $user => $groups ) {
-			$this->processUser( $user, $groups );
+		foreach ( $users as $user ) {
+			$this->processUser( $user );
 		}
 
 		return TaskResult::STATUS_GOOD;
@@ -32,22 +32,21 @@ class CreatePages extends Subtask {
 	/**
 	 * Determine what pages we need to create for a single user.
 	 *
-	 * @param string $user
-	 * @param array $groups
+	 * @param User $user
 	 */
-	protected function processUser( string $user, array $groups ) {
+	protected function processUser( User $user ) {
 		try {
 			$num = $this->getLastPageNum( $user ) + 1;
 		} catch ( TaskException $e ) {
 			// The page was already created today. PLZ let this poor bot work!
-			$this->getDataProvider()->removeUser( $user );
+			$this->getDataProvider()->removeUser( $user->getName() );
 			$this->getLogger()->warning( $e->getMessage() . " - User $user won't be processed." );
 			return;
 		}
 
 		$baseTitle = $this->getOpt( 'main-page-title' ) . "/$user";
 		$pageTitle = "$baseTitle/$num";
-		$this->createPage( $pageTitle, $user, $groups );
+		$this->createPage( $pageTitle, $user );
 
 		$newText = $this->msg( 'base-page-text' )->params( [ '$title' => $pageTitle ] )->text();
 		if ( $num === 1 ) {
@@ -63,18 +62,17 @@ class CreatePages extends Subtask {
 	/**
 	 * Get the number of last page for the given user
 	 *
-	 * @param string $user
+	 * @param User $user
 	 * @return int
 	 * @throws TaskException
 	 */
-	protected function getLastPageNum( string $user ) : int {
+	protected function getLastPageNum( User $user ) : int {
 		$this->getLogger()->debug( "Retrieving previous pages for $user" );
-		$userObj = new User( $user, $this->getWiki() );
 
 		$unprefixedTitle = explode( ':', $this->getOpt( 'main-page-title' ), 2 )[1];
 
 		$prefixes = [ "$unprefixedTitle/$user/" ];
-		foreach ( $userObj->getAliases() as $alias ) {
+		foreach ( $user->getAliases() as $alias ) {
 			$prefixes[] = "$unprefixedTitle/$alias/";
 		}
 
@@ -109,13 +107,13 @@ class CreatePages extends Subtask {
 	 * Really creates the page WP:A/Riconferma_annuale/USERNAME/XXX
 	 *
 	 * @param string $title
-	 * @param string $user
-	 * @param array $groups
+	 * @param User $user
 	 */
-	protected function createPage( string $title, string $user, array $groups ) {
+	protected function createPage( string $title, User $user ) {
 		$this->getLogger()->info( "Creating page $title" );
+		$groups = $user->getGroups();
 		$textParams = [
-			'$user' => $user,
+			'$user' => $user->getName(),
 			'$date' => $groups['sysop'],
 			'$burocrate' => $groups['bureaucrat'] ?? '',
 			'$checkuser' => $groups['checkuser'] ?? ''

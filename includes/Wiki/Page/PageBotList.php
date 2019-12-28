@@ -3,6 +3,7 @@
 namespace BotRiconferme\Wiki\Page;
 
 use BotRiconferme\Config;
+use BotRiconferme\Wiki\User;
 use BotRiconferme\Wiki\Wiki;
 
 /**
@@ -10,6 +11,9 @@ use BotRiconferme\Wiki\Wiki;
  */
 class PageBotList extends Page {
 	public const NON_GROUP_KEYS = [ 'override', 'override-perm', 'aliases' ];
+
+	/** @var User[]|null */
+	private $adminsList;
 
 	/**
 	 * @private Use self::get()
@@ -75,19 +79,26 @@ class PageBotList extends Page {
 	/**
 	 * Get the actual list of admins
 	 *
-	 * @return array[]
+	 * @return User[]
 	 */
 	public function getAdminsList() : array {
-		return json_decode( $this->getContent(), true );
+		if ( $this->adminsList === null ) {
+			$this->adminsList = [];
+			foreach ( $this->getDecodedContent() as $user => $info ) {
+				$userObj = new User( $user, $this->wiki );
+				$userObj->setInfo( $info );
+				$this->adminsList[ $user ] = $userObj;
+			}
+		}
+		return $this->adminsList;
 	}
 
 	/**
-	 * @inheritDoc
+	 * Get the JSON-decoded content of the list
+	 *
+	 * @return array[]
 	 */
-	public function edit( array $params ) {
-		parent::edit( $params );
-		if ( array_key_exists( 'text', $params ) ) {
-			$this->content = $params['text'];
-		}
+	public function getDecodedContent() : array {
+		return json_decode( $this->getContent(), true );
 	}
 }

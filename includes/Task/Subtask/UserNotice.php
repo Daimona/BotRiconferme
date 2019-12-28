@@ -3,6 +3,7 @@
 namespace BotRiconferme\Task\Subtask;
 
 use BotRiconferme\TaskResult;
+use BotRiconferme\Wiki\User;
 
 /**
  * Notify the affected users
@@ -24,8 +25,8 @@ class UserNotice extends Subtask {
 			$ricNums[ $page->getUser()->getName() ] = $page->getNum();
 		}
 
-		foreach ( $users as $user => $_ ) {
-			$this->addMsg( $user, $ricNums[ $user ] );
+		foreach ( $users as $name => $user ) {
+			$this->addMsg( $user, $ricNums[ $name ] );
 		}
 
 		return TaskResult::STATUS_GOOD;
@@ -34,21 +35,20 @@ class UserNotice extends Subtask {
 	/**
 	 * Leaves a message to the talk page
 	 *
-	 * @param string $user
+	 * @param User $user
 	 * @param int $ricNum
 	 */
-	protected function addMsg( string $user, int $ricNum ) {
+	protected function addMsg( User $user, int $ricNum ) {
 		$this->getLogger()->info( "Leaving msg to $user" );
 		$msg = $this->msg( 'user-notice-msg' )->params( [ '$num' => $ricNum ] )->text();
 
 		$params = [
-			'title' => "User talk:$user",
 			'section' => 'new',
 			'text' => $msg,
 			'sectiontitle' => $this->msg( 'user-notice-sectiontitle' )->text(),
 			'summary' => $this->msg( 'user-notice-summary' )->text()
 		];
 
-		$this->getWiki()->editPage( $params );
+		$user->getTalkPage()->edit( $params );
 	}
 }
