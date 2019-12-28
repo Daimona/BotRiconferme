@@ -40,6 +40,15 @@ class User extends Element {
 	}
 
 	/**
+	 * Like getGroups(), but includes flag dates.
+	 *
+	 * @return string[] [ group => date ]
+	 */
+	public function getGroupsWithDates() : array {
+		return array_intersect_key( $this->getUserInfo(), array_fill_keys( $this->getGroups(), 1 ) );
+	}
+
+	/**
 	 * Get some info about this user, including flag dates.
 	 *
 	 * @return string[]

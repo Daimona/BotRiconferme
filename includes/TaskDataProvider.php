@@ -45,7 +45,7 @@ class TaskDataProvider extends ContextSource {
 		$timestamp = PageBotList::getOverrideTimestamp( $user->getUserInfo() );
 
 		if ( $timestamp === null ) {
-			$timestamp = PageBotList::getValidFlagTimestamp( $user->getGroups() );
+			$timestamp = PageBotList::getValidFlagTimestamp( $user->getGroupsWithDates() );
 			$override = false;
 		}
 
