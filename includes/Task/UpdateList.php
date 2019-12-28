@@ -2,7 +2,6 @@
 
 namespace BotRiconferme\Task;
 
-use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageBotList;
 use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Exception\TaskException;
@@ -260,7 +259,11 @@ class UpdateList extends Task {
 	 * @param array[] $extra
 	 * @return string[] Removed users
 	 */
-	private function handleExtraAndMissing( array &$newContent, array $missing, array $extra ) : array {
+	private function handleExtraAndMissing(
+		array &$newContent,
+		array $missing,
+		array $extra
+	) : array {
 		$removed = [];
 		foreach ( $newContent as $user => $groups ) {
 			if ( isset( $missing[ $user ] ) ) {
