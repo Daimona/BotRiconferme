@@ -182,20 +182,14 @@ class UpdateList extends Task {
 	}
 
 	/**
-	 * Given a list of (old) usernames, check if these people have been renamed recently.
-	 *
 	 * @param string[] $names
-	 * @return string[] [ old_name => new_name ]
+	 * @return \stdClass
 	 */
-	protected function checkRenamedUsers( array $names ) : array {
-		if ( !$names ) {
-			return [];
-		}
-		$this->getLogger()->info( 'Checking rename for ' . implode( ', ', $names ) );
-
+	private function getRenameEntries( array $names ) : \stdClass {
 		$titles = array_map( function ( $x ) {
 			return "Utente:$x";
 		}, $names );
+
 		$params = [
 			'action' => 'query',
 			'list' => 'logevents',
@@ -203,10 +197,25 @@ class UpdateList extends Task {
 			'letype' => 'renameuser',
 			'letitle' => implode( '|', $titles ),
 			'lelimit' => 'max',
-			// lestart seems to be broken, so we check below
+			// lestart seems to be broken (?)
 		];
 
-		$data = RequestBase::newFromParams( $params )->execute();
+		return RequestBase::newFromParams( $params )->execute();
+	}
+
+	/**
+	 * Given a list of (old) usernames, check if these people have been renamed recently.
+	 *
+	 * @param string[] $names
+	 * @return string[] [ old_name => new_name ]
+	 */
+	protected function getRenamedUsers( array $names ) : array {
+		if ( !$names ) {
+			return [];
+		}
+		$this->getLogger()->info( 'Checking rename for ' . implode( ', ', $names ) );
+
+		$data = $this->getRenameEntries( $names );
 		$ret = [];
 		foreach ( $data->query->logevents as $entry ) {
 			$time = strtotime( $entry->timestamp );
@@ -221,33 +230,13 @@ class UpdateList extends Task {
 	}
 
 	/**
-	 * Get the new content for the list
+	 * Update aliases and overrides for renamed users
 	 *
-	 * @param array[] $missing
-	 * @param array[] $extra
-	 * @return array[]
+	 * @param array &$newContent
+	 * @param array $removed
 	 */
-	protected function getNewContent( array $missing, array $extra ) : array {
-		$newContent = $this->botList;
-		$renameMap = $this->checkRenamedUsers( array_keys( $extra ) );
-		$removed = [];
-		foreach ( $newContent as $user => $groups ) {
-			if ( isset( $missing[ $user ] ) ) {
-				$newContent[ $user ] = array_merge( $groups, $missing[ $user ] );
-				unset( $missing[ $user ] );
-			} elseif ( isset( $extra[ $user ] ) ) {
-				$newGroups = array_diff_key( $groups, $extra[ $user ] );
-				if ( array_diff_key( $newGroups, array_fill_keys( PageBotList::NON_GROUP_KEYS, 1 ) ) ) {
-					$newContent[ $user ] = $newGroups;
-				} else {
-					$removed[$user] = $newContent[$user];
-					unset( $newContent[ $user ] );
-				}
-			}
-		}
-		// Add users which don't have an entry at all
-		$newContent = array_merge( $newContent, $missing );
-
+	private function handleRenames( array &$newContent, array $removed ) : void {
+		$renameMap = $this->getRenamedUsers( array_keys( $removed ) );
 		foreach ( $removed as $oldName => $info ) {
 			if (
 				array_key_exists( $oldName, $renameMap ) &&
@@ -268,10 +257,53 @@ class UpdateList extends Task {
 				$newContent[ $newName ] = array_merge( $newContent[ $newName ], $overrides );
 			}
 		}
+	}
+
+	/**
+	 * Get the new content for the list
+	 *
+	 * @param array[] $missing
+	 * @param array[] $extra
+	 * @return array[]
+	 */
+	protected function getNewContent( array $missing, array $extra ) : array {
+		$newContent = $this->botList;
+		$removed = [];
+		foreach ( $newContent as $user => $groups ) {
+			if ( isset( $missing[ $user ] ) ) {
+				$newContent[ $user ] = array_merge( $groups, $missing[ $user ] );
+				unset( $missing[ $user ] );
+			} elseif ( isset( $extra[ $user ] ) ) {
+				$newGroups = array_diff_key( $groups, $extra[ $user ] );
+				if ( array_diff_key( $newGroups, array_fill_keys( PageBotList::NON_GROUP_KEYS, 1 ) ) ) {
+					$newContent[ $user ] = $newGroups;
+				} else {
+					$removed[$user] = $newContent[$user];
+					unset( $newContent[ $user ] );
+				}
+			}
+		}
+		// Add users which don't have an entry at all
+		$newContent = array_merge( $newContent, $missing );
+
+		$this->handleRenames( $newContent, $removed );
 
 		$newContent = $this->removeOverrides( $newContent );
 		ksort( $newContent, SORT_STRING | SORT_FLAG_CASE );
 		return $newContent;
+	}
+
+	/**
+	 * @param array $groups
+	 * @return bool
+	 */
+	private function isOverrideExpired( array $groups ) : bool {
+		$flagTS = PageBotList::getValidFlagTimestamp( $groups );
+		$usualTS = strtotime( date( 'Y' ) . '-' . date( 'm-d', $flagTS ) );
+		$overrideTS = \DateTime::createFromFormat( 'd/m/Y', $groups['override'] )->getTimestamp();
+		$delay = 60 * 60 * 24 * 3;
+
+		return time() > $usualTS + $delay && time() > $overrideTS + $delay;
 	}
 
 	/**
@@ -288,12 +320,7 @@ class UpdateList extends Task {
 				continue;
 			}
 
-			$flagTS = PageBotList::getValidFlagTimestamp( $groups );
-			$usualTS = strtotime( date( 'Y' ) . '-' . date( 'm-d', $flagTS ) );
-			$overrideTS = \DateTime::createFromFormat( 'd/m/Y', $groups['override'] )->getTimestamp();
-			$delay = 60 * 60 * 24 * 3;
-
-			if ( time() > $usualTS + $delay && time() > $overrideTS + $delay ) {
+			if ( $this->isOverrideExpired( $groups ) ) {
 				unset( $newContent[ $user ][ 'override' ] );
 				$removed[] = $user;
 			}
