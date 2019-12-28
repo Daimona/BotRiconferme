@@ -121,7 +121,7 @@ class TaskDataProvider extends ContextSource {
 	/**
 	 * @param PageRiconferma $page
 	 */
-	public function addCreatedPages( PageRiconferma $page ) {
+	public function addCreatedPage( PageRiconferma $page ) {
 		$this->createdPages[] = $page;
 	}
 }

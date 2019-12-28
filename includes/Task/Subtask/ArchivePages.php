@@ -101,7 +101,7 @@ class ArchivePages extends Subtask {
 	 * Really add $pages to the given archive
 	 *
 	 * @param string $archiveTitle
-	 * @param array $pages
+	 * @param PageRiconferma[] $pages
 	 */
 	private function reallyAddToArchive( string $archiveTitle, array $pages ) {
 		$archivePage = $this->getPage( "$archiveTitle/" . date( 'Y' ) );

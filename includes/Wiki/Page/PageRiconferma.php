@@ -2,6 +2,9 @@
 
 namespace BotRiconferme\Wiki\Page;
 
+use BotRiconferme\Config;
+use BotRiconferme\Exception\MissingPageException;
+use BotRiconferme\Exception\TaskException;
 use BotRiconferme\Message;
 use BotRiconferme\Wiki\User;
 
@@ -64,15 +67,6 @@ class PageRiconferma extends Page {
 	 */
 	public function getUserNum() : string {
 		return explode( '/', $this->getTitle(), 3 )[2];
-	}
-
-	/**
-	 * Strip the part with the progressive number
-	 *
-	 * @return string
-	 */
-	public function getBaseTitle() : string {
-		return substr( $this->getTitle(), 0, strrpos( $this->getTitle(), '/' ) );
 	}
 
 	/**

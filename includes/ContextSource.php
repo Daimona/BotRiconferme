@@ -2,6 +2,7 @@
 
 namespace BotRiconferme;
 
+use BotRiconferme\Wiki\User;
 use BotRiconferme\Wiki\Wiki;
 use BotRiconferme\Wiki\Page\Page;
 use Psr\Log\LoggerAwareInterface;
@@ -100,5 +101,15 @@ abstract class ContextSource implements LoggerAwareInterface {
 	 */
 	protected function getPage( string $title ) : Page {
 		return new Page( $title, $this->getWiki() );
+	}
+
+	/**
+	 * Shorthand to get a user using the local wiki
+	 *
+	 * @param string $name
+	 * @return User
+	 */
+	protected function getUser( string $name ) : User {
+		return new User( $name, $this->getWiki() );
 	}
 }

@@ -2,6 +2,7 @@
 
 namespace BotRiconferme\Task\Subtask;
 
+use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Exception\TaskException;
@@ -33,6 +34,7 @@ class CreatePages extends Subtask {
 	 * Determine what pages we need to create for a single user.
 	 *
 	 * @param User $user
+	 * @throws TaskException
 	 */
 	protected function processUser( User $user ) {
 		try {
@@ -45,18 +47,20 @@ class CreatePages extends Subtask {
 		}
 
 		$baseTitle = $this->getOpt( 'main-page-title' ) . "/$user";
+		// This should always use the new username
 		$pageTitle = "$baseTitle/$num";
 		$this->createPage( $pageTitle, $user );
+		$ricPage = new PageRiconferma( $pageTitle, $this->getWiki() );
 
 		$newText = $this->msg( 'base-page-text' )->params( [ '$title' => $pageTitle ] )->text();
 		if ( $num === 1 ) {
 			$this->createBasePage( $baseTitle, $newText );
 		} else {
-			$this->updateBasePage( $baseTitle, $newText );
+			$baseObj = $user->getExistingBasePage();
+			$this->updateBasePage( $baseObj, $newText );
 		}
 
-		$pageObj = new PageRiconferma( $pageTitle, $this->getWiki() );
-		$this->getDataProvider()->addCreatedPages( $pageObj );
+		$this->getDataProvider()->addCreatedPage( $ricPage );
 	}
 
 	/**
@@ -87,20 +91,20 @@ class CreatePages extends Subtask {
 		$res = RequestBase::newFromParams( $params )->execute();
 
 		// Little hack to have getNum() return 0
-		$last = new PageRiconferma( 'X/Y/Z/0', $this->getWiki() );
+		$last = null;
 		foreach ( $res->query->allpages as $resPage ) {
 			$page = new PageRiconferma( $resPage->title, $this->getWiki() );
 
-			if ( $page->getNum() > $last->getNum() ) {
+			if ( $last === null || $page->getNum() > $last->getNum() ) {
 				$last = $page;
 			}
 		}
 
-		if ( $last->getNum() !== 0 && date( 'z/Y' ) === date( 'z/Y', $last->getCreationTimestamp() ) ) {
+		if ( $last !== null && date( 'z/Y' ) === date( 'z/Y', $last->getCreationTimestamp() ) ) {
 			throw new TaskException( "Page $last was already created." );
 		}
 
-		return $last->getNum();
+		return $last === null ? 0 : $last->getNum();
 	}
 
 	/**
@@ -148,18 +152,17 @@ class CreatePages extends Subtask {
 
 	/**
 	 * Updates the page WP:A/Riconferma_annuale/USERNAME if it already exists
-	 * @param string $title
+	 * @param Page $basePage
 	 * @param string $newText
 	 */
-	protected function updateBasePage( string $title, string $newText ) {
-		$this->getLogger()->info( "Updating base page $title" );
+	protected function updateBasePage( Page $basePage, string $newText ) {
+		$this->getLogger()->info( "Updating base page $basePage" );
 
 		$params = [
-			'title' => $title,
 			'appendtext' => "\n$newText",
 			'summary' => $this->msg( 'base-page-summary-update' )->text()
 		];
 
-		$this->getWiki()->editPage( $params );
+		$basePage->edit( $params );
 	}
 }

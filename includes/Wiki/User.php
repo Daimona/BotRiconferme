@@ -2,6 +2,8 @@
 
 namespace BotRiconferme\Wiki;
 
+use BotRiconferme\Config;
+use BotRiconferme\Exception\MissingPageException;
 use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageBotList;
 
@@ -106,6 +108,43 @@ class User extends Element {
 	 */
 	public function getTalkPage() : Page {
 		return new Page( "User talk:{$this->name}", $this->wiki );
+	}
+
+	/**
+	 * Get the default base page, e.g. WP:A/Riconferma annuale/XXX
+	 * @return Page
+	 */
+	public function getBasePage() : Page {
+		$prefix = Config::getInstance()->get( 'main-page-title' );
+		return new Page( "$prefix/$this", $this->wiki );
+	}
+
+	/**
+	 * Get an *existing* base page for this user. If no existing page is found, this will throw.
+	 * Don't use this method if the page is allowed not to exist.
+	 *
+	 * @throws MissingPageException
+	 * @return Page
+	 */
+	public function getExistingBasePage() : Page {
+		$basePage = $this->getBasePage();
+		if ( !$basePage->exists() ) {
+			$basePage = null;
+			$prefix = Config::getInstance()->get( 'main-page-title' );
+			foreach ( $this->getAliases() as $alias ) {
+				$altTitle = "$prefix/$alias";
+				$altPage = new Page( $altTitle, $this->wiki );
+				if ( $altPage->exists() ) {
+					$basePage = $altPage;
+					break;
+				}
+			}
+			if ( $basePage === null ) {
+				// We've tried hard enough.
+				throw new MissingPageException( "Couldn't find base page for $this" );
+			}
+		}
+		return $basePage;
 	}
 
 	/**

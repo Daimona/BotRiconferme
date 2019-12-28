@@ -113,7 +113,7 @@ class SimpleUpdates extends Subtask {
 
 		$riconfNames = $removeNames = [];
 		foreach ( $outcomes as $username => $confirmed ) {
-			$user = new User( $username, $this->getWiki() );
+			$user = $this->getUser( $username );
 			$userReg = $user->getRegex();
 			$reg = "!({{Ammini\w+\/riga\|$userReg\|\D+\|\d{8}\|)(?:\d{8})?\|\d{8}((?:\|[a-z]*)?}}.*\n)!";
 			if ( $confirmed ) {
@@ -183,7 +183,7 @@ class SimpleUpdates extends Subtask {
 
 		$riconfNames = $removeNames = [];
 		foreach ( $outcomes as $user => $confirmed ) {
-			$userReg = ( new User( $user, $this->getWiki() ) )->getRegex();
+			$userReg = $this->getUser( $user )->getRegex();
 			$reg = "!(\{\{ *Checkuser *\| *$userReg *\|[^}]+\| *)[\w \d]+(}}.*\n)!";
 			if ( $confirmed ) {
 				$newContent = preg_replace( $reg, '${1}{{subst:#time:j F Y}}$2', $newContent );
