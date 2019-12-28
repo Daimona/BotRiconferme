@@ -41,12 +41,11 @@ class TaskDataProvider extends ContextSource {
 	 * @return bool
 	 */
 	private function shouldAddUser( User $user ) : bool {
-		$groups = $user->getGroups();
 		$override = true;
-		$timestamp = PageBotList::getOverrideTimestamp( $groups );
+		$timestamp = PageBotList::getOverrideTimestamp( $user->getUserInfo() );
 
 		if ( $timestamp === null ) {
-			$timestamp = PageBotList::getValidFlagTimestamp( $groups );
+			$timestamp = PageBotList::getValidFlagTimestamp( $user->getGroups() );
 			$override = false;
 		}
 
