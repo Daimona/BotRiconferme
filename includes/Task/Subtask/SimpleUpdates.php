@@ -120,7 +120,7 @@ class SimpleUpdates extends Subtask {
 				$nextDate = date( 'Ymd', $this->getNextTs( $user ) );
 				$newContent = preg_replace(
 					$reg,
-					'${1}' . date( 'Ymd' ) . '|' . $nextDate . '$2',
+					'${1}{{subst:#timel:Ymd}}|' . $nextDate . '$2',
 					$newContent
 				);
 				$riconfNames[] = $username;

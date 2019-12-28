@@ -89,21 +89,19 @@ class CreatePages extends Subtask {
 
 		$res = RequestBase::newFromParams( $params )->execute();
 
-		// Little hack to have getNum() return 0
-		$last = null;
+		$last = 0;
 		foreach ( $res->query->allpages as $resPage ) {
 			$page = new PageRiconferma( $resPage->title, $this->getWiki() );
 
-			if ( $last === null || $page->getNum() > $last->getNum() ) {
-				$last = $page;
+			if ( date( 'z/Y', $page->getCreationTimestamp() ) === date( 'z/Y' ) ) {
+				throw new TaskException( "Page $page was already created today!" );
+			}
+			if ( $page->getNum() > $last ) {
+				$last = $page->getNum();
 			}
 		}
 
-		if ( $last !== null && date( 'z/Y' ) === date( 'z/Y', $last->getCreationTimestamp() ) ) {
-			throw new TaskException( "Page $last was already created." );
-		}
-
-		return $last === null ? 0 : $last->getNum();
+		return $last;
 	}
 
 	/**

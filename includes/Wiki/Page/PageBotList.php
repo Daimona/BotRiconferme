@@ -77,6 +77,23 @@ class PageBotList extends Page {
 	}
 
 	/**
+	 * @param array $groups
+	 * @return bool
+	 */
+	public static function isOverrideExpired( array $groups ) : bool {
+		if ( !isset( $groups['override'] ) ) {
+			return false;
+		}
+
+		$flagTS = self::getValidFlagTimestamp( $groups );
+		$usualTS = strtotime( date( 'Y' ) . '-' . date( 'm-d', $flagTS ) );
+		$overrideTS = \DateTime::createFromFormat( 'd/m/Y', $groups['override'] )->getTimestamp();
+		$delay = 60 * 60 * 24 * 3;
+
+		return time() > $usualTS + $delay && time() > $overrideTS + $delay;
+	}
+
+	/**
 	 * Get the actual list of admins
 	 *
 	 * @return User[]

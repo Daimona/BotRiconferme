@@ -2,6 +2,7 @@
 
 namespace BotRiconferme\Task;
 
+use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageBotList;
 use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Exception\TaskException;
@@ -152,12 +153,12 @@ class UpdateList extends Task {
 	private function extractTimestamp( \stdClass $data, string $group ) : ?string {
 		$ts = null;
 		foreach ( $data->query->logevents as $entry ) {
-			if ( isset( $entry->params ) ) {
-				$addedGroups = array_diff( $entry->params->newgroups, $entry->params->oldgroups );
-				if ( in_array( $group, $addedGroups ) ) {
-					$ts = $entry->timestamp;
-					break;
-				}
+			if (
+				isset( $entry->params ) &&
+				in_array( $group, array_diff( $entry->params->newgroups, $entry->params->oldgroups ) )
+			) {
+				$ts = $entry->timestamp;
+				break;
 			}
 		}
 		return $ts;
@@ -218,9 +219,8 @@ class UpdateList extends Task {
 		$data = $this->getRenameEntries( $names );
 		$ret = [];
 		foreach ( $data->query->logevents as $entry ) {
-			$time = strtotime( $entry->timestamp );
 			// 1 month is arbitrary
-			if ( $time > strtotime( '-1 month' ) ) {
+			if ( strtotime( $entry->timestamp ) > strtotime( '-1 month' ) ) {
 				$par = $entry->params;
 				$ret[ $par->olduser ] = $par->newuser;
 			}
@@ -245,13 +245,8 @@ class UpdateList extends Task {
 				// This user was renamed! Add this name as alias, if they're still listed
 				$newName = $renameMap[ $oldName ];
 				$this->getLogger()->info( "Found rename $oldName -> $newName" );
-				if ( array_key_exists( 'aliases', $newContent[ $newName ] ) ) {
-					if ( !in_array( $oldName, $newContent[ $newName ]['aliases'] ) ) {
-						$newContent[ $newName ]['aliases'][] = $oldName;
-					}
-				} else {
-					$newContent[ $newName ]['aliases'] = [ $oldName ];
-				}
+				$aliases = array_unique( array_merge( $newContent[ $newName ]['aliases'], [ $oldName ] ) );
+				$newContent[ $newName ]['aliases'] = $aliases;
 				// Transfer overrides to the new name.
 				$overrides = array_diff_key( $info, [ 'override' => 1, 'override-perm' => 1 ] );
 				$newContent[ $newName ] = array_merge( $newContent[ $newName ], $overrides );
@@ -260,14 +255,12 @@ class UpdateList extends Task {
 	}
 
 	/**
-	 * Get the new content for the list
-	 *
+	 * @param array[] &$newContent
 	 * @param array[] $missing
 	 * @param array[] $extra
-	 * @return array[]
+	 * @return string[] Removed users
 	 */
-	protected function getNewContent( array $missing, array $extra ) : array {
-		$newContent = $this->botList;
+	private function handleExtraAndMissing( array &$newContent, array $missing, array $extra ) : array {
 		$removed = [];
 		foreach ( $newContent as $user => $groups ) {
 			if ( isset( $missing[ $user ] ) ) {
@@ -285,42 +278,40 @@ class UpdateList extends Task {
 		}
 		// Add users which don't have an entry at all
 		$newContent = array_merge( $newContent, $missing );
-
-		$this->handleRenames( $newContent, $removed );
-
-		$newContent = $this->removeOverrides( $newContent );
-		ksort( $newContent, SORT_STRING | SORT_FLAG_CASE );
-		return $newContent;
+		return $removed;
 	}
 
 	/**
-	 * @param array $groups
-	 * @return bool
+	 * Get the new content for the list
+	 *
+	 * @param array[] $missing
+	 * @param array[] $extra
+	 * @return array[]
 	 */
-	private function isOverrideExpired( array $groups ) : bool {
-		$flagTS = PageBotList::getValidFlagTimestamp( $groups );
-		$usualTS = strtotime( date( 'Y' ) . '-' . date( 'm-d', $flagTS ) );
-		$overrideTS = \DateTime::createFromFormat( 'd/m/Y', $groups['override'] )->getTimestamp();
-		$delay = 60 * 60 * 24 * 3;
+	protected function getNewContent( array $missing, array $extra ) : array {
+		$newContent = $this->botList;
 
-		return time() > $usualTS + $delay && time() > $overrideTS + $delay;
+		$removed = $this->handleExtraAndMissing( $newContent, $missing, $extra );
+
+		$this->handleRenames( $newContent, $removed );
+
+		$this->removeOverrides( $newContent );
+
+		ksort( $newContent, SORT_STRING | SORT_FLAG_CASE );
+
+		return $newContent;
 	}
 
 	/**
 	 * Remove expired overrides. This must happen after the override date has been used AND
 	 * after the "normal" date has passed. We do it 3 days later to be sure.
 	 *
-	 * @param array[] $newContent
-	 * @return array[]
+	 * @param array[] &$newContent
 	 */
-	protected function removeOverrides( array $newContent ) : array {
+	protected function removeOverrides( array &$newContent ) : void {
 		$removed = [];
 		foreach ( $newContent as $user => $groups ) {
-			if ( !isset( $groups['override'] ) ) {
-				continue;
-			}
-
-			if ( $this->isOverrideExpired( $groups ) ) {
+			if ( PageBotList::isOverrideExpired( $groups ) ) {
 				unset( $newContent[ $user ][ 'override' ] );
 				$removed[] = $user;
 			}
@@ -329,7 +320,5 @@ class UpdateList extends Task {
 		if ( $removed ) {
 			$this->getLogger()->info( 'Removing overrides for users: ' . implode( ', ', $removed ) );
 		}
-
-		return $newContent;
 	}
 }

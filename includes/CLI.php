@@ -81,19 +81,15 @@ class CLI {
 			}
 		}
 
-		if (
-			!array_key_exists( 'password', $opts ) &&
-			!array_key_exists( 'use-password-file', $opts )
-		) {
+		$hasPw = array_key_exists( 'password', $opts );
+		$hasPwFile = array_key_exists( 'use-password-file', $opts );
+		if ( !$hasPw && !$hasPwFile ) {
 			exit( 'Please provide a password or use a password file' );
-		} elseif (
-			array_key_exists( 'password', $opts ) &&
-			array_key_exists( 'use-password-file', $opts )
-		) {
+		} elseif ( $hasPw && $hasPwFile ) {
 			exit( 'Can only use one of "password" and "use-password-file"' );
 		}
 
-		if ( array_key_exists( 'use-password-file', $opts ) && !file_exists( self::PASSWORD_FILE ) ) {
+		if ( $hasPwFile && !file_exists( self::PASSWORD_FILE ) ) {
 			exit( 'Please create the password file (' . self::PASSWORD_FILE . ')' );
 		}
 

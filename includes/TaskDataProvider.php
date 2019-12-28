@@ -15,6 +15,10 @@ class TaskDataProvider extends ContextSource {
 	private $processUsers;
 	/** @var PageRiconferma[] */
 	private $createdPages = [];
+	/** @var PageRiconferma[]|null */
+	private $openPages;
+	/** @var PageRiconferma[]|null */
+	private $pagesToClose;
 
 	/**
 	 * Get a list of users to execute tasks on.
@@ -41,17 +45,16 @@ class TaskDataProvider extends ContextSource {
 	 * @return bool
 	 */
 	private function shouldAddUser( User $user ) : bool {
-		$override = true;
 		$timestamp = PageBotList::getOverrideTimestamp( $user->getUserInfo() );
+		$override = $timestamp !== null;
 
 		if ( $timestamp === null ) {
 			$timestamp = PageBotList::getValidFlagTimestamp( $user->getGroupsWithDates() );
-			$override = false;
 		}
 
-		return ( date( 'd/m', $timestamp ) === date( 'd/m' ) &&
-			// Don't add it if the date is actually today and it's not an override
-			( $override || date( 'd/m/Y', $timestamp ) !== date( 'd/m/Y' ) ) );
+		$datesMatch = date( 'd/m', $timestamp ) === date( 'd/m' );
+		$dateIsToday = date( 'd/m/Y', $timestamp ) === date( 'd/m/Y' );
+		return ( $datesMatch && ( $override || !$dateIsToday ) );
 	}
 
 	/**
@@ -60,9 +63,8 @@ class TaskDataProvider extends ContextSource {
 	 * @return PageRiconferma[]
 	 */
 	public function getOpenPages() : array {
-		static $list = null;
-		if ( $list === null ) {
-			$list = [];
+		if ( $this->openPages === null ) {
+			$this->openPages = [];
 			$mainTitle = $this->getOpt( 'main-page-title' );
 			$params = [
 				'action' => 'query',
@@ -72,16 +74,16 @@ class TaskDataProvider extends ContextSource {
 				'tllimit' => 'max'
 			];
 
-			$titleReg = ( $this->getPage( $mainTitle ) )->getRegex();
+			$titleReg = $this->getPage( $mainTitle )->getRegex();
 			$pages = RequestBase::newFromParams( $params )->execute()->query->pages;
 			foreach ( reset( $pages )->templates as $page ) {
-				if ( preg_match( "!$titleReg\/[^\/]+\/\d!", $page->title ) ) {
-					$list[] = new PageRiconferma( $page->title, $this->getWiki() );
+				if ( preg_match( "!$titleReg/[^/]+/\d!", $page->title ) ) {
+					$this->openPages[] = new PageRiconferma( $page->title, $this->getWiki() );
 				}
 			}
 		}
 
-		return $list;
+		return $this->openPages;
 	}
 
 	/**
@@ -90,16 +92,15 @@ class TaskDataProvider extends ContextSource {
 	 * @return PageRiconferma[]
 	 */
 	public function getPagesToClose() : array {
-		static $list = null;
-		if ( $list === null ) {
-			$list = [];
+		if ( $this->pagesToClose === null ) {
+			$this->pagesToClose = [];
 			foreach ( $this->getOpenPages() as $page ) {
 				if ( time() > $page->getEndTimestamp() ) {
-					$list[] = $page;
+					$this->pagesToClose[] = $page;
 				}
 			}
 		}
-		return $list;
+		return $this->pagesToClose;
 	}
 
 	/**

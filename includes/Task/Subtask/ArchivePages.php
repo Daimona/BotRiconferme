@@ -105,7 +105,7 @@ class ArchivePages extends Subtask {
 	 */
 	private function reallyAddToArchive( string $archiveTitle, array $pages ) {
 		$archivePage = $this->getPage( "$archiveTitle/" . date( 'Y' ) );
-		$exists = $archivePage->exists();
+		$existed = $archivePage->exists();
 
 		$append = "\n";
 		$archivedList = [];
@@ -122,7 +122,7 @@ class ArchivePages extends Subtask {
 			'summary' => $summary
 		] );
 
-		if ( !$exists ) {
+		if ( !$existed ) {
 			$this->addArchiveYear( $archiveTitle );
 		}
 	}

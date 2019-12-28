@@ -29,5 +29,6 @@ return [
 		'UnusedSuppressionPlugin',
 		'DuplicateArrayKeyPlugin',
 		'DuplicateExpressionPlugin',
+		'RedundantAssignmentPlugin'
 	],
 ];

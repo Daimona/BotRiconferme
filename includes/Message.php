@@ -66,25 +66,6 @@ class Message {
 	}
 
 	/**
-	 * Get a localized version of article + day + time
-	 *
-	 * @param int $timestamp
-	 * @return string
-	 * @suppress PhanUnreferencedPublicMethod
-	 * @fixme Is this necessary?
-	 */
-	public static function getTimeWithArticle( int $timestamp ) : string {
-		$oldLoc = setlocale( LC_TIME, 'it_IT', 'Italian_Italy', 'Italian' );
-		$timeString = strftime( '%e %B alle %R', $timestamp );
-		// Remove the left space if day has a single digit
-		$timeString = ltrim( $timeString );
-		$artic = in_array( date( 'j', $timestamp ), [ 8, 11 ] ) ? "l'" : "il ";
-		setlocale( LC_TIME, $oldLoc );
-
-		return $artic . $timeString;
-	}
-
-	/**
 	 * Get a timestamp from a localized time string
 	 *
 	 * @param string $timeString Full format, e.g. "15 aprile 2019 18:27"
