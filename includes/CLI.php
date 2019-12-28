@@ -76,19 +76,22 @@ class CLI {
 	 */
 	private function checkRequired( array $opts ) : void {
 		$missingOpts = array_diff( self::REQUIRED_OPTS, array_keys( $opts ) );
-		$hasPw = array_key_exists( 'password', $opts );
-		$hasPwFile = array_key_exists( 'use-password-file', $opts );
-
 		if ( $missingOpts ) {
 			exit( "Required options missing: " . implode( ', ', $missingOpts ) );
-		} elseif ( !$hasPw && !$hasPwFile ) {
+		}
+
+		$hasPw = array_key_exists( 'password', $opts );
+		$hasPwFile = array_key_exists( 'use-password-file', $opts );
+		if ( !$hasPw && !$hasPwFile ) {
 			exit( 'Please provide a password or use a password file' );
 		} elseif ( $hasPw && $hasPwFile ) {
 			exit( 'Can only use one of "password" and "use-password-file"' );
 		} elseif ( $hasPwFile && !file_exists( self::PASSWORD_FILE ) ) {
 			exit( 'Please create the password file (' . self::PASSWORD_FILE . ')' );
-		} elseif ( array_key_exists( 'task', $opts ) && array_key_exists( 'subtask', $opts ) ) {
-			exit( 'Cannot specify both "task" and "subtask".' );
+		}
+
+		if ( count( array_intersect_key( $opts, [ 'task' => 1, 'subtask' => 1 ] ) ) === 2 ) {
+			exit( 'Cannot specify both task and subtask.' );
 		}
 	}
 
