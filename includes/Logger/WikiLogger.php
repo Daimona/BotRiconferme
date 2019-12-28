@@ -46,7 +46,7 @@ class WikiLogger extends AbstractLogger implements IFlushingAwareLogger {
 	 */
 	protected function getOutput() : string {
 		$line = str_repeat( '-', 80 );
-		return implode( "\n", $this->buffer ) . "\n$line\n\n";
+		return "\n\n" . implode( "\n", $this->buffer ) . "\n$line\n\n";
 	}
 
 	/**
