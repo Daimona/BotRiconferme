@@ -185,7 +185,7 @@ class UpdateList extends Task {
 	 * Given a list of (old) usernames, check if these people have been renamed recently.
 	 *
 	 * @param string[] $names
-	 * @return string[] [ new_name => old_name ]
+	 * @return string[] [ old_name => new_name ]
 	 */
 	protected function checkRenamedUsers( array $names ) : array {
 		if ( !$names ) {
@@ -213,7 +213,7 @@ class UpdateList extends Task {
 			// 1 month is arbitrary
 			if ( $time > strtotime( '-1 month' ) ) {
 				$par = $entry->params;
-				$ret[ $par->newuser ] = $par->olduser;
+				$ret[ $par->olduser ] = $par->newuser;
 			}
 		}
 		$this->getLogger()->info( 'Renames found: ' . var_export( $ret, true ) );
