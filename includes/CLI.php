@@ -66,7 +66,8 @@ class CLI {
 	 */
 	public function __construct() {
 		$opts = getopt( self::SHORT_OPTS, self::LONG_OPTS );
-		$this->checkRequired( $opts );
+		$this->checkRequiredOpts( $opts );
+		$this->checkConflictingOpts( $opts );
 		$this->canonicalize( $opts );
 		$this->opts = $opts;
 	}
@@ -74,7 +75,7 @@ class CLI {
 	/**
 	 * @param array $opts
 	 */
-	private function checkRequired( array $opts ) : void {
+	private function checkRequiredOpts( array $opts ) : void {
 		$missingOpts = array_diff( self::REQUIRED_OPTS, array_keys( $opts ) );
 		if ( $missingOpts ) {
 			exit( "Required options missing: " . implode( ', ', $missingOpts ) );
@@ -84,7 +85,16 @@ class CLI {
 		$hasPwFile = array_key_exists( 'use-password-file', $opts );
 		if ( !$hasPw && !$hasPwFile ) {
 			exit( 'Please provide a password or use a password file' );
-		} elseif ( $hasPw && $hasPwFile ) {
+		}
+	}
+
+	/**
+	 * @param array $opts
+	 */
+	private function checkConflictingOpts( array $opts ) : void {
+		$hasPw = array_key_exists( 'password', $opts );
+		$hasPwFile = array_key_exists( 'use-password-file', $opts );
+		if ( $hasPw && $hasPwFile ) {
 			exit( 'Can only use one of "password" and "use-password-file"' );
 		} elseif ( $hasPwFile && !file_exists( self::PASSWORD_FILE ) ) {
 			exit( 'Please create the password file (' . self::PASSWORD_FILE . ')' );
