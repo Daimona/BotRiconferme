@@ -2,9 +2,6 @@
 
 namespace BotRiconferme\Wiki\Page;
 
-use BotRiconferme\Config;
-use BotRiconferme\Exception\MissingPageException;
-use BotRiconferme\Exception\TaskException;
 use BotRiconferme\Message;
 use BotRiconferme\Wiki\User;
 

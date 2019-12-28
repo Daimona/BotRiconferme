@@ -34,7 +34,6 @@ class CreatePages extends Subtask {
 	 * Determine what pages we need to create for a single user.
 	 *
 	 * @param User $user
-	 * @throws TaskException
 	 */
 	protected function processUser( User $user ) {
 		try {
@@ -46,18 +45,18 @@ class CreatePages extends Subtask {
 			return;
 		}
 
-		$baseTitle = $this->getOpt( 'main-page-title' ) . "/$user";
+		$basePage = $user->getBasePage();
 		// This should always use the new username
-		$pageTitle = "$baseTitle/$num";
+		$pageTitle = "$basePage/$num";
 		$this->createPage( $pageTitle, $user );
 		$ricPage = new PageRiconferma( $pageTitle, $this->getWiki() );
 
 		$newText = $this->msg( 'base-page-text' )->params( [ '$title' => $pageTitle ] )->text();
 		if ( $num === 1 ) {
-			$this->createBasePage( $baseTitle, $newText );
+			$this->createBasePage( $basePage, $newText );
 		} else {
-			$baseObj = $user->getExistingBasePage();
-			$this->updateBasePage( $baseObj, $newText );
+			$basePage = $user->getExistingBasePage();
+			$this->updateBasePage( $basePage, $newText );
 		}
 
 		$this->getDataProvider()->addCreatedPage( $ricPage );
@@ -135,19 +134,18 @@ class CreatePages extends Subtask {
 	/**
 	 * Creates the page WP:A/Riconferma_annuale/USERNAME if it doesn't exist
 	 *
-	 * @param string $title
+	 * @param Page $basePage
 	 * @param string $newText
 	 */
-	protected function createBasePage( string $title, string $newText ) {
-		$this->getLogger()->info( "Creating base page $title" );
+	protected function createBasePage( Page $basePage, string $newText ) {
+		$this->getLogger()->info( "Creating base page $basePage" );
 
 		$params = [
-			'title' => $title,
 			'text' => $newText,
 			'summary' => $this->msg( 'base-page-summary' )->text()
 		];
 
-		$this->getWiki()->editPage( $params );
+		$basePage->edit( $params );
 	}
 
 	/**
