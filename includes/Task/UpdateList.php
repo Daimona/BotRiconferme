@@ -188,6 +188,10 @@ class UpdateList extends Task {
 	 * @return string[] [ new_name => old_name ]
 	 */
 	protected function checkRenamedUsers( array $names ) : array {
+		if ( !$names ) {
+			return [];
+		}
+
 		$titles = array_map( function ( $x ) {
 			return "Utente:$x";
 		}, $names );
