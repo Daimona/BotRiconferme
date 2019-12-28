@@ -216,6 +216,7 @@ class UpdateList extends Task {
 				$ret[ $par->newuser ] = $par->olduser;
 			}
 		}
+		$this->getLogger()->info( 'Renames found: ' . var_export( $ret, true ) );
 		return $ret;
 	}
 
