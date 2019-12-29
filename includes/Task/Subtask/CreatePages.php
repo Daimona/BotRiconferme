@@ -36,6 +36,7 @@ class CreatePages extends Subtask {
 	 * @param User $user
 	 */
 	protected function processUser( User $user ) {
+		$this->getLogger()->info( "Processing user $user" );
 		try {
 			$num = $this->getLastPageNum( $user ) + 1;
 		} catch ( TaskException $e ) {
