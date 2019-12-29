@@ -112,7 +112,7 @@ class CreatePages extends Subtask {
 	 */
 	protected function createPage( string $title, User $user ) {
 		$this->getLogger()->info( "Creating page $title" );
-		$groups = $user->getGroups();
+		$groups = $user->getGroupsWithDates();
 		$textParams = [
 			'$user' => $user->getName(),
 			'$date' => $groups['sysop'],
