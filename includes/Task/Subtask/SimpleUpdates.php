@@ -156,21 +156,20 @@ class SimpleUpdates extends Subtask {
 				'd/m/Y',
 				$userInfo['override-perm'] . '/' . date( 'Y' )
 			);
-			if ( $date < new \DateTime ) {
-				$date->modify( '+1 year' );
-			}
-			$res = $date->getTimestamp();
 		} else {
-			$ts = PageBotList::getValidFlagTimestamp( $userInfo );
-			$res = strtotime( date( 'Y', strtotime( '+1 year' ) ) . date( '-m-d', $ts ) );
-			if ( isset( $userInfo['override'] ) ) {
+			$date = null;
+			if ( isset( $userInfo['override'] ) )
 				$date = \DateTime::createFromFormat( 'd/m/Y', $userInfo['override'] );
-				if ( $date > new \DateTime ) {
-					$res = $date->getTimestamp();
-				}
+			}
+			if ( !$date || $date <= new \DateTime ) {
+				$ts = PageBotList::getValidFlagTimestamp( $userInfo );
+				$date = ( new \DateTime )->setTimestamp( $ts );
 			}
 		}
-		return $res;
+		while ( $date <= new \DateTime ) {
+			$date->modify( '+1 year' );
+		}
+		return $date->getTimestamp();
 	}
 
 	/**
