@@ -87,8 +87,8 @@ class SimpleUpdates extends Subtask {
 		$simpleMatches = $newsPage->getMatch( $simpleReg );
 		$voteMatches = $newsPage->getMatch( $voteReg );
 
-		$newSimp = (int)$simpleMatches[2] - $simpleAmount ?: '';
-		$newVote = (int)$voteMatches[2] - $voteAmount ?: '';
+		$newSimp = ( (int)$simpleMatches[2] - $simpleAmount ) ?: '';
+		$newVote = ( (int)$voteMatches[2] - $voteAmount ) ?: '';
 		$newContent = preg_replace( $simpleReg, '${1}' . $newSimp, $newsPage->getContent() );
 		$newContent = preg_replace( $voteReg, '${1}' . $newVote, $newContent );
 
@@ -158,7 +158,7 @@ class SimpleUpdates extends Subtask {
 			);
 		} else {
 			$date = null;
-			if ( isset( $userInfo['override'] ) )
+			if ( isset( $userInfo['override'] ) ) {
 				$date = \DateTime::createFromFormat( 'd/m/Y', $userInfo['override'] );
 			}
 			if ( !$date || $date <= new \DateTime ) {
