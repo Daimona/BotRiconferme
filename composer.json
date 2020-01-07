@@ -21,7 +21,7 @@
 	"require-dev": {
 		"jakub-onderka/php-parallel-lint": "1.0.0",
 		"mediawiki/mediawiki-codesniffer": "28.0.0",
-		"phan/phan": "2.4.5"
+		"phan/phan": "2.4.6"
 	},
 	"autoload": {
 		"psr-4": {
@@ -32,7 +32,7 @@
 		"test": [
 			"parallel-lint . --exclude node_modules --exclude vendor",
 			"phpcs -p -s",
-			"phan -p"
+			"phan --long-progress-bar"
 		],
 		"fix": "phpcbf"
 	}

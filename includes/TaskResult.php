@@ -37,14 +37,14 @@ class TaskResult {
 	 * @return string[]
 	 * @suppress PhanUnreferencedPublicMethod
 	 */
-	public function getErrors() {
+	public function getErrors() : array {
 		return $this->errors;
 	}
 
 	/**
 	 * @param TaskResult $that
 	 */
-	public function merge( TaskResult $that ) {
+	public function merge( TaskResult $that ) : void {
 		$this->status |= $that->status;
 		$this->errors = array_merge( $this->errors, $that->errors );
 	}

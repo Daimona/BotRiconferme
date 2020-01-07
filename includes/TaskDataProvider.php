@@ -74,7 +74,7 @@ class TaskDataProvider extends ContextSource {
 				'tllimit' => 'max'
 			];
 
-			$titleReg = $this->getPage( $mainTitle )->getRegex();
+			$titleReg = $this->getPage( $mainTitle )->getRegex( '!' );
 			$pages = RequestBase::newFromParams( $params )->execute()->query->pages;
 			foreach ( reset( $pages )->templates as $page ) {
 				if ( preg_match( "!$titleReg/[^/]+/\d!", $page->title ) ) {
@@ -108,7 +108,7 @@ class TaskDataProvider extends ContextSource {
 	 *
 	 * @param string $name
 	 */
-	public function removeUser( string $name ) {
+	public function removeUser( string $name ) : void {
 		unset( $this->processUsers[ $name ] );
 	}
 
@@ -122,7 +122,7 @@ class TaskDataProvider extends ContextSource {
 	/**
 	 * @param PageRiconferma $page
 	 */
-	public function addCreatedPage( PageRiconferma $page ) {
+	public function addCreatedPage( PageRiconferma $page ) : void {
 		$this->createdPages[] = $page;
 	}
 }

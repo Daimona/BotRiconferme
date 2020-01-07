@@ -2,6 +2,7 @@
 
 namespace BotRiconferme\Wiki\Page;
 
+use BotRiconferme\Exception\MissingMatchException;
 use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Wiki\Wiki;
 use BotRiconferme\Wiki\Element;
@@ -50,7 +51,7 @@ class Page extends Element {
 	 * @param array $params
 	 * @throws \LogicException
 	 */
-	public function edit( array $params ) {
+	public function edit( array $params ) : void {
 		$params = [
 			'title' => $this->getTitle()
 		] + $params;
@@ -99,12 +100,12 @@ class Page extends Element {
 	 *
 	 * @param string $regex
 	 * @return string[]
-	 * @throws \Exception
+	 * @throws MissingMatchException
 	 */
 	public function getMatch( string $regex ) : array {
 		$ret = [];
 		if ( preg_match( $regex, $this->getContent(), $ret ) === 0 ) {
-			throw new \Exception( "The content of $this does not match the given regex $regex" );
+			throw new MissingMatchException( "The content of $this does not match the given regex $regex" );
 		}
 		return $ret;
 	}
@@ -114,8 +115,8 @@ class Page extends Element {
 	 *
 	 * @inheritDoc
 	 */
-	public function getRegex() : string {
-		return str_replace( ' ', '[ _]', preg_quote( $this->title ) );
+	public function getRegex( string $delimiter = '/' ) : string {
+		return str_replace( ' ', '[ _]', preg_quote( $this->title, $delimiter ) );
 	}
 
 	/**

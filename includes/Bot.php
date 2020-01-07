@@ -31,7 +31,7 @@ class Bot {
 	 * @param string $mode
 	 * @param string|null $name
 	 */
-	private function run( string $mode = TaskManager::MODE_COMPLETE, string $name = null ) {
+	private function run( string $mode = TaskManager::MODE_COMPLETE, string $name = null ) : void {
 		$activity = $mode === TaskManager::MODE_COMPLETE ? TaskManager::MODE_COMPLETE : "$mode $name";
 		$this->logger->info( "Running $activity" );
 		$manager = new TaskManager( $this->logger, $this->wiki );
@@ -50,7 +50,7 @@ class Bot {
 	/**
 	 * Entry point for the whole process
 	 */
-	public function runAll() {
+	public function runAll() : void {
 		$this->run();
 	}
 
@@ -59,7 +59,7 @@ class Bot {
 	 *
 	 * @param string $task
 	 */
-	public function runTask( string $task ) {
+	public function runTask( string $task ) : void {
 		$this->run( TaskManager::MODE_TASK, $task );
 	}
 
@@ -68,7 +68,7 @@ class Bot {
 	 *
 	 * @param string $subtask
 	 */
-	public function runSubtask( string $subtask ) {
+	public function runSubtask( string $subtask ) : void {
 		$this->run( TaskManager::MODE_SUBTASK, $subtask );
 	}
 }

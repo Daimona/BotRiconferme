@@ -41,7 +41,7 @@ abstract class ContextSource implements LoggerAwareInterface {
 	/**
 	 * @inheritDoc
 	 */
-	public function setLogger( LoggerInterface $logger ) {
+	public function setLogger( LoggerInterface $logger ) : void {
 		$this->logger = $logger;
 	}
 
@@ -65,7 +65,7 @@ abstract class ContextSource implements LoggerAwareInterface {
 	/**
 	 * @param Config $cfg
 	 */
-	protected function setConfig( Config $cfg ) {
+	protected function setConfig( Config $cfg ) : void {
 		$this->config = $cfg;
 	}
 
@@ -79,7 +79,7 @@ abstract class ContextSource implements LoggerAwareInterface {
 	/**
 	 * @param Wiki $wiki
 	 */
-	protected function setWiki( Wiki $wiki ) {
+	protected function setWiki( Wiki $wiki ) : void {
 		$this->wiki = $wiki;
 	}
 

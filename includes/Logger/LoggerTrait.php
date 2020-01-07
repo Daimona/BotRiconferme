@@ -23,7 +23,7 @@ trait LoggerTrait {
 			LogLevel::ALERT,
 			LogLevel::EMERGENCY
 		];
-		return array_search( $level, $mapping );
+		return array_search( $level, $mapping, true );
 	}
 
 	/**
@@ -31,7 +31,7 @@ trait LoggerTrait {
 	 * @param string $message
 	 * @return string
 	 */
-	protected function getFormattedMessage( string $level, string $message ) {
-		return sprintf( "%s [%s] - %s", date( 'd M H:i:s' ), $level, $message );
+	protected function getFormattedMessage( string $level, string $message ) : string {
+		return sprintf( '%s [%s] - %s', date( 'd M H:i:s' ), $level, $message );
 	}
 }

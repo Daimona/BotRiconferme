@@ -32,7 +32,7 @@ class PageRiconferma extends Page {
 	 * because they can vary depending on whether the page is a vote, which is relatively
 	 * expensive to know since it requires parsing the content of the page.
 	 */
-	private function defineSections() {
+	private function defineSections() : void {
 		$this->supportSection = $this->isVote() ? 3 : 0;
 		$this->opposeSection = $this->isVote() ? 4 : 3;
 	}
@@ -54,7 +54,7 @@ class PageRiconferma extends Page {
 	 */
 	public function getNum() : int {
 		$bits = explode( '/', $this->getTitle() );
-		return intval( end( $bits ) );
+		return (int)end( $bits );
 	}
 
 	/**
@@ -100,7 +100,7 @@ class PageRiconferma extends Page {
 		if ( !isset( $this->sectionCounts[ $secNum ] ) ) {
 			$content = $this->wiki->getPageContent( $this->title, $secNum );
 			// Let's hope that this is good enough...
-			$this->sectionCounts[$secNum] = preg_match_all( "/^\# *(?![# *:]|\.\.\.$)/m", $content );
+			$this->sectionCounts[$secNum] = preg_match_all( "/^# *(?![# *:]|\.\.\.$)/m", $content );
 		}
 		return $this->sectionCounts[$secNum];
 	}
@@ -112,7 +112,7 @@ class PageRiconferma extends Page {
 	 */
 	protected function getQuorum() : int {
 		$reg = "!soddisfare il \[\[[^|\]]+\|quorum]] di '''(\d+) voti'''!";
-		return intval( $this->getMatch( $reg )[1] );
+		return (int)$this->getMatch( $reg )[1];
 	}
 
 	/**
@@ -208,11 +208,10 @@ class PageRiconferma extends Page {
 	public function getEndTimestamp() : int {
 		if ( $this->isVote() ) {
 			$reg = "!La votazione ha inizio il.+ alle ore ([\d:]+) e ha termine il (.+) alla stessa ora!";
-			list( , $hours, $day ) = $this->getMatch( $reg );
-			$day = preg_replace( '![^\d \w]!', '', $day );
+			[ , $hours, $day ] = $this->getMatch( $reg );
+			$day = preg_replace( '![^ \w]!', '', $day );
 			return Message::getTimestampFromLocalTime( "$day $hours" );
-		} else {
-			return $this->getCreationTimestamp() + 60 * 60 * 24 * self::SIMPLE_DURATION;
 		}
+		return $this->getCreationTimestamp() + 60 * 60 * 24 * self::SIMPLE_DURATION;
 	}
 }

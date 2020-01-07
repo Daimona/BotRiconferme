@@ -75,7 +75,7 @@ class UpdateList extends Task {
 		$ret = [];
 		$blacklist = $this->getOpt( 'exclude-admins' );
 		foreach ( $data->query->allusers as $u ) {
-			if ( in_array( $u->name, $blacklist ) ) {
+			if ( in_array( $u->name, $blacklist, true ) ) {
 				continue;
 			}
 			$interestingGroups = array_intersect( $u->groups, [ 'sysop', 'bureaucrat', 'checkuser' ] );
@@ -154,7 +154,7 @@ class UpdateList extends Task {
 		foreach ( $data->query->logevents as $entry ) {
 			if (
 				isset( $entry->params ) &&
-				in_array( $group, array_diff( $entry->params->newgroups, $entry->params->oldgroups ) )
+				in_array( $group, array_diff( $entry->params->newgroups, $entry->params->oldgroups ), true )
 			) {
 				$ts = $entry->timestamp;
 				break;
@@ -186,7 +186,7 @@ class UpdateList extends Task {
 	 * @return \stdClass
 	 */
 	private function getRenameEntries( array $names ) : \stdClass {
-		$titles = array_map( function ( $x ) {
+		$titles = array_map( static function ( $x ) {
 			return "Utente:$x";
 		}, $names );
 

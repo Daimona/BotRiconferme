@@ -50,7 +50,7 @@ class Message {
 	/**
 	 * Replace {{$plur|<amount>|sing|plur}}
 	 */
-	protected function parsePlurals() {
+	protected function parsePlurals() : void {
 		$reg = '!\{\{\$plur\|(?P<amount>\d+)\|(?P<sing>[^}|]+)\|(?P<plur>[^|}]+)}}!';
 
 		if ( preg_match( $reg, $this->value ) === 0 ) {
@@ -58,8 +58,8 @@ class Message {
 		}
 		$this->value = preg_replace_callback(
 			$reg,
-			function ( $matches ) {
-				return intval( $matches['amount'] ) > 1 ? trim( $matches['plur'] ) : trim( $matches['sing'] );
+			static function ( $matches ) {
+				return (int)$matches['amount'] > 1 ? trim( $matches['plur'] ) : trim( $matches['sing'] );
 			},
 			$this->value
 		);

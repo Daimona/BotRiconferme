@@ -53,9 +53,9 @@ class FailedUpdates extends Subtask {
 	/**
 	 * @param User[] $users
 	 */
-	protected function updateBurList( array $users ) {
+	protected function updateBurList( array $users ) : void {
 		$this->getLogger()->info( 'Updating bur list. Removing: ' . implode( ', ', $users ) );
-		$remList = Element::regexFromArray( $users );
+		$remList = Element::regexFromArray( $users, '!' );
 		$burList = $this->getPage( $this->getOpt( 'bur-list-title' ) );
 		$content = $burList->getContent();
 		$reg = "!^\#\{\{ *Burocrate *\| *$remList.+\n!m";
@@ -76,7 +76,7 @@ class FailedUpdates extends Subtask {
 	 *
 	 * @param PageRiconferma[] $pages
 	 */
-	protected function requestRemoval( array $pages ) {
+	protected function requestRemoval( array $pages ) : void {
 		$this->getLogger()->info( 'Requesting flag removal for: ' . implode( ', ', $pages ) );
 
 		$metaWiki = new Wiki( $this->getLogger(), META_URL );
@@ -113,7 +113,7 @@ class FailedUpdates extends Subtask {
 	 *
 	 * @param PageRiconferma[] $pages
 	 */
-	protected function updateAnnunci( array $pages ) {
+	protected function updateAnnunci( array $pages ) : void {
 		$this->getLogger()->info( 'Updating annunci' );
 		$section = 1;
 
@@ -153,7 +153,7 @@ class FailedUpdates extends Subtask {
 	 *
 	 * @param PageRiconferma[] $pages
 	 */
-	protected function updateUltimeNotizie( array $pages ) {
+	protected function updateUltimeNotizie( array $pages ) : void {
 		$this->getLogger()->info( 'Updating ultime notizie' );
 		$notiziePage = $this->getPage( $this->getOpt( 'ultimenotizie-page-title' ) );
 

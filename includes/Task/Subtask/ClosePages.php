@@ -35,9 +35,9 @@ class ClosePages extends Subtask {
 	/**
 	 * @param PageRiconferma $page
 	 */
-	protected function addVoteCloseText( PageRiconferma $page ) {
+	protected function addVoteCloseText( PageRiconferma $page ) : void {
 		$content = $page->getContent();
-		$beforeReg = '!è necessario ottenere una maggioranza .+ votanti\.!';
+		$beforeReg = '!è necessario ottenere una maggioranza .+ votanti\.!u';
 		$newContent = preg_replace( $beforeReg, '$0' . "\n" . $page->getOutcomeText(), $content );
 
 		$page->edit( [
@@ -50,7 +50,7 @@ class ClosePages extends Subtask {
 	 * @param PageRiconferma $page
 	 * @see CreatePages::updateBasePage()
 	 */
-	protected function updateBasePage( PageRiconferma $page ) {
+	protected function updateBasePage( PageRiconferma $page ) : void {
 		$this->getLogger()->info( "Updating base page for $page" );
 
 		if ( $page->getNum() === 1 ) {
@@ -61,7 +61,7 @@ class ClosePages extends Subtask {
 
 		$current = $basePage->getContent();
 
-		$outcomeText = $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ?
+		$outcomeText = ( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ) ?
 			'non riconfermato' :
 			'riconfermato';
 		$text = $page->isVote() ? "votazione: $outcomeText" : 'riconferma tacita';

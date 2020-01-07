@@ -38,7 +38,7 @@ class SimpleUpdates extends Subtask {
 	 * @param PageRiconferma[] $pages
 	 * @see OpenUpdates::addToVotazioni()
 	 */
-	protected function updateVotazioni( array $pages ) {
+	protected function updateVotazioni( array $pages ) : void {
 		$this->getLogger()->info(
 			'Updating votazioni: ' . implode( ', ', $pages )
 		);
@@ -48,7 +48,7 @@ class SimpleUpdates extends Subtask {
 		foreach ( $pages as $page ) {
 			$users[] = $page->getUser();
 		}
-		$usersReg = Element::regexFromArray( $users );
+		$usersReg = Element::regexFromArray( $users, '!' );
 
 		$search = "!^.+\{\{[^|}]*\/Riga\|[^|]*riconferma[^|]*\|utente=$usersReg\|.+\n!m";
 
@@ -67,7 +67,7 @@ class SimpleUpdates extends Subtask {
 	 * @param array $pages
 	 * @see OpenUpdates::addToNews()
 	 */
-	protected function updateNews( array $pages ) {
+	protected function updateNews( array $pages ) : void {
 		$simpleAmount = $voteAmount = 0;
 		foreach ( $pages as $page ) {
 			if ( $page->isVote() ) {
@@ -106,7 +106,7 @@ class SimpleUpdates extends Subtask {
 	 *
 	 * @param bool[] $outcomes
 	 */
-	protected function updateAdminList( array $outcomes ) {
+	protected function updateAdminList( array $outcomes ) : void {
 		$this->getLogger()->info( 'Updating admin list' );
 		$adminsPage = $this->getPage( $this->getOpt( 'admins-list-title' ) );
 		$newContent = $adminsPage->getContent();
@@ -114,7 +114,7 @@ class SimpleUpdates extends Subtask {
 		$riconfNames = $removeNames = [];
 		foreach ( $outcomes as $username => $confirmed ) {
 			$user = $this->getUser( $username );
-			$userReg = $user->getRegex();
+			$userReg = $user->getRegex( '!' );
 			$reg = "!({{Ammini\w+\/riga\|$userReg\|\D+\|\d{8}\|)(?:\d{8})?\|\d{8}((?:\|[a-z]*)?}}.*\n)!";
 			if ( $confirmed ) {
 				$nextDate = date( 'Ymd', $this->getNextTs( $user ) );
@@ -175,14 +175,14 @@ class SimpleUpdates extends Subtask {
 	/**
 	 * @param bool[] $outcomes
 	 */
-	protected function updateCUList( array $outcomes ) {
+	protected function updateCUList( array $outcomes ) : void {
 		$this->getLogger()->info( 'Updating CU list.' );
 		$cuList = $this->getPage( $this->getOpt( 'cu-list-title' ) );
 		$newContent = $cuList->getContent();
 
 		$riconfNames = $removeNames = [];
 		foreach ( $outcomes as $user => $confirmed ) {
-			$userReg = $this->getUser( $user )->getRegex();
+			$userReg = $this->getUser( $user )->getRegex( '!' );
 			$reg = "!(\{\{ *Checkuser *\| *$userReg *\|[^}]+\| *)[\w \d]+(}}.*\n)!";
 			if ( $confirmed ) {
 				$newContent = preg_replace( $reg, '${1}{{subst:#time:j F Y}}$2', $newContent );

@@ -9,7 +9,7 @@ use Psr\Log\AbstractLogger;
  */
 class MultiLogger extends AbstractLogger implements IFlushingAwareLogger {
 	/** @var IFlushingAwareLogger[] */
-	private $loggers = [];
+	private $loggers;
 
 	/**
 	 * @param IFlushingAwareLogger ...$loggers
@@ -22,7 +22,7 @@ class MultiLogger extends AbstractLogger implements IFlushingAwareLogger {
 	 * @inheritDoc
 	 * @suppress PhanUnusedPublicMethodParameter
 	 */
-	public function log( $level, $message, array $context = [] ) {
+	public function log( $level, $message, array $context = [] ) :void {
 		foreach ( $this->loggers as $logger ) {
 			$logger->log( $level, $message );
 		}

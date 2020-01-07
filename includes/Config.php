@@ -43,7 +43,7 @@ class Config {
 	 * @param Wiki $wiki
 	 * @throws ConfigException
 	 */
-	public static function init( array $defaults, Wiki $wiki ) {
+	public static function init( array $defaults, Wiki $wiki ) : void {
 		if ( self::$instance ) {
 			throw new ConfigException( 'Config was already initialized' );
 		}
@@ -93,7 +93,7 @@ class Config {
 	 * @param string $key
 	 * @param mixed $value
 	 */
-	protected function set( string $key, $value ) {
+	protected function set( string $key, $value ) : void {
 		$this->opts[ $key ] = $value;
 	}
 

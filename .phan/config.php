@@ -12,6 +12,8 @@ return [
 		'vendor/'
 	],
 
+	'exclude_file_regex' => '@vendor/.*/[Tt]ests?/@',
+
 	'enable_extended_internal_return_type_plugins' => true,
 	'enable_include_path_checks' => true,
 	'generic_types_enabled' => true,
@@ -29,6 +31,7 @@ return [
 		'UnusedSuppressionPlugin',
 		'DuplicateArrayKeyPlugin',
 		'DuplicateExpressionPlugin',
-		'RedundantAssignmentPlugin'
+		'RedundantAssignmentPlugin',
+		'StrictLiteralComparisonPlugin',
 	],
 ];

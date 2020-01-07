@@ -78,7 +78,7 @@ class Wiki {
 	 * @param array $params
 	 * @throws EditException
 	 */
-	public function editPage( array $params ) {
+	public function editPage( array $params ) : void {
 		$this->login();
 
 		$params = [
@@ -105,7 +105,7 @@ class Wiki {
 	 * Login wrapper. Checks if we're already logged in and clears tokens cache
 	 * @throws LoginException
 	 */
-	public function login() {
+	public function login() : void {
 		if ( self::$loggedIn ) {
 			return;
 		}
@@ -187,7 +187,7 @@ class Wiki {
 	 * @param string $title
 	 * @param string $reason
 	 */
-	public function protectPage( string $title, string $reason ) {
+	public function protectPage( string $title, string $reason ) : void {
 		$this->logger->info( "Protecting page $title" );
 		$this->login();
 

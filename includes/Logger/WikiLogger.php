@@ -35,7 +35,7 @@ class WikiLogger extends AbstractLogger implements IFlushingAwareLogger {
 	 * @inheritDoc
 	 * @suppress PhanUnusedPublicMethodParameter
 	 */
-	public function log( $level, $message, array $context = [] ) {
+	public function log( $level, $message, array $context = [] ) :void {
 		if ( $this->levelToInt( $level ) >= $this->minLevel ) {
 			$this->buffer[] = $this->getFormattedMessage( $level, $message );
 		}

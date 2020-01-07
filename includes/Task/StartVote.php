@@ -59,7 +59,7 @@ class StartVote extends Task {
 	 *
 	 * @param PageRiconferma $page
 	 */
-	protected function openVote( PageRiconferma $page ) {
+	protected function openVote( PageRiconferma $page ) : void {
 		$this->getLogger()->info( "Starting vote on $page" );
 
 		$content = $page->getContent();
@@ -77,7 +77,7 @@ class StartVote extends Task {
 		);
 
 		$newContent = preg_replace(
-			'!(==== *Favorevoli alla riconferma *====\n\#[\s.]+|maggioranza di.+ dei votanti\.)\n-->!',
+			'!(==== *Favorevoli alla riconferma *====\n#[\s.]+|maggioranza di.+ dei votanti\.)\n-->!',
 			'$1',
 			$newContent,
 			2
@@ -98,14 +98,14 @@ class StartVote extends Task {
 	 * @see SimpleUpdates::updateVotazioni()
 	 * @see OpenUpdates::addToVotazioni()
 	 */
-	protected function updateVotazioni( array $pages ) {
+	protected function updateVotazioni( array $pages ) : void {
 		$votePage = $this->getPage( $this->getOpt( 'vote-page-title' ) );
 
 		$users = [];
 		foreach ( $pages as $page ) {
 			$users[] = $page->getUser();
 		}
-		$usersReg = Element::regexFromArray( $users );
+		$usersReg = Element::regexFromArray( $users, '!' );
 
 		$search = "!^.+\{\{[^|}]*\/Riga\|riconferma tacita\|utente=$usersReg\|.+\n!m";
 
@@ -141,7 +141,7 @@ class StartVote extends Task {
 	 * @see SimpleUpdates::updateNews()
 	 * @see OpenUpdates::addToNews()
 	 */
-	protected function updateNews( int $amount ) {
+	protected function updateNews( int $amount ) : void {
 		$this->getLogger()->info( "Turning $amount pages into votes" );
 		$newsPage = $this->getPage( $this->getOpt( 'news-page-title' ) );
 
@@ -156,8 +156,8 @@ class StartVote extends Task {
 			throw new TaskException( 'Param "voto" not found in news page' );
 		}
 
-		$newTac = intval( $newsPage->getMatch( $regTac )[2] ) - $amount ?: '';
-		$newVot = intval( $newsPage->getMatch( $regVot )[2] ) + $amount ?: '';
+		$newTac = ( (int)$newsPage->getMatch( $regTac )[2] - $amount ) ?: '';
+		$newVot = ( (int)$newsPage->getMatch( $regVot )[2] + $amount ) ?: '';
 
 		$newContent = preg_replace( $regTac, '${1}' . $newTac, $content );
 		$newContent = preg_replace( $regVot, '${1}' . $newVot, $newContent );

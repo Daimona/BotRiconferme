@@ -96,7 +96,7 @@ abstract class RequestBase {
 
 			$finished = true;
 			if ( isset( $res->continue ) ) {
-				$curParams = array_merge( $curParams, get_object_vars( $res->continue ) );
+				$curParams = get_object_vars( $res->continue ) + $curParams;
 				$finished = false;
 			}
 		} while ( !$finished );
@@ -114,9 +114,9 @@ abstract class RequestBase {
 		if ( $this->method === 'POST' ) {
 			$params['maxlag'] = self::MAXLAG;
 		}
-		$params = http_build_query( $params );
+		$query = http_build_query( $params );
 
-		$body = $this->reallyMakeRequest( $params );
+		$body = $this->reallyMakeRequest( $query );
 
 		$this->setCookies( $this->newCookies );
 		return json_decode( $body );
@@ -135,10 +135,10 @@ abstract class RequestBase {
 	 *
 	 * @param array $cookies
 	 */
-	protected function setCookies( array $cookies ) {
+	protected function setCookies( array $cookies ) : void {
 		foreach ( $cookies as $cookie ) {
 			$bits = explode( ';', $cookie );
-			list( $name, $value ) = explode( '=', $bits[0] );
+			[ $name, $value ] = explode( '=', $bits[0] );
 			self::$cookiesToSet[ $name ] = $value;
 		}
 	}
@@ -172,7 +172,7 @@ abstract class RequestBase {
 	 * @param \stdClass $res
 	 * @throws APIRequestException
 	 */
-	protected function handleErrorAndWarnings( \stdClass $res ) {
+	protected function handleErrorAndWarnings( \stdClass $res ) : void {
 		if ( isset( $res->error ) ) {
 			throw $this->getException( $res );
 		} elseif ( isset( $res->warnings ) ) {

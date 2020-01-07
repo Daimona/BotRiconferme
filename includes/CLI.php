@@ -78,7 +78,7 @@ class CLI {
 	private function checkRequiredOpts( array $opts ) : void {
 		$missingOpts = array_diff( self::REQUIRED_OPTS, array_keys( $opts ) );
 		if ( $missingOpts ) {
-			exit( "Required options missing: " . implode( ', ', $missingOpts ) );
+			exit( 'Required options missing: ' . implode( ', ', $missingOpts ) );
 		}
 
 		$hasPw = array_key_exists( 'password', $opts );

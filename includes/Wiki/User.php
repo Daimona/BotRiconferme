@@ -77,7 +77,7 @@ class User extends Element {
 	 * @return bool
 	 */
 	public function inGroup( string $groupName ) : bool {
-		return in_array( $groupName, $this->getGroups() );
+		return in_array( $groupName, $this->getGroups(), true );
 	}
 
 	/**
@@ -85,11 +85,11 @@ class User extends Element {
 	 *
 	 * @inheritDoc
 	 */
-	public function getRegex() : string {
+	public function getRegex( string $delimiter = '/' ) : string {
 		$bits = $this->getAliases();
 		$bits[] = $this->name;
-		$regexify = function ( $el ) {
-			return str_replace( ' ', '[ _]', preg_quote( $el ) );
+		$regexify = static function ( $el ) use ( $delimiter ) {
+			return str_replace( ' ', '[ _]', preg_quote( $el, $delimiter ) );
 		};
 		return '(?:' . implode( '|', array_map( $regexify, $bits ) ) . ')';
 	}

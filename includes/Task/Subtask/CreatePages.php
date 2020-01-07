@@ -35,7 +35,7 @@ class CreatePages extends Subtask {
 	 *
 	 * @param User $user
 	 */
-	protected function processUser( User $user ) {
+	protected function processUser( User $user ) : void {
 		$this->getLogger()->info( "Processing user $user" );
 		try {
 			$num = $this->getLastPageNum( $user ) + 1;
@@ -111,7 +111,7 @@ class CreatePages extends Subtask {
 	 * @param string $title
 	 * @param User $user
 	 */
-	protected function createPage( string $title, User $user ) {
+	protected function createPage( string $title, User $user ) : void {
 		$this->getLogger()->info( "Creating page $title" );
 		$groups = $user->getGroupsWithDates();
 		$textParams = [
@@ -136,7 +136,7 @@ class CreatePages extends Subtask {
 	 * @param Page $basePage
 	 * @param string $newText
 	 */
-	protected function createBasePage( Page $basePage, string $newText ) {
+	protected function createBasePage( Page $basePage, string $newText ) : void {
 		$this->getLogger()->info( "Creating base page $basePage" );
 
 		$params = [
@@ -152,7 +152,7 @@ class CreatePages extends Subtask {
 	 * @param Page $basePage
 	 * @param string $newText
 	 */
-	protected function updateBasePage( Page $basePage, string $newText ) {
+	protected function updateBasePage( Page $basePage, string $newText ) : void {
 		$this->getLogger()->info( "Updating base page $basePage" );
 
 		$params = [
