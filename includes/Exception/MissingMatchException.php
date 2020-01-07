@@ -2,8 +2,6 @@
 
 namespace BotRiconferme\Exception;
 
-use Throwable;
-
 /**
  * Exception thrown when a page doesn't match the given content
  */
