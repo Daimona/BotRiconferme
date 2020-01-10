@@ -2,9 +2,9 @@
 
 namespace BotRiconferme;
 
+use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Wiki\Page\PageBotList;
 use BotRiconferme\Wiki\Page\PageRiconferma;
-use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Wiki\User;
 
 /**

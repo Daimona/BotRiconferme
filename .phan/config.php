@@ -3,7 +3,7 @@
 return [
 	'directory_list' => [
 		'includes',
-		'vendor/'
+		'vendor/psr'
 	],
 	'file_list' => [
 		'run.php',

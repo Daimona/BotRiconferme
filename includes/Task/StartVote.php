@@ -3,9 +3,9 @@
 namespace BotRiconferme\Task;
 
 use BotRiconferme\Exception\TaskException;
+use BotRiconferme\TaskResult;
 use BotRiconferme\Wiki\Element;
 use BotRiconferme\Wiki\Page\PageRiconferma;
-use BotRiconferme\TaskResult;
 
 /**
  * Start a vote if there are >= PageRiconferma::REQUIRED_OPPOSE opposing comments

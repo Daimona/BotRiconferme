@@ -5,8 +5,8 @@ namespace BotRiconferme\Request;
 use BotRiconferme\Bot;
 use BotRiconferme\Exception\APIRequestException;
 use BotRiconferme\Exception\MissingPageException;
-use BotRiconferme\Exception\ProtectedPageException;
 use BotRiconferme\Exception\PermissionDeniedException;
+use BotRiconferme\Exception\ProtectedPageException;
 
 /**
  * Core wrapper for an API request. Current implementations use either cURL or file_get_contents

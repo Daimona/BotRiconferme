@@ -2,8 +2,8 @@
 
 namespace BotRiconferme\Task\Subtask;
 
-use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\TaskResult;
+use BotRiconferme\Wiki\Page\PageRiconferma;
 
 /**
  * For each open page, protect it, add a closing text if it was a vote, and

@@ -2,9 +2,9 @@
 
 namespace BotRiconferme\Task;
 
-use BotRiconferme\TaskResult;
 use BotRiconferme\ContextSource;
 use BotRiconferme\TaskDataProvider;
+use BotRiconferme\TaskResult;
 use BotRiconferme\Wiki\Wiki;
 use Psr\Log\LoggerInterface;
 

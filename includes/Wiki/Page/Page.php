@@ -4,8 +4,8 @@ namespace BotRiconferme\Wiki\Page;
 
 use BotRiconferme\Exception\MissingMatchException;
 use BotRiconferme\Request\RequestBase;
-use BotRiconferme\Wiki\Wiki;
 use BotRiconferme\Wiki\Element;
+use BotRiconferme\Wiki\Wiki;
 
 /**
  * Represents a single on-wiki page

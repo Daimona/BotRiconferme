@@ -3,10 +3,10 @@
 namespace BotRiconferme\Task\Subtask;
 
 use BotRiconferme\Message;
+use BotRiconferme\TaskResult;
 use BotRiconferme\Wiki\Element;
 use BotRiconferme\Wiki\Page\PageBotList;
 use BotRiconferme\Wiki\Page\PageRiconferma;
-use BotRiconferme\TaskResult;
 use BotRiconferme\Wiki\User;
 
 /**

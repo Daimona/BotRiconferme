@@ -2,9 +2,9 @@
 
 namespace BotRiconferme;
 
+use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\User;
 use BotRiconferme\Wiki\Wiki;
-use BotRiconferme\Wiki\Page\Page;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 

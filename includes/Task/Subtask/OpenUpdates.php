@@ -2,9 +2,9 @@
 
 namespace BotRiconferme\Task\Subtask;
 
-use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\Exception\TaskException;
 use BotRiconferme\TaskResult;
+use BotRiconferme\Wiki\Page\PageRiconferma;
 
 /**
  * Do some updates around to notify people of the newly created pages

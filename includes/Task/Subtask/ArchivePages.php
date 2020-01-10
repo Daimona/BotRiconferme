@@ -3,8 +3,8 @@
 namespace BotRiconferme\Task\Subtask;
 
 use BotRiconferme\Message;
-use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\TaskResult;
+use BotRiconferme\Wiki\Page\PageRiconferma;
 
 /**
  * Remove pages from the main page and add them to the archive

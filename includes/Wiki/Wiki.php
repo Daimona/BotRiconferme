@@ -3,9 +3,9 @@
 namespace BotRiconferme\Wiki;
 
 use BotRiconferme\Config;
+use BotRiconferme\Exception\APIRequestException;
 use BotRiconferme\Exception\EditException;
 use BotRiconferme\Exception\LoginException;
-use BotRiconferme\Exception\APIRequestException;
 use BotRiconferme\Exception\MissingPageException;
 use BotRiconferme\Exception\MissingSectionException;
 use BotRiconferme\Request\RequestBase;

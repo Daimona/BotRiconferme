@@ -5,9 +5,9 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-use BotRiconferme\Config;
 use BotRiconferme\Bot;
 use BotRiconferme\CLI;
+use BotRiconferme\Config;
 
 if ( !CLI::isCLI() ) {
 	exit( 'CLI only!' );

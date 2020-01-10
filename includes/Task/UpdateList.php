@@ -2,10 +2,10 @@
 
 namespace BotRiconferme\Task;
 
-use BotRiconferme\Wiki\Page\PageBotList;
-use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Exception\TaskException;
+use BotRiconferme\Request\RequestBase;
 use BotRiconferme\TaskResult;
+use BotRiconferme\Wiki\Page\PageBotList;
 
 /**
  * Updates the JSON list, adding and removing dates according to the API list of privileged people
