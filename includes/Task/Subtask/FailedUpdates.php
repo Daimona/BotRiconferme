@@ -4,10 +4,10 @@ namespace BotRiconferme\Task\Subtask;
 
 use BotRiconferme\Message;
 use BotRiconferme\TaskResult;
-use BotRiconferme\Wiki\Element;
 use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\Wiki\User;
+use BotRiconferme\Wiki\Utils\RegexUtils;
 
 /**
  * Update various pages around, to be done for all failed procedures
@@ -54,7 +54,7 @@ class FailedUpdates extends Subtask {
 	 */
 	protected function updateBurList( array $users ) : void {
 		$this->getLogger()->info( 'Updating bur list. Removing: ' . implode( ', ', $users ) );
-		$remList = Element::regexFromArray( $users, '!' );
+		$remList = RegexUtils::regexFromArray( '!', $users );
 		$burList = $this->getPage( $this->getOpt( 'bur-list-title' ) );
 		$content = $burList->getContent();
 		$reg = "!^\#\{\{ *Burocrate *\| *$remList.+\n!m";

@@ -4,8 +4,8 @@ namespace BotRiconferme\Task\Subtask;
 
 use BotRiconferme\Message;
 use BotRiconferme\TaskResult;
-use BotRiconferme\Wiki\Element;
 use BotRiconferme\Wiki\Page\PageRiconferma;
+use BotRiconferme\Wiki\Utils\RegexUtils;
 
 /**
  * Update various pages around, to be done for all closed procedures
@@ -46,7 +46,7 @@ class SimpleUpdates extends Subtask {
 		foreach ( $pages as $page ) {
 			$users[] = $this->getUser( $page->getUserName() );
 		}
-		$usersReg = Element::regexFromArray( $users, '!' );
+		$usersReg = RegexUtils::regexFromArray( '!', $users );
 
 		$search = "!^.+\{\{[^|}]*\/Riga\|[^|]*riconferma[^|]*\|utente=$usersReg\|.+\n!m";
 

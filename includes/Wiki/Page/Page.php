@@ -3,13 +3,13 @@
 namespace BotRiconferme\Wiki\Page;
 
 use BotRiconferme\Exception\MissingMatchException;
-use BotRiconferme\Wiki\Element;
+use BotRiconferme\Wiki\Utils\IRegexAble;
 use BotRiconferme\Wiki\Wiki;
 
 /**
  * Represents a single on-wiki page
  */
-class Page extends Element {
+class Page implements IRegexAble {
 	/** @var string */
 	protected $title;
 	/** @var string|null */

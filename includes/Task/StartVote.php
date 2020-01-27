@@ -4,8 +4,8 @@ namespace BotRiconferme\Task;
 
 use BotRiconferme\Exception\TaskException;
 use BotRiconferme\TaskResult;
-use BotRiconferme\Wiki\Element;
 use BotRiconferme\Wiki\Page\PageRiconferma;
+use BotRiconferme\Wiki\Utils\RegexUtils;
 
 /**
  * Start a vote if there are >= PageRiconferma::REQUIRED_OPPOSE opposing comments
@@ -105,7 +105,7 @@ class StartVote extends Task {
 		foreach ( $pages as $page ) {
 			$users[] = $this->getUser( $page->getUserName() );
 		}
-		$usersReg = Element::regexFromArray( $users, '!' );
+		$usersReg = RegexUtils::regexFromArray( '!', $users );
 
 		$search = "!^.+\{\{[^|}]*\/Riga\|riconferma tacita\|utente=$usersReg\|.+\n!m";
 
