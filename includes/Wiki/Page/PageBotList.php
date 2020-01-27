@@ -2,7 +2,6 @@
 
 namespace BotRiconferme\Wiki\Page;
 
-use BotRiconferme\Config;
 use BotRiconferme\Wiki\User;
 use BotRiconferme\Wiki\Wiki;
 
@@ -20,7 +19,9 @@ class PageBotList extends Page {
 	 * @param Wiki $wiki
 	 */
 	public function __construct( Wiki $wiki ) {
-		parent::__construct( Config::getInstance()->get( 'list-title' ), $wiki );
+		// phpcs:ignore MediaWiki.NamingConventions.ValidGlobalName.allowedPrefix
+		global $globalListTitle;
+		parent::__construct( $globalListTitle, $wiki );
 	}
 
 	/**

@@ -31,13 +31,17 @@ define( 'META_URL', 'https://meta.wikimedia.org/w/api.php' );
 $errTitle = $cli->getOpt( 'error-title' );
 
 $simpleLogger = new \BotRiconferme\Logger\SimpleLogger();
-// @fixme
+// @fixme A bit of dependency hell here
 $wiki = new \BotRiconferme\Wiki\Wiki( $simpleLogger );
-Config::init( $cli->getMainOpts(), $wiki );
-$mp = new MessageProvider( $wiki, Config::getInstance()->get( 'msg-title' ) );
+
+// FIXME global state. But don't let it depend on config.
+$globalListTitle = $cli->getOpt( 'list-title' );
+
+Config::init( $cli->getOpt( 'config-title' ), $wiki );
+$mp = new MessageProvider( $wiki, $cli->getOpt( 'msg-title' ) );
 $loginInfo = new \BotRiconferme\Wiki\LoginInfo(
-	Config::getInstance()->get( 'username' ),
-	Config::getInstance()->get( 'password' )
+	$cli->getOpt( 'username' ),
+	$cli->getOpt( 'password' )
 );
 $wiki->setLoginInfo( $loginInfo );
 $wiki->setEditsAsBot( Config::getInstance()->get( 'bot-edits' ) );

@@ -10,14 +10,6 @@ use BotRiconferme\Wiki\Wiki;
  * Singleton class holding user-defined config
  */
 class Config {
-	public const REQUIRED_OPTS = [
-		'username',
-		'list-title',
-		'config-title',
-		'msg-title',
-		'password'
-	];
-
 	/** @var self */
 	private static $instance;
 	/** @var array */
@@ -37,24 +29,20 @@ class Config {
 	/**
 	 * Initialize a new self instance with CLI params set and retrieve on-wiki config.
 	 *
-	 * @param array $defaults
+	 * @param string $configTitle
 	 * @param Wiki $wiki
 	 * @throws ConfigException
 	 */
-	public static function init( array $defaults, Wiki $wiki ) : void {
+	public static function init( string $configTitle, Wiki $wiki ) : void {
 		if ( self::$instance ) {
 			throw new ConfigException( 'Config was already initialized' );
 		}
 
 		$inst = new self( $wiki );
-		$inst->set( 'list-title', $defaults['list-title'] );
-		$inst->set( 'msg-title', $defaults['msg-title'] );
-		$inst->set( 'username', $defaults['username'] );
-		$inst->set( 'password', $defaults['password'] );
 
 		// On-wiki values
 		try {
-			$conf = $inst->wiki->getPageContent( $defaults[ 'config-title' ] );
+			$conf = $inst->wiki->getPageContent( $configTitle );
 		} catch ( MissingPageException $_ ) {
 			throw new ConfigException( 'Please create a config page.' );
 		}

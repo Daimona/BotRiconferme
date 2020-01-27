@@ -117,17 +117,6 @@ class CLI {
 	}
 
 	/**
-	 * These are the options required by Config.
-	 * @return array
-	 */
-	public function getMainOpts() : array {
-		return array_intersect_key(
-			$this->opts,
-			array_fill_keys( Config::REQUIRED_OPTS, true )
-		);
-	}
-
-	/**
 	 * @param string $opt
 	 * @param mixed|null $default
 	 * @return mixed
