@@ -14,8 +14,6 @@ class Bot {
 	/** @var Wiki */
 	private $wiki;
 
-	public const VERSION = '2.0';
-
 	/**
 	 * @param LoggerInterface $logger
 	 * @param Wiki $wiki

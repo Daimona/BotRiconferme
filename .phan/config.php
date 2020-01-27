@@ -33,5 +33,6 @@ return [
 		'DuplicateExpressionPlugin',
 		'RedundantAssignmentPlugin',
 		'StrictLiteralComparisonPlugin',
+		'DollarDollarPlugin'
 	],
 ];

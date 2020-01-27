@@ -13,6 +13,8 @@ if ( !CLI::isCLI() ) {
 	exit( 'CLI only!' );
 }
 
+define( 'BOT_VERSION', '2.1' );
+
 date_default_timezone_set( 'Europe/Rome' );
 
 $cli = new CLI();

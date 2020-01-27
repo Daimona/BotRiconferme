@@ -12,7 +12,7 @@ use BotRiconferme\Exception\ProtectedPageException;
  * Core wrapper for an API request. Current implementations use either cURL or file_get_contents
  */
 abstract class RequestBase {
-	protected const USER_AGENT = 'Daimona - BotRiconferme ' . Bot::VERSION .
+	protected const USER_AGENT = 'Daimona - BotRiconferme ' . BOT_VERSION .
 		' (https://github.com/Daimona/BotRiconferme)';
 	protected const HEADERS = [
 		'Content-Type: application/x-www-form-urlencoded',
