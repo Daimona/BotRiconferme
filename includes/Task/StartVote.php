@@ -4,8 +4,8 @@ namespace BotRiconferme\Task;
 
 use BotRiconferme\Exception\TaskException;
 use BotRiconferme\TaskResult;
-use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\Utils\RegexUtils;
+use BotRiconferme\Wiki\Page\PageRiconferma;
 
 /**
  * Start a vote if there are >= PageRiconferma::REQUIRED_OPPOSE opposing comments

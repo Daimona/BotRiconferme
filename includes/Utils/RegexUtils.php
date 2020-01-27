@@ -10,7 +10,10 @@ class RegexUtils {
 	 * @param IRegexAble ...$elements
 	 * @return string
 	 */
-	public static function regexFromArray( string $delimiter = '/', IRegexAble ...$elements ) : string {
+	public static function regexFromArray(
+		string $delimiter = '/',
+		IRegexAble ...$elements
+	) : string {
 		$bits = [];
 		foreach ( $elements as $el ) {
 			$bits[] = $el->getRegex( $delimiter );
