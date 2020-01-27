@@ -15,13 +15,15 @@ class Page extends Element {
 	protected $title;
 	/** @var string|null */
 	protected $content;
+	/** @var Wiki */
+	protected $wiki;
 
 	/**
 	 * @param string $title
 	 * @param Wiki $wiki For the site where the page lives
 	 */
 	public function __construct( string $title, Wiki $wiki ) {
-		parent::__construct( $wiki );
+		$this->wiki = $wiki;
 		$this->title = $title;
 	}
 

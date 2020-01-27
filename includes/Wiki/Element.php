@@ -6,16 +6,6 @@ namespace BotRiconferme\Wiki;
  * Base class for wiki elements
  */
 abstract class Element {
-	/** @var Wiki */
-	protected $wiki;
-
-	/**
-	 * @param Wiki $wiki
-	 */
-	public function __construct( Wiki $wiki ) {
-		$this->wiki = $wiki;
-	}
-
 	/**
 	 * Return a regex for matching the name of the element
 	 *

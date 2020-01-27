@@ -15,13 +15,15 @@ class User extends Element {
 	private $name;
 	/** @var string[]|null Info contained in the JSON page */
 	private $info;
+	/** @var Wiki */
+	private $wiki;
 
 	/**
 	 * @param string $name
 	 * @param Wiki $wiki
 	 */
 	public function __construct( string $name, Wiki $wiki ) {
-		parent::__construct( $wiki );
+		$this->wiki = $wiki;
 		$this->name = $name;
 	}
 
