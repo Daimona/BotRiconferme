@@ -35,28 +35,14 @@ abstract class RequestBase {
 	protected $newCookies = [];
 
 	/**
-	 * Use self::newFromParams, which will provide the right class to use
+	 * @private Use RequestFactory
 	 *
 	 * @param array $params
+	 * @param string $domain
 	 */
-	protected function __construct( array $params ) {
+	public function __construct( array $params, string $domain ) {
 		$this->params = [ 'format' => 'json' ] + $params;
-		$this->url = DEFAULT_URL;
-	}
-
-	/**
-	 * Instance getter, will instantiate the proper subclass
-	 *
-	 * @param array $params
-	 * @return self
-	 */
-	public static function newFromParams( array $params ) : self {
-		if ( extension_loaded( 'curl' ) ) {
-			$ret = new CurlRequest( $params );
-		} else {
-			$ret = new NativeRequest( $params );
-		}
-		return $ret;
+		$this->url = $domain;
 	}
 
 	/**
@@ -66,17 +52,6 @@ abstract class RequestBase {
 	 */
 	public function setPost() : self {
 		$this->method = self::METHOD_POST;
-		return $this;
-	}
-
-	/**
-	 * Set a different URL for this request
-	 *
-	 * @param string $url
-	 * @return self for chaining
-	 */
-	public function setUrl( string $url ) : self {
-		$this->url = $url;
 		return $this;
 	}
 

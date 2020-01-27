@@ -3,7 +3,6 @@
 namespace BotRiconferme\Wiki\Page;
 
 use BotRiconferme\Exception\MissingMatchException;
-use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Wiki\Element;
 use BotRiconferme\Wiki\Wiki;
 
@@ -78,7 +77,7 @@ class Page extends Element {
 	 * @return bool
 	 */
 	public function exists() : bool {
-		$res = RequestBase::newFromParams( [
+		$res = $this->wiki->getRequestFactory()->newFromParams( [
 			'action' => 'query',
 			'titles' => $this->getTitle()
 		] )->execute();

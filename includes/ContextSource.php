@@ -2,9 +2,12 @@
 
 namespace BotRiconferme;
 
+use BotRiconferme\Request\RequestFactory;
 use BotRiconferme\Wiki\Page\Page;
+use BotRiconferme\Wiki\Page\PageBotList;
 use BotRiconferme\Wiki\User;
 use BotRiconferme\Wiki\Wiki;
+use BotRiconferme\Wiki\WikiGroup;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 
@@ -18,22 +21,32 @@ abstract class ContextSource implements LoggerAwareInterface {
 	/** @var Config */
 	private $config;
 
-	/** @var Wiki */
-	private $wiki;
+	/** @var WikiGroup */
+	private $wikiGroup;
 
 	/** @var MessageProvider */
 	private $messageProvider;
 
+	/** @var PageBotList */
+	private $pageBotList;
+
 	/**
 	 * @param LoggerInterface $logger
-	 * @param Wiki $wiki
+	 * @param WikiGroup $wikiGroup
 	 * @param MessageProvider $mp
+	 * @param PageBotList $pbl
 	 */
-	public function __construct( LoggerInterface $logger, Wiki $wiki, MessageProvider $mp ) {
+	public function __construct(
+		LoggerInterface $logger,
+		WikiGroup $wikiGroup,
+		MessageProvider $mp,
+		PageBotList $pbl
+	) {
 		$this->setLogger( $logger );
 		$this->setConfig( Config::getInstance() );
-		$this->setWiki( $wiki );
+		$this->setWikiGroup( $wikiGroup );
 		$this->setMessageProvider( $mp );
+		$this->pageBotList = $pbl;
 	}
 
 	/**
@@ -75,17 +88,25 @@ abstract class ContextSource implements LoggerAwareInterface {
 	}
 
 	/**
+	 * Shorthand
 	 * @return Wiki
 	 */
 	protected function getWiki() : Wiki {
-		return $this->wiki;
+		return $this->getWikiGroup()->getMainWiki();
 	}
 
 	/**
-	 * @param Wiki $wiki
+	 * @return WikiGroup
 	 */
-	protected function setWiki( Wiki $wiki ) : void {
-		$this->wiki = $wiki;
+	protected function getWikiGroup() : WikiGroup {
+		return $this->wikiGroup;
+	}
+
+	/**
+	 * @param WikiGroup $wikiGroup
+	 */
+	protected function setWikiGroup( WikiGroup $wikiGroup ) : void {
+		$this->wikiGroup = $wikiGroup;
 	}
 
 	/**
@@ -113,6 +134,20 @@ abstract class ContextSource implements LoggerAwareInterface {
 	}
 
 	/**
+	 * @return PageBotList
+	 */
+	public function getBotList() : PageBotList {
+		return $this->pageBotList;
+	}
+
+	/**
+	 * @return RequestFactory
+	 */
+	public function getRequestFactory() : RequestFactory {
+		return $this->getWiki()->getRequestFactory();
+	}
+
+	/**
 	 * Shorthand to get a page using the local wiki
 	 *
 	 * @param string $title
@@ -129,6 +164,7 @@ abstract class ContextSource implements LoggerAwareInterface {
 	 * @return User
 	 */
 	protected function getUser( string $name ) : User {
-		return new User( $name, $this->getWiki() );
+		$ui = $this->getBotList()->getUserInfo( $name );
+		return new User( $ui, $this->getWiki() );
 	}
 }

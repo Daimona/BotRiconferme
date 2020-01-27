@@ -2,7 +2,7 @@
 
 namespace BotRiconferme\Wiki\Page;
 
-use BotRiconferme\Wiki\User;
+use BotRiconferme\Wiki\UserInfo;
 use BotRiconferme\Wiki\Wiki;
 
 /**
@@ -11,49 +11,79 @@ use BotRiconferme\Wiki\Wiki;
 class PageBotList extends Page {
 	public const NON_GROUP_KEYS = [ 'override', 'override-perm', 'aliases' ];
 
-	/** @var User[]|null */
+	/** @var UserInfo[]|null */
 	private $adminsList;
 
 	/**
 	 * @private Use self::get()
+	 * @param string $listTitle
 	 * @param Wiki $wiki
 	 */
-	public function __construct( Wiki $wiki ) {
-		// phpcs:ignore MediaWiki.NamingConventions.ValidGlobalName.allowedPrefix
-		global $globalListTitle;
-		parent::__construct( $globalListTitle, $wiki );
+	public function __construct( string $listTitle, Wiki $wiki ) {
+		parent::__construct( $listTitle, $wiki );
 	}
 
 	/**
 	 * Instance getter
 	 *
 	 * @param Wiki $wiki
+	 * @param string $listTitle
 	 * @return self
 	 */
-	public static function get( Wiki $wiki ) : self {
+	public static function get( Wiki $wiki, string $listTitle ) : self {
 		static $instance = null;
 		if ( $instance === null ) {
-			$instance = new self( $wiki );
+			$instance = new self( $listTitle, $wiki );
 		}
 		return $instance;
 	}
 
 	/**
-	 * @param string[] $groups
+	 * @param UserInfo $ui
 	 * @return int|null
 	 */
-	public static function getOverrideTimestamp( array $groups ) : ?int {
-		if ( !array_intersect_key( $groups, [ 'override-perm' => true, 'override' => true ] ) ) {
+	public function getOverrideTimestamp( UserInfo $ui ) : ?int {
+		$info = $ui->getInfo();
+		if ( !array_intersect_key( $info, [ 'override-perm' => true, 'override' => true ] ) ) {
 			return null;
 		}
 
 		// A one-time override takes precedence
-		if ( array_key_exists( 'override', $groups ) ) {
-			$date = $groups['override'];
+		if ( array_key_exists( 'override', $info ) ) {
+			$date = $info['override'];
 		} else {
-			$date = $groups['override-prem'] . '/' . date( 'Y' );
+			$date = $info['override-prem'] . '/' . date( 'Y' );
 		}
 		return \DateTime::createFromFormat( 'd/m/Y', $date )->getTimestamp();
+	}
+
+	/**
+	 * Get the next valid timestamp for the given user
+	 *
+	 * @param string $user
+	 * @return int
+	 */
+	public function getNextTimestamp( string $user ) : int {
+		$userInfo = $this->getUserInfo( $user )->getInfo();
+		if ( isset( $userInfo['override-perm'] ) ) {
+			$date = \DateTime::createFromFormat(
+				'd/m/Y',
+				$userInfo['override-perm'] . '/' . date( 'Y' )
+			);
+		} else {
+			$date = null;
+			if ( isset( $userInfo['override'] ) ) {
+				$date = \DateTime::createFromFormat( 'd/m/Y', $userInfo['override'] );
+			}
+			if ( !$date || $date <= new \DateTime ) {
+				$ts = self::getValidFlagTimestamp( $userInfo );
+				$date = ( new \DateTime )->setTimestamp( $ts );
+			}
+		}
+		while ( $date <= new \DateTime ) {
+			$date->modify( '+1 year' );
+		}
+		return $date->getTimestamp();
 	}
 
 	/**
@@ -97,18 +127,24 @@ class PageBotList extends Page {
 	/**
 	 * Get the actual list of admins
 	 *
-	 * @return User[]
+	 * @return UserInfo[]
 	 */
 	public function getAdminsList() : array {
 		if ( $this->adminsList === null ) {
 			$this->adminsList = [];
 			foreach ( $this->getDecodedContent() as $user => $info ) {
-				$userObj = new User( $user, $this->wiki );
-				$userObj->setInfo( $info );
-				$this->adminsList[ $user ] = $userObj;
+				$this->adminsList[ $user ] = new UserInfo( $user, $info );
 			}
 		}
 		return $this->adminsList;
+	}
+
+	/**
+	 * @param string $user
+	 * @return UserInfo
+	 */
+	public function getUserInfo( string $user ) : UserInfo {
+		return $this->getAdminsList()[$user];
 	}
 
 	/**

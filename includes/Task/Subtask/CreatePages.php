@@ -3,7 +3,6 @@
 namespace BotRiconferme\Task\Subtask;
 
 use BotRiconferme\Exception\TaskException;
-use BotRiconferme\Request\RequestBase;
 use BotRiconferme\TaskResult;
 use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageRiconferma;
@@ -88,7 +87,7 @@ class CreatePages extends Subtask {
 			'aplimit' => 'max'
 		];
 
-		$res = RequestBase::newFromParams( $params )->execute();
+		$res = $this->getRequestFactory()->newFromParams( $params )->execute();
 
 		$last = 0;
 		foreach ( $res->query->allpages as $resPage ) {

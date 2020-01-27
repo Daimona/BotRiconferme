@@ -54,9 +54,9 @@ class ClosePages extends Subtask {
 		$this->getLogger()->info( "Updating base page for $page" );
 
 		if ( $page->getNum() === 1 ) {
-			$basePage = $page->getUser()->getBasePage();
+			$basePage = $this->getUser( $page->getUserName() )->getBasePage();
 		} else {
-			$basePage = $page->getUser()->getExistingBasePage();
+			$basePage = $this->getUser( $page->getUserName() )->getExistingBasePage();
 		}
 
 		$current = $basePage->getContent();

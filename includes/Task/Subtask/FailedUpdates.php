@@ -8,7 +8,6 @@ use BotRiconferme\Wiki\Element;
 use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\Wiki\User;
-use BotRiconferme\Wiki\Wiki;
 
 /**
  * Update various pages around, to be done for all failed procedures
@@ -79,10 +78,9 @@ class FailedUpdates extends Subtask {
 	protected function requestRemoval( array $pages ) : void {
 		$this->getLogger()->info( 'Requesting flag removal for: ' . implode( ', ', $pages ) );
 
-		$metaWiki = new Wiki( $this->getLogger(), META_URL );
+		$metaWiki = $this->getWikiGroup()->getCentralWiki();
 		// FIXME There should be some layer like "WikiFamily" for sharing Login info and bot status
 		//  and/or a factory method to get wikis.
-		$metaWiki->setLoginInfo( $this->getWiki()->getLoginInfo() );
 		$metaWiki->setEditsAsBot( $this->getWiki()->getEditsAsBot() );
 		$flagRemPage = new Page(
 			$this->getOpt( 'flag-removal-page-title' ),
@@ -94,9 +92,9 @@ class FailedUpdates extends Subtask {
 		foreach ( $pages as $page ) {
 			$append .=
 				$baseText->params( [
-					'$username' => $page->getUser()->getName(),
+					'$username' => $page->getUserName(),
 					'$link' => '[[:it:' . $page->getTitle() . ']]',
-					'$groups' => implode( ', ', $page->getUser()->getGroups() )
+					'$groups' => implode( ', ', $this->getUser( $page->getUserName() )->getGroups() )
 				] )->text();
 		}
 
@@ -124,7 +122,7 @@ class FailedUpdates extends Subtask {
 		$names = [];
 		$text = '';
 		foreach ( $pages as $page ) {
-			$user = $page->getUser()->getName();
+			$user = $page->getUserName();
 			$names[] = $user;
 			$text .= $this->msg( 'annunci-text' )->params( [ '$user' => $user ] )->text();
 		}
@@ -165,7 +163,7 @@ class FailedUpdates extends Subtask {
 		$text = '';
 		$msg = $this->msg( 'ultimenotizie-text' );
 		foreach ( $pages as $page ) {
-			$user = $page->getUser()->getName();
+			$user = $page->getUserName();
 			$names[] = $user;
 			$text .= $msg->params( [ '$user' => $user, '$title' => $page->getTitle() ] )->text();
 		}
@@ -198,7 +196,7 @@ class FailedUpdates extends Subtask {
 	private function getFailedBureaucrats( array $pages ) : array {
 		$ret = [];
 		foreach ( $pages as $page ) {
-			$user = $page->getUser();
+			$user = $this->getUser( $page->getUserName() );
 			if ( $user->inGroup( 'bureaucrat' ) ) {
 				$ret[] = $user;
 			}

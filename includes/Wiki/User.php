@@ -5,7 +5,6 @@ namespace BotRiconferme\Wiki;
 use BotRiconferme\Config;
 use BotRiconferme\Exception\MissingPageException;
 use BotRiconferme\Wiki\Page\Page;
-use BotRiconferme\Wiki\Page\PageBotList;
 
 /**
  * Class representing a single user. NOTE: this can only represent users stored in the JSON list
@@ -13,18 +12,19 @@ use BotRiconferme\Wiki\Page\PageBotList;
 class User extends Element {
 	/** @var string */
 	private $name;
-	/** @var string[]|null Info contained in the JSON page */
-	private $info;
 	/** @var Wiki */
 	private $wiki;
+	/** @var UserInfo */
+	private $ui;
 
 	/**
-	 * @param string $name
+	 * @param UserInfo $ui
 	 * @param Wiki $wiki
 	 */
-	public function __construct( string $name, Wiki $wiki ) {
+	public function __construct( UserInfo $ui, Wiki $wiki ) {
 		$this->wiki = $wiki;
-		$this->name = $name;
+		$this->name = $ui->getName();
+		$this->ui = $ui;
 	}
 
 	/**
@@ -40,7 +40,7 @@ class User extends Element {
 	 * @return string[]
 	 */
 	public function getGroups() : array {
-		return array_diff( array_keys( $this->getUserInfo() ), PageBotList::NON_GROUP_KEYS );
+		return $this->ui->extractGroups();
 	}
 
 	/**
@@ -49,27 +49,7 @@ class User extends Element {
 	 * @return string[] [ group => date ]
 	 */
 	public function getGroupsWithDates() : array {
-		return array_intersect_key( $this->getUserInfo(), array_fill_keys( $this->getGroups(), 1 ) );
-	}
-
-	/**
-	 * Get some info about this user, including flag dates.
-	 *
-	 * @return string[]
-	 */
-	public function getUserInfo() : array {
-		if ( $this->info === null ) {
-			$usersList = PageBotList::get( $this->wiki )->getAdminsList();
-			$this->info = $usersList[ $this->name ]->getUserInfo();
-		}
-		return $this->info;
-	}
-
-	/**
-	 * @param array|null $info
-	 */
-	public function setInfo( ?array $info ) : void {
-		$this->info = $info;
+		return $this->ui->extractGroupsWithDates();
 	}
 
 	/**
@@ -102,7 +82,7 @@ class User extends Element {
 	 * @return string[]
 	 */
 	public function getAliases() : array {
-		return $this->getUserInfo()['aliases'] ?? [];
+		return $this->ui->getAliases();
 	}
 
 	/**

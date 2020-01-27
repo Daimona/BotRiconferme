@@ -2,7 +2,8 @@
 
 namespace BotRiconferme;
 
-use BotRiconferme\Wiki\Wiki;
+use BotRiconferme\Wiki\Page\PageBotList;
+use BotRiconferme\Wiki\WikiGroup;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -11,20 +12,29 @@ use Psr\Log\LoggerInterface;
 class Bot {
 	/** @var LoggerInterface */
 	private $logger;
-	/** @var Wiki */
-	private $wiki;
+	/** @var WikiGroup */
+	private $wikiGroup;
 	/** @var MessageProvider */
 	private $messageProvider;
+	/** @var PageBotList */
+	private $pageBotList;
 
 	/**
 	 * @param LoggerInterface $logger
-	 * @param Wiki $wiki
+	 * @param WikiGroup $wikiGroup
 	 * @param MessageProvider $mp
+	 * @param PageBotList $pbl
 	 */
-	public function __construct( LoggerInterface $logger, Wiki $wiki, MessageProvider $mp ) {
+	public function __construct(
+		LoggerInterface $logger,
+		WikiGroup $wikiGroup,
+		MessageProvider $mp,
+		PageBotList $pbl
+	) {
 		$this->logger = $logger;
-		$this->wiki = $wiki;
+		$this->wikiGroup = $wikiGroup;
 		$this->messageProvider = $mp;
+		$this->pageBotList = $pbl;
 	}
 
 	/**
@@ -36,7 +46,12 @@ class Bot {
 	private function run( string $mode = TaskManager::MODE_COMPLETE, string $name = null ) : void {
 		$activity = $mode === TaskManager::MODE_COMPLETE ? TaskManager::MODE_COMPLETE : "$mode $name";
 		$this->logger->info( "Running $activity" );
-		$manager = new TaskManager( $this->logger, $this->wiki, $this->messageProvider );
+		$manager = new TaskManager(
+			$this->logger,
+			$this->wikiGroup,
+			$this->messageProvider,
+			$this->pageBotList
+		);
 		$res = $manager->run( $mode, $name );
 		$base = "Execution of $activity";
 		if ( $res->isOK() ) {

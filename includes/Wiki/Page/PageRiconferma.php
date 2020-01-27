@@ -3,7 +3,6 @@
 namespace BotRiconferme\Wiki\Page;
 
 use BotRiconferme\Message;
-use BotRiconferme\Wiki\User;
 
 /**
  * Represents a single riconferma page
@@ -40,11 +39,10 @@ class PageRiconferma extends Page {
 	/**
 	 * Get the name of the user from the title
 	 *
-	 * @return User
+	 * @return string
 	 */
-	public function getUser() : User {
-		$name = explode( '/', $this->title )[2];
-		return new User( $name, $this->wiki );
+	public function getUserName() : string {
+		return explode( '/', $this->title )[2];
 	}
 
 	/**
@@ -162,7 +160,7 @@ class PageRiconferma extends Page {
 			$this->getSupportCount(),
 			$this->getOpposingCount()
 		);
-		$user = $this->getUser();
+		$user = $this->getUserName();
 
 		switch ( $this->getOutcome() ) {
 			case self::OUTCOME_OK:

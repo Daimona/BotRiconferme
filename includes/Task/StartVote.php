@@ -103,7 +103,7 @@ class StartVote extends Task {
 
 		$users = [];
 		foreach ( $pages as $page ) {
-			$users[] = $page->getUser();
+			$users[] = $this->getUser( $page->getUserName() );
 		}
 		$usersReg = Element::regexFromArray( $users, '!' );
 
@@ -115,7 +115,7 @@ class StartVote extends Task {
 		$endDays = PageRiconferma::VOTE_DURATION;
 		foreach ( $pages as $page ) {
 			$newLines .= '{{subst:Wikipedia:Wikipediano/Votazioni/RigaCompleta|votazione riconferma' .
-				'|utente=' . $page->getUser() . '|numero=' . $page->getNum() . '|giorno=' .
+				'|utente=' . $page->getUserName() . '|numero=' . $page->getNum() . '|giorno=' .
 				"{{subst:#timel:j F|+ $endDays days}}|ore={{subst:LOCALTIME}}}}\n";
 		}
 

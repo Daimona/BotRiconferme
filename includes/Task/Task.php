@@ -47,9 +47,10 @@ abstract class Task extends TaskBase {
 		/** @var Subtask $ret */
 		$ret = new $class(
 			$this->getLogger(),
-			$this->getWiki(),
+			$this->getWikiGroup(),
 			$this->getDataProvider(),
-			$this->getMessageProvider()
+			$this->getMessageProvider(),
+			$this->getBotList()
 		);
 		return $ret;
 	}

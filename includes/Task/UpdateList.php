@@ -3,7 +3,6 @@
 namespace BotRiconferme\Task;
 
 use BotRiconferme\Exception\TaskException;
-use BotRiconferme\Request\RequestBase;
 use BotRiconferme\TaskResult;
 use BotRiconferme\Wiki\Page\PageBotList;
 
@@ -29,7 +28,7 @@ class UpdateList extends Task {
 	 */
 	public function runInternal() : int {
 		$this->actualList = $this->getActualAdmins();
-		$pageBotList = PageBotList::get( $this->getWiki() );
+		$pageBotList = $this->getBotList();
 		$this->botList = $pageBotList->getDecodedContent();
 
 		$missing = $this->getMissingGroups();
@@ -63,7 +62,7 @@ class UpdateList extends Task {
 			'aulimit' => 'max',
 		];
 
-		$req = RequestBase::newFromParams( $params );
+		$req = $this->getRequestFactory()->newFromParams( $params );
 		return $this->extractAdmins( $req->execute() );
 	}
 
@@ -116,10 +115,10 @@ class UpdateList extends Task {
 	protected function getFlagDate( string $admin, string $group ) : string {
 		$this->getLogger()->info( "Retrieving $group flag date for $admin" );
 
-		$url = DEFAULT_URL;
+		$wiki = $this->getWiki();
 		if ( $group === 'checkuser' ) {
-			$url = 'https://meta.wikimedia.org/w/api.php';
-			$admin .= '@itwiki';
+			$wiki = $this->getWikiGroup()->getCentralWiki();
+			$admin .= $wiki->getLocalUserIdentifier();
 		}
 
 		$params = [
@@ -131,8 +130,7 @@ class UpdateList extends Task {
 			'lelimit' => 'max'
 		];
 
-		// @phan-suppress-next-line PhanTypeMismatchArgumentNullable $url is never null
-		$data = RequestBase::newFromParams( $params )->setUrl( $url )->execute();
+		$data = $wiki->getRequestFactory()->newFromParams( $params )->execute();
 		$ts = $this->extractTimestamp( $data, $group );
 
 		if ( $ts === null ) {
@@ -200,7 +198,7 @@ class UpdateList extends Task {
 			// lestart seems to be broken (?)
 		];
 
-		return RequestBase::newFromParams( $params )->execute();
+		return $this->getRequestFactory()->newFromParams( $params )->execute();
 	}
 
 	/**

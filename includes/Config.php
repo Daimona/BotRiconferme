@@ -3,8 +3,6 @@
 namespace BotRiconferme;
 
 use BotRiconferme\Exception\ConfigException;
-use BotRiconferme\Exception\MissingPageException;
-use BotRiconferme\Wiki\Wiki;
 
 /**
  * Singleton class holding user-defined config
@@ -14,40 +12,27 @@ class Config {
 	private static $instance;
 	/** @var array */
 	private $opts = [];
-	/** @var Wiki */
-	private $wiki;
 
 	/**
 	 * Use self::init() and self::getInstance()
-	 *
-	 * @param Wiki $wiki
 	 */
-	private function __construct( Wiki $wiki ) {
-		$this->wiki = $wiki;
+	private function __construct() {
 	}
 
 	/**
 	 * Initialize a new self instance with CLI params set and retrieve on-wiki config.
 	 *
-	 * @param string $configTitle
-	 * @param Wiki $wiki
+	 * @param array $confValues
 	 * @throws ConfigException
 	 */
-	public static function init( string $configTitle, Wiki $wiki ) : void {
+	public static function init( array $confValues ) : void {
 		if ( self::$instance ) {
 			throw new ConfigException( 'Config was already initialized' );
 		}
 
-		$inst = new self( $wiki );
+		$inst = new self();
 
-		// On-wiki values
-		try {
-			$conf = $inst->wiki->getPageContent( $configTitle );
-		} catch ( MissingPageException $_ ) {
-			throw new ConfigException( 'Please create a config page.' );
-		}
-
-		foreach ( json_decode( $conf, true ) as $key => $val ) {
+		foreach ( $confValues as $key => $val ) {
 			$inst->set( $key, $val );
 		}
 		self::$instance = $inst;

@@ -6,7 +6,8 @@ use BotRiconferme\ContextSource;
 use BotRiconferme\MessageProvider;
 use BotRiconferme\TaskDataProvider;
 use BotRiconferme\TaskResult;
-use BotRiconferme\Wiki\Wiki;
+use BotRiconferme\Wiki\Page\PageBotList;
+use BotRiconferme\Wiki\WikiGroup;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -22,17 +23,19 @@ abstract class TaskBase extends ContextSource {
 	 * Final to keep calls linear in the TaskManager
 	 *
 	 * @param LoggerInterface $logger
-	 * @param Wiki $wiki
+	 * @param WikiGroup $wikiGroup
 	 * @param TaskDataProvider $dataProvider
 	 * @param MessageProvider $mp
+	 * @param PageBotList $pbl
 	 */
 	final public function __construct(
 		LoggerInterface $logger,
-		Wiki $wiki,
+		WikiGroup $wikiGroup,
 		TaskDataProvider $dataProvider,
-		MessageProvider $mp
+		MessageProvider $mp,
+		PageBotList $pbl
 	) {
-		parent::__construct( $logger, $wiki, $mp );
+		parent::__construct( $logger, $wikiGroup, $mp, $pbl );
 		$this->dataProvider = $dataProvider;
 	}
 

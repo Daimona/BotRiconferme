@@ -22,7 +22,7 @@ class UserNotice extends Subtask {
 
 		$ricNums = [];
 		foreach ( $pages as $page ) {
-			$ricNums[ $page->getUser()->getName() ] = $page->getNum();
+			$ricNums[ $page->getUserName() ] = $page->getNum();
 		}
 
 		foreach ( $users as $name => $user ) {

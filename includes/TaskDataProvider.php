@@ -2,10 +2,10 @@
 
 namespace BotRiconferme;
 
-use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Wiki\Page\PageBotList;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\Wiki\User;
+use BotRiconferme\Wiki\UserInfo;
 
 /**
  * Object holding data to be shared between different tasks.
@@ -28,9 +28,9 @@ class TaskDataProvider extends ContextSource {
 	public function getUsersToProcess() : array {
 		if ( $this->processUsers === null ) {
 			$this->processUsers = [];
-			foreach ( PageBotList::get( $this->getWiki() )->getAdminsList() as $name => $user ) {
-				if ( $this->shouldAddUser( $user ) ) {
-					$this->processUsers[ $name ] = $user;
+			foreach ( $this->getBotList()->getAdminsList() as $name => $userInfo ) {
+				if ( $this->shouldAddUser( $userInfo ) ) {
+					$this->processUsers[ $name ] = new User( $userInfo, $this->getWiki() );
 				}
 			}
 		}
@@ -41,15 +41,15 @@ class TaskDataProvider extends ContextSource {
 	/**
 	 * Whether the given user should be processed
 	 *
-	 * @param User $user
+	 * @param UserInfo $ui
 	 * @return bool
 	 */
-	private function shouldAddUser( User $user ) : bool {
-		$timestamp = PageBotList::getOverrideTimestamp( $user->getUserInfo() );
+	private function shouldAddUser( UserInfo $ui ) : bool {
+		$timestamp = $this->getBotList()->getOverrideTimestamp( $ui );
 		$override = $timestamp !== null;
 
 		if ( $timestamp === null ) {
-			$timestamp = PageBotList::getValidFlagTimestamp( $user->getGroupsWithDates() );
+			$timestamp = PageBotList::getValidFlagTimestamp( $ui->getInfo() );
 		}
 
 		$datesMatch = date( 'd/m', $timestamp ) === date( 'd/m' );
@@ -75,7 +75,7 @@ class TaskDataProvider extends ContextSource {
 			];
 
 			$titleReg = $this->getPage( $mainTitle )->getRegex( '!' );
-			$pages = RequestBase::newFromParams( $params )->execute()->query->pages;
+			$pages = $this->getRequestFactory()->newFromParams( $params )->execute()->query->pages;
 			foreach ( reset( $pages )->templates as $page ) {
 				if ( preg_match( "!$titleReg/[^/]+/\d!", $page->title ) ) {
 					$this->openPages[] = new PageRiconferma( $page->title, $this->getWiki() );

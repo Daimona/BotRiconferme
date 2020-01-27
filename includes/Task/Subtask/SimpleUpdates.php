@@ -5,9 +5,7 @@ namespace BotRiconferme\Task\Subtask;
 use BotRiconferme\Message;
 use BotRiconferme\TaskResult;
 use BotRiconferme\Wiki\Element;
-use BotRiconferme\Wiki\Page\PageBotList;
 use BotRiconferme\Wiki\Page\PageRiconferma;
-use BotRiconferme\Wiki\User;
 
 /**
  * Update various pages around, to be done for all closed procedures
@@ -46,7 +44,7 @@ class SimpleUpdates extends Subtask {
 
 		$users = [];
 		foreach ( $pages as $page ) {
-			$users[] = $page->getUser();
+			$users[] = $this->getUser( $page->getUserName() );
 		}
 		$usersReg = Element::regexFromArray( $users, '!' );
 
@@ -117,7 +115,10 @@ class SimpleUpdates extends Subtask {
 			$userReg = $user->getRegex( '!' );
 			$reg = "!({{Ammini\w+\/riga\|$userReg\|\D+\|\d{8}\|)(?:\d{8})?\|\d{8}((?:\|[a-z]*)?}}.*\n)!";
 			if ( $confirmed ) {
-				$nextDate = date( 'Ymd', $this->getNextTs( $user ) );
+				$nextDate = date(
+					'Ymd',
+					$this->getBotList()->getNextTimestamp( $user->getName() )
+				);
 				$newContent = preg_replace(
 					$reg,
 					'${1}{{subst:#timel:Ymd}}|' . $nextDate . '$2',
@@ -141,35 +142,6 @@ class SimpleUpdates extends Subtask {
 			'text' => $newContent,
 			'summary' => $summary
 		] );
-	}
-
-	/**
-	 * Get the next valid timestamp for the given user
-	 *
-	 * @param User $user
-	 * @return int
-	 */
-	private function getNextTs( User $user ) : int {
-		$userInfo = $user->getUserInfo();
-		if ( isset( $userInfo['override-perm'] ) ) {
-			$date = \DateTime::createFromFormat(
-				'd/m/Y',
-				$userInfo['override-perm'] . '/' . date( 'Y' )
-			);
-		} else {
-			$date = null;
-			if ( isset( $userInfo['override'] ) ) {
-				$date = \DateTime::createFromFormat( 'd/m/Y', $userInfo['override'] );
-			}
-			if ( !$date || $date <= new \DateTime ) {
-				$ts = PageBotList::getValidFlagTimestamp( $userInfo );
-				$date = ( new \DateTime )->setTimestamp( $ts );
-			}
-		}
-		while ( $date <= new \DateTime ) {
-			$date->modify( '+1 year' );
-		}
-		return $date->getTimestamp();
 	}
 
 	/**
@@ -216,7 +188,7 @@ class SimpleUpdates extends Subtask {
 	private function getGroupOutcomes( string $group, array $pages ) : array {
 		$ret = [];
 		foreach ( $pages as $page ) {
-			$user = $page->getUser();
+			$user = $this->getUser( $page->getUserName() );
 			if ( $user->inGroup( $group ) ) {
 				$ret[ $user->getName() ] = !( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL );
 			}

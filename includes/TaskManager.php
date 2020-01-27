@@ -15,7 +15,8 @@ use BotRiconferme\Task\Subtask\Subtask;
 use BotRiconferme\Task\Subtask\UserNotice;
 use BotRiconferme\Task\Task;
 use BotRiconferme\Task\UpdateList;
-use BotRiconferme\Wiki\Wiki;
+use BotRiconferme\Wiki\Page\PageBotList;
+use BotRiconferme\Wiki\WikiGroup;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -48,21 +49,35 @@ class TaskManager {
 	private $provider;
 	/** @var LoggerInterface */
 	private $logger;
-	/** @var Wiki */
-	private $wiki;
+	/** @var WikiGroup */
+	private $wikiGroup;
 	/** @var MessageProvider */
 	private $messageProvider;
+	/** @var PageBotList */
+	private $pageBotList;
 
 	/**
 	 * @param LoggerInterface $logger
-	 * @param Wiki $wiki
+	 * @param WikiGroup $wikiGroup
 	 * @param MessageProvider $mp
+	 * @param PageBotList $pbl
 	 */
-	public function __construct( LoggerInterface $logger, Wiki $wiki, MessageProvider $mp ) {
+	public function __construct(
+		LoggerInterface $logger,
+		WikiGroup $wikiGroup,
+		MessageProvider $mp,
+		PageBotList $pbl
+	) {
 		$this->logger = $logger;
-		$this->wiki = $wiki;
+		$this->wikiGroup = $wikiGroup;
 		$this->messageProvider = $mp;
-		$this->provider = new TaskDataProvider( $this->logger, $this->wiki, $this->messageProvider );
+		$this->pageBotList = $pbl;
+		$this->provider = new TaskDataProvider(
+			$this->logger,
+			$this->wikiGroup,
+			$this->messageProvider,
+			$pbl
+		);
 	}
 
 	/**
@@ -141,7 +156,13 @@ class TaskManager {
 	private function getTaskInstance( string $name ) : Task {
 		$class = self::TASKS_MAP[ $name ];
 		/** @var Task $ret */
-		$ret = new $class( $this->logger, $this->wiki, $this->provider, $this->messageProvider );
+		$ret = new $class(
+			$this->logger,
+			$this->wikiGroup,
+			$this->provider,
+			$this->messageProvider,
+			$this->pageBotList
+		);
 		return $ret;
 	}
 
@@ -153,7 +174,13 @@ class TaskManager {
 	 */
 	private function getSubtaskInstance( string $class ) : Subtask {
 		/** @var Subtask $ret */
-		$ret = new $class( $this->logger, $this->wiki, $this->provider, $this->messageProvider );
+		$ret = new $class(
+			$this->logger,
+			$this->wikiGroup,
+			$this->provider,
+			$this->messageProvider,
+			$this->pageBotList
+		);
 		return $ret;
 	}
 }

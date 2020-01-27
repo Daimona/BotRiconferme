@@ -9,6 +9,7 @@ use BotRiconferme\Exception\LoginException;
 use BotRiconferme\Exception\MissingPageException;
 use BotRiconferme\Exception\MissingSectionException;
 use BotRiconferme\Request\RequestBase;
+use BotRiconferme\Request\RequestFactory;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -19,30 +20,30 @@ class Wiki {
 	private static $loggedIn = false;
 	/** @var LoggerInterface */
 	private $logger;
-	/** @var string */
-	private $domain;
 	/** @var string[] */
 	private $tokens;
 	/** @var LoginInfo|null */
 	private $loginInfo;
 	/** @var bool Whether our edits are bot edits */
 	private $botEdits;
-
-	/**
-	 * @param LoggerInterface $logger
-	 * @param string $domain The URL of the wiki, if different from default
-	 */
-	public function __construct( LoggerInterface $logger, string $domain = DEFAULT_URL ) {
-		$this->logger = $logger;
-		$this->domain = $domain;
-	}
+	/** @var RequestFactory */
+	private $requestFactory;
+	/** @var string */
+	private $localUserIdentifier = '';
 
 	/**
 	 * @param LoginInfo $li
+	 * @param LoggerInterface $logger
+	 * @param RequestFactory $requestFactory
 	 */
-	public function setLoginInfo( LoginInfo $li ) : void {
-		// FIXME This should be in the constructor, and it should not depend on config
+	public function __construct(
+		LoginInfo $li,
+		LoggerInterface $logger,
+		RequestFactory $requestFactory
+	) {
 		$this->loginInfo = $li;
+		$this->logger = $logger;
+		$this->requestFactory = $requestFactory;
 	}
 
 	/**
@@ -65,6 +66,27 @@ class Wiki {
 	 */
 	public function getEditsAsBot() : bool {
 		return $this->botEdits;
+	}
+
+	/**
+	 * @return RequestFactory
+	 */
+	public function getRequestFactory() : RequestFactory {
+		return $this->requestFactory;
+	}
+
+	/**
+	 * @param string $ident
+	 */
+	public function setLocalUserIdentifier( string $ident ) : void {
+		$this->localUserIdentifier = $ident;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getLocalUserIdentifier() : string {
+		return $this->localUserIdentifier;
 	}
 
 	/**
@@ -246,6 +268,6 @@ class Wiki {
 	 * @return RequestBase
 	 */
 	private function buildRequest( array $params ) : RequestBase {
-		return RequestBase::newFromParams( $params )->setUrl( $this->domain );
+		return $this->requestFactory->newFromParams( $params );
 	}
 }
