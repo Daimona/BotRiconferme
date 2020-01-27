@@ -1,8 +1,0 @@
-mode: 'usage'
-source: './includes'
-filePattern: '*.php'
-formatter: 'PhpDA\Writer\Strategy\Html'
-target: './class-level.html'
-ignore: 'tests'
-groupLength: 3
-

@@ -7,7 +7,7 @@ use BotRiconferme\TaskResult;
 use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\Wiki\User;
-use BotRiconferme\Wiki\Utils\RegexUtils;
+use BotRiconferme\Utils\RegexUtils;
 
 /**
  * Update various pages around, to be done for all failed procedures

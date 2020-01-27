@@ -5,7 +5,7 @@ namespace BotRiconferme\Wiki;
 use BotRiconferme\Config;
 use BotRiconferme\Exception\MissingPageException;
 use BotRiconferme\Wiki\Page\Page;
-use BotRiconferme\Wiki\Utils\IRegexAble;
+use BotRiconferme\Utils\IRegexAble;
 
 /**
  * Class representing a single user. NOTE: this can only represent users stored in the JSON list

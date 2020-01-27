@@ -3,7 +3,7 @@
 namespace BotRiconferme\Wiki\Page;
 
 use BotRiconferme\Exception\MissingMatchException;
-use BotRiconferme\Wiki\Utils\IRegexAble;
+use BotRiconferme\Utils\IRegexAble;
 use BotRiconferme\Wiki\Wiki;
 
 /**

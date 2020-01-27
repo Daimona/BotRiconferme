@@ -1,6 +1,6 @@
 <?php declare( strict_types=1 );
 
-namespace BotRiconferme\Wiki\Utils;
+namespace BotRiconferme\Utils;
 
 class RegexUtils {
 	/**

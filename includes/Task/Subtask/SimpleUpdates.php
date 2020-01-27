@@ -5,7 +5,7 @@ namespace BotRiconferme\Task\Subtask;
 use BotRiconferme\Message;
 use BotRiconferme\TaskResult;
 use BotRiconferme\Wiki\Page\PageRiconferma;
-use BotRiconferme\Wiki\Utils\RegexUtils;
+use BotRiconferme\Utils\RegexUtils;
 
 /**
  * Update various pages around, to be done for all closed procedures
