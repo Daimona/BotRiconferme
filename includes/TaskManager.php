@@ -50,15 +50,19 @@ class TaskManager {
 	private $logger;
 	/** @var Wiki */
 	private $wiki;
+	/** @var MessageProvider */
+	private $messageProvider;
 
 	/**
 	 * @param LoggerInterface $logger
 	 * @param Wiki $wiki
+	 * @param MessageProvider $mp
 	 */
-	public function __construct( LoggerInterface $logger, Wiki $wiki ) {
+	public function __construct( LoggerInterface $logger, Wiki $wiki, MessageProvider $mp ) {
 		$this->logger = $logger;
 		$this->wiki = $wiki;
-		$this->provider = new TaskDataProvider( $this->logger, $this->wiki );
+		$this->messageProvider = $mp;
+		$this->provider = new TaskDataProvider( $this->logger, $this->wiki, $this->messageProvider );
 	}
 
 	/**
@@ -110,8 +114,7 @@ class TaskManager {
 			throw new \InvalidArgumentException( "'$name' is not a valid task." );
 		}
 
-		$class = self::TASKS_MAP[ $name ];
-		return $this->getTaskInstance( $class )->run();
+		return $this->getTaskInstance( $name )->run();
 	}
 
 	/**
@@ -132,11 +135,14 @@ class TaskManager {
 	/**
 	 * Helper to make type inferencing easier
 	 *
-	 * @param string $class
+	 * @param string $name
 	 * @return Task
 	 */
-	private function getTaskInstance( string $class ) : Task {
-		return new $class( $this->logger, $this->wiki, $this->provider );
+	private function getTaskInstance( string $name ) : Task {
+		$class = self::TASKS_MAP[ $name ];
+		/** @var Task $ret */
+		$ret = new $class( $this->logger, $this->wiki, $this->provider, $this->messageProvider );
+		return $ret;
 	}
 
 	/**
@@ -146,6 +152,8 @@ class TaskManager {
 	 * @return Subtask
 	 */
 	private function getSubtaskInstance( string $class ) : Subtask {
-		return new $class( $this->logger, $this->wiki, $this->provider );
+		/** @var Subtask $ret */
+		$ret = new $class( $this->logger, $this->wiki, $this->provider, $this->messageProvider );
+		return $ret;
 	}
 }

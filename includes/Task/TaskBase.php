@@ -3,6 +3,7 @@
 namespace BotRiconferme\Task;
 
 use BotRiconferme\ContextSource;
+use BotRiconferme\MessageProvider;
 use BotRiconferme\TaskDataProvider;
 use BotRiconferme\TaskResult;
 use BotRiconferme\Wiki\Wiki;
@@ -23,13 +24,15 @@ abstract class TaskBase extends ContextSource {
 	 * @param LoggerInterface $logger
 	 * @param Wiki $wiki
 	 * @param TaskDataProvider $dataProvider
+	 * @param MessageProvider $mp
 	 */
 	final public function __construct(
 		LoggerInterface $logger,
 		Wiki $wiki,
-		TaskDataProvider $dataProvider
+		TaskDataProvider $dataProvider,
+		MessageProvider $mp
 	) {
-		parent::__construct( $logger, $wiki );
+		parent::__construct( $logger, $wiki, $mp );
 		$this->dataProvider = $dataProvider;
 	}
 

@@ -2,8 +2,8 @@
 
 namespace BotRiconferme\Wiki;
 
-use BotRiconferme\Config;
 use BotRiconferme\Exception\APIRequestException;
+use BotRiconferme\Exception\CannotLoginException;
 use BotRiconferme\Exception\EditException;
 use BotRiconferme\Exception\LoginException;
 use BotRiconferme\Exception\MissingPageException;
@@ -23,6 +23,10 @@ class Wiki {
 	private $domain;
 	/** @var string[] */
 	private $tokens;
+	/** @var LoginInfo|null */
+	private $loginInfo;
+	/** @var bool Whether our edits are bot edits */
+	private $botEdits;
 
 	/**
 	 * @param LoggerInterface $logger
@@ -31,6 +35,36 @@ class Wiki {
 	public function __construct( LoggerInterface $logger, string $domain = DEFAULT_URL ) {
 		$this->logger = $logger;
 		$this->domain = $domain;
+	}
+
+	/**
+	 * @param LoginInfo $li
+	 */
+	public function setLoginInfo( LoginInfo $li ) : void {
+		// FIXME This should be in the constructor, and it should not depend on config
+		$this->loginInfo = $li;
+	}
+
+	/**
+	 * @return LoginInfo
+	 */
+	public function getLoginInfo() : LoginInfo {
+		return $this->loginInfo;
+	}
+
+	/**
+	 * @param bool $bot
+	 */
+	public function setEditsAsBot( bool $bot ) : void {
+		// FIXME same as setLoginInfo
+		$this->botEdits = $bot;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getEditsAsBot() : bool {
+		return $this->botEdits;
 	}
 
 	/**
@@ -86,7 +120,7 @@ class Wiki {
 			'token' => $this->getToken( 'csrf' ),
 		] + $params;
 
-		if ( Config::getInstance()->get( 'bot-edits' ) ) {
+		if ( $this->getEditsAsBot() ) {
 			$params['bot'] = 1;
 		}
 
@@ -106,6 +140,9 @@ class Wiki {
 	 * @throws LoginException
 	 */
 	public function login() : void {
+		if ( $this->loginInfo === null ) {
+			throw new CannotLoginException( 'Missing login data' );
+		}
 		if ( self::$loggedIn ) {
 			return;
 		}
@@ -115,8 +152,8 @@ class Wiki {
 
 		$params = [
 			'action' => 'login',
-			'lgname' => Config::getInstance()->get( 'username' ),
-			'lgpassword' => Config::getInstance()->get( 'password' ),
+			'lgname' => $this->getLoginInfo()->getUsername(),
+			'lgpassword' => $this->getLoginInfo()->getPassword(),
 			'lgtoken' => $this->getToken( 'login' )
 		];
 

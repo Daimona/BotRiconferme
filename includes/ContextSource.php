@@ -21,14 +21,19 @@ abstract class ContextSource implements LoggerAwareInterface {
 	/** @var Wiki */
 	private $wiki;
 
+	/** @var MessageProvider */
+	private $messageProvider;
+
 	/**
 	 * @param LoggerInterface $logger
 	 * @param Wiki $wiki
+	 * @param MessageProvider $mp
 	 */
-	public function __construct( LoggerInterface $logger, Wiki $wiki ) {
+	public function __construct( LoggerInterface $logger, Wiki $wiki, MessageProvider $mp ) {
 		$this->setLogger( $logger );
 		$this->setConfig( Config::getInstance() );
 		$this->setWiki( $wiki );
+		$this->setMessageProvider( $mp );
 	}
 
 	/**
@@ -84,13 +89,27 @@ abstract class ContextSource implements LoggerAwareInterface {
 	}
 
 	/**
+	 * @return MessageProvider
+	 */
+	protected function getMessageProvider() : MessageProvider {
+		return $this->messageProvider;
+	}
+
+	/**
+	 * @param MessageProvider $mp
+	 */
+	protected function setMessageProvider( MessageProvider $mp ) : void {
+		$this->messageProvider = $mp;
+	}
+
+	/**
 	 * Get a message
 	 *
 	 * @param string $key
 	 * @return Message
 	 */
 	protected function msg( string $key ) : Message {
-		return new Message( $key );
+		return $this->messageProvider->getMessage( $key );
 	}
 
 	/**

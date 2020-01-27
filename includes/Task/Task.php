@@ -44,6 +44,13 @@ abstract class Task extends TaskBase {
 	 * @return Subtask
 	 */
 	private function getSubtaskInstance( string $class ) : Subtask {
-		return new $class( $this->getLogger(), $this->getWiki(), $this->getDataProvider() );
+		/** @var Subtask $ret */
+		$ret = new $class(
+			$this->getLogger(),
+			$this->getWiki(),
+			$this->getDataProvider(),
+			$this->getMessageProvider()
+		);
+		return $ret;
 	}
 }

@@ -2,9 +2,6 @@
 
 namespace BotRiconferme;
 
-/**
- *
- */
 class Message {
 	public const MONTHS = [
 		'January' => 'gennaio',
@@ -24,10 +21,10 @@ class Message {
 	private $value;
 
 	/**
-	 * @param string $key
+	 * @param string $value
 	 */
-	public function __construct( string $key ) {
-		$this->value = Config::getInstance()->getWikiMessage( $key );
+	public function __construct( string $value ) {
+		$this->value = $value;
 	}
 
 	/**

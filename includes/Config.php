@@ -22,8 +22,6 @@ class Config {
 	private static $instance;
 	/** @var array */
 	private $opts = [];
-	/** @var array|null Lazy-loaded to avoid unnecessary requests */
-	private $messages;
 	/** @var Wiki */
 	private $wiki;
 
@@ -65,26 +63,6 @@ class Config {
 			$inst->set( $key, $val );
 		}
 		self::$instance = $inst;
-	}
-
-	/**
-	 * @param string $key
-	 * @return string
-	 * @throws ConfigException
-	 */
-	public function getWikiMessage( string $key ) : string {
-		if ( $this->messages === null ) {
-			try {
-				$cont = $this->wiki->getPageContent( $this->opts[ 'msg-title' ] );
-				$this->messages = json_decode( $cont, true );
-			} catch ( MissingPageException $_ ) {
-				throw new ConfigException( 'Please create a messages page.' );
-			}
-		}
-		if ( !isset( $this->messages[ $key ] ) ) {
-			throw new ConfigException( "Message '$key' does not exist." );
-		}
-		return $this->messages[$key];
 	}
 
 	/**

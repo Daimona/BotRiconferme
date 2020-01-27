@@ -2,7 +2,6 @@
 
 namespace BotRiconferme\Request;
 
-use BotRiconferme\Bot;
 use BotRiconferme\Exception\APIRequestException;
 use BotRiconferme\Exception\MissingPageException;
 use BotRiconferme\Exception\PermissionDeniedException;

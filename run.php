@@ -8,6 +8,7 @@ require __DIR__ . '/vendor/autoload.php';
 use BotRiconferme\Bot;
 use BotRiconferme\CLI;
 use BotRiconferme\Config;
+use BotRiconferme\MessageProvider;
 
 if ( !CLI::isCLI() ) {
 	exit( 'CLI only!' );
@@ -33,13 +34,26 @@ $simpleLogger = new \BotRiconferme\Logger\SimpleLogger();
 // @fixme
 $wiki = new \BotRiconferme\Wiki\Wiki( $simpleLogger );
 Config::init( $cli->getMainOpts(), $wiki );
+$mp = new MessageProvider( $wiki, Config::getInstance()->get( 'msg-title' ) );
+$loginInfo = new \BotRiconferme\Wiki\LoginInfo(
+	Config::getInstance()->get( 'username' ),
+	Config::getInstance()->get( 'password' )
+);
+$wiki->setLoginInfo( $loginInfo );
+$wiki->setEditsAsBot( Config::getInstance()->get( 'bot-edits' ) );
 
 if ( $errTitle !== null ) {
 	// Use a different Wiki with higher min level.
 	$wikiLoggerLogger = new \BotRiconferme\Logger\SimpleLogger( \Psr\Log\LogLevel::ERROR );
 	$wikiLoggerWiki = new \BotRiconferme\Wiki\Wiki( $wikiLoggerLogger );
+	$wikiLoggerWiki->setLoginInfo( $loginInfo );
+	$wikiLoggerWiki->setEditsAsBot( Config::getInstance()->get( 'bot-edits' ) );
 	$errPage = new \BotRiconferme\Wiki\Page\Page( $errTitle, $wikiLoggerWiki );
-	$wikiLogger = new \BotRiconferme\Logger\WikiLogger( $errPage, \Psr\Log\LogLevel::ERROR );
+	$wikiLogger = new \BotRiconferme\Logger\WikiLogger(
+		$errPage,
+		$mp->getMessage( 'error-page-summary' )->text(),
+		\Psr\Log\LogLevel::ERROR
+	);
 	$mainLogger = new \BotRiconferme\Logger\MultiLogger( $simpleLogger, $wikiLogger );
 } else {
 	$mainLogger = $simpleLogger;
@@ -51,7 +65,7 @@ $errorHandler = function ( $errno, $errstr, $errfile, $errline ) {
 // @phan-suppress-next-line PhanTypeMismatchArgumentInternal
 set_error_handler( $errorHandler );
 
-$bot = new Bot( $mainLogger, $wiki );
+$bot = new Bot( $mainLogger, $wiki, $mp );
 $taskOpt = $cli->getTaskOpt();
 $type = current( array_keys( $taskOpt ) );
 try {

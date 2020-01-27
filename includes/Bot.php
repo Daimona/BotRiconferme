@@ -13,14 +13,18 @@ class Bot {
 	private $logger;
 	/** @var Wiki */
 	private $wiki;
+	/** @var MessageProvider */
+	private $messageProvider;
 
 	/**
 	 * @param LoggerInterface $logger
 	 * @param Wiki $wiki
+	 * @param MessageProvider $mp
 	 */
-	public function __construct( LoggerInterface $logger, Wiki $wiki ) {
+	public function __construct( LoggerInterface $logger, Wiki $wiki, MessageProvider $mp ) {
 		$this->logger = $logger;
 		$this->wiki = $wiki;
+		$this->messageProvider = $mp;
 	}
 
 	/**
@@ -32,7 +36,7 @@ class Bot {
 	private function run( string $mode = TaskManager::MODE_COMPLETE, string $name = null ) : void {
 		$activity = $mode === TaskManager::MODE_COMPLETE ? TaskManager::MODE_COMPLETE : "$mode $name";
 		$this->logger->info( "Running $activity" );
-		$manager = new TaskManager( $this->logger, $this->wiki );
+		$manager = new TaskManager( $this->logger, $this->wiki, $this->messageProvider );
 		$res = $manager->run( $mode, $name );
 		$base = "Execution of $activity";
 		if ( $res->isOK() ) {
