@@ -2,3 +2,5 @@
 /composer.lock
 /.idea/
 password.txt
+phpda.yml
+base.html

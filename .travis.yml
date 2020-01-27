@@ -11,14 +11,10 @@ before_install:
   - phpenv config-rm xdebug.ini
   - pecl channel-update pecl.php.net
   - pecl install ast
-  - sudo add-apt-repository universe
-  - sudo apt update
 
 install:
   - composer install
   - composer validate
-  - sudo apt install graphviz
 
 script:
   - composer test
-  - vendor/bin/phpda
