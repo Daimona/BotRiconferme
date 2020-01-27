@@ -21,7 +21,8 @@
 	"require-dev": {
 		"jakub-onderka/php-parallel-lint": "1.0.0",
 		"mediawiki/mediawiki-codesniffer": "29.0.0",
-		"phan/phan": "2.4.6"
+		"phan/phan": "2.4.7",
+		"mamuz/php-dependency-analysis": "^2.0"
 	},
 	"autoload": {
 		"psr-4": {

@@ -17,7 +17,7 @@ class NativeRequest extends RequestBase {
 			]
 		];
 		$url = $this->url;
-		if ( $this->method === 'POST' ) {
+		if ( $this->method === self::METHOD_POST ) {
 			$context['http']['content'] = $params;
 		} else {
 			$url = "$url?$params";

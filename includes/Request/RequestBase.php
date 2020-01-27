@@ -21,6 +21,9 @@ abstract class RequestBase {
 	// In seconds
 	protected const MAXLAG = 5;
 
+	protected const METHOD_GET = 'GET';
+	protected const METHOD_POST = 'POST';
+
 	/** @var string */
 	protected $url;
 	/** @var array */
@@ -28,7 +31,7 @@ abstract class RequestBase {
 	/** @var array */
 	protected $params;
 	/** @var string */
-	protected $method = 'GET';
+	protected $method = self::METHOD_GET;
 	/** @var string[] */
 	protected $newCookies = [];
 
@@ -63,7 +66,7 @@ abstract class RequestBase {
 	 * @return self For chaining
 	 */
 	public function setPost() : self {
-		$this->method = 'POST';
+		$this->method = self::METHOD_POST;
 		return $this;
 	}
 
@@ -111,7 +114,7 @@ abstract class RequestBase {
 	 * @return \stdClass
 	 */
 	private function makeRequestInternal( array $params ) : \stdClass {
-		if ( $this->method === 'POST' ) {
+		if ( $this->method === self::METHOD_POST ) {
 			$params['maxlag'] = self::MAXLAG;
 		}
 		$query = http_build_query( $params );

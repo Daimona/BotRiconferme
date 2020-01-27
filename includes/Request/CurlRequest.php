@@ -23,7 +23,7 @@ class CurlRequest extends RequestBase {
 		curl_setopt( $curl, CURLOPT_HTTPHEADER, $this->getHeaders() );
 
 		$url = $this->url;
-		if ( $this->method === 'POST' ) {
+		if ( $this->method === self::METHOD_POST ) {
 			curl_setopt( $curl, CURLOPT_URL, $url );
 			curl_setopt( $curl, CURLOPT_POST, true );
 			curl_setopt( $curl, CURLOPT_POSTFIELDS, $params );
