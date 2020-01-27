@@ -22,7 +22,7 @@ class Wiki {
 	private $logger;
 	/** @var string[] */
 	private $tokens;
-	/** @var LoginInfo|null */
+	/** @var LoginInfo */
 	private $loginInfo;
 	/** @var bool Whether our edits are bot edits */
 	private $botEdits;

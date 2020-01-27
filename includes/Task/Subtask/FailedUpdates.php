@@ -54,7 +54,7 @@ class FailedUpdates extends Subtask {
 	 */
 	protected function updateBurList( array $users ) : void {
 		$this->getLogger()->info( 'Updating bur list. Removing: ' . implode( ', ', $users ) );
-		$remList = RegexUtils::regexFromArray( '!', $users );
+		$remList = RegexUtils::regexFromArray( '!', ...$users );
 		$burList = $this->getPage( $this->getOpt( 'bur-list-title' ) );
 		$content = $burList->getContent();
 		$reg = "!^\#\{\{ *Burocrate *\| *$remList.+\n!m";

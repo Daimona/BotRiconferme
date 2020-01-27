@@ -46,7 +46,7 @@ class SimpleUpdates extends Subtask {
 		foreach ( $pages as $page ) {
 			$users[] = $this->getUser( $page->getUserName() );
 		}
-		$usersReg = RegexUtils::regexFromArray( '!', $users );
+		$usersReg = RegexUtils::regexFromArray( '!', ...$users );
 
 		$search = "!^.+\{\{[^|}]*\/Riga\|[^|]*riconferma[^|]*\|utente=$usersReg\|.+\n!m";
 
