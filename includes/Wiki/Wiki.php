@@ -83,7 +83,7 @@ class Wiki {
 	 */
 	public function getPageContent( string $title, int $section = null ) : string {
 		$msg = "Retrieving content of $title" . ( $section !== null ? ", section $section" : '' );
-		$this->logger->debug( $msg );
+		$this->logger->info( $msg );
 		$params = [
 			'action' => 'query',
 			'titles' => $title,

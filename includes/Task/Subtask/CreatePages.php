@@ -70,7 +70,7 @@ class CreatePages extends Subtask {
 	 * @throws TaskException
 	 */
 	protected function getLastPageNum( User $user ) : int {
-		$this->getLogger()->debug( "Retrieving previous pages for $user" );
+		$this->getLogger()->info( "Retrieving previous pages for $user" );
 
 		$unprefixedTitle = explode( ':', $this->getOpt( 'main-page-title' ), 2 )[1];
 

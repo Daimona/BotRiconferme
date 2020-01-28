@@ -60,10 +60,11 @@ abstract class RequestBase {
 	 *
 	 * @return \stdClass
 	 * @todo Return an iterable object which automatically continues the query only if the last
-	 *   entry available is reached.
+	 *   entry available is reached, instead of requesting max results.
 	 */
 	public function execute() : \stdClass {
 		$curParams = $this->params;
+		$lim = $this->parseLimit();
 		$sets = [];
 		do {
 			$res = $this->makeRequestInternal( $curParams );
@@ -71,14 +72,53 @@ abstract class RequestBase {
 			$this->handleErrorAndWarnings( $res );
 			$sets[] = $res;
 
+			// Assume that we have finished
 			$finished = true;
 			if ( isset( $res->continue ) ) {
+				// This may indicate that we're not done...
 				$curParams = get_object_vars( $res->continue ) + $curParams;
 				$finished = false;
+			}
+			if ( $lim !== -1 ) {
+				$count = $this->countResults( $res );
+				if ( $count !== null && $count >= $lim ) {
+					// Unless we're able to use a limit, and that limit was passed.
+					$finished = true;
+				}
 			}
 		} while ( !$finished );
 
 		return $this->mergeSets( $sets );
+	}
+
+	/**
+	 * FIXME Should be revamped together with countResults
+	 * @return int
+	 */
+	private function parseLimit() : int {
+		foreach ( $this->params as $name => $val ) {
+			if ( substr( $name, -strlen( 'limit' ) ) === 'limit' ) {
+				return $val === 'max' ? -1 : (int)$val;
+			}
+		}
+		// Assume no limit
+		return -1;
+	}
+
+	/**
+	 * Try to count the amount of entries in a result.
+	 * FIXME This is an awful hack that works with queryrevisions only. The caller should
+	 * probably pass a callable like $countResults() to execute().
+	 *
+	 * @param \stdClass $res
+	 * @return int|null
+	 */
+	private function countResults( \stdClass $res ) : ?int {
+		if ( isset( $res->query->pages ) && count( $res->query->pages ) === 1 ) {
+			$pages = $res->query->pages;
+			return count( reset( $pages )->revisions );
+		}
+		return null;
 	}
 
 	/**
