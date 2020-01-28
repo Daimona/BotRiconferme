@@ -21,7 +21,7 @@ use Psr\Log\LogLevel;
  * Higher-level class. It only wraps tasks executions, and contains generic data
  */
 class Bot {
-	/** @var LoggerInterface */
+	/** @var IFlushingAwareLogger */
 	private $mainLogger;
 	/** @var WikiGroup */
 	private $wikiGroup;
