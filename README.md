@@ -17,9 +17,8 @@ La pagina raccoglie dati su tutti gli admin, in particolare le date di elezione 
 **Nota**: È fondamentale includere gli zeri di padding (ovvero, 07/05 va bene, 7/05, 7/5 e 07/5 no).
 
 ### https://it.wikipedia.org/wiki/Utente:BotRiconferme/Config.json
-La pagina raccoglie un insieme di opzioni di configurazione più "oggettivi", e poco soggetti a cambiamenti. Sono quasi tutti titoli delle pagine che il bot dovrà modificare o leggere, tranne i primi due:
+La pagina raccoglie un insieme di opzioni di configurazione più "oggettivi", e poco soggetti a cambiamenti. Sono quasi tutti titoli delle pagine che il bot dovrà modificare o leggere, tranne il primo:
  * `exclude-admins` contiene una lista di admin da non includere nella lista e quindi da ignorare completamente.
- * `bot-edits` serve a decidere se contrassegnare gli edit del bot come bot-edit o meno.
  
 ### https://it.wikipedia.org/wiki/Utente:BotRiconferme/Messages.json
 Questa è l'unica pagina che potrebbe aver bisogno di qualche aggiornamento. Contiene (quasi) tutti i messaggi utilizzati dal bot: sostanzialmente, testo da aggiungere alle pagine e campi oggetto da utilizzare. In alcuni messaggi sono presenti stringhe come `$num`. Queste rappresentano variabili sostituite al momento di utilizzare il messaggio. Inoltre, alcuni usano il costrutto `{{$plur|$num|a|e}}`. Esso funziona esattamente come il `{{PLURAL}}` di MediaWiki, e viene utilizzato nei campi oggetto.

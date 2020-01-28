@@ -24,8 +24,6 @@ class Wiki {
 	private $tokens;
 	/** @var LoginInfo */
 	private $loginInfo;
-	/** @var bool Whether our edits are bot edits */
-	private $botEdits;
 	/** @var RequestFactory */
 	private $requestFactory;
 	/** @var string */
@@ -51,21 +49,6 @@ class Wiki {
 	 */
 	public function getLoginInfo() : LoginInfo {
 		return $this->loginInfo;
-	}
-
-	/**
-	 * @param bool $bot
-	 */
-	public function setEditsAsBot( bool $bot ) : void {
-		// FIXME same as setLoginInfo
-		$this->botEdits = $bot;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function getEditsAsBot() : bool {
-		return $this->botEdits;
 	}
 
 	/**
@@ -142,7 +125,7 @@ class Wiki {
 			'token' => $this->getToken( 'csrf' ),
 		] + $params;
 
-		if ( $this->getEditsAsBot() ) {
+		if ( BOT_EDITS === true ) {
 			$params['bot'] = 1;
 		}
 

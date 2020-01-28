@@ -16,6 +16,8 @@ if ( !CLI::isCLI() ) {
 }
 
 define( 'BOT_VERSION', '2.1' );
+// TODO make this configurable?
+define( 'BOT_EDITS', false );
 
 date_default_timezone_set( 'Europe/Rome' );
 
@@ -50,14 +52,10 @@ try {
 Config::init( $confValues );
 $mp = new MessageProvider( $wiki, $cli->getOpt( 'msg-title' ) );
 
-$wiki->setEditsAsBot( Config::getInstance()->get( 'bot-edits' ) );
-$centralWiki->setEditsAsBot( Config::getInstance()->get( 'bot-edits' ) );
-
 if ( $errTitle !== null ) {
 	// Use a different Wiki with higher min level.
 	$wikiLoggerLogger = new \BotRiconferme\Logger\SimpleLogger( \Psr\Log\LogLevel::ERROR );
 	$wikiLoggerWiki = new \BotRiconferme\Wiki\Wiki( $loginInfo, $wikiLoggerLogger, $rf );
-	$wikiLoggerWiki->setEditsAsBot( Config::getInstance()->get( 'bot-edits' ) );
 	$errPage = new \BotRiconferme\Wiki\Page\Page( $errTitle, $wikiLoggerWiki );
 	$wikiLogger = new \BotRiconferme\Logger\WikiLogger(
 		$errPage,

@@ -79,9 +79,6 @@ class FailedUpdates extends Subtask {
 		$this->getLogger()->info( 'Requesting flag removal for: ' . implode( ', ', $pages ) );
 
 		$metaWiki = $this->getWikiGroup()->getCentralWiki();
-		// FIXME There should be some layer like "WikiFamily" for sharing Login info and bot status
-		//  and/or a factory method to get wikis.
-		$metaWiki->setEditsAsBot( $this->getWiki()->getEditsAsBot() );
 		$flagRemPage = new Page(
 			$this->getOpt( 'flag-removal-page-title' ),
 			$metaWiki
