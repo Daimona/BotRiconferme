@@ -3,7 +3,7 @@
 namespace BotRiconferme\Task;
 
 use BotRiconferme\Task\Subtask\Subtask;
-use BotRiconferme\TaskResult;
+use BotRiconferme\TaskHelper\TaskResult;
 
 /**
  * Base class for a high-level task.
@@ -18,7 +18,7 @@ abstract class Task extends TaskBase {
 
 	/**
 	 * @param string $subtask Defined in self::SUBTASKS_MAP
-	 * @return TaskResult
+	 * @return \BotRiconferme\TaskHelper\TaskResult
 	 */
 	protected function runSubtask( string $subtask ) : TaskResult {
 		$map = $this->getSubtasksMap();

@@ -3,7 +3,7 @@
 namespace BotRiconferme\Task;
 
 use BotRiconferme\Exception\TaskException;
-use BotRiconferme\TaskResult;
+use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Utils\RegexUtils;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 

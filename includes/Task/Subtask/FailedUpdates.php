@@ -2,8 +2,8 @@
 
 namespace BotRiconferme\Task\Subtask;
 
-use BotRiconferme\Message;
-use BotRiconferme\TaskResult;
+use BotRiconferme\Message\Message;
+use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Utils\RegexUtils;
 use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageRiconferma;

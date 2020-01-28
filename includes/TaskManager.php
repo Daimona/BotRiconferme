@@ -15,6 +15,8 @@ use BotRiconferme\Task\Subtask\Subtask;
 use BotRiconferme\Task\Subtask\UserNotice;
 use BotRiconferme\Task\Task;
 use BotRiconferme\Task\UpdateList;
+use BotRiconferme\TaskHelper\TaskDataProvider;
+use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Wiki\Page\PageBotList;
 use BotRiconferme\Wiki\WikiGroup;
 use Psr\Log\LoggerInterface;

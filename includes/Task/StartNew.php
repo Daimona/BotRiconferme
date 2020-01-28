@@ -5,7 +5,7 @@ namespace BotRiconferme\Task;
 use BotRiconferme\Task\Subtask\CreatePages;
 use BotRiconferme\Task\Subtask\OpenUpdates;
 use BotRiconferme\Task\Subtask\UserNotice;
-use BotRiconferme\TaskResult;
+use BotRiconferme\TaskHelper\TaskResult;
 
 /**
  * Task for opening new procedures

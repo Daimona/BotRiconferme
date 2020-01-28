@@ -5,6 +5,7 @@ namespace BotRiconferme;
 use BotRiconferme\Exception\MessageNotFoundException;
 use BotRiconferme\Exception\MessagesPageDoesNotExistException;
 use BotRiconferme\Exception\MissingPageException;
+use BotRiconferme\Message\Message;
 use BotRiconferme\Wiki\Wiki;
 
 class MessageProvider {

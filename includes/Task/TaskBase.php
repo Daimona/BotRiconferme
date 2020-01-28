@@ -4,8 +4,8 @@ namespace BotRiconferme\Task;
 
 use BotRiconferme\ContextSource;
 use BotRiconferme\MessageProvider;
-use BotRiconferme\TaskDataProvider;
-use BotRiconferme\TaskResult;
+use BotRiconferme\TaskHelper\TaskDataProvider;
+use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Wiki\Page\PageBotList;
 use BotRiconferme\Wiki\WikiGroup;
 use Psr\Log\LoggerInterface;
@@ -25,7 +25,7 @@ abstract class TaskBase extends ContextSource {
 	 * @param LoggerInterface $logger
 	 * @param WikiGroup $wikiGroup
 	 * @param TaskDataProvider $dataProvider
-	 * @param MessageProvider $mp
+	 * @param \BotRiconferme\Message\\BotRiconferme\MessageProvider $mp
 	 * @param PageBotList $pbl
 	 */
 	final public function __construct(
@@ -42,7 +42,7 @@ abstract class TaskBase extends ContextSource {
 	/**
 	 * Entry point
 	 *
-	 * @return TaskResult
+	 * @return \BotRiconferme\TaskHelper\TaskResult
 	 */
 	final public function run() : TaskResult {
 		$class = ( new \ReflectionClass( $this ) )->getShortName();

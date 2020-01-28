@@ -1,7 +1,8 @@
 <?php declare( strict_types=1 );
 
-namespace BotRiconferme;
+namespace BotRiconferme\TaskHelper;
 
+use BotRiconferme\ContextSource;
 use BotRiconferme\Wiki\Page\PageBotList;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\Wiki\User;

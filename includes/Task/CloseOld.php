@@ -6,7 +6,7 @@ use BotRiconferme\Task\Subtask\ArchivePages;
 use BotRiconferme\Task\Subtask\ClosePages;
 use BotRiconferme\Task\Subtask\FailedUpdates;
 use BotRiconferme\Task\Subtask\SimpleUpdates;
-use BotRiconferme\TaskResult;
+use BotRiconferme\TaskHelper\TaskResult;
 
 /**
  * Task for closing old procedures

@@ -1,6 +1,6 @@
 <?php declare( strict_types=1 );
 
-namespace BotRiconferme;
+namespace BotRiconferme\TaskHelper;
 
 /**
  * Object wrapping the result of the execution of a task.

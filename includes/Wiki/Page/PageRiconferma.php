@@ -2,7 +2,7 @@
 
 namespace BotRiconferme\Wiki\Page;
 
-use BotRiconferme\Message;
+use BotRiconferme\Message\Message;
 
 /**
  * Represents a single riconferma page

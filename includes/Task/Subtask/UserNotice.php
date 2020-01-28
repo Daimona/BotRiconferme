@@ -2,7 +2,7 @@
 
 namespace BotRiconferme\Task\Subtask;
 
-use BotRiconferme\TaskResult;
+use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Wiki\User;
 
 /**
