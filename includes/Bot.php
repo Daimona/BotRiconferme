@@ -27,8 +27,6 @@ class Bot {
 	private $wikiGroup;
 	/** @var MessageProvider */
 	private $messageProvider;
-	/** @var PageBotList */
-	private $pageBotList;
 	/** @var CLI */
 	private $cli;
 
@@ -45,17 +43,13 @@ class Bot {
 	 */
 	private function initialize() : void {
 		$simpleLogger = new SimpleLogger();
-		$this->wikiGroup = $this->createWikiGroup( $simpleLogger );
+		$this->createWikiGroup( $simpleLogger );
 		$this->messageProvider = new MessageProvider(
 			$this->wikiGroup->getMainWiki(),
 			$this->cli->getOpt( 'msg-title' )
 		);
 		$this->initConfig();
-		$this->mainLogger = $this->createMainLogger( $simpleLogger );
-		$this->pageBotList = PageBotList::get(
-			$this->wikiGroup->getMainWiki(),
-			$this->cli->getOpt( 'list-title' )
-		);
+		$this->createMainLogger( $simpleLogger );
 	}
 
 	/**
@@ -81,9 +75,8 @@ class Bot {
 
 	/**
 	 * @param LoggerInterface $baseLogger
-	 * @return WikiGroup
 	 */
-	private function createWikiGroup( LoggerInterface $baseLogger ) : WikiGroup {
+	private function createWikiGroup( LoggerInterface $baseLogger ) : void {
 		// FIXME Hardcoded
 		$url = $this->cli->getURL() ?? 'https://it.wikipedia.org/w/api.php';
 		$localUserIdentifier = '@itwiki';
@@ -99,16 +92,15 @@ class Bot {
 		$centralRF = new RequestFactory( $centralURL );
 		$centralWiki = new Wiki( $loginInfo, $baseLogger, $centralRF );
 		$centralWiki->setLocalUserIdentifier( $localUserIdentifier );
-		return new WikiGroup( $wiki, $centralWiki );
+		$this->wikiGroup = new WikiGroup( $wiki, $centralWiki );
 	}
 
 	/**
 	 * FIXME SO MUCH DEPENDENCY HELL
 	 *
 	 * @param IFlushingAwareLogger $baseLogger
-	 * @return IFlushingAwareLogger
 	 */
-	private function createMainLogger( IFlushingAwareLogger $baseLogger ) : IFlushingAwareLogger {
+	private function createMainLogger( IFlushingAwareLogger $baseLogger ) : void {
 		$mainWiki = $this->wikiGroup->getMainWiki();
 		$mp = $this->messageProvider;
 		$errTitle = $this->cli->getOpt( 'error-title' );
@@ -126,11 +118,10 @@ class Bot {
 				$mp->getMessage( 'error-page-summary' )->text(),
 				LogLevel::ERROR
 			);
-			$mainLogger = new MultiLogger( $baseLogger, $wikiLogger );
+			$this->mainLogger = new MultiLogger( $baseLogger, $wikiLogger );
 		} else {
-			$mainLogger = $baseLogger;
+			$this->mainLogger = $baseLogger;
 		}
-		return $mainLogger;
 	}
 
 	/**
@@ -159,11 +150,15 @@ class Bot {
 	) : void {
 		$activity = $mode === TaskManager::MODE_COMPLETE ? TaskManager::MODE_COMPLETE : "$mode $name";
 		$this->mainLogger->info( "Running $activity" );
+		$pbl = PageBotList::get(
+			$this->wikiGroup->getMainWiki(),
+			$this->cli->getOpt( 'list-title' )
+		);
 		$manager = new TaskManager(
 			$this->mainLogger,
 			$this->wikiGroup,
 			$this->messageProvider,
-			$this->pageBotList
+			$pbl
 		);
 		$res = $manager->run( $mode, $name );
 		$base = "Execution of $activity";

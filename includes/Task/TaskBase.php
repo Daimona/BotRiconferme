@@ -25,7 +25,7 @@ abstract class TaskBase extends ContextSource {
 	 * @param LoggerInterface $logger
 	 * @param WikiGroup $wikiGroup
 	 * @param TaskDataProvider $dataProvider
-	 * @param \BotRiconferme\Message\\BotRiconferme\MessageProvider $mp
+	 * @param MessageProvider $mp
 	 * @param PageBotList $pbl
 	 */
 	final public function __construct(
