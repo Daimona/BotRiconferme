@@ -114,7 +114,7 @@ abstract class RequestBase {
 	 * @return int|null
 	 */
 	private function countResults( \stdClass $res ) : ?int {
-		if ( isset( $res->query->pages ) && count( $res->query->pages ) === 1 ) {
+		if ( isset( $res->query->pages ) && count( get_object_vars( $res->query->pages ) ) === 1 ) {
 			$pages = $res->query->pages;
 			return count( reset( $pages )->revisions );
 		}
