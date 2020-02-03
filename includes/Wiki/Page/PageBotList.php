@@ -108,6 +108,11 @@ class PageBotList extends Page {
 	}
 
 	/**
+	 * An override is considered expired if:
+	 * - The override date has passed (that's the point of having an override), AND
+	 * - The "normal" date has passed (otherwise we'd use two different dates for the same year)
+	 * For decreased risk, we add an additional delay of 3 days.
+	 *
 	 * @param array $groups
 	 * @return bool
 	 */
