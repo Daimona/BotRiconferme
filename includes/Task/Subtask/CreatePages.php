@@ -86,11 +86,15 @@ class CreatePages extends Subtask {
 			'apprefix' => implode( '|', $prefixes ),
 			'aplimit' => 'max'
 		];
-
-		$res = $this->getRequestFactory()->newFromParams( $params )->execute();
+		$foundPages = [];
+		foreach ( $prefixes as $prefix ) {
+			$params['apprefix'] = $prefix;
+			$res = $this->getRequestFactory()->newFromParams( $params )->execute();
+			$foundPages = array_merge( $foundPages, $res->query->allpages );
+		}
 
 		$last = 0;
-		foreach ( $res->query->allpages as $resPage ) {
+		foreach ( $foundPages as $resPage ) {
 			$page = new PageRiconferma( $resPage->title, $this->getWiki() );
 
 			if ( date( 'z/Y', $page->getCreationTimestamp() ) === date( 'z/Y' ) ) {
