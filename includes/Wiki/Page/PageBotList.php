@@ -80,6 +80,7 @@ class PageBotList extends Page {
 				$date = ( new \DateTime )->setTimestamp( $ts );
 			}
 		}
+		// @phan-suppress-next-line PhanPossiblyInfiniteLoop
 		while ( $date <= new \DateTime ) {
 			$date->modify( '+1 year' );
 		}
