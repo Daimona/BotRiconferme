@@ -206,6 +206,9 @@ abstract class RequestBase {
 	 * @return \stdClass
 	 */
 	private function mergeSets( array $sets ) : \stdClass {
+		if ( !$sets ) {
+			return (object)[];
+		}
 		// Use the first set as template
 		$ret = array_shift( $sets );
 
