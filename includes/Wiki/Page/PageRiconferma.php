@@ -9,7 +9,9 @@ use BotRiconferme\Message\Message;
  */
 class PageRiconferma extends Page {
 	// Sections of the page, value = section number. Loaded in self::defineSections
+	/** @var int */
 	private $supportSection;
+	/** @var int */
 	private $opposeSection;
 	/** @var array Counts of votes for each section */
 	private $sectionCounts = [];
