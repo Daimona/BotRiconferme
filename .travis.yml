@@ -6,7 +6,7 @@ php:
   - 7.4
   - 8.0
 
-dist: focal
+dist: bionic
 
 before_install:
   - phpenv config-rm xdebug.ini
