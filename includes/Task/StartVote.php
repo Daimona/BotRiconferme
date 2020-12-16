@@ -3,6 +3,7 @@
 namespace BotRiconferme\Task;
 
 use BotRiconferme\Exception\TaskException;
+use BotRiconferme\Task\Subtask\ClosePages;
 use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Utils\RegexUtils;
 use BotRiconferme\Wiki\Page\PageRiconferma;
@@ -131,6 +132,29 @@ class StartVote extends Task {
 		];
 
 		$votePage->edit( $params );
+	}
+
+	/**
+	 * @param PageRiconferma $page
+	 * @see ClosePages::updateBasePage()
+	 */
+	protected function updateBasePage( PageRiconferma $page ) : void {
+		$this->getLogger()->info( "Updating base page for $page" );
+
+		if ( $page->getNum() === 1 ) {
+			$basePage = $this->getUser( $page->getUserName() )->getBasePage();
+		} else {
+			$basePage = $this->getUser( $page->getUserName() )->getExistingBasePage();
+		}
+
+		$current = $basePage->getContent();
+
+		$newContent = preg_replace( '/^riconferma in corso/m', 'votazione di riconferma in corso', $current );
+
+		$basePage->edit( [
+			'text' => $newContent,
+			'summary' => $this->msg( 'close-base-page-summary-update' )->text()
+		] );
 	}
 
 	/**

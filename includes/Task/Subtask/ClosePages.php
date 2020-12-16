@@ -64,9 +64,9 @@ class ClosePages extends Subtask {
 		$outcomeText = ( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ) ?
 			'non riconfermato' :
 			'riconfermato';
-		$text = $page->isVote() ? "votazione: $outcomeText" : 'riconferma tacita';
+		$text = $page->isVote() ? "votazione di riconferma: $outcomeText" : 'riconferma tacita';
 
-		$newContent = str_replace( 'riconferma in corso', $text, $current );
+		$newContent = preg_replace( '/^(votazione di )?riconferma in corso/m', $text, $current );
 
 		$basePage->edit( [
 			'text' => $newContent,
