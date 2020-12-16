@@ -29,6 +29,7 @@ class FailedUpdates extends Subtask {
 		$this->requestRemoval( $failed );
 		$this->updateAnnunci( $failed );
 		$this->updateUltimeNotizie( $failed );
+		$this->updateTimeline( $failed );
 
 		return TaskResult::STATUS_GOOD;
 	}
@@ -180,6 +181,34 @@ class FailedUpdates extends Subtask {
 
 		$notiziePage->edit( [
 			'text' => $newContent,
+			'summary' => $summary
+		] );
+	}
+
+	/**
+	 * Update [[Wikipedia:Amministratori/Timeline]]
+	 *
+	 * @param PageRiconferma[] $pages
+	 */
+	protected function updateTimeline( array $pages ) : void {
+		$this->getLogger()->info( 'Updating timeline' );
+		$timelinePage = $this->getPage( $this->getOpt( 'timeline-page-title' ) );
+		$content = $timelinePage->getContent();
+
+		$today = date( 'm/d/Y' );
+		foreach ( $pages as $page ) {
+			$name = $page->getUserName();
+			$content = preg_replace(
+				"/(?<=color:)current( *from:11/27/2013 till:)end(?= text:\"\[\[(User|Utente):$name|$name]]\")/",
+				'nonriconf$1' . $today,
+				$content
+			);
+		}
+
+		$summary = $this->msg( 'timeline-summary' )->text();
+
+		$timelinePage->edit( [
+			'text' => $content,
 			'summary' => $summary
 		] );
 	}
