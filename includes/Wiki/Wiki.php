@@ -28,6 +28,8 @@ class Wiki {
 	private $requestFactory;
 	/** @var string */
 	private $localUserIdentifier = '';
+	/** @var string Used for logging */
+	private $pagePrefix = '';
 
 	/**
 	 * @param LoginInfo $li
@@ -59,6 +61,13 @@ class Wiki {
 	}
 
 	/**
+	 * @param string $prefix
+	 */
+	public function setPagePrefix( string $prefix ) : void {
+		$this->pagePrefix = $prefix;
+	}
+
+	/**
 	 * @param string $ident
 	 */
 	public function setLocalUserIdentifier( string $ident ) : void {
@@ -82,7 +91,8 @@ class Wiki {
 	 * @throws MissingSectionException
 	 */
 	public function getPageContent( string $title, int $section = null ) : string {
-		$msg = "Retrieving content of $title" . ( $section !== null ? ", section $section" : '' );
+		$fullTitle = $this->pagePrefix . $title;
+		$msg = "Retrieving content of $fullTitle" . ( $section !== null ? ", section $section" : '' );
 		$this->logger->info( $msg );
 		$params = [
 			'action' => 'query',
@@ -230,7 +240,8 @@ class Wiki {
 	 * @param string $reason
 	 */
 	public function protectPage( string $title, string $reason ) : void {
-		$this->logger->info( "Protecting page $title" );
+		$fullTitle = $this->pagePrefix . $title;
+		$this->logger->info( "Protecting page $fullTitle" );
 		$this->login();
 
 		$params = [

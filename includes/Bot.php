@@ -80,6 +80,7 @@ class Bot {
 		// FIXME Hardcoded
 		$url = $this->cli->getURL() ?? 'https://it.wikipedia.org/w/api.php';
 		$localUserIdentifier = '@itwiki';
+		$centralPagePrefix = 'meta:';
 		$centralURL = 'https://meta.wikimedia.org/w/api.php';
 
 		$loginInfo = new LoginInfo(
@@ -92,6 +93,7 @@ class Bot {
 		$centralRF = new RequestFactory( $centralURL );
 		$centralWiki = new Wiki( $loginInfo, $baseLogger, $centralRF );
 		$centralWiki->setLocalUserIdentifier( $localUserIdentifier );
+		$centralWiki->setPagePrefix( $centralPagePrefix );
 		$this->wikiGroup = new WikiGroup( $wiki, $centralWiki );
 	}
 
