@@ -82,6 +82,8 @@ class Bot {
 		$localUserIdentifier = '@itwiki';
 		$centralPagePrefix = 'meta:';
 		$centralURL = 'https://meta.wikimedia.org/w/api.php';
+		$privateURL = 'https://sysop-it.wikipedia.org/w/api.php';
+		$privatePagePrefix = 'private:';
 
 		$loginInfo = new LoginInfo(
 			$this->cli->getOpt( 'username' ),
@@ -90,11 +92,21 @@ class Bot {
 
 		$rf = new RequestFactory( $url );
 		$wiki = new Wiki( $loginInfo, $baseLogger, $rf );
+
 		$centralRF = new RequestFactory( $centralURL );
 		$centralWiki = new Wiki( $loginInfo, $baseLogger, $centralRF );
 		$centralWiki->setLocalUserIdentifier( $localUserIdentifier );
 		$centralWiki->setPagePrefix( $centralPagePrefix );
-		$this->wikiGroup = new WikiGroup( $wiki, $centralWiki );
+
+		$privateLI = new LoginInfo(
+			$this->cli->getOpt( 'username' ),
+			$this->cli->getOpt( 'private-password' )
+		);
+		$privateRF = new RequestFactory( $privateURL );
+		$privateWiki = new Wiki( $privateLI, $baseLogger, $privateRF );
+		$privateWiki->setPagePrefix( $privatePagePrefix );
+
+		$this->wikiGroup = new WikiGroup( $wiki, $centralWiki, $privateWiki );
 	}
 
 	/**

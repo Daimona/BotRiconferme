@@ -257,6 +257,33 @@ class Wiki {
 	}
 
 	/**
+	 * Block a user, infinite expiry
+	 *
+	 * @param string $username
+	 * @param string $reason
+	 */
+	public function blockUser( string $username, string $reason ) : void {
+		$this->logger->info( "Blocking user $username" );
+		$this->login();
+
+		$params = [
+			'action' => 'block',
+			// Don't allow talk page edit 'allowusertalk' => 1,
+			'autoblock' => 1,
+			'nocreate' => 1,
+			'expiry' => 'indefinite',
+			// No anononly
+			'noemail' => 1,
+			// No reblock
+			'reason' => $reason,
+			'user' => $username,
+			'token' => $this->getToken( 'csrf' )
+		];
+
+		$this->buildRequest( $params )->setPost()->execute();
+	}
+
+	/**
 	 * Shorthand
 	 * @param array $params
 	 * @return RequestBase

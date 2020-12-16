@@ -2,6 +2,7 @@
 /composer.lock
 /.idea/
 password.txt
+private-password.txt
 phpda.yml
 base.html
 class-level.html

@@ -15,7 +15,12 @@ namespace BotRiconferme;
  * --password=(BotPassword)
  * OR
  * --use-password-file
- * which will look for a $PWFILE file in the current directory containing only the plain password
+ * which will look for a PASSWORD_FILE file in the current directory containing only the plain password
+ *
+ * --private-password=(BotPassword)
+ * OR
+ * --use-private-password-file
+ * which will look for a PRIVATE_PASSWORD_FILE file in the current directory containing only the plain password
  *
  * --task=update-list
  * OR
@@ -34,6 +39,8 @@ class CLI {
 
 		'password:',
 		'use-password-file',
+		'private-password:',
+		'use-private-password-file',
 
 		'error-title:',
 
@@ -50,6 +57,7 @@ class CLI {
 
 	/** @todo Make it customizable? */
 	public const PASSWORD_FILE = __DIR__ . '/../password.txt';
+	public const PRIVATE_PASSWORD_FILE = __DIR__ . '/../private-password.txt';
 
 	/** @var array */
 	private $opts;
@@ -86,6 +94,12 @@ class CLI {
 		if ( !$hasPw && !$hasPwFile ) {
 			exit( 'Please provide a password or use a password file' );
 		}
+
+		$hasPrivatePw = array_key_exists( 'private-password', $opts );
+		$hasPrivatePwFile = array_key_exists( 'use-private-password-file', $opts );
+		if ( !$hasPrivatePw && !$hasPrivatePwFile ) {
+			exit( 'Please provide a private password or use a private-password file' );
+		}
 	}
 
 	/**
@@ -98,6 +112,14 @@ class CLI {
 			exit( 'Can only use one of "password" and "use-password-file"' );
 		} elseif ( $hasPwFile && !file_exists( self::PASSWORD_FILE ) ) {
 			exit( 'Please create the password file (' . self::PASSWORD_FILE . ')' );
+		}
+
+		$hasPrivatePw = array_key_exists( 'private-password', $opts );
+		$hasPrivatePwFile = array_key_exists( 'use-private-password-file', $opts );
+		if ( $hasPrivatePw && $hasPrivatePwFile ) {
+			exit( 'Can only use one of "private-password" and "use-private-password-file"' );
+		} elseif ( $hasPrivatePwFile && !file_exists( self::PRIVATE_PASSWORD_FILE ) ) {
+			exit( 'Please create the private-password file (' . self::PRIVATE_PASSWORD_FILE . ')' );
 		}
 
 		if ( count( array_intersect_key( $opts, [ 'task' => 1, 'subtask' => 1 ] ) ) === 2 ) {
@@ -113,6 +135,11 @@ class CLI {
 			$pw = trim( file_get_contents( self::PASSWORD_FILE ) );
 			$opts['password'] = $pw;
 			unset( $opts['use-password-file'] );
+		}
+		if ( array_key_exists( 'use-private-password-file', $opts ) ) {
+			$pw = trim( file_get_contents( self::PRIVATE_PASSWORD_FILE ) );
+			$opts['private-password'] = $pw;
+			unset( $opts['use-private-password-file'] );
 		}
 	}
 

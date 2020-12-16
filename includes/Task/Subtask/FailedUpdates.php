@@ -31,6 +31,7 @@ class FailedUpdates extends Subtask {
 		$this->updateUltimeNotizie( $failed );
 		$this->updateTimeline( $failed );
 		$this->updateCronologia( $failed );
+		$this->blockOnPrivate( $failed );
 
 		return TaskResult::STATUS_GOOD;
 	}
@@ -239,6 +240,22 @@ class FailedUpdates extends Subtask {
 			'text' => $content,
 			'summary' => $summary
 		] );
+	}
+
+	/**
+	 * Block the user on the private wiki
+	 *
+	 * @param PageRiconferma[] $pages
+	 */
+	private function blockOnPrivate( array $pages ) : void {
+		$this->getLogger()->info( 'Blocking on private wiki: ' . implode( ', ', $pages ) );
+
+		$privWiki = $this->getWikiGroup()->getPrivateWiki();
+		$reason = $this->msg( 'private-block-reason' )->text();
+
+		foreach ( $pages as $page ) {
+			$privWiki->blockUser( $page->getUserName(), $reason );
+		}
 	}
 
 	/**
