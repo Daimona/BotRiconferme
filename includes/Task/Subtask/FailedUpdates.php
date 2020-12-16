@@ -30,6 +30,7 @@ class FailedUpdates extends Subtask {
 		$this->updateAnnunci( $failed );
 		$this->updateUltimeNotizie( $failed );
 		$this->updateTimeline( $failed );
+		$this->updateCronologia( $failed );
 
 		return TaskResult::STATUS_GOOD;
 	}
@@ -199,13 +200,40 @@ class FailedUpdates extends Subtask {
 		foreach ( $pages as $page ) {
 			$name = $page->getUserName();
 			$content = preg_replace(
-				"/(?<=color:)current( *from:11/27/2013 till:)end(?= text:\"\[\[(User|Utente):$name|$name]]\")/",
+				"/(?<=color:)current( *from:\d+/\d+/\d+ till:)end(?= text:\"\[\[(User|Utente):$name|$name]]\")/",
 				'nonriconf$1' . $today,
 				$content
 			);
 		}
 
 		$summary = $this->msg( 'timeline-summary' )->text();
+
+		$timelinePage->edit( [
+			'text' => $content,
+			'summary' => $summary
+		] );
+	}
+
+	/**
+	 * Update [[Wikipedia:Amministratori/Cronologia]]
+	 *
+	 * @param PageRiconferma[] $pages
+	 */
+	private function updateCronologia( array $pages ) : void {
+		$this->getLogger()->info( 'Updating cronologia' );
+		$timelinePage = $this->getPage( $this->getOpt( 'cronologia-page-title' ) );
+		$content = $timelinePage->getContent();
+
+		foreach ( $pages as $page ) {
+			$name = $page->getUserName();
+			$content = preg_replace(
+				"/(\* *)'''(\[\[(Utente|User):$name|$name]])'''( <small>dal \d+ \w+ \d+)(</small>)/",
+				'$1$2$3' . " al {{subst:#timel:j F Y}} (non riconfermato)" . '$4',
+				$content
+			);
+		}
+
+		$summary = $this->msg( 'cronologia-summary' )->text();
 
 		$timelinePage->edit( [
 			'text' => $content,
