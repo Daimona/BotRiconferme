@@ -42,6 +42,7 @@ class StartVote extends Task {
 		foreach ( $pages as $page ) {
 			if ( $page->hasOpposition() && !$page->isVote() ) {
 				$this->openVote( $page );
+				$this->updateBasePage( $page );
 				$donePages[] = $page;
 			}
 		}
