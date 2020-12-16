@@ -3,6 +3,7 @@
 namespace BotRiconferme\Request;
 
 use BotRiconferme\Exception\APIRequestException;
+use BotRiconferme\Exception\BlockedException;
 use BotRiconferme\Exception\MissingPageException;
 use BotRiconferme\Exception\PermissionDeniedException;
 use BotRiconferme\Exception\ProtectedPageException;
@@ -176,6 +177,9 @@ abstract class RequestBase {
 				break;
 			case 'permissiondenied':
 				$ex = new PermissionDeniedException( $res->error->info );
+				break;
+			case 'blocked':
+				$ex = new BlockedException( $res->error->info );
 				break;
 			default:
 				$ex = new APIRequestException( $res->error->code . ' - ' . $res->error->info );
