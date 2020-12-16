@@ -106,24 +106,29 @@ class CLI {
 	 * @param array $opts
 	 */
 	private function checkConflictingOpts( array $opts ) : void {
-		$hasPw = array_key_exists( 'password', $opts );
-		$hasPwFile = array_key_exists( 'use-password-file', $opts );
-		if ( $hasPw && $hasPwFile ) {
-			exit( 'Can only use one of "password" and "use-password-file"' );
-		} elseif ( $hasPwFile && !file_exists( self::PASSWORD_FILE ) ) {
+		$this->checkNotBothSet( $opts,'password', 'use-password-file' );
+		if ( array_key_exists( 'use-password-file', $opts ) && !file_exists( self::PASSWORD_FILE ) ) {
 			exit( 'Please create the password file (' . self::PASSWORD_FILE . ')' );
 		}
 
-		$hasPrivatePw = array_key_exists( 'private-password', $opts );
-		$hasPrivatePwFile = array_key_exists( 'use-private-password-file', $opts );
-		if ( $hasPrivatePw && $hasPrivatePwFile ) {
-			exit( 'Can only use one of "private-password" and "use-private-password-file"' );
-		} elseif ( $hasPrivatePwFile && !file_exists( self::PRIVATE_PASSWORD_FILE ) ) {
+		$this->checkNotBothSet( $opts,'private-password', 'use-private-password-file' );
+		if ( array_key_exists( 'use-private-password-file', $opts ) && !file_exists( self::PRIVATE_PASSWORD_FILE ) ) {
 			exit( 'Please create the private-password file (' . self::PRIVATE_PASSWORD_FILE . ')' );
 		}
 
 		if ( count( array_intersect_key( $opts, [ 'task' => 1, 'subtask' => 1 ] ) ) === 2 ) {
 			exit( 'Cannot specify both task and subtask.' );
+		}
+	}
+
+	/**
+	 * @param array $opts
+	 * @param string $first
+	 * @param string $second
+	 */
+	private function checkNotBothSet( array $opts, string $first, string $second ) : void {
+		if ( array_key_exists( $first, $opts ) && array_key_exists( $second, $opts ) ) {
+			exit( "Can only use one of '$first' and '$second'" );
 		}
 	}
 

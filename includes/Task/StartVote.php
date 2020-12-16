@@ -3,7 +3,6 @@
 namespace BotRiconferme\Task;
 
 use BotRiconferme\Exception\TaskException;
-use BotRiconferme\Task\Subtask\ClosePages;
 use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Utils\RegexUtils;
 use BotRiconferme\Wiki\Page\PageRiconferma;
@@ -137,7 +136,7 @@ class StartVote extends Task {
 
 	/**
 	 * @param PageRiconferma $page
-	 * @see ClosePages::updateBasePage()
+	 * @see \BotRiconferme\Task\Subtask\ClosePages::updateBasePage()
 	 */
 	protected function updateBasePage( PageRiconferma $page ) : void {
 		$this->getLogger()->info( "Updating base page for $page" );
