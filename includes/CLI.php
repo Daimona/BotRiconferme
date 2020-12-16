@@ -106,12 +106,12 @@ class CLI {
 	 * @param array $opts
 	 */
 	private function checkConflictingOpts( array $opts ) : void {
-		$this->checkNotBothSet( $opts,'password', 'use-password-file' );
+		$this->checkNotBothSet( $opts, 'password', 'use-password-file' );
 		if ( array_key_exists( 'use-password-file', $opts ) && !file_exists( self::PASSWORD_FILE ) ) {
 			exit( 'Please create the password file (' . self::PASSWORD_FILE . ')' );
 		}
 
-		$this->checkNotBothSet( $opts,'private-password', 'use-private-password-file' );
+		$this->checkNotBothSet( $opts, 'private-password', 'use-private-password-file' );
 		if ( array_key_exists( 'use-private-password-file', $opts ) && !file_exists( self::PRIVATE_PASSWORD_FILE ) ) {
 			exit( 'Please create the private-password file (' . self::PRIVATE_PASSWORD_FILE . ')' );
 		}
