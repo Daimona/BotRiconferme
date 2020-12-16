@@ -17,7 +17,7 @@ use Psr\Log\LoggerInterface;
  */
 class Wiki {
 	/** @var bool */
-	private static $loggedIn = false;
+	private $loggedIn = false;
 	/** @var LoggerInterface */
 	private $logger;
 	/** @var string[] */
@@ -148,7 +148,7 @@ class Wiki {
 		if ( $this->loginInfo === null ) {
 			throw new CannotLoginException( 'Missing login data' );
 		}
-		if ( self::$loggedIn ) {
+		if ( $this->loggedIn ) {
 			return;
 		}
 
@@ -172,7 +172,7 @@ class Wiki {
 			throw new LoginException( $res->login->reason ?? 'Unknown error' );
 		}
 
-		self::$loggedIn = true;
+		$this->loggedIn = true;
 		// Clear tokens cache
 		$this->tokens = [];
 		$this->logger->info( 'Login succeeded' );
