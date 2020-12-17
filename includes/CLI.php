@@ -86,19 +86,19 @@ class CLI {
 	private function checkRequiredOpts( array $opts ) : void {
 		$missingOpts = array_diff( self::REQUIRED_OPTS, array_keys( $opts ) );
 		if ( $missingOpts ) {
-			exit( 'Required options missing: ' . implode( ', ', $missingOpts ) );
+			$this->fatal( 'Required options missing: ' . implode( ', ', $missingOpts ) );
 		}
 
 		$hasPw = array_key_exists( 'password', $opts );
 		$hasPwFile = array_key_exists( 'use-password-file', $opts );
 		if ( !$hasPw && !$hasPwFile ) {
-			exit( 'Please provide a password or use a password file' );
+			$this->fatal( 'Please provide a password or use a password file' );
 		}
 
 		$hasPrivatePw = array_key_exists( 'private-password', $opts );
 		$hasPrivatePwFile = array_key_exists( 'use-private-password-file', $opts );
 		if ( !$hasPrivatePw && !$hasPrivatePwFile ) {
-			exit( 'Please provide a private password or use a private-password file' );
+			$this->fatal( 'Please provide a private password or use a private-password file' );
 		}
 	}
 
@@ -108,16 +108,16 @@ class CLI {
 	private function checkConflictingOpts( array $opts ) : void {
 		$this->checkNotBothSet( $opts, 'password', 'use-password-file' );
 		if ( array_key_exists( 'use-password-file', $opts ) && !file_exists( self::PASSWORD_FILE ) ) {
-			exit( 'Please create the password file (' . self::PASSWORD_FILE . ')' );
+			$this->fatal( 'Please create the password file (' . self::PASSWORD_FILE . ')' );
 		}
 
 		$this->checkNotBothSet( $opts, 'private-password', 'use-private-password-file' );
 		if ( array_key_exists( 'use-private-password-file', $opts ) && !file_exists( self::PRIVATE_PASSWORD_FILE ) ) {
-			exit( 'Please create the private-password file (' . self::PRIVATE_PASSWORD_FILE . ')' );
+			$this->fatal( 'Please create the private-password file (' . self::PRIVATE_PASSWORD_FILE . ')' );
 		}
 
 		if ( count( array_intersect_key( $opts, [ 'task' => 1, 'subtask' => 1 ] ) ) === 2 ) {
-			exit( 'Cannot specify both task and subtask.' );
+			$this->fatal( 'Cannot specify both task and subtask.' );
 		}
 	}
 
@@ -128,7 +128,7 @@ class CLI {
 	 */
 	private function checkNotBothSet( array $opts, string $first, string $second ) : void {
 		if ( array_key_exists( $first, $opts ) && array_key_exists( $second, $opts ) ) {
-			exit( "Can only use one of '$first' and '$second'" );
+			$this->fatal( "Can only use one of '$first' and '$second'" );
 		}
 	}
 
@@ -146,6 +146,13 @@ class CLI {
 			$opts['private-password'] = $pw;
 			unset( $opts['use-private-password-file'] );
 		}
+	}
+
+	/**
+	 * @param string $msg
+	 */
+	private function fatal( string $msg ) : void {
+		exit( $msg . "\n" );
 	}
 
 	/**
