@@ -149,7 +149,7 @@ class StartVote extends Task {
 
 		$current = $basePage->getContent();
 
-		$newContent = preg_replace( '/^(?<=#: *)riconferma in corso/m', 'votazione di riconferma in corso', $current );
+		$newContent = preg_replace( '/^(#: *)riconferma in corso/m', '$1votazione di riconferma in corso', $current );
 
 		$basePage->edit( [
 			'text' => $newContent,
