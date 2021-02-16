@@ -23,7 +23,7 @@ class SimpleLogger extends AbstractLogger implements IFlushingAwareLogger {
 
 	/**
 	 * @inheritDoc
-	 * @suppress PhanUnusedPublicMethodParameter,PhanPluginUnknownArrayMethodParamType
+	 * @suppress PhanUnusedPublicMethodParameter
 	 */
 	public function log( $level, $message, array $context = [] ) : void {
 		if ( $this->levelToInt( $level ) >= $this->minLevel ) {

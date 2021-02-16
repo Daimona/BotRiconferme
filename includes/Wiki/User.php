@@ -6,11 +6,12 @@ use BotRiconferme\Config;
 use BotRiconferme\Exception\MissingPageException;
 use BotRiconferme\Utils\IRegexAble;
 use BotRiconferme\Wiki\Page\Page;
+use Stringable;
 
 /**
  * Class representing a single user. NOTE: this can only represent users stored in the JSON list
  */
-class User implements IRegexAble {
+class User implements IRegexAble, Stringable {
 	/** @var string */
 	private $name;
 	/** @var Wiki */

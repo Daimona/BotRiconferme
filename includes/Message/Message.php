@@ -29,7 +29,7 @@ class Message {
 
 	/**
 	 * @param array $args
-	 * @phan-param list<int|string> $args
+	 * @phan-param array<string,int|string> $args
 	 * @return self
 	 */
 	public function params( array $args ) : self {
@@ -88,7 +88,7 @@ class Message {
 	 * the last one. $emptyText can be used to specify the text in case $data is empty.
 	 *
 	 * @param array $data
-	 * @phan-param array<int|string> $data
+	 * @phan-param array<int|string|\Stringable> $data
 	 * @param string $emptyText
 	 * @return string
 	 */

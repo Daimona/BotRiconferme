@@ -11,7 +11,10 @@ use Generator;
  * Updates the JSON list, adding and removing dates according to the API list of privileged people
  */
 class UpdateList extends Task {
-	/** @var string[][] The JSON list */
+	/**
+	 * @var array The JSON list
+	 * @phan-var array<string,array<string,string|string[]>>
+	 */
 	private $botList;
 	/** @var array[] The list from the API request */
 	private $actualList;
@@ -232,7 +235,8 @@ class UpdateList extends Task {
 	/**
 	 * Update aliases and overrides for renamed users
 	 *
-	 * @param string[][] &$newContent
+	 * @param array &$newContent
+	 * @phan-param array<string,array<string,string|string[]>> $newContent
 	 * @param string[][] $removed
 	 */
 	private function handleRenames( array &$newContent, array $removed ) : void {
@@ -255,7 +259,8 @@ class UpdateList extends Task {
 	}
 
 	/**
-	 * @param string[][] &$newContent
+	 * @param array &$newContent
+	 * @phan-param array<string,array<string,string|string[]>> $newContent
 	 * @param string[][] $missing
 	 * @param string[][] $extra
 	 * @return string[][] Removed users
