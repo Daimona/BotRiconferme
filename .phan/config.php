@@ -1,11 +1,13 @@
 <?php
 
 return [
-	'directory_list' => [
-		'includes',
-		'vendor/psr',
-		'vendor/symfony/polyfill-php80',
-	],
+	'directory_list' => array_merge(
+		[
+			'includes',
+			'vendor/psr',
+		],
+		PHP_VERSION_ID < 80000 ? [ 'vendor/symfony/polyfill-php80' ] : []
+	),
 	'file_list' => [
 		'run.php',
 	],
