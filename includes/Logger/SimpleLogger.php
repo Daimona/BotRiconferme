@@ -23,6 +23,7 @@ class SimpleLogger extends AbstractLogger implements IFlushingAwareLogger {
 
 	/**
 	 * @inheritDoc
+	 * @param mixed[] $context
 	 * @suppress PhanUnusedPublicMethodParameter
 	 */
 	public function log( $level, $message, array $context = [] ) : void {
