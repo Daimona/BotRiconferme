@@ -33,6 +33,11 @@ return [
 		'DuplicateExpressionPlugin',
 		'RedundantAssignmentPlugin',
 		'StrictLiteralComparisonPlugin',
-		'DollarDollarPlugin'
+		'DollarDollarPlugin',
+		'UnknownElementTypePlugin',
+		'LoopVariableReusePlugin',
+		'StrictComparisonPlugin',
+		'SimplifyExpressionPlugin',
+		'vendor/mediawiki/phan-taint-check-plugin/GenericSecurityCheckPlugin.php'
 	],
 ];

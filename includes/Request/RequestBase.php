@@ -60,7 +60,7 @@ abstract class RequestBase {
 	}
 
 	/**
-	 * Optimized version of execute(), to be used with ApiQuery requests.
+	 * Execute a query request
 	 * @return Generator
 	 */
 	public function executeAsQuery() : Generator {
@@ -94,7 +94,7 @@ abstract class RequestBase {
 	}
 
 	/**
-	 * Variant of execute() for requests that don't need any continuation.
+	 * Execute a request that doesn't need any continuation.
 	 * @return stdClass
 	 */
 	public function executeSingle() : stdClass {
@@ -120,11 +120,11 @@ abstract class RequestBase {
 	/**
 	 * Try to count the amount of entries in a result.
 	 *
-	 * @param \stdClass $res
+	 * @param stdClass $res
 	 * @param string $resKey
 	 * @return int|null
 	 */
-	private function countQueryResults( \stdClass $res, string $resKey ) : ?int {
+	private function countQueryResults( stdClass $res, string $resKey ) : ?int {
 		if ( !isset( $res->query->$resKey ) ) {
 			return null;
 		}
@@ -149,9 +149,9 @@ abstract class RequestBase {
 	 * Process parameters and call the actual request method
 	 *
 	 * @param array $params
-	 * @return \stdClass
+	 * @return stdClass
 	 */
-	private function makeRequestInternal( array $params ) : \stdClass {
+	private function makeRequestInternal( array $params ) : stdClass {
 		if ( $this->method === self::METHOD_POST ) {
 			$params['maxlag'] = self::MAXLAG;
 		}
@@ -187,10 +187,10 @@ abstract class RequestBase {
 	/**
 	 * Get a specific exception class depending on the error code
 	 *
-	 * @param \stdClass $res
+	 * @param stdClass $res
 	 * @return APIRequestException
 	 */
-	private function getException( \stdClass $res ) : APIRequestException {
+	private function getException( stdClass $res ) : APIRequestException {
 		switch ( $res->error->code ) {
 			case 'missingtitle':
 				$ex = new MissingPageException;
@@ -213,10 +213,10 @@ abstract class RequestBase {
 	/**
 	 * Handle known warning and errors from an API request
 	 *
-	 * @param \stdClass $res
+	 * @param stdClass $res
 	 * @throws APIRequestException
 	 */
-	protected function handleErrorAndWarnings( \stdClass $res ) : void {
+	protected function handleErrorAndWarnings( stdClass $res ) : void {
 		if ( isset( $res->error ) ) {
 			throw $this->getException( $res );
 		}
