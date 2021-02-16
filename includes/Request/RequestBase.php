@@ -78,7 +78,7 @@ abstract class RequestBase {
 		do {
 			$res = $this->makeRequestInternal( $curParams );
 			$this->handleErrorAndWarnings( $res );
-			yield from $res->query->$key;
+			yield from $key === 'pages' ? get_object_vars( $res->query->pages ) : $res->query->$key;
 
 			// Assume that we have finished
 			$finished = true;
