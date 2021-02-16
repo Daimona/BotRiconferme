@@ -40,4 +40,8 @@ return [
 		'SimplifyExpressionPlugin',
 		'vendor/mediawiki/phan-taint-check-plugin/GenericSecurityCheckPlugin.php'
 	],
+
+	'suppress_issue_types' => [
+		'SecurityCheck-LikelyFalsePositive'
+	],
 ];

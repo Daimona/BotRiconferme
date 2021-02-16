@@ -15,6 +15,7 @@ class RequestFactory {
 
 	/**
 	 * @param array $params
+	 * @phan-param array<int|string|bool> $params
 	 * @return RequestBase
 	 */
 	public function newFromParams( array $params ) : RequestBase {

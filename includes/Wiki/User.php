@@ -71,7 +71,7 @@ class User implements IRegexAble {
 	public function getRegex( string $delimiter = '/' ) : string {
 		$bits = $this->getAliases();
 		$bits[] = $this->name;
-		$regexify = static function ( $el ) use ( $delimiter ) {
+		$regexify = static function ( string $el ) use ( $delimiter ) : string {
 			return str_replace( ' ', '[ _]', preg_quote( $el, $delimiter ) );
 		};
 		return '(?:' . implode( '|', array_map( $regexify, $bits ) ) . ')';

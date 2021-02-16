@@ -9,7 +9,7 @@ use BotRiconferme\Message\Message;
 use BotRiconferme\Wiki\Wiki;
 
 class MessageProvider {
-	/** @var array|null */
+	/** @var string[]|null */
 	private static $messages;
 
 	/** @var Wiki */

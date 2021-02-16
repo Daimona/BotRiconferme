@@ -62,6 +62,7 @@ class PageBotList extends Page {
 	 *
 	 * @param string $user
 	 * @return int
+	 * @suppress PhanPluginComparisonObjectOrdering DateTime objects can be compared (phan issue #2907)
 	 */
 	public function getNextTimestamp( string $user ) : int {
 		$userInfo = $this->getUserInfo( $user )->getInfo();
@@ -90,7 +91,7 @@ class PageBotList extends Page {
 	/**
 	 * Get the valid timestamp for the given groups
 	 *
-	 * @param array $groups
+	 * @param string[] $groups
 	 * @return int
 	 */
 	public static function getValidFlagTimestamp( array $groups ): int {
@@ -114,7 +115,7 @@ class PageBotList extends Page {
 	 * - The "normal" date has passed (otherwise we'd use two different dates for the same year)
 	 * For decreased risk, we add an additional delay of 3 days.
 	 *
-	 * @param array $groups
+	 * @param string[] $groups
 	 * @return bool
 	 */
 	public static function isOverrideExpired( array $groups ) : bool {
@@ -156,7 +157,7 @@ class PageBotList extends Page {
 	/**
 	 * Get the JSON-decoded content of the list
 	 *
-	 * @return array[]
+	 * @return string[][]
 	 */
 	public function getDecodedContent() : array {
 		return json_decode( $this->getContent(), true );

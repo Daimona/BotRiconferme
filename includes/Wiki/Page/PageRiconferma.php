@@ -13,7 +13,7 @@ class PageRiconferma extends Page {
 	private $supportSection;
 	/** @var int */
 	private $opposeSection;
-	/** @var array Counts of votes for each section */
+	/** @var int[] Counts of votes for each section */
 	private $sectionCounts = [];
 
 	// Possible outcomes of a vote

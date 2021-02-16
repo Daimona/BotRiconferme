@@ -4,7 +4,7 @@
  */
 
 // @phan-suppress-next-line PhanTypeMismatchArgumentInternal
-set_error_handler( static function ( $errno, $errstr, $errfile, $errline ) {
+set_error_handler( static function ( int $errno, string $errstr, string $errfile, int $errline ) {
 	throw new \ErrorException( $errstr, 0, $errno, $errfile, $errline );
 } );
 

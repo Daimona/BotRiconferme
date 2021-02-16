@@ -29,9 +29,12 @@ abstract class RequestBase {
 
 	/** @var string */
 	protected $url;
-	/** @var array */
+	/** @var string[] */
 	protected static $cookiesToSet;
-	/** @var array */
+	/**
+	 * @var array
+	 * @phan-var array<int|string|bool>
+	 */
 	protected $params;
 	/** @var string */
 	protected $method = self::METHOD_GET;
@@ -42,6 +45,7 @@ abstract class RequestBase {
 	 * @private Use RequestFactory
 	 *
 	 * @param array $params
+	 * @phan-param array<int|string|bool> $params
 	 * @param string $domain
 	 */
 	public function __construct( array $params, string $domain ) {
@@ -149,6 +153,7 @@ abstract class RequestBase {
 	 * Process parameters and call the actual request method
 	 *
 	 * @param array $params
+	 * @phan-param array<int|string|bool> $params
 	 * @return stdClass
 	 */
 	private function makeRequestInternal( array $params ) : stdClass {
@@ -174,7 +179,7 @@ abstract class RequestBase {
 	/**
 	 * After a request, set cookies for the next ones
 	 *
-	 * @param array $cookies
+	 * @param string[] $cookies
 	 */
 	protected function setCookies( array $cookies ) : void {
 		foreach ( $cookies as $cookie ) {
@@ -230,9 +235,9 @@ abstract class RequestBase {
 	/**
 	 * Get the headers to use for a new request
 	 *
-	 * @return array
+	 * @return string[]
 	 */
-	protected function getHeaders() :array {
+	protected function getHeaders() : array {
 		$ret = self::HEADERS;
 		if ( self::$cookiesToSet ) {
 			$cookies = [];
@@ -247,7 +252,7 @@ abstract class RequestBase {
 	/**
 	 * Utility function to implode headers
 	 *
-	 * @param array $headers
+	 * @param string[] $headers
 	 * @return string
 	 */
 	protected function buildHeadersString( array $headers ) : string {

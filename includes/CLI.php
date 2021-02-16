@@ -59,7 +59,7 @@ class CLI {
 	public const PASSWORD_FILE = __DIR__ . '/../password.txt';
 	public const PRIVATE_PASSWORD_FILE = __DIR__ . '/../private-password.txt';
 
-	/** @var array */
+	/** @var string[] */
 	private $opts;
 
 	/**
@@ -81,7 +81,7 @@ class CLI {
 	}
 
 	/**
-	 * @param array $opts
+	 * @param string[] $opts
 	 */
 	private function checkRequiredOpts( array $opts ) : void {
 		$missingOpts = array_diff( self::REQUIRED_OPTS, array_keys( $opts ) );
@@ -103,7 +103,7 @@ class CLI {
 	}
 
 	/**
-	 * @param array $opts
+	 * @param string[] $opts
 	 */
 	private function checkConflictingOpts( array $opts ) : void {
 		$this->checkNotBothSet( $opts, 'password', 'use-password-file' );
@@ -122,7 +122,7 @@ class CLI {
 	}
 
 	/**
-	 * @param array $opts
+	 * @param string[] $opts
 	 * @param string $first
 	 * @param string $second
 	 */
@@ -133,7 +133,7 @@ class CLI {
 	}
 
 	/**
-	 * @param array &$opts
+	 * @param string[] &$opts
 	 */
 	private function canonicalize( array &$opts ) : void {
 		if ( array_key_exists( 'use-password-file', $opts ) ) {
@@ -165,7 +165,7 @@ class CLI {
 	}
 
 	/**
-	 * @return array Either [ 'task' => taskname ] or [ 'subtask' => subtaskname ]
+	 * @return string[] Either [ 'task' => taskname ] or [ 'subtask' => subtaskname ]
 	 */
 	public function getTaskOpt() : array {
 		return array_intersect_key(

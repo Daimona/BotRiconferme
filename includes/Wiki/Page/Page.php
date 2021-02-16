@@ -50,6 +50,7 @@ class Page implements IRegexAble {
 	 * Edit this page and update content
 	 *
 	 * @param array $params
+	 * @phan-param array<int|string|bool> $params
 	 * @throws \LogicException
 	 */
 	public function edit( array $params ) : void {

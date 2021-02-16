@@ -10,7 +10,7 @@ use BotRiconferme\Exception\ConfigException;
 class Config {
 	/** @var self */
 	private static $instance;
-	/** @var array */
+	/** @var string[] */
 	private $opts = [];
 
 	/**
@@ -22,7 +22,7 @@ class Config {
 	/**
 	 * Initialize a new self instance with CLI params set and retrieve on-wiki config.
 	 *
-	 * @param array $confValues
+	 * @param string[] $confValues
 	 * @throws ConfigException
 	 */
 	public static function init( array $confValues ) : void {

@@ -29,6 +29,7 @@ class Message {
 
 	/**
 	 * @param array $args
+	 * @phan-param list<int|string> $args
 	 * @return self
 	 */
 	public function params( array $args ) : self {
@@ -55,7 +56,11 @@ class Message {
 		}
 		$this->value = preg_replace_callback(
 			$reg,
-			static function ( $matches ) {
+			/**
+			 * @param string[] $matches
+			 * @return string
+			 */
+			static function ( array $matches ) : string {
 				return (int)$matches['amount'] > 1 ? trim( $matches['plur'] ) : trim( $matches['sing'] );
 			},
 			$this->value
@@ -83,6 +88,7 @@ class Message {
 	 * the last one. $emptyText can be used to specify the text in case $data is empty.
 	 *
 	 * @param array $data
+	 * @phan-param array<int|string> $data
 	 * @param string $emptyText
 	 * @return string
 	 */

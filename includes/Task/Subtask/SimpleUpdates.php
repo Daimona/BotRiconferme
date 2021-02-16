@@ -62,7 +62,7 @@ class SimpleUpdates extends Subtask {
 	}
 
 	/**
-	 * @param array $pages
+	 * @param PageRiconferma[] $pages
 	 * @see OpenUpdates::addToNews()
 	 */
 	protected function updateNews( array $pages ) : void {

@@ -132,6 +132,7 @@ class Wiki {
 	 * Basically a wrapper for action=edit
 	 *
 	 * @param array $params
+	 * @phan-param array<int|string|bool> $params
 	 * @throws EditException
 	 */
 	public function editPage( array $params ) : void {
@@ -289,6 +290,7 @@ class Wiki {
 	/**
 	 * Shorthand
 	 * @param array $params
+	 * @phan-param array<int|string|bool> $params
 	 * @return RequestBase
 	 */
 	private function buildRequest( array $params ) : RequestBase {

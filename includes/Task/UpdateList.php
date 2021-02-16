@@ -11,7 +11,7 @@ use Generator;
  * Updates the JSON list, adding and removing dates according to the API list of privileged people
  */
 class UpdateList extends Task {
-	/** @var array[] The JSON list */
+	/** @var string[][] The JSON list */
 	private $botList;
 	/** @var array[] The list from the API request */
 	private $actualList;
@@ -52,7 +52,8 @@ class UpdateList extends Task {
 	}
 
 	/**
-	 * @return array
+	 * @return string[][]
+	 * @phan-return array<string,string[]>
 	 */
 	protected function getActualAdmins() : array {
 		$params = [
@@ -69,7 +70,8 @@ class UpdateList extends Task {
 
 	/**
 	 * @param Generator $data
-	 * @return array
+	 * @return string[][]
+	 * @phan-return array<string,string[]>
 	 */
 	protected function extractAdmins( Generator $data ) : array {
 		$ret = [];
@@ -87,7 +89,7 @@ class UpdateList extends Task {
 	/**
 	 * Populate a list of new admins missing from the JSON list and their groups
 	 *
-	 * @return array[]
+	 * @return string[][]
 	 */
 	protected function getMissingGroups() : array {
 		$missing = [];
@@ -165,7 +167,7 @@ class UpdateList extends Task {
 	/**
 	 * Get a list of admins who are in the JSON page but don't have the listed privileges anymore
 	 *
-	 * @return array[]
+	 * @return string[][]
 	 */
 	protected function getExtraGroups() : array {
 		$extra = [];
@@ -185,7 +187,7 @@ class UpdateList extends Task {
 	 * @return Generator
 	 */
 	private function getRenameEntries( array $names ) : Generator {
-		$titles = array_map( static function ( $x ) {
+		$titles = array_map( static function ( string $x ) : string {
 			return "Utente:$x";
 		}, $names );
 
@@ -230,8 +232,8 @@ class UpdateList extends Task {
 	/**
 	 * Update aliases and overrides for renamed users
 	 *
-	 * @param array &$newContent
-	 * @param array $removed
+	 * @param string[][] &$newContent
+	 * @param string[][] $removed
 	 */
 	private function handleRenames( array &$newContent, array $removed ) : void {
 		$renameMap = $this->getRenamedUsers( array_keys( $removed ) );
@@ -253,10 +255,10 @@ class UpdateList extends Task {
 	}
 
 	/**
-	 * @param array[] &$newContent
-	 * @param array[] $missing
-	 * @param array[] $extra
-	 * @return string[] Removed users
+	 * @param string[][] &$newContent
+	 * @param string[][] $missing
+	 * @param string[][] $extra
+	 * @return string[][] Removed users
 	 */
 	private function handleExtraAndMissing(
 		array &$newContent,
@@ -286,8 +288,8 @@ class UpdateList extends Task {
 	/**
 	 * Get the new content for the list
 	 *
-	 * @param array[] $missing
-	 * @param array[] $extra
+	 * @param string[][] $missing
+	 * @param string[][] $extra
 	 * @return array[]
 	 */
 	protected function getNewContent( array $missing, array $extra ) : array {

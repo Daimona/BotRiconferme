@@ -8,7 +8,10 @@ namespace BotRiconferme\Wiki;
 class UserInfo {
 	/** @var string */
 	private $name;
-	/** @var array */
+	/**
+	 * @var array
+	 * @phan-var array<string,string|string[]>
+	 */
 	private $info;
 
 	private const GROUP_KEYS = [ 'sysop', 'bureaucrat', 'checkuser' ];
@@ -16,6 +19,7 @@ class UserInfo {
 	/**
 	 * @param string $name
 	 * @param array $info
+	 * @phan-param array<string,string|string[]> $info
 	 */
 	public function __construct( string $name, array $info ) {
 		$this->name = $name;
@@ -31,27 +35,28 @@ class UserInfo {
 
 	/**
 	 * @return array
+	 * @phan-return array<string,string|string[]>
 	 */
 	public function getInfo() : array {
 		return $this->info;
 	}
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function extractGroups() : array {
 		return array_keys( $this->extractGroupsWithDates() );
 	}
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function extractGroupsWithDates() : array {
 		return array_intersect_key( $this->getInfo(), array_fill_keys( self::GROUP_KEYS, 1 ) );
 	}
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getAliases() : array {
 		return $this->getInfo()['aliases'] ?? [];
