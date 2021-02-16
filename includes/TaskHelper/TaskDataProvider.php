@@ -76,8 +76,8 @@ class TaskDataProvider extends ContextSource {
 			];
 
 			$titleReg = $this->getPage( $mainTitle )->getRegex( '!' );
-			$pages = $this->getRequestFactory()->newFromParams( $params )->execute()->query->pages;
-			foreach ( reset( $pages )->templates as $page ) {
+			$pages = $this->getRequestFactory()->newFromParams( $params )->executeAsQuery();
+			foreach ( $pages->current()->templates as $page ) {
 				if ( preg_match( "!$titleReg/[^/]+/\d!", $page->title ) ) {
 					$this->openPages[] = new PageRiconferma( $page->title, $this->getWiki() );
 				}

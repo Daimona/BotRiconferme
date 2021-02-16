@@ -2,11 +2,14 @@
 
 namespace BotRiconferme\Request;
 
+use BadMethodCallException;
 use BotRiconferme\Exception\APIRequestException;
 use BotRiconferme\Exception\BlockedException;
 use BotRiconferme\Exception\MissingPageException;
 use BotRiconferme\Exception\PermissionDeniedException;
 use BotRiconferme\Exception\ProtectedPageException;
+use Generator;
+use stdClass;
 
 /**
  * Core wrapper for an API request. Current implementations use either cURL or file_get_contents
@@ -57,21 +60,21 @@ abstract class RequestBase {
 	}
 
 	/**
-	 * Entry point for an API request
-	 *
-	 * @return \stdClass
-	 * @todo Return an iterable object which automatically continues the query only if the last
-	 *   entry available is reached, instead of requesting max results.
+	 * Optimized version of execute(), to be used with ApiQuery requests.
+	 * @return Generator
 	 */
-	public function execute() : \stdClass {
+	public function executeAsQuery() : Generator {
+		if ( ( $this->params['action'] ?? false ) !== 'query' ) {
+			throw new BadMethodCallException( 'Not an ApiQuery!' );
+		}
+		// TODO Is this always correct?
+		$key = $this->params['list'] ?? 'pages';
 		$curParams = $this->params;
 		$lim = $this->parseLimit();
-		$sets = [];
 		do {
 			$res = $this->makeRequestInternal( $curParams );
-
 			$this->handleErrorAndWarnings( $res );
-			$sets[] = $res;
+			yield from $res->query->$key;
 
 			// Assume that we have finished
 			$finished = true;
@@ -81,19 +84,27 @@ abstract class RequestBase {
 				$finished = false;
 			}
 			if ( $lim !== -1 ) {
-				$count = $this->countResults( $res );
+				$count = $this->countQueryResults( $res, $key );
 				if ( $count !== null && $count >= $lim ) {
 					// Unless we're able to use a limit, and that limit was passed.
 					$finished = true;
 				}
 			}
 		} while ( !$finished );
-
-		return $this->mergeSets( $sets );
 	}
 
 	/**
-	 * FIXME Should be revamped together with countResults
+	 * Variant of execute() for requests that don't need any continuation.
+	 * @return stdClass
+	 */
+	public function executeSingle() : stdClass {
+		$curParams = $this->params;
+		$res = $this->makeRequestInternal( $curParams );
+		$this->handleErrorAndWarnings( $res );
+		return $res;
+	}
+
+	/**
 	 * @return int
 	 */
 	private function parseLimit() : int {
@@ -108,18 +119,30 @@ abstract class RequestBase {
 
 	/**
 	 * Try to count the amount of entries in a result.
-	 * FIXME This is an awful hack that works with queryrevisions only. The caller should
-	 * probably pass a callable like $countResults() to execute().
 	 *
 	 * @param \stdClass $res
+	 * @param string $resKey
 	 * @return int|null
 	 */
-	private function countResults( \stdClass $res ) : ?int {
-		if ( isset( $res->query->pages ) && count( get_object_vars( $res->query->pages ) ) === 1 ) {
-			$pages = $res->query->pages;
-			return count( reset( $pages )->revisions );
+	private function countQueryResults( \stdClass $res, string $resKey ) : ?int {
+		if ( !isset( $res->query->$resKey ) ) {
+			return null;
 		}
-		return null;
+		if ( $resKey === 'pages' ) {
+			if ( count( get_object_vars( $res->query->pages ) ) !== 1 ) {
+				return null;
+			}
+			$pages = $res->query->pages;
+			$firstPage = reset( $pages );
+			// TODO Avoid special-casing this.
+			if ( !isset( $firstPage->revisions ) ) {
+				return null;
+			}
+			$actualList = $firstPage->revisions;
+		} else {
+			$actualList = $res->query->$resKey;
+		}
+		return count( $actualList );
 	}
 
 	/**
@@ -196,50 +219,12 @@ abstract class RequestBase {
 	protected function handleErrorAndWarnings( \stdClass $res ) : void {
 		if ( isset( $res->error ) ) {
 			throw $this->getException( $res );
-		} elseif ( isset( $res->warnings ) ) {
+		}
+		if ( isset( $res->warnings ) ) {
 			$act = $this->params[ 'action' ];
 			$warning = $res->warnings->$act ?? $res->warnings->main;
 			throw new APIRequestException( reset( $warning ) );
 		}
-	}
-
-	/**
-	 * Merge results from multiple requests in a single object
-	 *
-	 * @param \stdClass[] $sets
-	 * @return \stdClass
-	 */
-	private function mergeSets( array $sets ) : \stdClass {
-		if ( !$sets ) {
-			return (object)[];
-		}
-		// Use the first set as template
-		$ret = array_shift( $sets );
-
-		foreach ( $sets as $set ) {
-			$ret = $this->recursiveMerge( $ret, $set );
-		}
-		return $ret;
-	}
-
-	/**
-	 * Recursively merge objects, keeping the structure
-	 *
-	 * @param array|\stdClass $first
-	 * @param array|\stdClass $second
-	 * @return array|\stdClass array
-	 */
-	private function recursiveMerge( $first, $second ) {
-		$ret = $first;
-		if ( is_array( $second ) ) {
-			$ret = is_array( $first ) ? array_merge_recursive( $first, $second ) : $second;
-		} elseif ( is_object( $second ) ) {
-			foreach ( get_object_vars( $second ) as $key => $val ) {
-				$ret->$key = isset( $first->$key ) ? $this->recursiveMerge( $first->$key, $val ) : $val;
-			}
-		}
-
-		return $ret;
 	}
 
 	/**

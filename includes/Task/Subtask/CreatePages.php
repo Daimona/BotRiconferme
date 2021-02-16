@@ -2,11 +2,13 @@
 
 namespace BotRiconferme\Task\Subtask;
 
+use AppendIterator;
 use BotRiconferme\Exception\TaskException;
 use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\Wiki\User;
+use NoRewindIterator;
 
 /**
  * For each user, create the WP:A/Riconferma_annuale/USERNAME/XXX page and add it to its base page
@@ -86,15 +88,15 @@ class CreatePages extends Subtask {
 			'apprefix' => implode( '|', $prefixes ),
 			'aplimit' => 'max'
 		];
-		$foundPages = [];
+		$pagesIterator = new AppendIterator();
 		foreach ( $prefixes as $prefix ) {
 			$params['apprefix'] = $prefix;
-			$res = $this->getRequestFactory()->newFromParams( $params )->execute();
-			$foundPages = array_merge( $foundPages, $res->query->allpages );
+			$res = $this->getRequestFactory()->newFromParams( $params )->executeAsQuery();
+			$pagesIterator->append( new NoRewindIterator( $res ) );
 		}
 
 		$last = 0;
-		foreach ( $foundPages as $resPage ) {
+		foreach ( $pagesIterator as $resPage ) {
 			$page = new PageRiconferma( $resPage->title, $this->getWiki() );
 
 			if ( date( 'z/Y', $page->getCreationTimestamp() ) === date( 'z/Y' ) ) {

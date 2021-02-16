@@ -115,8 +115,7 @@ class Wiki {
 		}
 
 		$req = $this->buildRequest( $params );
-		$data = $req->execute();
-		$page = reset( $data->query->pages );
+		$page = $req->executeAsQuery()->current();
 		if ( isset( $page->missing ) ) {
 			throw new MissingPageException( $title );
 		}
@@ -147,7 +146,7 @@ class Wiki {
 			$params['bot'] = 1;
 		}
 
-		$res = $this->buildRequest( $params )->setPost()->execute();
+		$res = $this->buildRequest( $params )->setPost()->executeSingle();
 
 		$editData = $res->edit;
 		if ( $editData->result !== 'Success' ) {
@@ -181,7 +180,7 @@ class Wiki {
 		];
 
 		try {
-			$res = $this->buildRequest( $params )->setPost()->execute();
+			$res = $this->buildRequest( $params )->setPost()->executeSingle();
 		} catch ( APIRequestException $e ) {
 			throw new LoginException( $e->getMessage() );
 		}
@@ -209,10 +208,7 @@ class Wiki {
 				'meta'   => 'tokens',
 				'type'   => $type
 			];
-
-			$req = $this->buildRequest( $params );
-			$res = $req->execute();
-
+			$res = $this->buildRequest( $params )->executeSingle();
 			$this->tokens[ $type ] = $res->query->tokens->{ "{$type}token" };
 		}
 
@@ -236,9 +232,8 @@ class Wiki {
 			'rvdir' => 'newer'
 		];
 
-		$res = $this->buildRequest( $params )->execute();
-		$data = $res->query->pages;
-		return strtotime( reset( $data )->revisions[0]->timestamp );
+		$page = $this->buildRequest( $params )->executeAsQuery()->current();
+		return strtotime( $page->revisions[0]->timestamp );
 	}
 
 	/**
@@ -261,7 +256,7 @@ class Wiki {
 			'token' => $this->getToken( 'csrf' )
 		];
 
-		$this->buildRequest( $params )->setPost()->execute();
+		$this->buildRequest( $params )->setPost()->executeSingle();
 	}
 
 	/**
@@ -288,7 +283,7 @@ class Wiki {
 			'token' => $this->getToken( 'csrf' )
 		];
 
-		$this->buildRequest( $params )->setPost()->execute();
+		$this->buildRequest( $params )->setPost()->executeSingle();
 	}
 
 	/**

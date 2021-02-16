@@ -77,12 +77,11 @@ class Page implements IRegexAble {
 	 * @return bool
 	 */
 	public function exists() : bool {
-		$res = $this->wiki->getRequestFactory()->newFromParams( [
+		$pages = $this->wiki->getRequestFactory()->newFromParams( [
 			'action' => 'query',
 			'titles' => $this->getTitle()
-		] )->execute();
-		$pages = $res->query->pages;
-		return !isset( reset( $pages )->missing );
+		] )->executeAsQuery();
+		return !isset( $pages->current()->missing );
 	}
 
 	/**
@@ -125,7 +124,7 @@ class Page implements IRegexAble {
 	 *
 	 * @return string
 	 */
-	public function __toString() {
+	public function __toString() : string {
 		return $this->getTitle();
 	}
 }

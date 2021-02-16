@@ -5,6 +5,7 @@ namespace BotRiconferme\Task;
 use BotRiconferme\Exception\TaskException;
 use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Wiki\Page\PageBotList;
+use Generator;
 
 /**
  * Updates the JSON list, adding and removing dates according to the API list of privileged people
@@ -63,17 +64,17 @@ class UpdateList extends Task {
 		];
 
 		$req = $this->getRequestFactory()->newFromParams( $params );
-		return $this->extractAdmins( $req->execute() );
+		return $this->extractAdmins( $req->executeAsQuery() );
 	}
 
 	/**
-	 * @param \stdClass $data
+	 * @param Generator $data
 	 * @return array
 	 */
-	protected function extractAdmins( \stdClass $data ) : array {
+	protected function extractAdmins( Generator $data ) : array {
 		$ret = [];
 		$blacklist = $this->getOpt( 'exclude-admins' );
-		foreach ( $data->query->allusers as $u ) {
+		foreach ( $data as $u ) {
 			if ( in_array( $u->name, $blacklist, true ) ) {
 				continue;
 			}
@@ -130,7 +131,7 @@ class UpdateList extends Task {
 			'lelimit' => 'max'
 		];
 
-		$data = $wiki->getRequestFactory()->newFromParams( $params )->execute();
+		$data = $wiki->getRequestFactory()->newFromParams( $params )->executeAsQuery();
 		$ts = $this->extractTimestamp( $data, $group );
 
 		if ( $ts === null ) {
@@ -143,13 +144,13 @@ class UpdateList extends Task {
 	/**
 	 * Find the actual timestamp when the user was given the searched group
 	 *
-	 * @param \stdClass $data
+	 * @param Generator $data
 	 * @param string $group
 	 * @return string|null
 	 */
-	private function extractTimestamp( \stdClass $data, string $group ) : ?string {
+	private function extractTimestamp( Generator $data, string $group ) : ?string {
 		$ts = null;
-		foreach ( $data->query->logevents as $entry ) {
+		foreach ( $data as $entry ) {
 			if (
 				isset( $entry->params ) &&
 				in_array( $group, array_diff( $entry->params->newgroups, $entry->params->oldgroups ), true )
@@ -181,9 +182,9 @@ class UpdateList extends Task {
 
 	/**
 	 * @param string[] $names
-	 * @return \stdClass
+	 * @return Generator
 	 */
-	private function getRenameEntries( array $names ) : \stdClass {
+	private function getRenameEntries( array $names ) : Generator {
 		$titles = array_map( static function ( $x ) {
 			return "Utente:$x";
 		}, $names );
@@ -198,7 +199,7 @@ class UpdateList extends Task {
 			// lestart seems to be broken (?)
 		];
 
-		return $this->getRequestFactory()->newFromParams( $params )->execute();
+		return $this->getRequestFactory()->newFromParams( $params )->executeAsQuery();
 	}
 
 	/**
@@ -215,7 +216,7 @@ class UpdateList extends Task {
 
 		$data = $this->getRenameEntries( $names );
 		$ret = [];
-		foreach ( $data->query->logevents as $entry ) {
+		foreach ( $data as $entry ) {
 			// 1 month is arbitrary
 			if ( strtotime( $entry->timestamp ) > strtotime( '-1 month' ) ) {
 				$par = $entry->params;
