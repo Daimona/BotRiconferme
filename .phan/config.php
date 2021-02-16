@@ -3,7 +3,8 @@
 return [
 	'directory_list' => [
 		'includes',
-		'vendor/psr'
+		'vendor/psr',
+		'vendor/symfony/polyfill-php80',
 	],
 	'file_list' => [
 		'run.php',
