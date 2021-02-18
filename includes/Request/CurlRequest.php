@@ -22,19 +22,21 @@ class CurlRequest extends RequestBase {
 		curl_setopt( $curl, CURLOPT_HEADERFUNCTION, [ $this, 'headersHandler' ] );
 		curl_setopt( $curl, CURLOPT_HTTPHEADER, $this->getHeaders() );
 
-		$url = $this->url;
 		if ( $this->method === self::METHOD_POST ) {
-			curl_setopt( $curl, CURLOPT_URL, $url );
+			curl_setopt( $curl, CURLOPT_URL, $this->url );
 			curl_setopt( $curl, CURLOPT_POST, true );
 			curl_setopt( $curl, CURLOPT_POSTFIELDS, $params );
 		} else {
-			curl_setopt( $curl, CURLOPT_URL, "$url?$params" );
+			curl_setopt( $curl, CURLOPT_URL, "{$this->url}?$params" );
 		}
 
 		$result = curl_exec( $curl );
 
 		if ( $result === false ) {
-			throw new APIRequestException( curl_error( $curl ) );
+			$debugUrl = strpos( $this->url, 'login' ) !== false
+				? '[Login request]'
+				: $this->url;
+			throw new APIRequestException( "Curl error for $debugUrl: " . curl_error( $curl ) );
 		}
 
 		// Extract response body
