@@ -35,7 +35,7 @@ class CurlRequest extends RequestBase {
 		if ( $result === false ) {
 			$debugUrl = strpos( $this->url, 'login' ) !== false
 				? '[Login request]'
-				: $this->url;
+				: "{$this->url}?$params";
 			throw new APIRequestException( "Curl error for $debugUrl: " . curl_error( $curl ) );
 		}
 
