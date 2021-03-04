@@ -118,7 +118,7 @@ class TaskManager {
 	/**
 	 * Run $tasks in the given order
 	 *
-	 * @param array $tasks
+	 * @param string[] $tasks
 	 * @return TaskResult
 	 */
 	private function runTasks( array $tasks ) : TaskResult {
