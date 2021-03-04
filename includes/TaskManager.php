@@ -27,9 +27,9 @@ use Psr\Log\LoggerInterface;
  */
 class TaskManager {
 	// Run modes
-	public const MODE_COMPLETE = 'full process';
-	public const MODE_TASK = 'single task';
-	public const MODE_SUBTASK = 'single subtask';
+	public const MODE_COMPLETE = 'full';
+	public const MODE_TASK = 'task';
+	public const MODE_SUBTASK = 'subtask';
 
 	/** @var string[] */
 	private const TASKS_MAP = [

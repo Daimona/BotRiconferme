@@ -163,8 +163,8 @@ class Bot {
 		array $taskNames = []
 	) : void {
 		$activity = $mode === TaskManager::MODE_COMPLETE
-			? TaskManager::MODE_COMPLETE
-			: "$mode " . implode( ', ', $taskNames );
+			? 'full process'
+			: ( $mode === TaskManager::MODE_TASK ? 'tasks' : 'subtasks' ) . ': ' . implode( ', ', $taskNames );
 		$this->mainLogger->info( "Running $activity" );
 		$pbl = PageBotList::get(
 			$this->wikiGroup->getMainWiki(),
