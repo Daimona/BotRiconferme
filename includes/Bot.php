@@ -60,9 +60,9 @@ class Bot {
 		$type = current( array_keys( $taskOpt ) );
 		try {
 			if ( $type === 'task' ) {
-				$this->runInternal( TaskManager::MODE_TASK, explode( ',', $taskOpt['task'] ) );
+				$this->runInternal( TaskManager::MODE_TASK, explode( ',', $taskOpt['tasks'] ) );
 			} elseif ( $type === 'subtask' ) {
-				$this->runInternal( TaskManager::MODE_SUBTASK, explode( ',', $taskOpt['subtask'] ) );
+				$this->runInternal( TaskManager::MODE_SUBTASK, explode( ',', $taskOpt['subtasks'] ) );
 			} else {
 				$this->runInternal();
 			}

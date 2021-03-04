@@ -45,8 +45,8 @@ class CLI {
 
 		'error-title:',
 
-		'task:',
-		'subtask:'
+		'tasks:',
+		'subtasks:'
 	];
 
 	public const REQUIRED_OPTS = [
@@ -117,8 +117,8 @@ class CLI {
 			$this->fatal( 'Please create the private-password file (' . self::PRIVATE_PASSWORD_FILE . ')' );
 		}
 
-		if ( count( array_intersect_key( $opts, [ 'task' => 1, 'subtask' => 1 ] ) ) === 2 ) {
-			$this->fatal( 'Cannot specify both task and subtask.' );
+		if ( count( array_intersect_key( $opts, [ 'tasks' => 1, 'subtasks' => 1 ] ) ) === 2 ) {
+			$this->fatal( 'Cannot specify both tasks and subtasks.' );
 		}
 	}
 
@@ -166,12 +166,12 @@ class CLI {
 	}
 
 	/**
-	 * @return string[] Either [ 'task' => taskname ] or [ 'subtask' => subtaskname ]
+	 * @return string[] Either [ 'tasks' => name1,... ] or [ 'subtasks' => name1,... ]
 	 */
 	public function getTaskOpt() : array {
 		return array_intersect_key(
 			$this->opts,
-			[ 'task' => true, 'subtask' => true ]
+			[ 'tasks' => true, 'subtasks' => true ]
 		);
 	}
 
