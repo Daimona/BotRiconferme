@@ -86,17 +86,17 @@ class TaskManager {
 	 * Main entry point
 	 *
 	 * @param string $mode One of the MODE_ constants
-	 * @param string|null $name Only used in MODE_TASK and MODE_SUBTASK
+	 * @param string[] $tasks Only used in MODE_TASK and MODE_SUBTASK
 	 * @return TaskResult
 	 */
-	public function run( string $mode, string $name = null ) : TaskResult {
+	public function run( string $mode, array $tasks = [] ) : TaskResult {
 		if ( $mode === self::MODE_COMPLETE ) {
 			return $this->runAllTasks();
-		} elseif ( $name === null ) {
-			throw new \BadMethodCallException( 'MODE_TASK and MODE_SUBTASK need a (sub)task name.' );
-		} else {
-			return $mode === self::MODE_TASK ? $this->runTask( $name ) : $this->runSubtask( $name );
 		}
+		if ( !$tasks ) {
+			throw new \BadMethodCallException( 'MODE_TASK and MODE_SUBTASK need at least a (sub)task name.' );
+		}
+		return $mode === self::MODE_TASK ? $this->runTasks( $tasks ) : $this->runSubtasks( $tasks );
 	}
 
 	/**
@@ -112,10 +112,20 @@ class TaskManager {
 			'close-old'
 		];
 
+		return $this->runTasks( $orderedList );
+	}
+
+	/**
+	 * Run $tasks in the given order
+	 *
+	 * @param array $tasks
+	 * @return TaskResult
+	 */
+	private function runTasks( array $tasks ) : TaskResult {
 		$res = new TaskResult( TaskResult::STATUS_GOOD );
 		do {
-			$res->merge( $this->runTask( current( $orderedList ) ) );
-		} while ( $res->isOK() && next( $orderedList ) );
+			$res->merge( $this->runTask( current( $tasks ) ) );
+		} while ( $res->isOK() && next( $tasks ) );
 
 		return $res;
 	}
@@ -132,6 +142,21 @@ class TaskManager {
 		}
 
 		return $this->getTaskInstance( $name )->run();
+	}
+
+	/**
+	 * Run $subtasks in the given order
+	 *
+	 * @param string[] $subtasks
+	 * @return TaskResult
+	 */
+	private function runSubtasks( array $subtasks ) : TaskResult {
+		$res = new TaskResult( TaskResult::STATUS_GOOD );
+		do {
+			$res->merge( $this->runSubtask( current( $subtasks ) ) );
+		} while ( $res->isOK() && next( $subtasks ) );
+
+		return $res;
 	}
 
 	/**

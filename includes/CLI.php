@@ -22,9 +22,10 @@ namespace BotRiconferme;
  * --use-private-password-file
  * which will look for a PRIVATE_PASSWORD_FILE file in the current directory containing only the plain password
  *
- * --task=update-list
+ * --tasks=update-list
  * OR
- * --subtask=user-notice
+ * --subtasks=user-notice
+ * (or comma-separated list, for both)
  */
 class CLI {
 	public const SHORT_OPTS = '';

@@ -60,9 +60,9 @@ class Bot {
 		$type = current( array_keys( $taskOpt ) );
 		try {
 			if ( $type === 'task' ) {
-				$this->runInternal( TaskManager::MODE_TASK, $taskOpt['task'] );
+				$this->runInternal( TaskManager::MODE_TASK, explode( ',', $taskOpt['task'] ) );
 			} elseif ( $type === 'subtask' ) {
-				$this->runInternal( TaskManager::MODE_SUBTASK, $taskOpt['subtask'] );
+				$this->runInternal( TaskManager::MODE_SUBTASK, explode( ',', $taskOpt['subtask'] ) );
 			} else {
 				$this->runInternal();
 			}
@@ -156,13 +156,15 @@ class Bot {
 	 * Internal call to TaskManager
 	 *
 	 * @param string $mode
-	 * @param string|null $name
+	 * @param string[] $taskNames
 	 */
 	private function runInternal(
 		string $mode = TaskManager::MODE_COMPLETE,
-		string $name = null
+		array $taskNames = []
 	) : void {
-		$activity = $mode === TaskManager::MODE_COMPLETE ? TaskManager::MODE_COMPLETE : "$mode $name";
+		$activity = $mode === TaskManager::MODE_COMPLETE
+			? TaskManager::MODE_COMPLETE
+			: "$mode " . implode( ', ', $taskNames );
 		$this->mainLogger->info( "Running $activity" );
 		$pbl = PageBotList::get(
 			$this->wikiGroup->getMainWiki(),
@@ -174,7 +176,7 @@ class Bot {
 			$this->messageProvider,
 			$pbl
 		);
-		$res = $manager->run( $mode, $name );
+		$res = $manager->run( $mode, $taskNames );
 		$base = "Execution of $activity";
 		if ( $res->isOK() ) {
 			$msg = $res->getStatus() === TaskResult::STATUS_NOTHING ?
