@@ -159,10 +159,10 @@ class CLI {
 
 	/**
 	 * @param string $opt
-	 * @param mixed|null $default
-	 * @return string
+	 * @param string|null $default
+	 * @return string|null
 	 */
-	public function getOpt( string $opt, $default = null ) : string {
+	public function getOpt( string $opt, string $default = null ) : ?string {
 		return $this->opts[$opt] ?? $default;
 	}
 
