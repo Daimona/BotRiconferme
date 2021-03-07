@@ -131,16 +131,22 @@ class SimpleUpdates extends Subtask {
 			}
 		}
 
-		$summary = $this->msg( 'close-update-list-summary' )
-			->params( [
-				'$riconf' => Message::commaList( $riconfNames ),
-				'$remove' => Message::commaList( $removeNames )
-			] )
-			->text();
+		$summary = '';
+		if ( $riconfNames ) {
+			$summary .= $this->msg( 'close-update-list-summary-riconf' )
+				->params( [ '$riconf' => Message::commaList( $riconfNames ) ] )
+				->text();
+			$summary .= ' ';
+		}
+		if ( $removeNames ) {
+			$summary .= $this->msg( 'close-update-list-summary-remove' )
+				->params( [ '$remove' => Message::commaList( $removeNames ) ] )
+				->text();
+		}
 
 		$adminsPage->edit( [
 			'text' => $newContent,
-			'summary' => $summary
+			'summary' => rtrim( $summary )
 		] );
 	}
 
@@ -165,16 +171,22 @@ class SimpleUpdates extends Subtask {
 			}
 		}
 
-		$summary = $this->msg( 'cu-list-update-summary' )
-			->params( [
-				'$riconf' => Message::commaList( $riconfNames ),
-				'$remove' => Message::commaList( $removeNames )
-			] )
-			->text();
+		$summary = '';
+		if ( $riconfNames ) {
+			$summary .= $this->msg( 'cu-list-update-summary-riconf' )
+				->params( [ '$riconf' => Message::commaList( $riconfNames ) ] )
+				->text();
+			$summary .= ' ';
+		}
+		if ( $removeNames ) {
+			$summary .= $this->msg( 'cu-list-update-summary-remove' )
+				->params( [ '$remove' => Message::commaList( $removeNames ) ] )
+				->text();
+		}
 
 		$cuList->edit( [
 			'text' => $newContent,
-			'summary' => $summary
+			'summary' => rtrim( $summary )
 		] );
 	}
 
