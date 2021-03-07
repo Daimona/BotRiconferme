@@ -4,6 +4,7 @@ namespace BotRiconferme\Wiki\Page;
 
 use BotRiconferme\Wiki\UserInfo;
 use BotRiconferme\Wiki\Wiki;
+use DateTime;
 
 /**
  * Singleton class representing the JSON list of admins
@@ -15,11 +16,11 @@ class PageBotList extends Page {
 	private $adminsList;
 
 	/**
-	 * @private Use self::get()
+	 * Use self::get() instead
 	 * @param string $listTitle
 	 * @param Wiki $wiki
 	 */
-	public function __construct( string $listTitle, Wiki $wiki ) {
+	private function __construct( string $listTitle, Wiki $wiki ) {
 		parent::__construct( $listTitle, $wiki );
 	}
 
@@ -54,7 +55,7 @@ class PageBotList extends Page {
 		} else {
 			$date = $info['override-prem'] . '/' . date( 'Y' );
 		}
-		return \DateTime::createFromFormat( 'd/m/Y', $date )->getTimestamp();
+		return DateTime::createFromFormat( 'd/m/Y', $date )->getTimestamp();
 	}
 
 	/**
@@ -66,23 +67,24 @@ class PageBotList extends Page {
 	 */
 	public function getNextTimestamp( string $user ) : int {
 		$userInfo = $this->getUserInfo( $user )->getInfo();
+		$now = new DateTime();
 		if ( isset( $userInfo['override-perm'] ) ) {
-			$date = \DateTime::createFromFormat(
+			$date = DateTime::createFromFormat(
 				'd/m/Y',
 				$userInfo['override-perm'] . '/' . date( 'Y' )
 			);
 		} else {
 			$date = null;
 			if ( isset( $userInfo['override'] ) ) {
-				$date = \DateTime::createFromFormat( 'd/m/Y', $userInfo['override'] );
+				$date = DateTime::createFromFormat( 'd/m/Y', $userInfo['override'] );
 			}
-			if ( !$date || $date <= new \DateTime ) {
+			if ( !$date || $date <= $now ) {
 				$ts = self::getValidFlagTimestamp( $userInfo );
-				$date = ( new \DateTime )->setTimestamp( $ts );
+				$date = ( new DateTime )->setTimestamp( $ts );
 			}
 		}
 		// @phan-suppress-next-line PhanPossiblyInfiniteLoop
-		while ( $date <= new \DateTime ) {
+		while ( $date <= $now ) {
 			$date->modify( '+1 year' );
 		}
 		return $date->getTimestamp();
@@ -96,15 +98,15 @@ class PageBotList extends Page {
 	 */
 	public static function getValidFlagTimestamp( array $groups ): int {
 		$checkuser = isset( $groups['checkuser'] ) ?
-			\DateTime::createFromFormat( 'd/m/Y', $groups['checkuser'] )->getTimestamp() :
+			DateTime::createFromFormat( 'd/m/Y', $groups['checkuser'] )->getTimestamp() :
 			0;
 		$bureaucrat = isset( $groups['bureaucrat'] ) ?
-			\DateTime::createFromFormat( 'd/m/Y', $groups['bureaucrat'] )->getTimestamp() :
+			DateTime::createFromFormat( 'd/m/Y', $groups['bureaucrat'] )->getTimestamp() :
 			0;
 
 		$timestamp = max( $bureaucrat, $checkuser );
 		if ( $timestamp === 0 ) {
-			$timestamp = \DateTime::createFromFormat( 'd/m/Y', $groups['sysop'] )->getTimestamp();
+			$timestamp = DateTime::createFromFormat( 'd/m/Y', $groups['sysop'] )->getTimestamp();
 		}
 		return $timestamp;
 	}
@@ -125,7 +127,7 @@ class PageBotList extends Page {
 
 		$flagTS = self::getValidFlagTimestamp( $groups );
 		$usualTS = strtotime( date( 'Y' ) . '-' . date( 'm-d', $flagTS ) );
-		$overrideTS = \DateTime::createFromFormat( 'd/m/Y', $groups['override'] )->getTimestamp();
+		$overrideTS = DateTime::createFromFormat( 'd/m/Y', $groups['override'] )->getTimestamp();
 		$delay = 60 * 60 * 24 * 3;
 
 		return time() > $usualTS + $delay && time() > $overrideTS + $delay;

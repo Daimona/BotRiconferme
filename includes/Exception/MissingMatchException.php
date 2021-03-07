@@ -2,8 +2,10 @@
 
 namespace BotRiconferme\Exception;
 
+use RuntimeException;
+
 /**
  * Exception thrown when a page doesn't match the given content
  */
-class MissingMatchException extends \RuntimeException {
+class MissingMatchException extends RuntimeException {
 }

@@ -60,6 +60,7 @@ class CurlRequest extends RequestBase {
 	 * @suppress PhanUnreferencedPublicMethod,PhanUnusedPublicNoOverrideMethodParameter
 	 */
 	public function headersHandler( $ch, string $header ) : int {
+		/** @var string[] $bits */
 		$bits = explode( ':', $header, 2 );
 		if ( trim( $bits[0] ) === 'Set-Cookie' ) {
 			$this->newCookies[] = $bits[1];

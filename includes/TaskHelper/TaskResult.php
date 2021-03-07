@@ -52,7 +52,7 @@ class TaskResult {
 	/**
 	 * @return string
 	 */
-	public function __toString() {
+	public function __toString() : string {
 		if ( $this->isOK() ) {
 			$stat = 'OK';
 			$errs = "\tNo errors.";

@@ -16,6 +16,7 @@ use BotRiconferme\Wiki\Wiki;
 use BotRiconferme\Wiki\WikiGroup;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use Throwable;
 
 /**
  * Higher-level class. It only wraps tasks executions, and contains generic data
@@ -66,7 +67,7 @@ class Bot {
 			} else {
 				$this->runInternal();
 			}
-		} catch ( \Throwable $e ) {
+		} catch ( Throwable $e ) {
 			$this->mainLogger->error( $e->__toString() );
 		} finally {
 			$this->mainLogger->flush();

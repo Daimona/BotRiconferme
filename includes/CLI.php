@@ -74,6 +74,7 @@ class CLI {
 	 * Populate options and check for required ones
 	 */
 	public function __construct() {
+		/** @var string[] $opts */
 		$opts = getopt( self::SHORT_OPTS, self::LONG_OPTS );
 		$this->checkRequiredOpts( $opts );
 		$this->checkConflictingOpts( $opts );
@@ -159,9 +160,9 @@ class CLI {
 	/**
 	 * @param string $opt
 	 * @param mixed|null $default
-	 * @return mixed
+	 * @return string
 	 */
-	public function getOpt( string $opt, $default = null ) {
+	public function getOpt( string $opt, $default = null ) : string {
 		return $this->opts[$opt] ?? $default;
 	}
 

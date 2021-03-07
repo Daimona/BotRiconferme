@@ -2,8 +2,10 @@
 
 namespace BotRiconferme\Exception;
 
+use Exception;
+
 /**
  * Error thrown when the page for messages doesn't exist
  */
-class MessagesPageDoesNotExistException extends \Exception {
+class MessagesPageDoesNotExistException extends Exception {
 }

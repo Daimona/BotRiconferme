@@ -152,7 +152,7 @@ class PageRiconferma extends Page {
 	 *
 	 * @return string
 	 * @throws BadMethodCallException
-	 * @throws \LogicException
+	 * @throws LogicException
 	 */
 	public function getOutcomeText() : string {
 		if ( !$this->isVote() ) {

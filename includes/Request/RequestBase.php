@@ -171,7 +171,7 @@ abstract class RequestBase {
 
 		try {
 			$body = $this->reallyMakeRequest( $query );
-		} catch ( TimeoutException $e ) {
+		} catch ( TimeoutException $_ ) {
 			$this->logger->warning( 'Retrying request after timeout' );
 			$body = $this->reallyMakeRequest( $query );
 		}
@@ -195,6 +195,7 @@ abstract class RequestBase {
 	 */
 	protected function setCookies( array $cookies ) : void {
 		foreach ( $cookies as $cookie ) {
+			/** @var string[] $bits */
 			$bits = explode( ';', $cookie );
 			[ $name, $value ] = explode( '=', $bits[0] );
 			self::$cookiesToSet[ $name ] = $value;

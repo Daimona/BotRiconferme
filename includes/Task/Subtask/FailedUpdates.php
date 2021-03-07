@@ -127,7 +127,9 @@ class FailedUpdates extends Subtask {
 			$text .= $this->msg( 'annunci-text' )->params( [ '$user' => $user ] )->text();
 		}
 
-		$month = ucfirst( Message::MONTHS[ date( 'F' ) ] );
+		/** @var string $curMonth */
+		$curMonth = date( 'F' );
+		$month = ucfirst( Message::MONTHS[$curMonth] );
 
 		$annunciPage = $this->getPage( $this->getOpt( 'annunci-page-title' ) );
 		$content = $annunciPage->getContent( $section );

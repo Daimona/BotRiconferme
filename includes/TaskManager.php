@@ -2,6 +2,7 @@
 
 namespace BotRiconferme;
 
+use BadMethodCallException;
 use BotRiconferme\Task\CloseOld;
 use BotRiconferme\Task\StartNew;
 use BotRiconferme\Task\StartVote;
@@ -19,6 +20,7 @@ use BotRiconferme\TaskHelper\TaskDataProvider;
 use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Wiki\Page\PageBotList;
 use BotRiconferme\Wiki\WikiGroup;
+use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -100,7 +102,7 @@ class TaskManager {
 			$tasks = self::FULL_RUN_ORDERED;
 		}
 		if ( !$tasks ) {
-			throw new \BadMethodCallException( 'MODE_TASK and MODE_SUBTASK need at least a (sub)task name.' );
+			throw new BadMethodCallException( 'MODE_TASK and MODE_SUBTASK need at least a (sub)task name.' );
 		}
 		return $mode === self::MODE_TASK ? $this->runTasks( $tasks ) : $this->runSubtasks( $tasks );
 	}
@@ -128,7 +130,7 @@ class TaskManager {
 	 */
 	protected function runTask( string $name ) : TaskResult {
 		if ( !isset( self::TASKS_MAP[ $name ] ) ) {
-			throw new \InvalidArgumentException( "'$name' is not a valid task." );
+			throw new InvalidArgumentException( "'$name' is not a valid task." );
 		}
 
 		return $this->getTaskInstance( $name )->run();
@@ -157,7 +159,7 @@ class TaskManager {
 	 */
 	protected function runSubtask( string $name ) : TaskResult {
 		if ( !isset( self::SUBTASKS_MAP[ $name ] ) ) {
-			throw new \InvalidArgumentException( "'$name' is not a valid subtask." );
+			throw new InvalidArgumentException( "'$name' is not a valid subtask." );
 		}
 
 		$class = self::SUBTASKS_MAP[ $name ];

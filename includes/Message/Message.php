@@ -105,7 +105,7 @@ class Message {
 		return $ret;
 	}
 
-	public function __toString() {
+	public function __toString() : string {
 		return $this->text();
 	}
 }
