@@ -2,14 +2,20 @@
 
 namespace BotRiconferme\Request;
 
+use Psr\Log\LoggerInterface;
+
 class RequestFactory {
 	/** @var string */
 	private $domain;
+	/** @var LoggerInterface */
+	private $logger;
 
 	/**
+	 * @param LoggerInterface $logger
 	 * @param string $domain
 	 */
-	public function __construct( string $domain ) {
+	public function __construct( LoggerInterface $logger, string $domain ) {
+		$this->logger = $logger;
 		$this->domain = $domain;
 	}
 
@@ -20,10 +26,8 @@ class RequestFactory {
 	 */
 	public function newFromParams( array $params ) : RequestBase {
 		if ( extension_loaded( 'curl' ) ) {
-			$ret = new CurlRequest( $params, $this->domain );
-		} else {
-			$ret = new NativeRequest( $params, $this->domain );
+			return new CurlRequest( $this->logger, $params, $this->domain );
 		}
-		return $ret;
+		return new NativeRequest( $this->logger, $params, $this->domain );
 	}
 }

@@ -8,7 +8,9 @@ use BotRiconferme\Exception\BlockedException;
 use BotRiconferme\Exception\MissingPageException;
 use BotRiconferme\Exception\PermissionDeniedException;
 use BotRiconferme\Exception\ProtectedPageException;
+use BotRiconferme\Exception\TimeoutException;
 use Generator;
+use Psr\Log\LoggerInterface;
 use stdClass;
 
 /**
@@ -41,14 +43,19 @@ abstract class RequestBase {
 	/** @var string[] */
 	protected $newCookies = [];
 
+	/** @var LoggerInterface */
+	protected $logger;
+
 	/**
 	 * @private Use RequestFactory
 	 *
+	 * @param LoggerInterface $logger
 	 * @param array $params
 	 * @phan-param array<int|string|bool> $params
 	 * @param string $domain
 	 */
-	public function __construct( array $params, string $domain ) {
+	public function __construct( LoggerInterface $logger, array $params, string $domain ) {
+		$this->logger = $logger;
 		$this->params = [ 'format' => 'json' ] + $params;
 		$this->url = $domain;
 	}
@@ -162,7 +169,12 @@ abstract class RequestBase {
 		}
 		$query = http_build_query( $params );
 
-		$body = $this->reallyMakeRequest( $query );
+		try {
+			$body = $this->reallyMakeRequest( $query );
+		} catch ( TimeoutException $e ) {
+			$this->logger->warning( 'Retrying request after timeout' );
+			$body = $this->reallyMakeRequest( $query );
+		}
 
 		$this->setCookies( $this->newCookies );
 		return json_decode( $body );
@@ -261,5 +273,15 @@ abstract class RequestBase {
 			$ret .= "$header\r\n";
 		}
 		return $ret;
+	}
+
+	/**
+	 * @param string $actualParams
+	 * @return string
+	 */
+	protected function getDebugURL( string $actualParams ) : string {
+		return strpos( $this->url, 'login' ) !== false
+			? '[Login request]'
+			: "{$this->url}?$actualParams";
 	}
 }

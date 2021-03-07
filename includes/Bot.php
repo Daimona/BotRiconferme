@@ -90,10 +90,10 @@ class Bot {
 			$this->cli->getOpt( 'password' )
 		);
 
-		$rf = new RequestFactory( $url );
+		$rf = new RequestFactory( $baseLogger, $url );
 		$wiki = new Wiki( $loginInfo, $baseLogger, $rf );
 
-		$centralRF = new RequestFactory( $centralURL );
+		$centralRF = new RequestFactory( $baseLogger, $centralURL );
 		$centralWiki = new Wiki( $loginInfo, $baseLogger, $centralRF );
 		$centralWiki->setLocalUserIdentifier( $localUserIdentifier );
 		$centralWiki->setPagePrefix( $centralPagePrefix );
@@ -102,7 +102,7 @@ class Bot {
 			$this->cli->getOpt( 'username' ),
 			$this->cli->getOpt( 'private-password' )
 		);
-		$privateRF = new RequestFactory( $privateURL );
+		$privateRF = new RequestFactory( $baseLogger, $privateURL );
 		$privateWiki = new Wiki( $privateLI, $baseLogger, $privateRF );
 		$privateWiki->setPagePrefix( $privatePagePrefix );
 

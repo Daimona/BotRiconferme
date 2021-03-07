@@ -3,6 +3,7 @@
 namespace BotRiconferme\Request;
 
 use BotRiconferme\Exception\APIRequestException;
+use BotRiconferme\Exception\TimeoutException;
 
 /**
  * Request done using cURL, if available
@@ -33,9 +34,10 @@ class CurlRequest extends RequestBase {
 		$result = curl_exec( $curl );
 
 		if ( $result === false ) {
-			$debugUrl = strpos( $this->url, 'login' ) !== false
-				? '[Login request]'
-				: "{$this->url}?$params";
+			$debugUrl = $this->getDebugURL( $params );
+			if ( curl_errno( $curl ) === CURLE_OPERATION_TIMEDOUT ) {
+				throw new TimeoutException( "Curl timeout for $debugUrl" );
+			}
 			throw new APIRequestException( "Curl error for $debugUrl: " . curl_error( $curl ) );
 		}
 
@@ -51,7 +53,7 @@ class CurlRequest extends RequestBase {
 	/**
 	 * cURL's headers handler
 	 *
-	 * @param Resource $ch
+	 * @param resource $ch TODO CurlHandle on PHP 8
 	 * @param string $header
 	 * @return int
 	 * @internal Only used as CB for cURL (CURLOPT_HEADERFUNCTION)
