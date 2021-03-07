@@ -2,7 +2,7 @@
 
 namespace BotRiconferme\Utils;
 
-interface IRegexAble {
+interface IRegexable {
 	/**
 	 * Return a regex for matching the name of the element
 	 *

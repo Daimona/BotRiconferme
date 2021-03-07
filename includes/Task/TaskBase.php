@@ -8,7 +8,9 @@ use BotRiconferme\TaskHelper\TaskDataProvider;
 use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Wiki\Page\PageBotList;
 use BotRiconferme\Wiki\WikiGroup;
+use LogicException;
 use Psr\Log\LoggerInterface;
+use ReflectionClass;
 
 /**
  * Base framework for all kind of tasks and subtasks
@@ -42,10 +44,10 @@ abstract class TaskBase extends ContextSource {
 	/**
 	 * Entry point
 	 *
-	 * @return \BotRiconferme\TaskHelper\TaskResult
+	 * @return TaskResult
 	 */
 	final public function run() : TaskResult {
-		$class = ( new \ReflectionClass( $this ) )->getShortName();
+		$class = ( new ReflectionClass( $this ) )->getShortName();
 		$opName = $this->getOperationName();
 		$this->getLogger()->info( "Starting $opName $class" );
 
@@ -63,7 +65,7 @@ abstract class TaskBase extends ContextSource {
 				$msg = ucfirst( $opName ) . " $class completed with warnings.";
 				break;
 			default:
-				throw new \LogicException( "Unexpected status: $status." );
+				throw new LogicException( "Unexpected status: $status." );
 		}
 
 		$this->getLogger()->info( $msg );

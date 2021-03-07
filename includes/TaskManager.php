@@ -47,6 +47,12 @@ class TaskManager {
 		'open-updates' => OpenUpdates::class,
 		'user-notice' => UserNotice::class
 	];
+	private const FULL_RUN_ORDERED = [
+		'update-list',
+		'start-new',
+		'start-vote',
+		'close-old'
+	];
 	/** @var TaskDataProvider */
 	private $provider;
 	/** @var LoggerInterface */
@@ -91,28 +97,12 @@ class TaskManager {
 	 */
 	public function run( string $mode, array $tasks = [] ) : TaskResult {
 		if ( $mode === self::MODE_COMPLETE ) {
-			return $this->runAllTasks();
+			$tasks = self::FULL_RUN_ORDERED;
 		}
 		if ( !$tasks ) {
 			throw new \BadMethodCallException( 'MODE_TASK and MODE_SUBTASK need at least a (sub)task name.' );
 		}
 		return $mode === self::MODE_TASK ? $this->runTasks( $tasks ) : $this->runSubtasks( $tasks );
-	}
-
-	/**
-	 * Run everything
-	 *
-	 * @return TaskResult
-	 */
-	protected function runAllTasks() : TaskResult {
-		$orderedList = [
-			'update-list',
-			'start-new',
-			'start-vote',
-			'close-old'
-		];
-
-		return $this->runTasks( $orderedList );
 	}
 
 	/**
@@ -182,15 +172,13 @@ class TaskManager {
 	 */
 	private function getTaskInstance( string $name ) : Task {
 		$class = self::TASKS_MAP[ $name ];
-		/** @var Task $ret */
-		$ret = new $class(
+		return new $class(
 			$this->logger,
 			$this->wikiGroup,
 			$this->provider,
 			$this->messageProvider,
 			$this->pageBotList
 		);
-		return $ret;
 	}
 
 	/**
@@ -200,14 +188,12 @@ class TaskManager {
 	 * @return Subtask
 	 */
 	private function getSubtaskInstance( string $class ) : Subtask {
-		/** @var Subtask $ret */
-		$ret = new $class(
+		return new $class(
 			$this->logger,
 			$this->wikiGroup,
 			$this->provider,
 			$this->messageProvider,
 			$this->pageBotList
 		);
-		return $ret;
 	}
 }

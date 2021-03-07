@@ -4,6 +4,7 @@ namespace BotRiconferme\Task;
 
 use BotRiconferme\Task\Subtask\Subtask;
 use BotRiconferme\TaskHelper\TaskResult;
+use InvalidArgumentException;
 
 /**
  * Base class for a high-level task.
@@ -18,12 +19,12 @@ abstract class Task extends TaskBase {
 
 	/**
 	 * @param string $subtask Defined in self::SUBTASKS_MAP
-	 * @return \BotRiconferme\TaskHelper\TaskResult
+	 * @return TaskResult
 	 */
 	protected function runSubtask( string $subtask ) : TaskResult {
 		$map = $this->getSubtasksMap();
 		if ( !isset( $map[ $subtask ] ) ) {
-			throw new \InvalidArgumentException( "'$subtask' is not a valid task." );
+			throw new InvalidArgumentException( "'$subtask' is not a valid task." );
 		}
 
 		$class = $map[ $subtask ];
@@ -44,14 +45,12 @@ abstract class Task extends TaskBase {
 	 * @return Subtask
 	 */
 	private function getSubtaskInstance( string $class ) : Subtask {
-		/** @var Subtask $ret */
-		$ret = new $class(
+		return new $class(
 			$this->getLogger(),
 			$this->getWikiGroup(),
 			$this->getDataProvider(),
 			$this->getMessageProvider(),
 			$this->getBotList()
 		);
-		return $ret;
 	}
 }

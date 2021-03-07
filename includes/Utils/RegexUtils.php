@@ -7,12 +7,12 @@ class RegexUtils {
 	 * Get a regex matching any element in the given array
 	 *
 	 * @param string $delimiter
-	 * @param IRegexAble ...$elements
+	 * @param IRegexable ...$elements
 	 * @return string
 	 */
 	public static function regexFromArray(
 		string $delimiter = '/',
-		IRegexAble ...$elements
+		IRegexable ...$elements
 	) : string {
 		$bits = [];
 		foreach ( $elements as $el ) {

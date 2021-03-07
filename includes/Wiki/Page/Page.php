@@ -3,13 +3,14 @@
 namespace BotRiconferme\Wiki\Page;
 
 use BotRiconferme\Exception\MissingMatchException;
-use BotRiconferme\Utils\IRegexAble;
+use BotRiconferme\Utils\IRegexable;
 use BotRiconferme\Wiki\Wiki;
+use LogicException;
 
 /**
  * Represents a single on-wiki page
  */
-class Page implements IRegexAble {
+class Page implements IRegexable {
 	/** @var string */
 	protected $title;
 	/** @var string|null */
@@ -51,7 +52,7 @@ class Page implements IRegexAble {
 	 *
 	 * @param array $params
 	 * @phan-param array<int|string|bool> $params
-	 * @throws \LogicException
+	 * @throws LogicException
 	 */
 	public function edit( array $params ) : void {
 		$params = [
@@ -66,7 +67,7 @@ class Page implements IRegexAble {
 		} elseif ( isset( $params['prependtext'] ) ) {
 			$this->content = $params['prependtext'] . $this->content;
 		} else {
-			throw new \LogicException(
+			throw new LogicException(
 				'Unrecognized text param for edit. Params: ' . var_export( $params, true )
 			);
 		}

@@ -2,16 +2,18 @@
 
 namespace BotRiconferme\Wiki\Page;
 
+use BadMethodCallException;
 use BotRiconferme\Message\Message;
+use LogicException;
 
 /**
  * Represents a single riconferma page
  */
 class PageRiconferma extends Page {
 	// Sections of the page, value = section number. Loaded in self::defineSections
-	/** @var int */
+	/** @var int|null */
 	private $supportSection;
-	/** @var int */
+	/** @var int|null */
 	private $opposeSection;
 	/** @var int[] Counts of votes for each section */
 	private $sectionCounts = [];
@@ -80,11 +82,11 @@ class PageRiconferma extends Page {
 	 * Get the amount support votes
 	 *
 	 * @return int
-	 * @throws \BadMethodCallException
+	 * @throws BadMethodCallException
 	 */
 	public function getSupportCount() : int {
 		if ( !$this->isVote() ) {
-			throw new \BadMethodCallException( 'Cannot get support for a non-vote page.' );
+			throw new BadMethodCallException( 'Cannot get support for a non-vote page.' );
 		}
 		$this->defineSections();
 		return $this->getCountForSection( $this->supportSection );
@@ -149,12 +151,12 @@ class PageRiconferma extends Page {
 	 * Get the result text for the page itself
 	 *
 	 * @return string
-	 * @throws \BadMethodCallException
+	 * @throws BadMethodCallException
 	 * @throws \LogicException
 	 */
 	public function getOutcomeText() : string {
 		if ( !$this->isVote() ) {
-			throw new \BadMethodCallException( 'No need for an outcome text.' );
+			throw new BadMethodCallException( 'No need for an outcome text.' );
 		}
 
 		$text = sprintf(
@@ -176,7 +178,7 @@ class PageRiconferma extends Page {
 				$text .= " $user non viene riconfermato amministratore.";
 				break;
 			default:
-				throw new \LogicException( 'Invalid outcome: ' . $this->getOutcome() );
+				throw new LogicException( 'Invalid outcome: ' . $this->getOutcome() );
 		}
 		return $text;
 	}
