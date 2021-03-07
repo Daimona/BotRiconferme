@@ -158,11 +158,21 @@ class CLI {
 	}
 
 	/**
+	 * Get an option that is known to be set.
 	 * @param string $opt
+	 * @return string
+	 */
+	public function getSetOpt( string $opt ) : string {
+		return $this->opts[$opt];
+	}
+
+	/**
+	 * @param string $opt
+	 * @param string|null $default
 	 * @return string|null
 	 */
-	public function getOpt( string $opt ) : string {
-		return $this->opts[$opt];
+	public function getOpt( string $opt, string $default = null ) : ?string {
+		return $this->opts[$opt] ?? $default;
 	}
 
 	/**

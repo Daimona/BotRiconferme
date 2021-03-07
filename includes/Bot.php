@@ -47,7 +47,7 @@ class Bot {
 		$this->createWikiGroup( $simpleLogger );
 		$this->messageProvider = new MessageProvider(
 			$this->wikiGroup->getMainWiki(),
-			$this->cli->getOpt( 'msg-title' )
+			$this->cli->getSetOpt( 'msg-title' )
 		);
 		$this->initConfig();
 		$this->createMainLogger( $simpleLogger );
@@ -87,8 +87,8 @@ class Bot {
 		$privatePagePrefix = 'private:';
 
 		$loginInfo = new LoginInfo(
-			$this->cli->getOpt( 'username' ),
-			$this->cli->getOpt( 'password' )
+			$this->cli->getSetOpt( 'username' ),
+			$this->cli->getSetOpt( 'password' )
 		);
 
 		$rf = new RequestFactory( $baseLogger, $url );
@@ -100,8 +100,8 @@ class Bot {
 		$centralWiki->setPagePrefix( $centralPagePrefix );
 
 		$privateLI = new LoginInfo(
-			$this->cli->getOpt( 'username' ),
-			$this->cli->getOpt( 'private-password' )
+			$this->cli->getSetOpt( 'username' ),
+			$this->cli->getSetOpt( 'private-password' )
 		);
 		$privateRF = new RequestFactory( $baseLogger, $privateURL );
 		$privateWiki = new Wiki( $privateLI, $baseLogger, $privateRF );
@@ -145,7 +145,7 @@ class Bot {
 	private function initConfig() : void {
 		$wiki = $this->wikiGroup->getMainWiki();
 		try {
-			$confValues = json_decode( $wiki->getPageContent( $this->cli->getOpt( 'config-title' ) ), true );
+			$confValues = json_decode( $wiki->getPageContent( $this->cli->getSetOpt( 'config-title' ) ), true );
 		} catch ( MissingPageException $_ ) {
 			exit( 'Please create a config page.' );
 		}
@@ -169,7 +169,7 @@ class Bot {
 		$this->mainLogger->info( "Running $activity" );
 		$pbl = PageBotList::get(
 			$this->wikiGroup->getMainWiki(),
-			$this->cli->getOpt( 'list-title' )
+			$this->cli->getSetOpt( 'list-title' )
 		);
 		$manager = new TaskManager(
 			$this->mainLogger,
