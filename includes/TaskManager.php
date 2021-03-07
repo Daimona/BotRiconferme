@@ -99,7 +99,7 @@ class TaskManager {
 	 */
 	public function run( string $mode, array $tasks = [] ) : TaskResult {
 		if ( $mode === self::MODE_COMPLETE ) {
-			$tasks = self::FULL_RUN_ORDERED;
+			return $this->runTasks( self::FULL_RUN_ORDERED );
 		}
 		if ( !$tasks ) {
 			throw new BadMethodCallException( 'MODE_TASK and MODE_SUBTASK need at least a (sub)task name.' );
