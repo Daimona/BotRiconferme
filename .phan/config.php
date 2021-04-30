@@ -3,7 +3,7 @@
 return [
 	'directory_list' => array_merge(
 		[
-			'includes',
+			'src',
 			'vendor/psr',
 		],
 		PHP_VERSION_ID < 80000 ? [ 'vendor/symfony/polyfill-php80' ] : []
