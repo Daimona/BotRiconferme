@@ -81,6 +81,7 @@ class PageBotList extends Page {
 			if ( !$date || $date <= $now ) {
 				$ts = self::getValidFlagTimestamp( $userInfo );
 				$date = ( new DateTime )->setTimestamp( $ts );
+				$date->modify( '+1 year' );
 			}
 		}
 		// @phan-suppress-next-line PhanPossiblyInfiniteLoop
