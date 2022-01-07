@@ -32,7 +32,7 @@ class User implements IRegexable, Stringable {
 	/**
 	 * @return string
 	 */
-	public function getName() : string {
+	public function getName(): string {
 		return $this->name;
 	}
 
@@ -41,7 +41,7 @@ class User implements IRegexable, Stringable {
 	 *
 	 * @return string[]
 	 */
-	public function getGroups() : array {
+	public function getGroups(): array {
 		return $this->ui->extractGroups();
 	}
 
@@ -50,7 +50,7 @@ class User implements IRegexable, Stringable {
 	 *
 	 * @return string[] [ group => date ]
 	 */
-	public function getGroupsWithDates() : array {
+	public function getGroupsWithDates(): array {
 		return $this->ui->extractGroupsWithDates();
 	}
 
@@ -60,7 +60,7 @@ class User implements IRegexable, Stringable {
 	 * @param string $groupName
 	 * @return bool
 	 */
-	public function inGroup( string $groupName ) : bool {
+	public function inGroup( string $groupName ): bool {
 		return in_array( $groupName, $this->getGroups(), true );
 	}
 
@@ -69,10 +69,10 @@ class User implements IRegexable, Stringable {
 	 *
 	 * @inheritDoc
 	 */
-	public function getRegex( string $delimiter = '/' ) : string {
+	public function getRegex( string $delimiter = '/' ): string {
 		$bits = $this->getAliases();
 		$bits[] = $this->name;
-		$regexify = static function ( string $el ) use ( $delimiter ) : string {
+		$regexify = static function ( string $el ) use ( $delimiter ): string {
 			return str_replace( ' ', '[ _]', preg_quote( $el, $delimiter ) );
 		};
 		return '(?:' . implode( '|', array_map( $regexify, $bits ) ) . ')';
@@ -83,14 +83,14 @@ class User implements IRegexable, Stringable {
 	 *
 	 * @return string[]
 	 */
-	public function getAliases() : array {
+	public function getAliases(): array {
 		return $this->ui->getAliases();
 	}
 
 	/**
 	 * @return Page
 	 */
-	public function getTalkPage() : Page {
+	public function getTalkPage(): Page {
 		return new Page( "User talk:{$this->name}", $this->wiki );
 	}
 
@@ -98,7 +98,7 @@ class User implements IRegexable, Stringable {
 	 * Get the default base page, e.g. WP:A/Riconferma annuale/XXX
 	 * @return Page
 	 */
-	public function getBasePage() : Page {
+	public function getBasePage(): Page {
 		$prefix = Config::getInstance()->get( 'main-page-title' );
 		return new Page( "$prefix/$this", $this->wiki );
 	}
@@ -110,7 +110,7 @@ class User implements IRegexable, Stringable {
 	 * @throws MissingPageException
 	 * @return Page
 	 */
-	public function getExistingBasePage() : Page {
+	public function getExistingBasePage(): Page {
 		$basePage = $this->getBasePage();
 		if ( !$basePage->exists() ) {
 			$basePage = null;
@@ -134,7 +134,7 @@ class User implements IRegexable, Stringable {
 	/**
 	 * @return string
 	 */
-	public function __toString() : string {
+	public function __toString(): string {
 		return $this->name;
 	}
 }

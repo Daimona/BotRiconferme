@@ -13,7 +13,7 @@ class OpenUpdates extends Subtask {
 	/**
 	 * @inheritDoc
 	 */
-	public function runInternal() : int {
+	public function runInternal(): int {
 		$pages = $this->getDataProvider()->getCreatedPages();
 
 		if ( !$pages ) {
@@ -35,7 +35,7 @@ class OpenUpdates extends Subtask {
 	 *
 	 * @param PageRiconferma[] $pages
 	 */
-	protected function addToMainPage( array $pages ) : void {
+	protected function addToMainPage( array $pages ): void {
 		$this->getLogger()->info(
 			'Adding the following to main: ' . implode( ', ', $pages )
 		);
@@ -68,7 +68,7 @@ class OpenUpdates extends Subtask {
 	 *
 	 * @param PageRiconferma[] $pages
 	 */
-	protected function addToVotazioni( array $pages ) : void {
+	protected function addToVotazioni( array $pages ): void {
 		$this->getLogger()->info(
 			'Adding the following to votes: ' . implode( ', ', $pages )
 		);
@@ -105,7 +105,7 @@ class OpenUpdates extends Subtask {
 	 * @param int $amount
 	 * @throws TaskException
 	 */
-	protected function addToNews( int $amount ) : void {
+	protected function addToNews( int $amount ): void {
 		$this->getLogger()->info( "Increasing the news counter by $amount" );
 		$newsPage = $this->getPage( $this->getOpt( 'news-page-title' ) );
 

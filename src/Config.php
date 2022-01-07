@@ -25,7 +25,7 @@ class Config {
 	 * @param string[] $confValues
 	 * @throws ConfigException
 	 */
-	public static function init( array $confValues ) : void {
+	public static function init( array $confValues ): void {
 		if ( self::$instance ) {
 			throw new ConfigException( 'Config was already initialized' );
 		}
@@ -44,7 +44,7 @@ class Config {
 	 * @param string $key
 	 * @param mixed $value
 	 */
-	protected function set( string $key, $value ) : void {
+	protected function set( string $key, $value ): void {
 		$this->opts[ $key ] = $value;
 	}
 
@@ -54,7 +54,7 @@ class Config {
 	 * @return self
 	 * @throws ConfigException
 	 */
-	public static function getInstance() : self {
+	public static function getInstance(): self {
 		if ( !self::$instance ) {
 			throw new ConfigException( 'Config not yet initialized' );
 		}

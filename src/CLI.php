@@ -66,7 +66,7 @@ class CLI {
 	/**
 	 * @return bool
 	 */
-	public static function isCLI() : bool {
+	public static function isCLI(): bool {
 		return PHP_SAPI === 'cli';
 	}
 
@@ -85,7 +85,7 @@ class CLI {
 	/**
 	 * @param string[] $opts
 	 */
-	private function checkRequiredOpts( array $opts ) : void {
+	private function checkRequiredOpts( array $opts ): void {
 		$missingOpts = array_diff( self::REQUIRED_OPTS, array_keys( $opts ) );
 		if ( $missingOpts ) {
 			$this->fatal( 'Required options missing: ' . implode( ', ', $missingOpts ) );
@@ -107,7 +107,7 @@ class CLI {
 	/**
 	 * @param string[] $opts
 	 */
-	private function checkConflictingOpts( array $opts ) : void {
+	private function checkConflictingOpts( array $opts ): void {
 		$this->checkNotBothSet( $opts, 'password', 'use-password-file' );
 		if ( array_key_exists( 'use-password-file', $opts ) && !file_exists( self::PASSWORD_FILE ) ) {
 			$this->fatal( 'Please create the password file (' . self::PASSWORD_FILE . ')' );
@@ -128,7 +128,7 @@ class CLI {
 	 * @param string $first
 	 * @param string $second
 	 */
-	private function checkNotBothSet( array $opts, string $first, string $second ) : void {
+	private function checkNotBothSet( array $opts, string $first, string $second ): void {
 		if ( array_key_exists( $first, $opts ) && array_key_exists( $second, $opts ) ) {
 			$this->fatal( "Can only use one of '$first' and '$second'" );
 		}
@@ -137,7 +137,7 @@ class CLI {
 	/**
 	 * @param string[] &$opts
 	 */
-	private function canonicalize( array &$opts ) : void {
+	private function canonicalize( array &$opts ): void {
 		if ( array_key_exists( 'use-password-file', $opts ) ) {
 			$pw = trim( file_get_contents( self::PASSWORD_FILE ) );
 			$opts['password'] = $pw;
@@ -153,7 +153,7 @@ class CLI {
 	/**
 	 * @param string $msg
 	 */
-	private function fatal( string $msg ) : void {
+	private function fatal( string $msg ): void {
 		exit( $msg . "\n" );
 	}
 
@@ -162,7 +162,7 @@ class CLI {
 	 * @param string $opt
 	 * @return string
 	 */
-	public function getSetOpt( string $opt ) : string {
+	public function getSetOpt( string $opt ): string {
 		return $this->opts[$opt];
 	}
 
@@ -171,14 +171,14 @@ class CLI {
 	 * @param string|null $default
 	 * @return string|null
 	 */
-	public function getOpt( string $opt, string $default = null ) : ?string {
+	public function getOpt( string $opt, string $default = null ): ?string {
 		return $this->opts[$opt] ?? $default;
 	}
 
 	/**
 	 * @return string[] Either [ 'tasks' => name1,... ] or [ 'subtasks' => name1,... ]
 	 */
-	public function getTaskOpt() : array {
+	public function getTaskOpt(): array {
 		return array_intersect_key(
 			$this->opts,
 			[ 'tasks' => true, 'subtasks' => true ]
@@ -188,7 +188,7 @@ class CLI {
 	/**
 	 * @return string|null
 	 */
-	public function getURL() : ?string {
+	public function getURL(): ?string {
 		return $this->getOpt( 'force-url' );
 	}
 }

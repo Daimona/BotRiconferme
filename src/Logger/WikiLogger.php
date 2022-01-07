@@ -40,7 +40,7 @@ class WikiLogger extends AbstractLogger implements IFlushingAwareLogger {
 	 * @param mixed[] $context
 	 * @suppress PhanUnusedPublicMethodParameter
 	 */
-	public function log( $level, $message, array $context = [] ) :void {
+	public function log( $level, $message, array $context = [] ): void {
 		if ( $this->levelToInt( $level ) >= $this->minLevel ) {
 			$this->buffer[] = $this->getFormattedMessage( $level, $message );
 		}
@@ -49,7 +49,7 @@ class WikiLogger extends AbstractLogger implements IFlushingAwareLogger {
 	/**
 	 * @return string
 	 */
-	protected function getOutput() : string {
+	protected function getOutput(): string {
 		$line = str_repeat( '-', 80 );
 		return "\n\n" . implode( "\n", $this->buffer ) . "\n$line\n\n";
 	}
@@ -57,7 +57,7 @@ class WikiLogger extends AbstractLogger implements IFlushingAwareLogger {
 	/**
 	 * @inheritDoc
 	 */
-	public function flush() : void {
+	public function flush(): void {
 		if ( $this->buffer ) {
 			$this->logPage->edit( [
 				'appendtext' => $this->getOutput(),

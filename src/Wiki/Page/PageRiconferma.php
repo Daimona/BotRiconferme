@@ -35,7 +35,7 @@ class PageRiconferma extends Page {
 	 * because they can vary depending on whether the page is a vote, which is relatively
 	 * expensive to know since it requires parsing the content of the page.
 	 */
-	private function defineSections() : void {
+	private function defineSections(): void {
 		$this->supportSection = $this->isVote() ? 3 : 0;
 		$this->opposeSection = $this->isVote() ? 4 : 3;
 	}
@@ -45,7 +45,7 @@ class PageRiconferma extends Page {
 	 *
 	 * @return string
 	 */
-	public function getUserName() : string {
+	public function getUserName(): string {
 		return explode( '/', $this->title )[2];
 	}
 
@@ -54,7 +54,7 @@ class PageRiconferma extends Page {
 	 *
 	 * @return int
 	 */
-	public function getNum() : int {
+	public function getNum(): int {
 		$bits = explode( '/', $this->getTitle() );
 		return (int)end( $bits );
 	}
@@ -64,7 +64,7 @@ class PageRiconferma extends Page {
 	 *
 	 * @return string
 	 */
-	public function getUserNum() : string {
+	public function getUserNum(): string {
 		return explode( '/', $this->getTitle(), 3 )[2];
 	}
 
@@ -73,7 +73,7 @@ class PageRiconferma extends Page {
 	 *
 	 * @return int
 	 */
-	public function getOpposingCount() : int {
+	public function getOpposingCount(): int {
 		$this->defineSections();
 		return $this->getCountForSection( $this->opposeSection );
 	}
@@ -84,7 +84,7 @@ class PageRiconferma extends Page {
 	 * @return int
 	 * @throws BadMethodCallException
 	 */
-	public function getSupportCount() : int {
+	public function getSupportCount(): int {
 		if ( !$this->isVote() ) {
 			throw new BadMethodCallException( 'Cannot get support for a non-vote page.' );
 		}
@@ -98,7 +98,7 @@ class PageRiconferma extends Page {
 	 * @param int $secNum
 	 * @return int
 	 */
-	protected function getCountForSection( int $secNum ) : int {
+	protected function getCountForSection( int $secNum ): int {
 		if ( !isset( $this->sectionCounts[ $secNum ] ) ) {
 			$content = $this->wiki->getPageContent( $this->title, $secNum );
 			// Let's hope that this is good enough...
@@ -112,7 +112,7 @@ class PageRiconferma extends Page {
 	 *
 	 * @return int
 	 */
-	protected function getQuorum() : int {
+	protected function getQuorum(): int {
 		$reg = "!soddisfare il \[\[[^|\]]+\|quorum]] di '''(\d+) voti'''!";
 		return (int)$this->getMatch( $reg )[1];
 	}
@@ -122,7 +122,7 @@ class PageRiconferma extends Page {
 	 *
 	 * @return bool
 	 */
-	public function hasOpposition() : bool {
+	public function hasOpposition(): bool {
 		return $this->getOpposingCount() >= self::REQUIRED_OPPOSE;
 	}
 
@@ -131,7 +131,7 @@ class PageRiconferma extends Page {
 	 *
 	 * @return int One of the OUTCOME_* constants
 	 */
-	public function getOutcome() : int {
+	public function getOutcome(): int {
 		if ( !$this->isVote() ) {
 			return self::OUTCOME_OK;
 		}
@@ -154,7 +154,7 @@ class PageRiconferma extends Page {
 	 * @throws BadMethodCallException
 	 * @throws LogicException
 	 */
-	public function getOutcomeText() : string {
+	public function getOutcomeText(): string {
 		if ( !$this->isVote() ) {
 			throw new BadMethodCallException( 'No need for an outcome text.' );
 		}
@@ -188,7 +188,7 @@ class PageRiconferma extends Page {
 	 *
 	 * @return bool
 	 */
-	public function isVote() : bool {
+	public function isVote(): bool {
 		$sectionReg = '/<!-- SEZIONE DA UTILIZZARE PER/';
 		return !$this->matches( $sectionReg );
 	}
@@ -198,7 +198,7 @@ class PageRiconferma extends Page {
 	 *
 	 * @return int
 	 */
-	public function getCreationTimestamp() : int {
+	public function getCreationTimestamp(): int {
 		return $this->wiki->getPageCreationTS( $this->title );
 	}
 
@@ -207,7 +207,7 @@ class PageRiconferma extends Page {
 	 *
 	 * @return int
 	 */
-	public function getEndTimestamp() : int {
+	public function getEndTimestamp(): int {
 		if ( $this->isVote() ) {
 			$reg = "!La votazione ha inizio il.+ alle ore ([\d:]+) e ha termine il (.+) alla stessa ora!";
 			[ , $hours, $day ] = $this->getMatch( $reg );

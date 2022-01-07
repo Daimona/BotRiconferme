@@ -13,7 +13,7 @@ class ClosePages extends Subtask {
 	/**
 	 * @inheritDoc
 	 */
-	public function runInternal() : int {
+	public function runInternal(): int {
 		$pages = $this->getDataProvider()->getPagesToClose();
 
 		if ( !$pages ) {
@@ -35,7 +35,7 @@ class ClosePages extends Subtask {
 	/**
 	 * @param PageRiconferma $page
 	 */
-	protected function addVoteCloseText( PageRiconferma $page ) : void {
+	protected function addVoteCloseText( PageRiconferma $page ): void {
 		$content = $page->getContent();
 		$beforeReg = '!è necessario ottenere una maggioranza .+ votanti\.!u';
 		$newContent = preg_replace( $beforeReg, '$0' . "\n" . $page->getOutcomeText(), $content );
@@ -50,7 +50,7 @@ class ClosePages extends Subtask {
 	 * @param PageRiconferma $page
 	 * @see CreatePages::updateBasePage()
 	 */
-	protected function updateBasePage( PageRiconferma $page ) : void {
+	protected function updateBasePage( PageRiconferma $page ): void {
 		$this->getLogger()->info( "Updating base page for $page" );
 
 		if ( $page->getNum() === 1 ) {

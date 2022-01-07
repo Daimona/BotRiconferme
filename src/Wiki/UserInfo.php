@@ -29,7 +29,7 @@ class UserInfo {
 	/**
 	 * @return string
 	 */
-	public function getName() : string {
+	public function getName(): string {
 		return $this->name;
 	}
 
@@ -37,28 +37,28 @@ class UserInfo {
 	 * @return array
 	 * @phan-return array<string,string|string[]>
 	 */
-	public function getInfo() : array {
+	public function getInfo(): array {
 		return $this->info;
 	}
 
 	/**
 	 * @return string[]
 	 */
-	public function extractGroups() : array {
+	public function extractGroups(): array {
 		return array_keys( $this->extractGroupsWithDates() );
 	}
 
 	/**
 	 * @return string[]
 	 */
-	public function extractGroupsWithDates() : array {
+	public function extractGroupsWithDates(): array {
 		return array_intersect_key( $this->getInfo(), array_fill_keys( self::GROUP_KEYS, 1 ) );
 	}
 
 	/**
 	 * @return string[]
 	 */
-	public function getAliases() : array {
+	public function getAliases(): array {
 		return $this->getInfo()['aliases'] ?? [];
 	}
 }

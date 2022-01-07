@@ -26,7 +26,7 @@ class SimpleLogger extends AbstractLogger implements IFlushingAwareLogger {
 	 * @param mixed[] $context
 	 * @suppress PhanUnusedPublicMethodParameter
 	 */
-	public function log( $level, $message, array $context = [] ) : void {
+	public function log( $level, $message, array $context = [] ): void {
 		if ( $this->levelToInt( $level ) >= $this->minLevel ) {
 			echo $this->getFormattedMessage( $level, $message ) . "\n";
 		}
@@ -35,7 +35,7 @@ class SimpleLogger extends AbstractLogger implements IFlushingAwareLogger {
 	/**
 	 * @inheritDoc
 	 */
-	public function flush() : void {
+	public function flush(): void {
 		// Everything else is printed immediately
 		echo "\n" . str_repeat( '-', 80 ) . "\n\n";
 	}

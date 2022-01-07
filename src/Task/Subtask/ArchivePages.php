@@ -13,7 +13,7 @@ class ArchivePages extends Subtask {
 	/**
 	 * @inheritDoc
 	 */
-	public function runInternal() : int {
+	public function runInternal(): int {
 		$pages = $this->getDataProvider()->getPagesToClose();
 
 		if ( !$pages ) {
@@ -32,7 +32,7 @@ class ArchivePages extends Subtask {
 	 * @param PageRiconferma[] $pages
 	 * @see OpenUpdates::addToMainPage()
 	 */
-	protected function removeFromMainPage( array $pages ) : void {
+	protected function removeFromMainPage( array $pages ): void {
 		$this->getLogger()->info(
 			'Removing from main: ' . implode( ', ', $pages )
 		);
@@ -72,7 +72,7 @@ class ArchivePages extends Subtask {
 	 *
 	 * @param PageRiconferma[] $pages
 	 */
-	protected function addToArchive( array $pages ) : void {
+	protected function addToArchive( array $pages ): void {
 		$this->getLogger()->info(
 			'Adding to archive: ' . implode( ', ', $pages )
 		);
@@ -103,7 +103,7 @@ class ArchivePages extends Subtask {
 	 * @param string $archiveTitle
 	 * @param PageRiconferma[] $pages
 	 */
-	private function reallyAddToArchive( string $archiveTitle, array $pages ) : void {
+	private function reallyAddToArchive( string $archiveTitle, array $pages ): void {
 		$archivePage = $this->getPage( "$archiveTitle/" . date( 'Y' ) );
 		$existed = $archivePage->exists();
 
@@ -132,7 +132,7 @@ class ArchivePages extends Subtask {
 	 *
 	 * @param string $archiveTitle
 	 */
-	private function addArchiveYear( string $archiveTitle ) : void {
+	private function addArchiveYear( string $archiveTitle ): void {
 		$page = $this->getPage( $archiveTitle );
 		$year = date( 'Y' );
 

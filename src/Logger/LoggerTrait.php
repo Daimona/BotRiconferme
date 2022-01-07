@@ -11,7 +11,7 @@ trait LoggerTrait {
 	 * @param string $level
 	 * @return int
 	 */
-	protected function levelToInt( string $level ) : int {
+	protected function levelToInt( string $level ): int {
 		// Order matters
 		$mapping = [
 			LogLevel::DEBUG,
@@ -31,7 +31,7 @@ trait LoggerTrait {
 	 * @param string $message
 	 * @return string
 	 */
-	protected function getFormattedMessage( string $level, string $message ) : string {
+	protected function getFormattedMessage( string $level, string $message ): string {
 		return sprintf( '%s [%s] - %s', date( 'd M H:i:s' ), $level, $message );
 	}
 }

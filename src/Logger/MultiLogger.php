@@ -23,7 +23,7 @@ class MultiLogger extends AbstractLogger implements IFlushingAwareLogger {
 	 * @param mixed[] $context
 	 * @suppress PhanUnusedPublicMethodParameter
 	 */
-	public function log( $level, $message, array $context = [] ) :void {
+	public function log( $level, $message, array $context = [] ): void {
 		foreach ( $this->loggers as $logger ) {
 			$logger->log( $level, $message );
 		}
@@ -32,7 +32,7 @@ class MultiLogger extends AbstractLogger implements IFlushingAwareLogger {
 	/**
 	 * @inheritDoc
 	 */
-	public function flush() : void {
+	public function flush(): void {
 		foreach ( $this->loggers as $logger ) {
 			$logger->flush();
 		}

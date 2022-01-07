@@ -29,7 +29,7 @@ class TaskResult {
 	/**
 	 * @return int
 	 */
-	public function getStatus() : int {
+	public function getStatus(): int {
 		return $this->status;
 	}
 
@@ -37,14 +37,14 @@ class TaskResult {
 	 * @return string[]
 	 * @suppress PhanUnreferencedPublicMethod
 	 */
-	public function getErrors() : array {
+	public function getErrors(): array {
 		return $this->errors;
 	}
 
 	/**
 	 * @param TaskResult $that
 	 */
-	public function merge( TaskResult $that ) : void {
+	public function merge( TaskResult $that ): void {
 		$this->status |= $that->status;
 		$this->errors = array_merge( $this->errors, $that->errors );
 	}
@@ -52,7 +52,7 @@ class TaskResult {
 	/**
 	 * @return string
 	 */
-	public function __toString() : string {
+	public function __toString(): string {
 		if ( $this->isOK() ) {
 			$stat = 'OK';
 			$errs = "\tNo errors.";
@@ -72,7 +72,7 @@ class TaskResult {
 	 *
 	 * @return bool
 	 */
-	public function isOK() : bool {
+	public function isOK(): bool {
 		return ( $this->status | self::STATUS_GOOD ) === self::STATUS_GOOD;
 	}
 }

@@ -65,7 +65,7 @@ abstract class RequestBase {
 	 *
 	 * @return self For chaining
 	 */
-	public function setPost() : self {
+	public function setPost(): self {
 		$this->method = self::METHOD_POST;
 		return $this;
 	}
@@ -74,7 +74,7 @@ abstract class RequestBase {
 	 * Execute a query request
 	 * @return Generator
 	 */
-	public function executeAsQuery() : Generator {
+	public function executeAsQuery(): Generator {
 		if ( ( $this->params['action'] ?? false ) !== 'query' ) {
 			throw new BadMethodCallException( 'Not an ApiQuery!' );
 		}
@@ -108,7 +108,7 @@ abstract class RequestBase {
 	 * Execute a request that doesn't need any continuation.
 	 * @return stdClass
 	 */
-	public function executeSingle() : stdClass {
+	public function executeSingle(): stdClass {
 		$curParams = $this->params;
 		$res = $this->makeRequestInternal( $curParams );
 		$this->handleErrorAndWarnings( $res );
@@ -118,7 +118,7 @@ abstract class RequestBase {
 	/**
 	 * @return int
 	 */
-	private function parseLimit() : int {
+	private function parseLimit(): int {
 		foreach ( $this->params as $name => $val ) {
 			if ( substr( $name, -strlen( 'limit' ) ) === 'limit' ) {
 				return $val === 'max' ? -1 : (int)$val;
@@ -135,7 +135,7 @@ abstract class RequestBase {
 	 * @param string $resKey
 	 * @return int|null
 	 */
-	private function countQueryResults( stdClass $res, string $resKey ) : ?int {
+	private function countQueryResults( stdClass $res, string $resKey ): ?int {
 		if ( !isset( $res->query->$resKey ) ) {
 			return null;
 		}
@@ -163,7 +163,7 @@ abstract class RequestBase {
 	 * @phan-param array<int|string|bool> $params
 	 * @return stdClass
 	 */
-	private function makeRequestInternal( array $params ) : stdClass {
+	private function makeRequestInternal( array $params ): stdClass {
 		if ( $this->method === self::METHOD_POST ) {
 			$params['maxlag'] = self::MAXLAG;
 		}
@@ -186,14 +186,14 @@ abstract class RequestBase {
 	 * @param string $params
 	 * @return string
 	 */
-	abstract protected function reallyMakeRequest( string $params ) : string;
+	abstract protected function reallyMakeRequest( string $params ): string;
 
 	/**
 	 * After a request, set cookies for the next ones
 	 *
 	 * @param string[] $cookies
 	 */
-	protected function setCookies( array $cookies ) : void {
+	protected function setCookies( array $cookies ): void {
 		foreach ( $cookies as $cookie ) {
 			/** @var string[] $bits */
 			$bits = explode( ';', $cookie );
@@ -208,7 +208,7 @@ abstract class RequestBase {
 	 * @param stdClass $res
 	 * @return APIRequestException
 	 */
-	private function getException( stdClass $res ) : APIRequestException {
+	private function getException( stdClass $res ): APIRequestException {
 		switch ( $res->error->code ) {
 			case 'missingtitle':
 				$ex = new MissingPageException;
@@ -234,7 +234,7 @@ abstract class RequestBase {
 	 * @param stdClass $res
 	 * @throws APIRequestException
 	 */
-	protected function handleErrorAndWarnings( stdClass $res ) : void {
+	protected function handleErrorAndWarnings( stdClass $res ): void {
 		if ( isset( $res->error ) ) {
 			throw $this->getException( $res );
 		}
@@ -250,7 +250,7 @@ abstract class RequestBase {
 	 *
 	 * @return string[]
 	 */
-	protected function getHeaders() : array {
+	protected function getHeaders(): array {
 		$ret = self::HEADERS;
 		if ( self::$cookiesToSet ) {
 			$cookies = [];
@@ -268,7 +268,7 @@ abstract class RequestBase {
 	 * @param string[] $headers
 	 * @return string
 	 */
-	protected function buildHeadersString( array $headers ) : string {
+	protected function buildHeadersString( array $headers ): string {
 		$ret = '';
 		foreach ( $headers as $header ) {
 			$ret .= "$header\r\n";
@@ -280,7 +280,7 @@ abstract class RequestBase {
 	 * @param string $actualParams
 	 * @return string
 	 */
-	protected function getDebugURL( string $actualParams ) : string {
+	protected function getDebugURL( string $actualParams ): string {
 		return strpos( $this->url, 'login' ) !== false
 			? '[Login request]'
 			: "{$this->url}?$actualParams";

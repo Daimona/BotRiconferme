@@ -30,7 +30,7 @@ class UpdateList extends Task {
 	/**
 	 * @inheritDoc
 	 */
-	public function runInternal() : int {
+	public function runInternal(): int {
 		$this->actualList = $this->getActualAdmins();
 		$pageBotList = $this->getBotList();
 		$this->botList = $pageBotList->getDecodedContent();
@@ -58,7 +58,7 @@ class UpdateList extends Task {
 	 * @return string[][]
 	 * @phan-return array<string,string[]>
 	 */
-	protected function getActualAdmins() : array {
+	protected function getActualAdmins(): array {
 		$params = [
 			'action' => 'query',
 			'list' => 'allusers',
@@ -76,7 +76,7 @@ class UpdateList extends Task {
 	 * @return string[][]
 	 * @phan-return array<string,string[]>
 	 */
-	protected function extractAdmins( Generator $data ) : array {
+	protected function extractAdmins( Generator $data ): array {
 		$ret = [];
 		$blacklist = $this->getOpt( 'exclude-admins' );
 		foreach ( $data as $u ) {
@@ -94,7 +94,7 @@ class UpdateList extends Task {
 	 *
 	 * @return string[][]
 	 */
-	protected function getMissingGroups() : array {
+	protected function getMissingGroups(): array {
 		$missing = [];
 		foreach ( $this->actualList as $adm => $groups ) {
 			$curMissing = array_diff( $groups, array_keys( $this->botList[$adm] ?? [] ) );
@@ -118,7 +118,7 @@ class UpdateList extends Task {
 	 * @return string
 	 * @throws TaskException
 	 */
-	protected function getFlagDate( string $admin, string $group ) : string {
+	protected function getFlagDate( string $admin, string $group ): string {
 		$this->getLogger()->info( "Retrieving $group flag date for $admin" );
 
 		$wiki = $this->getWiki();
@@ -153,7 +153,7 @@ class UpdateList extends Task {
 	 * @param string $group
 	 * @return string|null
 	 */
-	private function extractTimestamp( Generator $data, string $group ) : ?string {
+	private function extractTimestamp( Generator $data, string $group ): ?string {
 		$ts = null;
 		foreach ( $data as $entry ) {
 			if (
@@ -172,7 +172,7 @@ class UpdateList extends Task {
 	 *
 	 * @return string[][]
 	 */
-	protected function getExtraGroups() : array {
+	protected function getExtraGroups(): array {
 		$extra = [];
 		foreach ( $this->botList as $name => $groups ) {
 			$groups = array_diff_key( $groups, array_fill_keys( PageBotList::NON_GROUP_KEYS, 1 ) );
@@ -189,8 +189,8 @@ class UpdateList extends Task {
 	 * @param string[] $names
 	 * @return Generator
 	 */
-	private function getRenameEntries( array $names ) : Generator {
-		$titles = array_map( static function ( string $x ) : string {
+	private function getRenameEntries( array $names ): Generator {
+		$titles = array_map( static function ( string $x ): string {
 			return "Utente:$x";
 		}, $names );
 
@@ -213,7 +213,7 @@ class UpdateList extends Task {
 	 * @param string[] $names
 	 * @return string[] [ old_name => new_name ]
 	 */
-	protected function getRenamedUsers( array $names ) : array {
+	protected function getRenamedUsers( array $names ): array {
 		if ( !$names ) {
 			return [];
 		}
@@ -239,7 +239,7 @@ class UpdateList extends Task {
 	 * @phan-param array<string,array<string,string|string[]>> $newContent
 	 * @param string[][] $removed
 	 */
-	private function handleRenames( array &$newContent, array $removed ) : void {
+	private function handleRenames( array &$newContent, array $removed ): void {
 		$renameMap = $this->getRenamedUsers( array_keys( $removed ) );
 		foreach ( $removed as $oldName => $info ) {
 			if (
@@ -269,7 +269,7 @@ class UpdateList extends Task {
 		array &$newContent,
 		array $missing,
 		array $extra
-	) : array {
+	): array {
 		$removed = [];
 		foreach ( $newContent as $user => $groups ) {
 			if ( isset( $missing[ $user ] ) ) {
@@ -297,7 +297,7 @@ class UpdateList extends Task {
 	 * @param string[][] $extra
 	 * @return array[]
 	 */
-	protected function getNewContent( array $missing, array $extra ) : array {
+	protected function getNewContent( array $missing, array $extra ): array {
 		$newContent = $this->botList;
 
 		$removed = $this->handleExtraAndMissing( $newContent, $missing, $extra );
@@ -316,7 +316,7 @@ class UpdateList extends Task {
 	 *
 	 * @param array[] &$newContent
 	 */
-	protected function removeOverrides( array &$newContent ) : void {
+	protected function removeOverrides( array &$newContent ): void {
 		$removed = [];
 		foreach ( $newContent as $user => $groups ) {
 			if ( PageBotList::isOverrideExpired( $groups ) ) {

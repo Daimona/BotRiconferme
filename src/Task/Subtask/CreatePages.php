@@ -17,7 +17,7 @@ class CreatePages extends Subtask {
 	/**
 	 * @inheritDoc
 	 */
-	public function runInternal() : int {
+	public function runInternal(): int {
 		$users = $this->getDataProvider()->getUsersToProcess();
 
 		if ( !$users ) {
@@ -36,7 +36,7 @@ class CreatePages extends Subtask {
 	 *
 	 * @param User $user
 	 */
-	protected function processUser( User $user ) : void {
+	protected function processUser( User $user ): void {
 		$this->getLogger()->info( "Processing user $user" );
 		try {
 			$num = $this->getLastPageNum( $user ) + 1;
@@ -71,7 +71,7 @@ class CreatePages extends Subtask {
 	 * @return int
 	 * @throws TaskException
 	 */
-	protected function getLastPageNum( User $user ) : int {
+	protected function getLastPageNum( User $user ): int {
 		$this->getLogger()->info( "Retrieving previous pages for $user" );
 
 		$unprefixedTitle = explode( ':', $this->getOpt( 'main-page-title' ), 2 )[1];
@@ -116,7 +116,7 @@ class CreatePages extends Subtask {
 	 * @param string $title
 	 * @param User $user
 	 */
-	protected function createPage( string $title, User $user ) : void {
+	protected function createPage( string $title, User $user ): void {
 		$this->getLogger()->info( "Creating page $title" );
 		$groups = $user->getGroupsWithDates();
 		$textParams = [
@@ -141,7 +141,7 @@ class CreatePages extends Subtask {
 	 * @param Page $basePage
 	 * @param string $newText
 	 */
-	protected function createBasePage( Page $basePage, string $newText ) : void {
+	protected function createBasePage( Page $basePage, string $newText ): void {
 		$this->getLogger()->info( "Creating base page $basePage" );
 
 		$params = [
@@ -157,7 +157,7 @@ class CreatePages extends Subtask {
 	 * @param Page $basePage
 	 * @param string $newText
 	 */
-	protected function updateBasePage( Page $basePage, string $newText ) : void {
+	protected function updateBasePage( Page $basePage, string $newText ): void {
 		$this->getLogger()->info( "Updating base page $basePage" );
 
 		$params = [

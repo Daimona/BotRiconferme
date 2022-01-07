@@ -11,5 +11,5 @@ interface IFlushingAwareLogger extends LoggerInterface {
 	/**
 	 * Flush the buffer
 	 */
-	public function flush() : void;
+	public function flush(): void;
 }

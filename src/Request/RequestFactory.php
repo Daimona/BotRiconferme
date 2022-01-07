@@ -24,7 +24,7 @@ class RequestFactory {
 	 * @phan-param array<int|string|bool> $params
 	 * @return RequestBase
 	 */
-	public function newFromParams( array $params ) : RequestBase {
+	public function newFromParams( array $params ): RequestBase {
 		if ( extension_loaded( 'curl' ) ) {
 			return new CurlRequest( $this->logger, $params, $this->domain );
 		}

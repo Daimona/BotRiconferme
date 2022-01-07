@@ -27,21 +27,21 @@ class WikiGroup {
 	/**
 	 * @return Wiki
 	 */
-	public function getMainWiki() : Wiki {
+	public function getMainWiki(): Wiki {
 		return $this->mainWiki;
 	}
 
 	/**
 	 * @return Wiki
 	 */
-	public function getCentralWiki() : Wiki {
+	public function getCentralWiki(): Wiki {
 		return $this->centralWiki;
 	}
 
 	/**
 	 * @return Wiki
 	 */
-	public function getPrivateWiki() : Wiki {
+	public function getPrivateWiki(): Wiki {
 		return $this->privateWiki;
 	}
 }

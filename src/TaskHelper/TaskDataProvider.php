@@ -26,7 +26,7 @@ class TaskDataProvider extends ContextSource {
 	 *
 	 * @return User[]
 	 */
-	public function getUsersToProcess() : array {
+	public function getUsersToProcess(): array {
 		if ( $this->processUsers === null ) {
 			$this->processUsers = [];
 			foreach ( $this->getBotList()->getAdminsList() as $name => $userInfo ) {
@@ -45,7 +45,7 @@ class TaskDataProvider extends ContextSource {
 	 * @param UserInfo $ui
 	 * @return bool
 	 */
-	private function shouldAddUser( UserInfo $ui ) : bool {
+	private function shouldAddUser( UserInfo $ui ): bool {
 		$timestamp = $this->getBotList()->getOverrideTimestamp( $ui );
 		$override = $timestamp !== null;
 
@@ -63,7 +63,7 @@ class TaskDataProvider extends ContextSource {
 	 *
 	 * @return PageRiconferma[]
 	 */
-	public function getOpenPages() : array {
+	public function getOpenPages(): array {
 		if ( $this->openPages === null ) {
 			$this->openPages = [];
 			$mainTitle = $this->getOpt( 'main-page-title' );
@@ -92,7 +92,7 @@ class TaskDataProvider extends ContextSource {
 	 *
 	 * @return PageRiconferma[]
 	 */
-	public function getPagesToClose() : array {
+	public function getPagesToClose(): array {
 		if ( $this->pagesToClose === null ) {
 			$this->pagesToClose = [];
 			foreach ( $this->getOpenPages() as $page ) {
@@ -109,21 +109,21 @@ class TaskDataProvider extends ContextSource {
 	 *
 	 * @param string $name
 	 */
-	public function removeUser( string $name ) : void {
+	public function removeUser( string $name ): void {
 		unset( $this->processUsers[ $name ] );
 	}
 
 	/**
 	 * @return PageRiconferma[]
 	 */
-	public function getCreatedPages() : array {
+	public function getCreatedPages(): array {
 		return $this->createdPages;
 	}
 
 	/**
 	 * @param PageRiconferma $page
 	 */
-	public function addCreatedPage( PageRiconferma $page ) : void {
+	public function addCreatedPage( PageRiconferma $page ): void {
 		$this->createdPages[] = $page;
 	}
 }

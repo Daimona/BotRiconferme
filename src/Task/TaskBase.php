@@ -46,7 +46,7 @@ abstract class TaskBase extends ContextSource {
 	 *
 	 * @return TaskResult
 	 */
-	final public function run() : TaskResult {
+	final public function run(): TaskResult {
 		$class = ( new ReflectionClass( $this ) )->getShortName();
 		$opName = $this->getOperationName();
 		$this->getLogger()->info( "Starting $opName $class" );
@@ -77,19 +77,19 @@ abstract class TaskBase extends ContextSource {
 	 *
 	 * @return int One of the STATUS_* constants
 	 */
-	abstract protected function runInternal() : int;
+	abstract protected function runInternal(): int;
 
 	/**
 	 * How this operation should be called in logs
 	 *
 	 * @return string
 	 */
-	abstract public function getOperationName() : string;
+	abstract public function getOperationName(): string;
 
 	/**
 	 * @return TaskDataProvider
 	 */
-	protected function getDataProvider() : TaskDataProvider {
+	protected function getDataProvider(): TaskDataProvider {
 		return $this->dataProvider;
 	}
 }

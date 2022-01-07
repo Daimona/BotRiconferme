@@ -29,7 +29,7 @@ class MessageProvider {
 	/**
 	 * @throws MessagesPageDoesNotExistException
 	 */
-	private function grabWikiMessages() : void {
+	private function grabWikiMessages(): void {
 		if ( self::$messages !== null ) {
 			return;
 		}
@@ -46,7 +46,7 @@ class MessageProvider {
 	 * @return Message
 	 * @throws MessageNotFoundException
 	 */
-	public function getMessage( string $key ) : Message {
+	public function getMessage( string $key ): Message {
 		$this->grabWikiMessages();
 		if ( !isset( self::$messages[ $key ] ) ) {
 			throw new MessageNotFoundException( "Message '$key' does not exist." );

@@ -32,7 +32,7 @@ class Message {
 	 * @phan-param array<string,int|string> $args
 	 * @return self
 	 */
-	public function params( array $args ) : self {
+	public function params( array $args ): self {
 		$this->value = strtr( $this->value, $args );
 		return $this;
 	}
@@ -40,7 +40,7 @@ class Message {
 	/**
 	 * @return string
 	 */
-	public function text() : string {
+	public function text(): string {
 		$this->parsePlurals();
 		return $this->value;
 	}
@@ -48,7 +48,7 @@ class Message {
 	/**
 	 * Replace {{$plur|<amount>|sing|plur}}
 	 */
-	protected function parsePlurals() : void {
+	protected function parsePlurals(): void {
 		$reg = '!\{\{\$plur\|(?P<amount>\d+)\|(?P<sing>[^}|]+)\|(?P<plur>[^|}]+)}}!';
 
 		if ( preg_match( $reg, $this->value ) === 0 ) {
@@ -60,7 +60,7 @@ class Message {
 			 * @param string[] $matches
 			 * @return string
 			 */
-			static function ( array $matches ) : string {
+			static function ( array $matches ): string {
 				return (int)$matches['amount'] > 1 ? trim( $matches['plur'] ) : trim( $matches['sing'] );
 			},
 			$this->value
@@ -73,7 +73,7 @@ class Message {
 	 * @param string $timeString Full format, e.g. "15 aprile 2019 18:27"
 	 * @return int
 	 */
-	public static function getTimestampFromLocalTime( string $timeString ) : int {
+	public static function getTimestampFromLocalTime( string $timeString ): int {
 		$englishTime = str_ireplace(
 			array_values( self::MONTHS ),
 			array_keys( self::MONTHS ),
@@ -92,7 +92,7 @@ class Message {
 	 * @param string $emptyText
 	 * @return string
 	 */
-	public static function commaList( array $data, string $emptyText = 'nessuno' ) : string {
+	public static function commaList( array $data, string $emptyText = 'nessuno' ): string {
 		if ( count( $data ) > 1 ) {
 			$last = array_pop( $data );
 			$ret = implode( ', ', $data ) . " e $last";
@@ -105,7 +105,7 @@ class Message {
 		return $ret;
 	}
 
-	public function __toString() : string {
+	public function __toString(): string {
 		return $this->text();
 	}
 }

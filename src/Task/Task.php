@@ -15,13 +15,13 @@ abstract class Task extends TaskBase {
 	 *
 	 * @return string[]
 	 */
-	abstract protected function getSubtasksMap() : array;
+	abstract protected function getSubtasksMap(): array;
 
 	/**
 	 * @param string $subtask Defined in self::SUBTASKS_MAP
 	 * @return TaskResult
 	 */
-	protected function runSubtask( string $subtask ) : TaskResult {
+	protected function runSubtask( string $subtask ): TaskResult {
 		$map = $this->getSubtasksMap();
 		if ( !isset( $map[ $subtask ] ) ) {
 			throw new InvalidArgumentException( "'$subtask' is not a valid task." );
@@ -44,7 +44,7 @@ abstract class Task extends TaskBase {
 	 * @param string $class
 	 * @return Subtask
 	 */
-	private function getSubtaskInstance( string $class ) : Subtask {
+	private function getSubtaskInstance( string $class ): Subtask {
 		return new $class(
 			$this->getLogger(),
 			$this->getWikiGroup(),

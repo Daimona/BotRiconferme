@@ -14,7 +14,7 @@ class SimpleUpdates extends Subtask {
 	/**
 	 * @inheritDoc
 	 */
-	public function runInternal() : int {
+	public function runInternal(): int {
 		$pages = $this->getDataProvider()->getPagesToClose();
 
 		if ( !$pages ) {
@@ -36,7 +36,7 @@ class SimpleUpdates extends Subtask {
 	 * @param PageRiconferma[] $pages
 	 * @see OpenUpdates::addToVotazioni()
 	 */
-	protected function updateVotazioni( array $pages ) : void {
+	protected function updateVotazioni( array $pages ): void {
 		$this->getLogger()->info(
 			'Updating votazioni: ' . implode( ', ', $pages )
 		);
@@ -65,7 +65,7 @@ class SimpleUpdates extends Subtask {
 	 * @param PageRiconferma[] $pages
 	 * @see OpenUpdates::addToNews()
 	 */
-	protected function updateNews( array $pages ) : void {
+	protected function updateNews( array $pages ): void {
 		$simpleAmount = $voteAmount = 0;
 		foreach ( $pages as $page ) {
 			if ( $page->isVote() ) {
@@ -104,7 +104,7 @@ class SimpleUpdates extends Subtask {
 	 *
 	 * @param bool[] $outcomes
 	 */
-	protected function updateAdminList( array $outcomes ) : void {
+	protected function updateAdminList( array $outcomes ): void {
 		$this->getLogger()->info( 'Updating admin list' );
 		$adminsPage = $this->getPage( $this->getOpt( 'admins-list-title' ) );
 		$newContent = $adminsPage->getContent();
@@ -153,7 +153,7 @@ class SimpleUpdates extends Subtask {
 	/**
 	 * @param bool[] $outcomes
 	 */
-	protected function updateCUList( array $outcomes ) : void {
+	protected function updateCUList( array $outcomes ): void {
 		$this->getLogger()->info( 'Updating CU list.' );
 		$cuList = $this->getPage( $this->getOpt( 'cu-list-title' ) );
 		$newContent = $cuList->getContent();
@@ -197,7 +197,7 @@ class SimpleUpdates extends Subtask {
 	 * @param PageRiconferma[] $pages
 	 * @return bool[]
 	 */
-	private function getGroupOutcomes( string $group, array $pages ) : array {
+	private function getGroupOutcomes( string $group, array $pages ): array {
 		$ret = [];
 		foreach ( $pages as $page ) {
 			$user = $this->getUser( $page->getUserName() );

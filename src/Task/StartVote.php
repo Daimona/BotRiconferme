@@ -22,7 +22,7 @@ class StartVote extends Task {
 	/**
 	 * @inheritDoc
 	 */
-	public function runInternal() : int {
+	public function runInternal(): int {
 		$pages = $this->getDataProvider()->getOpenPages();
 
 		if ( !$pages ) {
@@ -36,7 +36,7 @@ class StartVote extends Task {
 	 * @param PageRiconferma[] $pages
 	 * @return int a STATUS_* constant
 	 */
-	protected function processPages( array $pages ) : int {
+	protected function processPages( array $pages ): int {
 		$donePages = [];
 		foreach ( $pages as $page ) {
 			if ( $page->hasOpposition() && !$page->isVote() ) {
@@ -60,7 +60,7 @@ class StartVote extends Task {
 	 *
 	 * @param PageRiconferma $page
 	 */
-	protected function openVote( PageRiconferma $page ) : void {
+	protected function openVote( PageRiconferma $page ): void {
 		$this->getLogger()->info( "Starting vote on $page" );
 
 		$content = $page->getContent();
@@ -99,7 +99,7 @@ class StartVote extends Task {
 	 * @see SimpleUpdates::updateVotazioni()
 	 * @see OpenUpdates::addToVotazioni()
 	 */
-	protected function updateVotazioni( array $pages ) : void {
+	protected function updateVotazioni( array $pages ): void {
 		$votePage = $this->getPage( $this->getOpt( 'vote-page-title' ) );
 
 		$users = [];
@@ -138,7 +138,7 @@ class StartVote extends Task {
 	 * @param PageRiconferma $page
 	 * @see \BotRiconferme\Task\Subtask\ClosePages::updateBasePage()
 	 */
-	protected function updateBasePage( PageRiconferma $page ) : void {
+	protected function updateBasePage( PageRiconferma $page ): void {
 		$this->getLogger()->info( "Updating base page for $page" );
 
 		if ( $page->getNum() === 1 ) {
@@ -165,7 +165,7 @@ class StartVote extends Task {
 	 * @see SimpleUpdates::updateNews()
 	 * @see OpenUpdates::addToNews()
 	 */
-	protected function updateNews( int $amount ) : void {
+	protected function updateNews( int $amount ): void {
 		$this->getLogger()->info( "Turning $amount pages into votes" );
 		$newsPage = $this->getPage( $this->getOpt( 'news-page-title' ) );
 

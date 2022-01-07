@@ -9,5 +9,5 @@ interface IRegexable {
 	 * @param string $delimiter
 	 * @return string
 	 */
-	public function getRegex( string $delimiter ) : string;
+	public function getRegex( string $delimiter ): string;
 }

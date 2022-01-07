@@ -15,7 +15,7 @@ class CloseOld extends Task {
 	/**
 	 * @inheritDoc
 	 */
-	public function runInternal() : int {
+	public function runInternal(): int {
 		$orderedList = [
 			'close-pages',
 			'archive-pages',

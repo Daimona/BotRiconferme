@@ -9,7 +9,7 @@ class NativeRequest extends RequestBase {
 	/**
 	 * @inheritDoc
 	 */
-	protected function reallyMakeRequest( string $params ) : string {
+	protected function reallyMakeRequest( string $params ): string {
 		$context = [
 			'http' => [
 				'method' => $this->method,

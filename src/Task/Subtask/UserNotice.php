@@ -12,7 +12,7 @@ class UserNotice extends Subtask {
 	/**
 	 * @inheritDoc
 	 */
-	public function runInternal() : int {
+	public function runInternal(): int {
 		$pages = $this->getDataProvider()->getCreatedPages();
 		$users = $this->getDataProvider()->getUsersToProcess();
 
@@ -38,7 +38,7 @@ class UserNotice extends Subtask {
 	 * @param User $user
 	 * @param int $ricNum
 	 */
-	protected function addMsg( User $user, int $ricNum ) : void {
+	protected function addMsg( User $user, int $ricNum ): void {
 		$this->getLogger()->info( "Leaving msg to $user" );
 		$msg = $this->msg( 'user-notice-msg' )->params( [ '$num' => $ricNum ] )->text();
 

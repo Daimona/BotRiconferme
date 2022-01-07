@@ -13,7 +13,7 @@ class CurlRequest extends RequestBase {
 	 * @inheritDoc
 	 * @throws APIRequestException
 	 */
-	protected function reallyMakeRequest( string $params ) : string {
+	protected function reallyMakeRequest( string $params ): string {
 		$curl = curl_init();
 		if ( $curl === false ) {
 			throw new APIRequestException( 'Cannot open cURL handler.' );
@@ -59,7 +59,7 @@ class CurlRequest extends RequestBase {
 	 * @internal Only used as CB for cURL (CURLOPT_HEADERFUNCTION)
 	 * @suppress PhanUnreferencedPublicMethod,PhanUnusedPublicNoOverrideMethodParameter
 	 */
-	public function headersHandler( $ch, string $header ) : int {
+	public function headersHandler( $ch, string $header ): int {
 		/** @var string[] $bits */
 		$bits = explode( ':', $header, 2 );
 		if ( trim( $bits[0] ) === 'Set-Cookie' ) {

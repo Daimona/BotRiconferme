@@ -14,7 +14,7 @@ class StartNew extends Task {
 	/**
 	 * @inheritDoc
 	 */
-	public function runInternal() : int {
+	public function runInternal(): int {
 		$orderedList = [
 			'create-pages',
 			'open-updates',
@@ -32,7 +32,7 @@ class StartNew extends Task {
 	/**
 	 * @inheritDoc
 	 */
-	protected function getSubtasksMap() : array {
+	protected function getSubtasksMap(): array {
 		return [
 			'create-pages' => CreatePages::class,
 			'open-updates' => OpenUpdates::class,

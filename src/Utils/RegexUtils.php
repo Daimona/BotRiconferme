@@ -13,7 +13,7 @@ class RegexUtils {
 	public static function regexFromArray(
 		string $delimiter = '/',
 		IRegexable ...$elements
-	) : string {
+	): string {
 		$bits = [];
 		foreach ( $elements as $el ) {
 			$bits[] = $el->getRegex( $delimiter );

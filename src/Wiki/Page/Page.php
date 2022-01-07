@@ -30,7 +30,7 @@ class Page implements IRegexable {
 	/**
 	 * @return string
 	 */
-	public function getTitle() : string {
+	public function getTitle(): string {
 		return $this->title;
 	}
 
@@ -40,7 +40,7 @@ class Page implements IRegexable {
 	 * @param int|null $section A section number to retrieve the content of that section
 	 * @return string
 	 */
-	public function getContent( int $section = null ) : string {
+	public function getContent( int $section = null ): string {
 		if ( $this->content === null ) {
 			$this->content = $this->wiki->getPageContent( $this->title, $section );
 		}
@@ -54,7 +54,7 @@ class Page implements IRegexable {
 	 * @phan-param array<int|string|bool> $params
 	 * @throws LogicException
 	 */
-	public function edit( array $params ) : void {
+	public function edit( array $params ): void {
 		$params = [
 			'title' => $this->getTitle()
 		] + $params;
@@ -78,7 +78,7 @@ class Page implements IRegexable {
 	 *
 	 * @return bool
 	 */
-	public function exists() : bool {
+	public function exists(): bool {
 		$pages = $this->wiki->getRequestFactory()->newFromParams( [
 			'action' => 'query',
 			'titles' => $this->getTitle()
@@ -92,7 +92,7 @@ class Page implements IRegexable {
 	 * @param string $regex
 	 * @return bool
 	 */
-	public function matches( string $regex ) : bool {
+	public function matches( string $regex ): bool {
 		return (bool)preg_match( $regex, $this->getContent() );
 	}
 
@@ -104,7 +104,7 @@ class Page implements IRegexable {
 	 * @return string[]
 	 * @throws MissingMatchException
 	 */
-	public function getMatch( string $regex ) : array {
+	public function getMatch( string $regex ): array {
 		$ret = [];
 		if ( preg_match( $regex, $this->getContent(), $ret ) === 0 ) {
 			throw new MissingMatchException( "The content of $this does not match the given regex $regex" );
@@ -117,7 +117,7 @@ class Page implements IRegexable {
 	 *
 	 * @inheritDoc
 	 */
-	public function getRegex( string $delimiter = '/' ) : string {
+	public function getRegex( string $delimiter = '/' ): string {
 		return str_replace( ' ', '[ _]', preg_quote( $this->title, $delimiter ) );
 	}
 
@@ -126,7 +126,7 @@ class Page implements IRegexable {
 	 *
 	 * @return string
 	 */
-	public function __toString() : string {
+	public function __toString(): string {
 		return $this->getTitle();
 	}
 }

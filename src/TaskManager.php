@@ -97,7 +97,7 @@ class TaskManager {
 	 * @param string[] $tasks Only used in MODE_TASK and MODE_SUBTASK
 	 * @return TaskResult
 	 */
-	public function run( string $mode, array $tasks = [] ) : TaskResult {
+	public function run( string $mode, array $tasks = [] ): TaskResult {
 		if ( $mode === self::MODE_COMPLETE ) {
 			return $this->runTasks( self::FULL_RUN_ORDERED );
 		}
@@ -113,7 +113,7 @@ class TaskManager {
 	 * @param string[] $tasks
 	 * @return TaskResult
 	 */
-	private function runTasks( array $tasks ) : TaskResult {
+	private function runTasks( array $tasks ): TaskResult {
 		$res = new TaskResult( TaskResult::STATUS_GOOD );
 		do {
 			$res->merge( $this->runTask( current( $tasks ) ) );
@@ -128,7 +128,7 @@ class TaskManager {
 	 * @param string $name
 	 * @return TaskResult
 	 */
-	protected function runTask( string $name ) : TaskResult {
+	protected function runTask( string $name ): TaskResult {
 		if ( !isset( self::TASKS_MAP[ $name ] ) ) {
 			throw new InvalidArgumentException( "'$name' is not a valid task." );
 		}
@@ -142,7 +142,7 @@ class TaskManager {
 	 * @param string[] $subtasks
 	 * @return TaskResult
 	 */
-	private function runSubtasks( array $subtasks ) : TaskResult {
+	private function runSubtasks( array $subtasks ): TaskResult {
 		$res = new TaskResult( TaskResult::STATUS_GOOD );
 		do {
 			$res->merge( $this->runSubtask( current( $subtasks ) ) );
@@ -157,7 +157,7 @@ class TaskManager {
 	 * @param string $name
 	 * @return TaskResult
 	 */
-	protected function runSubtask( string $name ) : TaskResult {
+	protected function runSubtask( string $name ): TaskResult {
 		if ( !isset( self::SUBTASKS_MAP[ $name ] ) ) {
 			throw new InvalidArgumentException( "'$name' is not a valid subtask." );
 		}
@@ -172,7 +172,7 @@ class TaskManager {
 	 * @param string $name
 	 * @return Task
 	 */
-	private function getTaskInstance( string $name ) : Task {
+	private function getTaskInstance( string $name ): Task {
 		$class = self::TASKS_MAP[ $name ];
 		return new $class(
 			$this->logger,
@@ -189,7 +189,7 @@ class TaskManager {
 	 * @param string $class
 	 * @return Subtask
 	 */
-	private function getSubtaskInstance( string $class ) : Subtask {
+	private function getSubtaskInstance( string $class ): Subtask {
 		return new $class(
 			$this->logger,
 			$this->wikiGroup,

@@ -16,7 +16,7 @@ class FailedUpdates extends Subtask {
 	/**
 	 * @inheritDoc
 	 */
-	public function runInternal() : int {
+	public function runInternal(): int {
 		$failed = $this->getFailures();
 		if ( !$failed ) {
 			return TaskResult::STATUS_NOTHING;
@@ -41,7 +41,7 @@ class FailedUpdates extends Subtask {
 	 *
 	 * @return PageRiconferma[]
 	 */
-	private function getFailures() : array {
+	private function getFailures(): array {
 		$ret = [];
 		$allPages = $this->getDataProvider()->getPagesToClose();
 		foreach ( $allPages as $page ) {
@@ -55,7 +55,7 @@ class FailedUpdates extends Subtask {
 	/**
 	 * @param User[] $users
 	 */
-	protected function updateBurList( array $users ) : void {
+	protected function updateBurList( array $users ): void {
 		$this->getLogger()->info( 'Updating bur list. Removing: ' . implode( ', ', $users ) );
 		$remList = RegexUtils::regexFromArray( '!', ...$users );
 		$burList = $this->getPage( $this->getOpt( 'bur-list-title' ) );
@@ -78,7 +78,7 @@ class FailedUpdates extends Subtask {
 	 *
 	 * @param PageRiconferma[] $pages
 	 */
-	protected function requestRemoval( array $pages ) : void {
+	protected function requestRemoval( array $pages ): void {
 		$this->getLogger()->info( 'Requesting flag removal for: ' . implode( ', ', $pages ) );
 
 		$metaWiki = $this->getWikiGroup()->getCentralWiki();
@@ -115,7 +115,7 @@ class FailedUpdates extends Subtask {
 	 *
 	 * @param PageRiconferma[] $pages
 	 */
-	protected function updateAnnunci( array $pages ) : void {
+	protected function updateAnnunci( array $pages ): void {
 		$this->getLogger()->info( 'Updating annunci' );
 		$section = 1;
 
@@ -157,7 +157,7 @@ class FailedUpdates extends Subtask {
 	 *
 	 * @param PageRiconferma[] $pages
 	 */
-	protected function updateUltimeNotizie( array $pages ) : void {
+	protected function updateUltimeNotizie( array $pages ): void {
 		$this->getLogger()->info( 'Updating ultime notizie' );
 		$notiziePage = $this->getPage( $this->getOpt( 'ultimenotizie-page-title' ) );
 
@@ -194,7 +194,7 @@ class FailedUpdates extends Subtask {
 	 *
 	 * @param PageRiconferma[] $pages
 	 */
-	protected function updateTimeline( array $pages ) : void {
+	protected function updateTimeline( array $pages ): void {
 		$this->getLogger()->info( 'Updating timeline' );
 		$timelinePage = $this->getPage( $this->getOpt( 'timeline-page-title' ) );
 		$content = $timelinePage->getContent();
@@ -222,7 +222,7 @@ class FailedUpdates extends Subtask {
 	 *
 	 * @param PageRiconferma[] $pages
 	 */
-	private function updateCronologia( array $pages ) : void {
+	private function updateCronologia( array $pages ): void {
 		$this->getLogger()->info( 'Updating cronologia' );
 		$timelinePage = $this->getPage( $this->getOpt( 'cronologia-page-title' ) );
 		$content = $timelinePage->getContent();
@@ -249,7 +249,7 @@ class FailedUpdates extends Subtask {
 	 *
 	 * @param PageRiconferma[] $pages
 	 */
-	private function blockOnPrivate( array $pages ) : void {
+	private function blockOnPrivate( array $pages ): void {
 		$this->getLogger()->info( 'Blocking on private wiki: ' . implode( ', ', $pages ) );
 
 		$privWiki = $this->getWikiGroup()->getPrivateWiki();
@@ -266,7 +266,7 @@ class FailedUpdates extends Subtask {
 	 * @param PageRiconferma[] $pages
 	 * @return User[]
 	 */
-	private function getFailedBureaucrats( array $pages ) : array {
+	private function getFailedBureaucrats( array $pages ): array {
 		$ret = [];
 		foreach ( $pages as $page ) {
 			$user = $this->getUser( $page->getUserName() );

@@ -49,35 +49,35 @@ class Wiki {
 	/**
 	 * @return LoginInfo
 	 */
-	public function getLoginInfo() : LoginInfo {
+	public function getLoginInfo(): LoginInfo {
 		return $this->loginInfo;
 	}
 
 	/**
 	 * @return RequestFactory
 	 */
-	public function getRequestFactory() : RequestFactory {
+	public function getRequestFactory(): RequestFactory {
 		return $this->requestFactory;
 	}
 
 	/**
 	 * @param string $prefix
 	 */
-	public function setPagePrefix( string $prefix ) : void {
+	public function setPagePrefix( string $prefix ): void {
 		$this->pagePrefix = $prefix;
 	}
 
 	/**
 	 * @param string $ident
 	 */
-	public function setLocalUserIdentifier( string $ident ) : void {
+	public function setLocalUserIdentifier( string $ident ): void {
 		$this->localUserIdentifier = $ident;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getLocalUserIdentifier() : string {
+	public function getLocalUserIdentifier(): string {
 		return $this->localUserIdentifier;
 	}
 
@@ -85,7 +85,7 @@ class Wiki {
 	 * @param string $title
 	 * @param int|null $section
 	 */
-	private function logRead( string $title, int $section = null ) : void {
+	private function logRead( string $title, int $section = null ): void {
 		$fullTitle = $this->pagePrefix . $title;
 		$msg = "Retrieving content of $fullTitle" . ( $section !== null ? ", section $section" : '' );
 		$this->logger->info( $msg );
@@ -100,7 +100,7 @@ class Wiki {
 	 * @throws MissingPageException
 	 * @throws MissingSectionException
 	 */
-	public function getPageContent( string $title, int $section = null ) : string {
+	public function getPageContent( string $title, int $section = null ): string {
 		$this->logRead( $title, $section );
 		$params = [
 			'action' => 'query',
@@ -135,7 +135,7 @@ class Wiki {
 	 * @phan-param array<int|string|bool> $params
 	 * @throws EditException
 	 */
-	public function editPage( array $params ) : void {
+	public function editPage( array $params ): void {
 		$this->login();
 
 		$params = [
@@ -162,7 +162,7 @@ class Wiki {
 	 * Login wrapper. Checks if we're already logged in and clears tokens cache
 	 * @throws LoginException
 	 */
-	public function login() : void {
+	public function login(): void {
 		if ( $this->loginInfo === null ) {
 			throw new CannotLoginException( 'Missing login data' );
 		}
@@ -202,7 +202,7 @@ class Wiki {
 	 * @param string $type
 	 * @return string
 	 */
-	public function getToken( string $type ) : string {
+	public function getToken( string $type ): string {
 		if ( !isset( $this->tokens[ $type ] ) ) {
 			$params = [
 				'action' => 'query',
@@ -222,7 +222,7 @@ class Wiki {
 	 * @param string $title
 	 * @return int
 	 */
-	public function getPageCreationTS( string $title ) : int {
+	public function getPageCreationTS( string $title ): int {
 		$params = [
 			'action' => 'query',
 			'prop' => 'revisions',
@@ -243,7 +243,7 @@ class Wiki {
 	 * @param string $title
 	 * @param string $reason
 	 */
-	public function protectPage( string $title, string $reason ) : void {
+	public function protectPage( string $title, string $reason ): void {
 		$fullTitle = $this->pagePrefix . $title;
 		$this->logger->info( "Protecting page $fullTitle" );
 		$this->login();
@@ -266,7 +266,7 @@ class Wiki {
 	 * @param string $username
 	 * @param string $reason
 	 */
-	public function blockUser( string $username, string $reason ) : void {
+	public function blockUser( string $username, string $reason ): void {
 		$this->logger->info( "Blocking user $username" );
 		$this->login();
 
@@ -293,7 +293,7 @@ class Wiki {
 	 * @phan-param array<int|string|bool> $params
 	 * @return RequestBase
 	 */
-	private function buildRequest( array $params ) : RequestBase {
+	private function buildRequest( array $params ): RequestBase {
 		return $this->requestFactory->newFromParams( $params );
 	}
 }

@@ -31,7 +31,7 @@ class PageBotList extends Page {
 	 * @param string $listTitle
 	 * @return self
 	 */
-	public static function get( Wiki $wiki, string $listTitle ) : self {
+	public static function get( Wiki $wiki, string $listTitle ): self {
 		static $instance = null;
 		if ( $instance === null ) {
 			$instance = new self( $listTitle, $wiki );
@@ -43,7 +43,7 @@ class PageBotList extends Page {
 	 * @param UserInfo $ui
 	 * @return int|null
 	 */
-	public function getOverrideTimestamp( UserInfo $ui ) : ?int {
+	public function getOverrideTimestamp( UserInfo $ui ): ?int {
 		$info = $ui->getInfo();
 		if ( !array_intersect_key( $info, [ 'override-perm' => true, 'override' => true ] ) ) {
 			return null;
@@ -65,7 +65,7 @@ class PageBotList extends Page {
 	 * @return int
 	 * @suppress PhanPluginComparisonObjectOrdering DateTime objects can be compared (phan issue #2907)
 	 */
-	public function getNextTimestamp( string $user ) : int {
+	public function getNextTimestamp( string $user ): int {
 		$userInfo = $this->getUserInfo( $user )->getInfo();
 		$now = new DateTime();
 		if ( isset( $userInfo['override-perm'] ) ) {
@@ -121,7 +121,7 @@ class PageBotList extends Page {
 	 * @param string[] $groups
 	 * @return bool
 	 */
-	public static function isOverrideExpired( array $groups ) : bool {
+	public static function isOverrideExpired( array $groups ): bool {
 		if ( !isset( $groups['override'] ) ) {
 			return false;
 		}
@@ -139,7 +139,7 @@ class PageBotList extends Page {
 	 *
 	 * @return UserInfo[]
 	 */
-	public function getAdminsList() : array {
+	public function getAdminsList(): array {
 		if ( $this->adminsList === null ) {
 			$this->adminsList = [];
 			foreach ( $this->getDecodedContent() as $user => $info ) {
@@ -153,7 +153,7 @@ class PageBotList extends Page {
 	 * @param string $user
 	 * @return UserInfo
 	 */
-	public function getUserInfo( string $user ) : UserInfo {
+	public function getUserInfo( string $user ): UserInfo {
 		return $this->getAdminsList()[$user];
 	}
 
@@ -162,7 +162,7 @@ class PageBotList extends Page {
 	 *
 	 * @return string[][]
 	 */
-	public function getDecodedContent() : array {
+	public function getDecodedContent(): array {
 		return json_decode( $this->getContent(), true );
 	}
 }

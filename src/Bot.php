@@ -42,7 +42,7 @@ class Bot {
 	/**
 	 * Initialize all members.
 	 */
-	private function initialize() : void {
+	private function initialize(): void {
 		$simpleLogger = new SimpleLogger();
 		$this->createWikiGroup( $simpleLogger );
 		$this->messageProvider = new MessageProvider(
@@ -56,7 +56,7 @@ class Bot {
 	/**
 	 * Main entry point
 	 */
-	public function run() : void {
+	public function run(): void {
 		$taskOpt = $this->cli->getTaskOpt();
 		$type = current( array_keys( $taskOpt ) );
 		try {
@@ -77,7 +77,7 @@ class Bot {
 	/**
 	 * @param LoggerInterface $baseLogger
 	 */
-	private function createWikiGroup( LoggerInterface $baseLogger ) : void {
+	private function createWikiGroup( LoggerInterface $baseLogger ): void {
 		// FIXME Hardcoded
 		$url = $this->cli->getURL() ?? 'https://it.wikipedia.org/w/api.php';
 		$localUserIdentifier = '@itwiki';
@@ -115,7 +115,7 @@ class Bot {
 	 *
 	 * @param IFlushingAwareLogger $baseLogger
 	 */
-	private function createMainLogger( IFlushingAwareLogger $baseLogger ) : void {
+	private function createMainLogger( IFlushingAwareLogger $baseLogger ): void {
 		$mainWiki = $this->wikiGroup->getMainWiki();
 		$mp = $this->messageProvider;
 		$errTitle = $this->cli->getOpt( 'error-title' );
@@ -142,7 +142,7 @@ class Bot {
 	/**
 	 * Create the Config
 	 */
-	private function initConfig() : void {
+	private function initConfig(): void {
 		$wiki = $this->wikiGroup->getMainWiki();
 		try {
 			$confValues = json_decode( $wiki->getPageContent( $this->cli->getSetOpt( 'config-title' ) ), true );
@@ -162,7 +162,7 @@ class Bot {
 	private function runInternal(
 		string $mode = TaskManager::MODE_COMPLETE,
 		array $taskNames = []
-	) : void {
+	): void {
 		$activity = $mode === TaskManager::MODE_COMPLETE
 			? 'full process'
 			: ( $mode === TaskManager::MODE_TASK ? 'tasks' : 'subtasks' ) . ': ' . implode( ', ', $taskNames );
