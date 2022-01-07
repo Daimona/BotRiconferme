@@ -31,7 +31,7 @@ class Wiki {
 	/** @var string Used for logging */
 	private $pagePrefix = '';
 	/** @var string[] */
-	private $cookies;
+	private $cookies = [];
 
 	/**
 	 * @param LoginInfo $li
