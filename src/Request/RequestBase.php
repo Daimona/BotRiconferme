@@ -185,9 +185,6 @@ abstract class RequestBase {
 		if ( $this->method === self::METHOD_POST ) {
 			$params['maxlag'] = self::MAXLAG;
 		}
-		if ( !isset( $params['assert'] ) ) {
-			$params['assert'] = 'user';
-		}
 		$query = http_build_query( $params );
 
 		try {
