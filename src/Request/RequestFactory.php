@@ -22,12 +22,31 @@ class RequestFactory {
 	/**
 	 * @param array $params
 	 * @phan-param array<int|string|bool> $params
+	 * @param string[] $cookies
+	 * @param callable $cookiesCallback
 	 * @return RequestBase
 	 */
-	public function newFromParams( array $params ): RequestBase {
-		if ( extension_loaded( 'curl' ) ) {
-			return new CurlRequest( $this->logger, $params, $this->domain );
-		}
-		return new NativeRequest( $this->logger, $params, $this->domain );
+	public function createRequest( array $params, array $cookies, callable $cookiesCallback ) {
+		$ret = extension_loaded( 'curl' )
+			? new CurlRequest( $this->logger, $params, $this->domain, $cookiesCallback )
+			: new NativeRequest( $this->logger, $params, $this->domain, $cookiesCallback );
+		$ret->setCookies( $cookies );
+		return $ret;
+	}
+
+	/**
+	 * Similar to createRequest, but doesn't save any info like cookies.
+	 *
+	 * @param array $params
+	 * @phan-param array<int|string|bool> $params
+	 * @return RequestBase
+	 */
+	public function createStandaloneRequest( array $params ) {
+		$cookiesCallback = function ( array $newCookies ) {
+			$this->logger->warning( 'Standalone request with set-cookie: ' . implode( ', ', array_keys( $newCookies ) ) );
+		};
+		return extension_loaded( 'curl' )
+			? new CurlRequest( $this->logger, $params, $this->domain, $cookiesCallback )
+			: new NativeRequest( $this->logger, $params, $this->domain, $cookiesCallback );
 	}
 }

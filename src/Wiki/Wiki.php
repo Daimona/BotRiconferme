@@ -30,6 +30,8 @@ class Wiki {
 	private $localUserIdentifier = '';
 	/** @var string Used for logging */
 	private $pagePrefix = '';
+	/** @var string[] */
+	private $cookies;
 
 	/**
 	 * @param LoginInfo $li
@@ -294,6 +296,12 @@ class Wiki {
 	 * @return RequestBase
 	 */
 	private function buildRequest( array $params ): RequestBase {
-		return $this->requestFactory->newFromParams( $params );
+		return $this->requestFactory->createRequest(
+			$params,
+			$this->cookies,
+			function ( array $newCookies ) {
+				$this->cookies = $newCookies + $this->cookies;
+			}
+		);
 	}
 }

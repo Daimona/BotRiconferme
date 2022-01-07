@@ -29,7 +29,7 @@ class NativeRequest extends RequestBase {
 			/** @var string[] $bits */
 			$bits = explode( ':', $header, 2 );
 			if ( trim( $bits[0] ) === 'Set-Cookie' ) {
-				$this->newCookies[] = $bits[1];
+				$this->saveNewCookie( $bits[1] );
 			}
 		}
 

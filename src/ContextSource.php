@@ -142,13 +142,6 @@ abstract class ContextSource implements LoggerAwareInterface {
 	}
 
 	/**
-	 * @return RequestFactory
-	 */
-	public function getRequestFactory(): RequestFactory {
-		return $this->getWiki()->getRequestFactory();
-	}
-
-	/**
 	 * Shorthand to get a page using the local wiki
 	 *
 	 * @param string $title

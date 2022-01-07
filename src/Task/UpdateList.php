@@ -67,7 +67,7 @@ class UpdateList extends Task {
 			'aulimit' => 'max',
 		];
 
-		$req = $this->getRequestFactory()->newFromParams( $params );
+		$req = $this->getWiki()->getRequestFactory()->createStandaloneRequest( $params );
 		return $this->extractAdmins( $req->executeAsQuery() );
 	}
 
@@ -136,7 +136,7 @@ class UpdateList extends Task {
 			'lelimit' => 'max'
 		];
 
-		$data = $wiki->getRequestFactory()->newFromParams( $params )->executeAsQuery();
+		$data = $wiki->getRequestFactory()->createStandaloneRequest( $params )->executeAsQuery();
 		$ts = $this->extractTimestamp( $data, $group );
 
 		if ( $ts === null ) {
@@ -204,7 +204,7 @@ class UpdateList extends Task {
 			// lestart seems to be broken (?)
 		];
 
-		return $this->getRequestFactory()->newFromParams( $params )->executeAsQuery();
+		return $this->getWiki()->getRequestFactory()->createStandaloneRequest( $params )->executeAsQuery();
 	}
 
 	/**

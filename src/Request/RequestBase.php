@@ -32,7 +32,7 @@ abstract class RequestBase {
 	/** @var string */
 	protected $url;
 	/** @var string[] */
-	protected static $cookiesToSet;
+	protected $cookiesToSet;
 	/**
 	 * @var array
 	 * @phan-var array<int|string|bool>
@@ -42,6 +42,8 @@ abstract class RequestBase {
 	protected $method = self::METHOD_GET;
 	/** @var string[] */
 	protected $newCookies = [];
+	/** @var callable|null */
+	private $cookiesHandlerCallback;
 
 	/** @var LoggerInterface */
 	protected $logger;
@@ -53,11 +55,18 @@ abstract class RequestBase {
 	 * @param array $params
 	 * @phan-param array<int|string|bool> $params
 	 * @param string $domain
+	 * @param callable $cookiesHandlerCallback
 	 */
-	public function __construct( LoggerInterface $logger, array $params, string $domain ) {
+	public function __construct(
+		LoggerInterface $logger,
+		array $params,
+		string $domain,
+		callable $cookiesHandlerCallback
+	) {
 		$this->logger = $logger;
 		$this->params = [ 'format' => 'json' ] + $params;
 		$this->url = $domain;
+		$this->cookiesHandlerCallback = $cookiesHandlerCallback;
 	}
 
 	/**
@@ -67,6 +76,15 @@ abstract class RequestBase {
 	 */
 	public function setPost(): self {
 		$this->method = self::METHOD_POST;
+		return $this;
+	}
+
+	/**
+	 * @param array $cookies
+	 * @return self For chaining
+	 */
+	public function setCookies( array $cookies ): self {
+		$this->cookiesToSet = $cookies;
 		return $this;
 	}
 
@@ -179,8 +197,19 @@ abstract class RequestBase {
 			$body = $this->reallyMakeRequest( $query );
 		}
 
-		$this->setCookies( $this->newCookies );
+		( $this->cookiesHandlerCallback )( $this->newCookies );
 		return json_decode( $body );
+	}
+
+	/**
+	 * Parses the new cookies and saves them for later retrieval.
+	 *
+	 * @param string $cookie "{key}={value}"
+	 */
+	protected function saveNewCookie( string $cookie ): void {
+		$bits = explode( ';', $cookie );
+		[ $name, $value ] = explode( '=', $bits[0] );
+		$this->newCookies[$name] = $value;
 	}
 
 	/**
@@ -190,20 +219,6 @@ abstract class RequestBase {
 	 * @return string
 	 */
 	abstract protected function reallyMakeRequest( string $params ): string;
-
-	/**
-	 * After a request, set cookies for the next ones
-	 *
-	 * @param string[] $cookies
-	 */
-	protected function setCookies( array $cookies ): void {
-		foreach ( $cookies as $cookie ) {
-			/** @var string[] $bits */
-			$bits = explode( ';', $cookie );
-			[ $name, $value ] = explode( '=', $bits[0] );
-			self::$cookiesToSet[ $name ] = $value;
-		}
-	}
 
 	/**
 	 * Get a specific exception class depending on the error code
@@ -255,9 +270,9 @@ abstract class RequestBase {
 	 */
 	protected function getHeaders(): array {
 		$ret = self::HEADERS;
-		if ( self::$cookiesToSet ) {
+		if ( $this->cookiesToSet ) {
 			$cookies = [];
-			foreach ( self::$cookiesToSet as $cname => $cval ) {
+			foreach ( $this->cookiesToSet as $cname => $cval ) {
 				$cookies[] = trim( "$cname=$cval" );
 			}
 			$ret[] = 'Cookie: ' . implode( '; ', $cookies );

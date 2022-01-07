@@ -91,7 +91,7 @@ class CreatePages extends Subtask {
 		$pagesIterator = new AppendIterator();
 		foreach ( $prefixes as $prefix ) {
 			$params['apprefix'] = $prefix;
-			$res = $this->getRequestFactory()->newFromParams( $params )->executeAsQuery();
+			$res = $this->getWiki()->getRequestFactory()->createStandaloneRequest( $params )->executeAsQuery();
 			$pagesIterator->append( new NoRewindIterator( $res ) );
 		}
 
