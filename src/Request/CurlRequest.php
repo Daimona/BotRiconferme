@@ -62,7 +62,7 @@ class CurlRequest extends RequestBase {
 	public function headersHandler( $ch, string $header ): int {
 		/** @var string[] $bits */
 		$bits = explode( ':', $header, 2 );
-		if ( trim( $bits[0] ) === 'Set-Cookie' ) {
+		if ( strtolower( trim( $bits[0] ) ) === 'set-cookie' ) {
 			$this->saveNewCookie( $bits[1] );
 		}
 

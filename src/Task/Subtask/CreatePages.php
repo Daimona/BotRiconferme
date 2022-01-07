@@ -95,19 +95,21 @@ class CreatePages extends Subtask {
 			$pagesIterator->append( new NoRewindIterator( $res ) );
 		}
 
-		$last = 0;
+		$lastNum = 0;
 		foreach ( $pagesIterator as $resPage ) {
 			$page = new PageRiconferma( $resPage->title, $this->getWiki() );
 
+			// Note: we may be able to just check the page with the greatest number, but unsure if that
+			// assumption will work when considering renames etc.
 			if ( date( 'z/Y', $page->getCreationTimestamp() ) === date( 'z/Y' ) ) {
 				throw new TaskException( "Page $page was already created today!" );
 			}
-			if ( $page->getNum() > $last ) {
-				$last = $page->getNum();
+			if ( $page->getNum() > $lastNum ) {
+				$lastNum = $page->getNum();
 			}
 		}
 
-		return $last;
+		return $lastNum;
 	}
 
 	/**
