@@ -204,7 +204,9 @@ abstract class RequestBase {
 	 * @param string $rawHeader
 	 */
 	protected function handleResponseHeader( string $rawHeader ): void {
-		[ $headerName, $headerValue ] = explode( ':', $rawHeader, 2 );
+		$headerParts = explode( ':', $rawHeader, 2 );
+		$headerName = $headerParts[0];
+		$headerValue = $headerParts[1] ?? null;
 		if ( strtolower( trim( $headerName ) ) === 'set-cookie' ) {
 			// TODO Maybe use a cookie file?
 			$cookieKeyVal = explode( ';', $headerValue )[0];
