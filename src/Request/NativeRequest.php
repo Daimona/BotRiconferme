@@ -26,11 +26,7 @@ class NativeRequest extends RequestBase {
 		$body = file_get_contents( $url, false, $context );
 
 		foreach ( $http_response_header as $header ) {
-			/** @var string[] $bits */
-			$bits = explode( ':', $header, 2 );
-			if ( trim( $bits[0] ) === 'Set-Cookie' ) {
-				$this->saveNewCookie( $bits[1] );
-			}
+			$this->handleResponseHeader( $header );
 		}
 
 		return $body;

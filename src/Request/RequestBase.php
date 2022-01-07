@@ -199,14 +199,18 @@ abstract class RequestBase {
 	}
 
 	/**
-	 * Parses a new cookie and saves it for later retrieval.
+	 * Parses an HTTP response header.
 	 *
-	 * @param string $cookie "{key}={value}"
+	 * @param string $rawHeader
 	 */
-	protected function saveNewCookie( string $cookie ): void {
-		$bits = explode( ';', $cookie );
-		[ $name, $value ] = explode( '=', $bits[0] );
-		$this->newCookies[$name] = $value;
+	protected function handleResponseHeader( string $rawHeader ): void {
+		[ $headerName, $headerValue ] = explode( ':', $rawHeader, 2 );
+		if ( strtolower( trim( $headerName ) ) === 'set-cookie' ) {
+			// TODO Maybe use a cookie file?
+			$cookieKeyVal = explode( ';', $headerValue )[0];
+			[ $name, $value ] = explode( '=', $cookieKeyVal );
+			$this->newCookies[$name] = $value;
+		}
 	}
 
 	/**
