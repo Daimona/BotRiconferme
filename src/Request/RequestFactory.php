@@ -44,9 +44,11 @@ class RequestFactory {
 	public function createStandaloneRequest( array $params ) {
 		/** @param string[] $newCookies */
 		$cookiesCallback = function ( array $newCookies ) {
-			$this->logger->warning(
-				'Standalone request with set-cookie: ' . implode( ', ', array_keys( $newCookies ) )
-			);
+			if ( $newCookies ) {
+				$this->logger->warning(
+					'Standalone request with set-cookie: ' . implode( ', ', array_keys( $newCookies ) )
+				);
+			}
 		};
 		return extension_loaded( 'curl' )
 			? new CurlRequest( $this->logger, $params, $this->domain, $cookiesCallback )
