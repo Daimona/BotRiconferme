@@ -299,6 +299,7 @@ class Wiki {
 		return $this->requestFactory->createRequest(
 			$params,
 			$this->cookies,
+			/** @param string[] $newCookies */
 			function ( array $newCookies ) {
 				$this->cookies = $newCookies + $this->cookies;
 			}

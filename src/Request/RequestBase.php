@@ -80,7 +80,7 @@ abstract class RequestBase {
 	}
 
 	/**
-	 * @param array $cookies
+	 * @param string[] $cookies
 	 * @return self For chaining
 	 */
 	public function setCookies( array $cookies ): self {
@@ -202,7 +202,7 @@ abstract class RequestBase {
 	}
 
 	/**
-	 * Parses the new cookies and saves them for later retrieval.
+	 * Parses a new cookie and saves it for later retrieval.
 	 *
 	 * @param string $cookie "{key}={value}"
 	 */
