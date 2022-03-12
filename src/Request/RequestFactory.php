@@ -50,6 +50,7 @@ class RequestFactory {
 	public function createStandaloneRequest( array $params ) {
 		/** @param string[] $newCookies */
 		$cookiesCallback = function ( array $newCookies ) {
+			$newCookies = array_map( 'trim', $newCookies );
 			$relevantCookies = array_diff_key( $newCookies, self::STANDALONE_REQUEST_ALLOWED_COOKIES );
 			if ( $relevantCookies ) {
 				$this->logger->warning(

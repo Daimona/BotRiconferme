@@ -134,7 +134,9 @@ class UpdateList extends Task {
 		}
 		// Add users which don't have an entry at all
 		$newList = array_merge( $newList, $missing );
-		$this->getLogger()->info( 'The following admins were removed: ' . implode( ', ', $removed ) );
+		if ( $removed ) {
+			$this->getLogger()->info( 'The following admins were removed: ' . implode( ', ', $removed ) );
+		}
 	}
 
 	/**
