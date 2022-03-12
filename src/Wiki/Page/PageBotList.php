@@ -158,7 +158,8 @@ class PageBotList extends Page {
 	/**
 	 * Get the JSON-decoded content of the list
 	 *
-	 * @return string[][]
+	 * @return array[]
+	 * @phan-return array<string,array{sysop:string,checkuser?:string,bureaucrat?:string,override?:string,override-perm?:string,aliases?:list<string>}>
 	 */
 	public function getDecodedContent(): array {
 		return json_decode( $this->getContent(), true );

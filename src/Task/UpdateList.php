@@ -10,14 +10,13 @@ use Generator;
  * Updates the JSON list, adding and removing dates according to the API list of privileged people
  */
 class UpdateList extends Task {
-	private const NON_GROUP_KEYS = [ 'override', 'override-perm', 'aliases' ];
+	private const RELEVANT_GROUPS = [ 'sysop', 'bureaucrat', 'checkuser' ];
+	private const NON_GROUP_KEYS = [ 'override' => 1, 'override-perm' => 1, 'aliases' => 1 ];
 
 	/**
-	 * @var array The JSON list
-	 * @phan-var array<string,array<string,string|string[]>>
+	 * @var array[] The list from the API request, mapping [ user => group[] ]
+	 * @phan-var array<string,list<string>>
 	 */
-	private $botList;
-	/** @var array[] The list from the API request */
 	private $actualList;
 
 	/**
@@ -32,23 +31,20 @@ class UpdateList extends Task {
 	 * @inheritDoc
 	 */
 	public function runInternal(): int {
-		$this->actualList = $this->getActualAdmins();
+		$this->actualList = $this->computeActualList();
 		$pageBotList = $this->getBotList();
-		$this->botList = $pageBotList->getDecodedContent();
+		$botList = $pageBotList->getDecodedContent();
 
-		$missing = $this->getMissingGroups();
-		$extra = $this->getExtraGroups();
+		$newList = $this->computeNewList( $botList );
 
-		$newContent = $this->getNewContent( $missing, $extra );
-
-		if ( $newContent === $this->botList ) {
+		if ( $newList === $botList ) {
 			return TaskResult::STATUS_NOTHING;
 		}
 
 		$this->getLogger()->info( 'Updating admin list' );
 
 		$pageBotList->edit( [
-			'text' => json_encode( $newContent ),
+			'text' => json_encode( $newList ),
 			'summary' => $this->msg( 'list-update-summary' )->text()
 		] );
 
@@ -59,7 +55,7 @@ class UpdateList extends Task {
 	 * @return string[][]
 	 * @phan-return array<string,string[]>
 	 */
-	protected function getActualAdmins(): array {
+	private function computeActualList(): array {
 		$params = [
 			'action' => 'query',
 			'list' => 'allusers',
@@ -69,7 +65,7 @@ class UpdateList extends Task {
 		];
 
 		$req = $this->getWiki()->getRequestFactory()->createStandaloneRequest( $params );
-		return $this->extractAdmins( $req->executeAsQuery() );
+		return $this->extractAdminsData( $req->executeAsQuery() );
 	}
 
 	/**
@@ -77,49 +73,87 @@ class UpdateList extends Task {
 	 * @return string[][]
 	 * @phan-return array<string,string[]>
 	 */
-	protected function extractAdmins( Generator $data ): array {
+	private function extractAdminsData( Generator $data ): array {
 		$ret = [];
 		$blacklist = $this->getOpt( 'exclude-admins' );
-		foreach ( $data as $u ) {
-			if ( in_array( $u->name, $blacklist, true ) ) {
+		foreach ( $data as $user ) {
+			if ( in_array( $user->name, $blacklist, true ) ) {
 				continue;
 			}
-			$interestingGroups = array_intersect( $u->groups, [ 'sysop', 'bureaucrat', 'checkuser' ] );
-			$ret[ $u->name ] = array_values( $interestingGroups );
+			$interestingGroups = array_intersect( $user->groups, self::RELEVANT_GROUPS );
+			$ret[ $user->name ] = array_values( $interestingGroups );
 		}
 		return $ret;
 	}
 
 	/**
+	 * Get the new content for the list
+	 *
+	 * @param array[] $curList
+	 * @phan-param array<string,array{sysop:string,checkuser?:string,bureaucrat?:string,override?:string,override-perm?:string,aliases?:list<string>}> $curList
+	 * @return array[]
+	 */
+	private function computeNewList( array $curList ): array {
+		$newList = $curList;
+
+		$extra = $this->getExtraAdminGroups( $curList );
+		if ( $extra ) {
+			$renamed = $this->handleRenames( $newList, $extra );
+			$extra = array_diff_key( $extra, $renamed );
+		}
+		$this->handleExtraAndMissing( $newList, $extra );
+		$this->removeOverrides( $newList );
+
+		ksort( $newList, SORT_STRING | SORT_FLAG_CASE );
+		return $newList;
+	}
+
+
+	/**
+	 * @param array &$newList
+	 * @phan-param array<string,array<string,string|string[]>> $newContent
+	 * @param array $extra
+	 */
+	private function handleExtraAndMissing( array &$newList, array $extra ): void {
+		$missing = $this->getMissingAdminGroups( $newList );
+
+		$removed = [];
+		foreach ( $newList as $user => $data ) {
+			if ( isset( $missing[$user] ) ) {
+				$newList[$user] = array_merge( $data, $missing[$user] );
+				unset( $missing[$user] );
+			} elseif ( isset( $extra[$user] ) ) {
+				$newGroups = array_diff_key( $data, $extra[$user] );
+				if ( array_diff_key( $newGroups, self::NON_GROUP_KEYS ) ) {
+					$newList[$user] = $newGroups;
+				} else {
+					$removed[] = $user;
+					unset( $newList[$user] );
+				}
+			}
+		}
+		// Add users which don't have an entry at all
+		$newList = array_merge( $newList, $missing );
+		$this->getLogger()->info( 'The following admins were removed: ' . implode( ', ', $removed ) );
+	}
+
+	/**
 	 * Populate a list of new admins missing from the JSON list and their groups
 	 *
+	 * @param array $botList
 	 * @return string[][]
 	 */
-	protected function getMissingGroups(): array {
+	private function getMissingAdminGroups( array $botList ): array {
 		$missing = [];
-		foreach ( $this->actualList as $admin => $data ) {
-			$missingProps = array_diff( $data, array_keys( $this->botList[$admin] ?? [] ) );
-			$missingGroups = array_diff( $missingProps, self::NON_GROUP_KEYS );
-
+		foreach ( $this->actualList as $admin => $groups ) {
+			$missingGroups = array_diff( $groups, array_keys( $botList[$admin] ?? [] ) );
 			foreach ( $missingGroups as $group ) {
 				$ts = $this->getFlagDate( $admin, $group );
 				if ( $ts === null ) {
-					$aliases = $data['aliases'] ?? [];
-					if ( $aliases ) {
-						$this->getLogger()->info( "No $group flag date for $admin, trying aliases" );
-						foreach ( $aliases as $alias ) {
-							$ts = $this->getFlagDate( $alias, $group );
-							if ( $ts !== null ) {
-								break;
-							}
-						}
-					}
-					if ( $ts === null ) {
-						$this->errors[] = "$group flag date unavailable for $admin";
-						continue;
-					}
+					$this->errors[] = "$group flag date unavailable for $admin";
+					continue;
 				}
-				$missing[ $admin ][ $group ] = $ts;
+				$missing[$admin][$group] = $ts;
 			}
 		}
 		return $missing;
@@ -132,7 +166,7 @@ class UpdateList extends Task {
 	 * @param string $group
 	 * @return string|null
 	 */
-	protected function getFlagDate( string $admin, string $group ): ?string {
+	private function getFlagDate( string $admin, string $group ): ?string {
 		$this->getLogger()->info( "Retrieving $group flag date for $admin" );
 
 		$wiki = $this->getWiki();
@@ -180,29 +214,31 @@ class UpdateList extends Task {
 	/**
 	 * Get a list of admins who are in the JSON page but don't have the listed privileges anymore
 	 *
+	 * @param array[] $botList
+	 * @phan-param array<string,array{sysop:string,checkuser?:string,bureaucrat?:string,override?:string,override-perm?:string,aliases?:list<string>}> $botList
 	 * @return string[][]
 	 */
-	protected function getExtraGroups(): array {
+	private function getExtraAdminGroups( array $botList ): array {
 		$extra = [];
-		foreach ( $this->botList as $name => $groups ) {
-			$groups = array_diff_key( $groups, array_fill_keys( self::NON_GROUP_KEYS, 1 ) );
-			if ( !isset( $this->actualList[ $name ] ) ) {
-				$extra[ $name ] = $groups;
-			} elseif ( count( $groups ) > count( $this->actualList[ $name ] ) ) {
-				$extra[ $name ] = array_diff_key( $groups, $this->actualList[ $name ] );
+		foreach ( $botList as $name => $data ) {
+			$groups = array_diff_key( $data, self::NON_GROUP_KEYS );
+			if ( !isset( $this->actualList[$name] ) ) {
+				$extra[$name] = $groups;
+			} elseif ( count( $groups ) > count( $this->actualList[$name] ) ) {
+				$extra[$name] = array_diff_key( $groups, $this->actualList[$name] );
 			}
 		}
 		return $extra;
 	}
 
 	/**
-	 * @param string[] $names
+	 * @param string[] $oldNames
 	 * @return Generator
 	 */
-	private function getRenameEntries( array $names ): Generator {
+	private function getRenameEntries( array $oldNames ): Generator {
 		$titles = array_map( static function ( string $x ): string {
 			return "Utente:$x";
-		}, $names );
+		}, $oldNames );
 
 		$params = [
 			'action' => 'query',
@@ -220,16 +256,16 @@ class UpdateList extends Task {
 	/**
 	 * Given a list of (old) usernames, check if these people have been renamed recently.
 	 *
-	 * @param string[] $names
+	 * @param string[] $oldNames
 	 * @return string[] [ old_name => new_name ]
 	 */
-	protected function getRenamedUsers( array $names ): array {
-		if ( !$names ) {
+	private function getRenamedUsers( array $oldNames ): array {
+		if ( !$oldNames ) {
 			return [];
 		}
-		$this->getLogger()->info( 'Checking rename for ' . implode( ', ', $names ) );
+		$this->getLogger()->info( 'Checking rename for ' . implode( ', ', $oldNames ) );
 
-		$data = $this->getRenameEntries( $names );
+		$data = $this->getRenameEntries( $oldNames );
 		$ret = [];
 		foreach ( $data as $entry ) {
 			// 1 month is arbitrary
@@ -243,94 +279,35 @@ class UpdateList extends Task {
 	}
 
 	/**
-	 * Update aliases and overrides for renamed users
+	 * Checks whether any user that is on the bot list but is not an admin according to MW
+	 * was actually renamed, and updates the list accordingly.
 	 *
-	 * @param array &$newContent
+	 * @param array &$newList
 	 * @phan-param array<string,array<string,string|string[]>> $newContent
-	 * @param string[][] $removed
-	 */
-	private function handleRenames( array &$newContent, array $removed ): void {
-		$renameMap = $this->getRenamedUsers( array_keys( $removed ) );
-		foreach ( $removed as $oldName => $info ) {
-			if (
-				array_key_exists( $oldName, $renameMap ) &&
-				array_key_exists( $renameMap[$oldName], $newContent )
-			) {
-				// This user was renamed! Add this name as alias, if they're still listed
-				$newName = $renameMap[ $oldName ];
-				$this->getLogger()->info( "Found rename $oldName -> $newName" );
-				$aliases = array_unique( array_merge( $newContent[ $newName ]['aliases'] ?? [], [ $oldName ] ) );
-				$newContent[ $newName ]['aliases'] = $aliases;
-				// Transfer overrides to the new name.
-				$overrides = array_diff_key( $info, [ 'override' => 1, 'override-perm' => 1 ] );
-				$newContent[ $newName ] = array_merge( $newContent[ $newName ], $overrides );
-			}
-		}
-	}
-
-	/**
-	 * @param array &$newContent
-	 * @phan-param array<string,array<string,string|string[]>> $newContent
-	 * @param string[][] $missing
 	 * @param string[][] $extra
-	 * @return string[][] Removed users
+	 * @return array<string,string> Map of renamed users
 	 */
-	private function handleExtraAndMissing(
-		array &$newContent,
-		array $missing,
-		array $extra
-	): array {
-		$removed = [];
-		foreach ( $newContent as $user => $data ) {
-			if ( isset( $missing[ $user ] ) ) {
-				$newContent[ $user ] = array_merge( $data, $missing[ $user ] );
-				unset( $missing[ $user ] );
-			} elseif ( isset( $extra[ $user ] ) ) {
-				$newGroups = array_diff_key( $data, $extra[ $user ] );
-				if ( array_diff_key( $newGroups, array_fill_keys( self::NON_GROUP_KEYS, 1 ) ) ) {
-					$newContent[ $user ] = $newGroups;
-				} else {
-					$removed[$user] = $data;
-					unset( $newContent[ $user ] );
-				}
-			}
+	private function handleRenames( array &$newList, array $extra ): array {
+		$renameMap = $this->getRenamedUsers( array_keys( $extra ) );
+		foreach ( $renameMap as $oldName => $newName ) {
+			$this->getLogger()->info( "Found rename $oldName -> $newName" );
+			$newList[$newName] = $newList[$oldName];
+			$newList[$newName]['aliases'] = array_unique( array_merge( $newList[$newName]['aliases'] ?? [], [ $oldName ] ) );
+			unset( $newList[$oldName] );
 		}
-		// Add users which don't have an entry at all
-		$newContent = array_merge( $newContent, $missing );
-		return $removed;
-	}
-
-	/**
-	 * Get the new content for the list
-	 *
-	 * @param string[][] $missing
-	 * @param string[][] $extra
-	 * @return array[]
-	 */
-	protected function getNewContent( array $missing, array $extra ): array {
-		$newContent = $this->botList;
-
-		$removed = $this->handleExtraAndMissing( $newContent, $missing, $extra );
-
-		$this->handleRenames( $newContent, $removed );
-
-		$this->removeOverrides( $newContent );
-
-		ksort( $newContent, SORT_STRING | SORT_FLAG_CASE );
-
-		return $newContent;
+		return $renameMap;
 	}
 
 	/**
 	 * Remove expired overrides.
 	 *
-	 * @param array[] &$newContent
+	 * @param array[] &$newList
 	 */
-	protected function removeOverrides( array &$newContent ): void {
+	private function removeOverrides( array &$newList ): void {
 		$removed = [];
-		foreach ( $newContent as $user => $groups ) {
-			if ( PageBotList::isOverrideExpired( $groups ) ) {
-				unset( $newContent[ $user ][ 'override' ] );
+		foreach ( $newList as $user => $data ) {
+			if ( PageBotList::isOverrideExpired( $data ) ) {
+				unset( $newList[$user]['override'] );
 				$removed[] = $user;
 			}
 		}

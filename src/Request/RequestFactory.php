@@ -5,6 +5,12 @@ namespace BotRiconferme\Request;
 use Psr\Log\LoggerInterface;
 
 class RequestFactory {
+	private const STANDALONE_REQUEST_ALLOWED_COOKIES = [
+		'WMF-Last-Access' => 1,
+		'WMF-Last-Access-Global' => 1,
+		'GeoIP' => 1
+	];
+
 	/** @var string */
 	private $domain;
 	/** @var LoggerInterface */
@@ -44,9 +50,10 @@ class RequestFactory {
 	public function createStandaloneRequest( array $params ) {
 		/** @param string[] $newCookies */
 		$cookiesCallback = function ( array $newCookies ) {
-			if ( $newCookies ) {
+			$relevantCookies = array_diff_key( $newCookies, self::STANDALONE_REQUEST_ALLOWED_COOKIES );
+			if ( $relevantCookies ) {
 				$this->logger->warning(
-					'Standalone request with set-cookie: ' . implode( ', ', array_keys( $newCookies ) )
+					'Standalone request with set-cookie: ' . implode( ', ', array_keys( $relevantCookies ) )
 				);
 			}
 		};
