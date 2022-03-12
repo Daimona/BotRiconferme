@@ -6,9 +6,9 @@ use Psr\Log\LoggerInterface;
 
 class RequestFactory {
 	private const STANDALONE_REQUEST_ALLOWED_COOKIES = [
-		'WMF-Last-Access' => 1,
-		'WMF-Last-Access-Global' => 1,
-		'GeoIP' => 1
+		'WMF-Last-Access',
+		'WMF-Last-Access-Global',
+		'GeoIP'
 	];
 
 	/** @var string */
@@ -50,8 +50,8 @@ class RequestFactory {
 	public function createStandaloneRequest( array $params ) {
 		/** @param string[] $newCookies */
 		$cookiesCallback = function ( array $newCookies ) {
-			$newCookies = array_map( 'trim', $newCookies );
-			$relevantCookies = array_diff_key( $newCookies, self::STANDALONE_REQUEST_ALLOWED_COOKIES );
+			$newCookies = array_map( 'trim', array_keys( $newCookies ) );
+			$relevantCookies = array_diff( $newCookies, self::STANDALONE_REQUEST_ALLOWED_COOKIES );
 			if ( $relevantCookies ) {
 				$this->logger->warning(
 					'Standalone request with set-cookie: ' . implode( ', ', array_keys( $relevantCookies ) )
