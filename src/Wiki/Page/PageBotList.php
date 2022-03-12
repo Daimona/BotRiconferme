@@ -10,8 +10,6 @@ use DateTime;
  * Singleton class representing the JSON list of admins
  */
 class PageBotList extends Page {
-	public const NON_GROUP_KEYS = [ 'override', 'override-perm', 'aliases' ];
-
 	/** @var UserInfo[]|null */
 	private $adminsList;
 

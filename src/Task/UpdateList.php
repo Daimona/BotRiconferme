@@ -2,7 +2,6 @@
 
 namespace BotRiconferme\Task;
 
-use BotRiconferme\Exception\TaskException;
 use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Wiki\Page\PageBotList;
 use Generator;
@@ -11,6 +10,8 @@ use Generator;
  * Updates the JSON list, adding and removing dates according to the API list of privileged people
  */
 class UpdateList extends Task {
+	private const NON_GROUP_KEYS = [ 'override', 'override-perm', 'aliases' ];
+
 	/**
 	 * @var array The JSON list
 	 * @phan-var array<string,array<string,string|string[]>>
@@ -96,15 +97,29 @@ class UpdateList extends Task {
 	 */
 	protected function getMissingGroups(): array {
 		$missing = [];
-		foreach ( $this->actualList as $adm => $groups ) {
-			$curMissing = array_diff( $groups, array_keys( $this->botList[$adm] ?? [] ) );
+		foreach ( $this->actualList as $admin => $data ) {
+			$missingProps = array_diff( $data, array_keys( $this->botList[$admin] ?? [] ) );
+			$missingGroups = array_diff( $missingProps, self::NON_GROUP_KEYS );
 
-			foreach ( $curMissing as $group ) {
-				try {
-					$missing[ $adm ][ $group ] = $this->getFlagDate( $adm, $group );
-				} catch ( TaskException $e ) {
-					$this->errors[] = $e->getMessage();
+			foreach ( $missingGroups as $group ) {
+				$ts = $this->getFlagDate( $admin, $group );
+				if ( $ts === null ) {
+					$aliases = $data['aliases'] ?? [];
+					if ( $aliases ) {
+						$this->getLogger()->info( "No $group flag date for $admin, trying aliases" );
+						foreach ( $aliases as $alias ) {
+							$ts = $this->getFlagDate( $alias, $group );
+							if ( $ts !== null ) {
+								break;
+							}
+						}
+					}
+					if ( $ts === null ) {
+						$this->errors[] = "$group flag date unavailable for $admin";
+						continue;
+					}
 				}
+				$missing[ $admin ][ $group ] = $ts;
 			}
 		}
 		return $missing;
@@ -115,10 +130,9 @@ class UpdateList extends Task {
 	 *
 	 * @param string $admin
 	 * @param string $group
-	 * @return string
-	 * @throws TaskException
+	 * @return string|null
 	 */
-	protected function getFlagDate( string $admin, string $group ): string {
+	protected function getFlagDate( string $admin, string $group ): ?string {
 		$this->getLogger()->info( "Retrieving $group flag date for $admin" );
 
 		$wiki = $this->getWiki();
@@ -139,11 +153,7 @@ class UpdateList extends Task {
 		$data = $wiki->getRequestFactory()->createStandaloneRequest( $params )->executeAsQuery();
 		$ts = $this->extractTimestamp( $data, $group );
 
-		if ( $ts === null ) {
-			throw new TaskException( "$group flag date unavailable for $admin" );
-		}
-
-		return date( 'd/m/Y', strtotime( $ts ) );
+		return $ts !== null ? date( 'd/m/Y', strtotime( $ts ) ) : null;
 	}
 
 	/**
@@ -175,7 +185,7 @@ class UpdateList extends Task {
 	protected function getExtraGroups(): array {
 		$extra = [];
 		foreach ( $this->botList as $name => $groups ) {
-			$groups = array_diff_key( $groups, array_fill_keys( PageBotList::NON_GROUP_KEYS, 1 ) );
+			$groups = array_diff_key( $groups, array_fill_keys( self::NON_GROUP_KEYS, 1 ) );
 			if ( !isset( $this->actualList[ $name ] ) ) {
 				$extra[ $name ] = $groups;
 			} elseif ( count( $groups ) > count( $this->actualList[ $name ] ) ) {
@@ -271,16 +281,16 @@ class UpdateList extends Task {
 		array $extra
 	): array {
 		$removed = [];
-		foreach ( $newContent as $user => $groups ) {
+		foreach ( $newContent as $user => $data ) {
 			if ( isset( $missing[ $user ] ) ) {
-				$newContent[ $user ] = array_merge( $groups, $missing[ $user ] );
+				$newContent[ $user ] = array_merge( $data, $missing[ $user ] );
 				unset( $missing[ $user ] );
 			} elseif ( isset( $extra[ $user ] ) ) {
-				$newGroups = array_diff_key( $groups, $extra[ $user ] );
-				if ( array_diff_key( $newGroups, array_fill_keys( PageBotList::NON_GROUP_KEYS, 1 ) ) ) {
+				$newGroups = array_diff_key( $data, $extra[ $user ] );
+				if ( array_diff_key( $newGroups, array_fill_keys( self::NON_GROUP_KEYS, 1 ) ) ) {
 					$newContent[ $user ] = $newGroups;
 				} else {
-					$removed[$user] = $newContent[$user];
+					$removed[$user] = $data;
 					unset( $newContent[ $user ] );
 				}
 			}
