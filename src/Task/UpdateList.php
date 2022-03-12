@@ -249,7 +249,7 @@ class UpdateList extends Task {
 				// This user was renamed! Add this name as alias, if they're still listed
 				$newName = $renameMap[ $oldName ];
 				$this->getLogger()->info( "Found rename $oldName -> $newName" );
-				$aliases = array_unique( array_merge( $newContent[ $newName ]['aliases'], [ $oldName ] ) );
+				$aliases = array_unique( array_merge( $newContent[ $newName ]['aliases'] ?? [], [ $oldName ] ) );
 				$newContent[ $newName ]['aliases'] = $aliases;
 				// Transfer overrides to the new name.
 				$overrides = array_diff_key( $info, [ 'override' => 1, 'override-perm' => 1 ] );
