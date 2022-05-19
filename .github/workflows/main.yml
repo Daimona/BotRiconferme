@@ -1,4 +1,4 @@
-name: PHP Composer
+name: Main
 
 on:
   push:
@@ -37,6 +37,12 @@ jobs:
         key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           ${{ runner.os }}-php-
+
+    - name: Setup PHP extensions
+      run: |
+        sudo phpdismod xdebug
+        pecl channel-update pecl.php.net
+        pecl install ast
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
