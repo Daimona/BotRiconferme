@@ -90,6 +90,7 @@ class UpdateList extends Task {
 	 * Get the new content for the list
 	 *
 	 * @param array[] $curList
+	 * @phpcs:ignore Generic.Files.LineLength
 	 * @phan-param array<string,array{sysop:string,checkuser?:string,bureaucrat?:string,override?:string,override-perm?:string,aliases?:list<string>}> $curList
 	 * @return array[]
 	 */
@@ -107,7 +108,6 @@ class UpdateList extends Task {
 		ksort( $newList, SORT_STRING | SORT_FLAG_CASE );
 		return $newList;
 	}
-
 
 	/**
 	 * @param array &$newList
@@ -217,6 +217,7 @@ class UpdateList extends Task {
 	 * Get a list of admins who are in the JSON page but don't have the listed privileges anymore
 	 *
 	 * @param array[] $botList
+	 * @phpcs:ignore Generic.Files.LineLength
 	 * @phan-param array<string,array{sysop:string,checkuser?:string,bureaucrat?:string,override?:string,override-perm?:string,aliases?:list<string>}> $botList
 	 * @return string[][]
 	 */
@@ -294,7 +295,9 @@ class UpdateList extends Task {
 		foreach ( $renameMap as $oldName => $newName ) {
 			$this->getLogger()->info( "Found rename $oldName -> $newName" );
 			$newList[$newName] = $newList[$oldName];
-			$newList[$newName]['aliases'] = array_unique( array_merge( $newList[$newName]['aliases'] ?? [], [ $oldName ] ) );
+			$newList[$newName]['aliases'] = array_unique(
+				array_merge( $newList[$newName]['aliases'] ?? [], [ $oldName ] )
+			);
 			unset( $newList[$oldName] );
 		}
 		return $renameMap;
