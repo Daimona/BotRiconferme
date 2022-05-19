@@ -42,8 +42,8 @@ jobs:
       run: |
         sudo phpdismod xdebug
         pecl channel-update pecl.php.net
+        php -i | grep 'Configuration File'
         sudo pecl install ast
-        phpenmod ast
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
