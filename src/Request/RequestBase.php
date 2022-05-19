@@ -207,7 +207,7 @@ abstract class RequestBase {
 		$headerParts = explode( ':', $rawHeader, 2 );
 		$headerName = $headerParts[0];
 		$headerValue = $headerParts[1] ?? null;
-		if ( strtolower( trim( $headerName ) ) === 'set-cookie' ) {
+		if ( strtolower( trim( $headerName ) ) === 'set-cookie' && $headerVal ) {
 			// TODO Maybe use a cookie file?
 			$cookieKeyVal = explode( ';', $headerValue )[0];
 			[ $name, $value ] = explode( '=', $cookieKeyVal );

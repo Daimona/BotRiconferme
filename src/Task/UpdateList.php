@@ -111,7 +111,7 @@ class UpdateList extends Task {
 
 	/**
 	 * @param array &$newList
-	 * @phan-param array<string,array<string,string|string[]>> $newContent
+	 * @phan-param array<string,array<string,string|string[]>> &$newList
 	 * @param array $extra
 	 */
 	private function handleExtraAndMissing( array &$newList, array $extra ): void {
@@ -143,6 +143,7 @@ class UpdateList extends Task {
 	 * Populate a list of new admins missing from the JSON list and their groups
 	 *
 	 * @param array $botList
+	 * @phan-param array<string,array<string,string|string[]>> $botList
 	 * @return string[][]
 	 */
 	private function getMissingAdminGroups( array $botList ): array {
@@ -286,7 +287,7 @@ class UpdateList extends Task {
 	 * was actually renamed, and updates the list accordingly.
 	 *
 	 * @param array &$newList
-	 * @phan-param array<string,array<string,string|string[]>> $newContent
+	 * @phan-param array<string,array<string,string|string[]>> $newList
 	 * @param string[][] $extra
 	 * @return array<string,string> Map of renamed users
 	 */
