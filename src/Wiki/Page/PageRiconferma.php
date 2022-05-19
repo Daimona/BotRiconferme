@@ -25,7 +25,8 @@ class PageRiconferma extends Page {
 	public const OUTCOME_FAIL = self::OUTCOME_FAIL_VOTES | self::OUTCOME_NO_QUOR;
 
 	// Values depending on bureaucracy
-	public const REQUIRED_OPPOSE = 15;
+	public const REQUIRED_OPPOSE_MAX = 15;
+	public const REQUIRED_OPPOSE_QUORUM_RATIO = 1 / 4;
 	public const SIMPLE_DURATION = 7;
 	public const VOTE_DURATION = 14;
 	public const SUCCESS_RATIO = 2 / 3;
@@ -123,7 +124,11 @@ class PageRiconferma extends Page {
 	 * @return bool
 	 */
 	public function hasOpposition(): bool {
-		return $this->getOpposingCount() >= self::REQUIRED_OPPOSE;
+		$req = min(
+			self::REQUIRED_OPPOSE_MAX,
+			ceil( $this->getQuorum() * self::REQUIRED_OPPOSE_QUORUM_RATIO )
+		);
+		return $this->getOpposingCount() >= $req;
 	}
 
 	/**
