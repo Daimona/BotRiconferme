@@ -112,7 +112,7 @@ class UpdateList extends Task {
 	/**
 	 * @param array &$newList
 	 * @phan-param array<string,array<string,string|string[]>> &$newList
-	 * @param array $extra
+	 * @param string[][] $extra
 	 */
 	private function handleExtraAndMissing( array &$newList, array $extra ): void {
 		$missing = $this->getMissingAdminGroups( $newList );
