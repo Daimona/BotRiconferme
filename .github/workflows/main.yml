@@ -16,15 +16,17 @@ jobs:
 
     strategy:
       matrix:
-       include:
-         - PHP_VERSION: '7.2'
-         - PHP_VERSION: '7.3'
-         - PHP_VERSION: '7.4'
-         - PHP_VERSION: '8.0'
-         - PHP_VERSION: '8.1'
+       php-versions: ['7.2', '7.3', '7.4', '8.0', '8.1']
 
     steps:
     - uses: actions/checkout@v3
+
+    - name: Install PHP
+      uses: shivammathur/setup-php@v2
+       with:
+        php-version: ${{ matrix.php-versions }}
+        extensions: ast
+        coverage: none
 
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
@@ -37,13 +39,6 @@ jobs:
         key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           ${{ runner.os }}-php-
-
-    - name: Setup PHP extensions
-      run: |
-        sudo phpdismod xdebug
-        pecl channel-update pecl.php.net
-        php -i | grep 'Configuration File'
-        sudo pecl install ast
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
