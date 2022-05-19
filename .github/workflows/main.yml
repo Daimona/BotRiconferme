@@ -43,6 +43,7 @@ jobs:
         sudo phpdismod xdebug
         pecl channel-update pecl.php.net
         sudo pecl install ast
+        phpenmod ast
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
