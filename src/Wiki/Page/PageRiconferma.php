@@ -214,8 +214,8 @@ class PageRiconferma extends Page {
 	 */
 	public function getEndTimestamp(): int {
 		if ( $this->isVote() ) {
-			$reg = "!La votazione ha inizio il.+ alle ore ([\d:]+) e ha termine il (.+) alla stessa ora!";
-			[ , $hours, $day ] = $this->getMatch( $reg );
+			$reg = "!La votazione ha inizio il.+ e ha termine il (\d+ \w+ \d+) alle ([\d:]+)!";
+			[ , $day, $hours ] = $this->getMatch( $reg );
 			$day = preg_replace( '![^ \w]!', '', $day );
 			return Message::getTimestampFromLocalTime( "$day $hours" );
 		}
