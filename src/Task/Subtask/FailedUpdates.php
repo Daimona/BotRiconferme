@@ -98,7 +98,10 @@ class FailedUpdates extends Subtask {
 				] )->text();
 		}
 
-		$after = '=== Miscellaneous requests ===';
+		// NOTE: This assumes that the section for removal of access comes immediately
+		// before the "see also" section. This is obviously not guaranteed, and this code
+		// might break if the page structure changes.
+		$after = '== See also ==';
 		$newContent = str_replace( $after, "$append\n$after", $flagRemPage->getContent() );
 		$summary = $this->msg( 'flag-removal-summary' )
 			->params( [ '$num' => count( $pages ) ] )
