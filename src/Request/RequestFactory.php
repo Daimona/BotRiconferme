@@ -8,7 +8,8 @@ class RequestFactory {
 	private const STANDALONE_REQUEST_ALLOWED_COOKIES = [
 		'WMF-Last-Access',
 		'WMF-Last-Access-Global',
-		'GeoIP'
+		'GeoIP',
+		'NetworkProbeLimit',
 	];
 
 	/** @var string */
@@ -54,7 +55,7 @@ class RequestFactory {
 			$relevantCookies = array_diff( $newCookies, self::STANDALONE_REQUEST_ALLOWED_COOKIES );
 			if ( $relevantCookies ) {
 				$this->logger->warning(
-					'Standalone request with set-cookie: ' . implode( ', ', array_keys( $relevantCookies ) )
+					'Standalone request with set-cookie: ' . implode( ', ', $relevantCookies )
 				);
 			}
 		};
