@@ -79,7 +79,7 @@ class OpenUpdates extends Subtask {
 		foreach ( $pages as $page ) {
 			$newLines .= '{{subst:Wikipedia:Wikipediano/Votazioni/RigaCompleta|riconferma tacita' .
 				'|utente=' . $page->getUserName() . '|numero=' . $page->getNum() . '|giorno=' .
-				"{{subst:#timel:j F|+ $endDays days}}|ore={{subst:LOCALTIME}}}}\n";
+				"{{subst:#timel:j F|+ $endDays days}}|ore={{subst:#timel:H:i|+$endDays DAYS}}}}\n";
 		}
 
 		$newContent = preg_replace(
