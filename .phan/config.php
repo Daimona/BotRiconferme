@@ -1,50 +1,35 @@
 <?php
 
-return [
-	'directory_list' => array_merge(
-		[
-			'src',
-			'vendor/psr',
-		],
-		PHP_VERSION_ID < 80000 ? [ 'vendor/symfony/polyfill-php80' ] : []
-	),
-	'file_list' => [
-		'run.php',
-	],
-	'exclude_analysis_directory_list' => [
-		'vendor/'
-	],
+$cfg = require __DIR__ . '/../vendor/mediawiki/mediawiki-phan-config/src/config-library.php';
 
-	'exclude_file_regex' => '@vendor/.*/[Tt]ests?/@',
+$cfg['directory_list'] = array_merge(
+	[
+		'src',
+		'vendor/psr',
+	],
+	PHP_VERSION_ID < 80000 ? [ 'vendor/symfony/polyfill-php80' ] : []
+);
 
+$cfg['file_list'] = [
+	'run.php',
+];
+
+$cfg = [
 	'enable_extended_internal_return_type_plugins' => true,
 	'enable_include_path_checks' => true,
-	'generic_types_enabled' => true,
 
-	'null_casts_as_any_type' => false,
-	'scalar_implicit_cast' => false,
 	'dead_code_detection' => true,
 	'dead_code_detection_prefer_false_negative' => true,
+] + $cfg;
 
-	'redundant_condition_detection' => true,
-
-	'plugins' => [
-		'UnreachableCodePlugin',
-		'PregRegexCheckerPlugin',
-		'UnusedSuppressionPlugin',
-		'DuplicateArrayKeyPlugin',
-		'DuplicateExpressionPlugin',
-		'RedundantAssignmentPlugin',
+$cfg['plugins'] = array_merge(
+	$cfg['plugins'],
+	[
 		'StrictLiteralComparisonPlugin',
 		'DollarDollarPlugin',
 		'UnknownElementTypePlugin',
-		'LoopVariableReusePlugin',
 		'StrictComparisonPlugin',
-		'SimplifyExpressionPlugin',
-		'vendor/mediawiki/phan-taint-check-plugin/GenericSecurityCheckPlugin.php'
-	],
+	]
+);
 
-	'suppress_issue_types' => [
-		'SecurityCheck-LikelyFalsePositive'
-	],
-];
+return $cfg;

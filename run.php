@@ -7,7 +7,9 @@ use BotRiconferme\CLI;
  * Entry point for the bot, called by CLI
  */
 
-// @phan-suppress-next-line PhanTypeMismatchArgumentInternal
+/**
+ * @return never
+ */
 set_error_handler( static function ( int $errno, string $errstr, string $errfile, int $errline ) {
 	throw new ErrorException( $errstr, 0, $errno, $errfile, $errline );
 } );
