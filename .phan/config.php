@@ -2,13 +2,10 @@
 
 $cfg = require __DIR__ . '/../vendor/mediawiki/mediawiki-phan-config/src/config-library.php';
 
-$cfg['directory_list'] = array_merge(
-	[
-		'src',
-		'vendor/psr',
-	],
-	PHP_VERSION_ID < 80000 ? [ 'vendor/symfony/polyfill-php80' ] : []
-);
+$cfg['directory_list'] = [
+	'src',
+	'vendor/psr',
+];
 
 $cfg['file_list'] = [
 	'run.php',
