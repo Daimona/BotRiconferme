@@ -12,10 +12,8 @@ class TaskResult {
 	public const STATUS_ERROR = 3;
 
 	/** @var string[] */
-	private $errors;
-
-	/** @var int */
-	private $status;
+	private array $errors;
+	private int $status;
 
 	/**
 	 * @param int $status One of the Task::STATUS_* constants

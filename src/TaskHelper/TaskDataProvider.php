@@ -13,13 +13,13 @@ use BotRiconferme\Wiki\UserInfo;
  */
 class TaskDataProvider extends ContextSource {
 	/** @var User[]|null */
-	private $processUsers;
+	private ?array $processUsers;
 	/** @var PageRiconferma[] */
-	private $createdPages = [];
+	private array $createdPages = [];
 	/** @var PageRiconferma[]|null */
-	private $openPages;
+	private ?array $openPages;
 	/** @var PageRiconferma[]|null */
-	private $pagesToClose;
+	private ?array $pagesToClose;
 
 	/**
 	 * Get a list of users to execute tasks on.

@@ -6,12 +6,9 @@ namespace BotRiconferme\Wiki;
  *
  */
 class WikiGroup {
-	/** @var Wiki */
-	private $mainWiki;
-	/** @var Wiki */
-	private $centralWiki;
-	/** @var Wiki */
-	private $privateWiki;
+	private Wiki $mainWiki;
+	private Wiki $centralWiki;
+	private Wiki $privateWiki;
 
 	/**
 	 * @param Wiki $mainWiki

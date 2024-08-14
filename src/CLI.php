@@ -61,7 +61,7 @@ class CLI {
 	public const PRIVATE_PASSWORD_FILE = __DIR__ . '/../private-password.txt';
 
 	/** @var string[] */
-	private $opts;
+	private array $opts;
 
 	/**
 	 * @return bool

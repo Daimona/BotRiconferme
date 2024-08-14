@@ -12,10 +12,8 @@ class RequestFactory {
 		'NetworkProbeLimit',
 	];
 
-	/** @var string */
-	private $domain;
-	/** @var LoggerInterface */
-	private $logger;
+	private string $domain;
+	private LoggerInterface $logger;
 
 	/**
 	 * @param LoggerInterface $logger

@@ -29,24 +29,20 @@ abstract class RequestBase {
 	protected const METHOD_GET = 'GET';
 	protected const METHOD_POST = 'POST';
 
-	/** @var string */
-	protected $url;
+	protected string $url;
 	/** @var string[] */
-	protected $cookiesToSet;
+	protected array $cookiesToSet;
 	/**
-	 * @var array
 	 * @phan-var array<int|string|bool>
 	 */
-	protected $params;
-	/** @var string */
-	protected $method = self::METHOD_GET;
+	protected array $params;
+	protected string $method = self::METHOD_GET;
 	/** @var string[] */
-	protected $newCookies = [];
+	protected array $newCookies = [];
 	/** @var callable|null */
 	private $cookiesHandlerCallback;
 
-	/** @var LoggerInterface */
-	protected $logger;
+	protected LoggerInterface $logger;
 
 	/**
 	 * @private Use RequestFactory

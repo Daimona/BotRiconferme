@@ -11,8 +11,7 @@ use Psr\Log\LogLevel;
 class SimpleLogger extends AbstractLogger implements IFlushingAwareLogger {
 	use LoggerTrait;
 
-	/** @var int */
-	private $minLevel;
+	private int $minLevel;
 
 	/**
 	 * @param string $minlevel

@@ -22,14 +22,10 @@ use Throwable;
  * Higher-level class. It only wraps tasks executions, and contains generic data
  */
 class Bot {
-	/** @var IFlushingAwareLogger */
-	private $mainLogger;
-	/** @var WikiGroup */
-	private $wikiGroup;
-	/** @var MessageProvider */
-	private $messageProvider;
-	/** @var CLI */
-	private $cli;
+	private IFlushingAwareLogger $mainLogger;
+	private WikiGroup $wikiGroup;
+	private MessageProvider $messageProvider;
+	private CLI $cli;
 
 	/**
 	 * @param CLI $cli

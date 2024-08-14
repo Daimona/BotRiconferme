@@ -17,7 +17,7 @@ class UpdateList extends Task {
 	 * @var array[] The list from the API request, mapping [ user => group[] ]
 	 * @phan-var array<string,list<string>>
 	 */
-	private $actualList;
+	private array $actualList;
 
 	/**
 	 * @inheritDoc

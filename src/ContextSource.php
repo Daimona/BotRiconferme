@@ -15,20 +15,11 @@ use Psr\Log\LoggerInterface;
  * Base class with a few utility methods available to get a logger, the config and a wiki
  */
 abstract class ContextSource implements LoggerAwareInterface {
-	/** @var LoggerInterface */
-	private $logger;
-
-	/** @var Config */
-	private $config;
-
-	/** @var WikiGroup */
-	private $wikiGroup;
-
-	/** @var MessageProvider */
-	private $messageProvider;
-
-	/** @var PageBotList */
-	private $pageBotList;
+	private LoggerInterface $logger;
+	private Config $config;
+	private WikiGroup $wikiGroup;
+	private MessageProvider $messageProvider;
+	private PageBotList $pageBotList;
 
 	/**
 	 * @param LoggerInterface $logger

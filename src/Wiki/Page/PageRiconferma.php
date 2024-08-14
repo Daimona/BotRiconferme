@@ -10,13 +10,11 @@ use LogicException;
  * Represents a single riconferma page
  */
 class PageRiconferma extends Page {
-	// Sections of the page, value = section number. Loaded in self::defineSections
-	/** @var int|null */
-	private $supportSection;
-	/** @var int|null */
-	private $opposeSection;
+	/** Sections of the page, value = section number. Loaded in self::defineSections */
+	private ?int $supportSection;
+	private ?int $opposeSection;
 	/** @var int[] Counts of votes for each section */
-	private $sectionCounts = [];
+	private array $sectionCounts = [];
 
 	// Possible outcomes of a vote
 	public const OUTCOME_OK = 0;

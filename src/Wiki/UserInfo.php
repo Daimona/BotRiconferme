@@ -6,13 +6,9 @@ namespace BotRiconferme\Wiki;
  * Value object containing the data about a User that is stored in the list page
  */
 class UserInfo {
-	/** @var string */
-	private $name;
-	/**
-	 * @var array
-	 * @phan-var array<string,string|string[]>
-	 */
-	private $info;
+	private string $name;
+	/** @phan-var array<string,string|string[]> */
+	private array $info;
 
 	private const GROUP_KEYS = [ 'sysop', 'bureaucrat', 'checkuser' ];
 

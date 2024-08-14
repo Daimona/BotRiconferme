@@ -10,12 +10,10 @@ use BotRiconferme\Wiki\Wiki;
 
 class MessageProvider {
 	/** @var string[]|null */
-	private static $messages;
+	private static ?array $messages;
 
-	/** @var Wiki */
-	private $wiki;
-	/** @var string */
-	private $msgTitle;
+	private Wiki $wiki;
+	private string $msgTitle;
 
 	/**
 	 * @param Wiki $wiki

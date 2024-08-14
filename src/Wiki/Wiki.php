@@ -16,22 +16,17 @@ use Psr\Log\LoggerInterface;
  * Class for wiki interaction, contains some requests shorthands
  */
 class Wiki {
-	/** @var bool */
-	private $loggedIn = false;
-	/** @var LoggerInterface */
-	private $logger;
+	private bool $loggedIn = false;
+	private LoggerInterface $logger;
 	/** @var string[] */
-	private $tokens;
-	/** @var LoginInfo */
-	private $loginInfo;
-	/** @var RequestFactory */
-	private $requestFactory;
-	/** @var string */
-	private $localUserIdentifier = '';
-	/** @var string Used for logging */
-	private $pagePrefix = '';
+	private array $tokens;
+	private LoginInfo $loginInfo;
+	private RequestFactory $requestFactory;
+	private string $localUserIdentifier = '';
+	/** Used for logging */
+	private string $pagePrefix = '';
 	/** @var string[] */
-	private $cookies = [];
+	private array $cookies = [];
 
 	/**
 	 * @param LoginInfo $li

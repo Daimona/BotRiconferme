@@ -6,10 +6,8 @@ namespace BotRiconferme\Wiki;
  * Immutable value object with login info
  */
 class LoginInfo {
-	/** @var string */
-	private $username;
-	/** @var string */
-	private $password;
+	private string $username;
+	private string $password;
 
 	/**
 	 * @param string $username

@@ -8,10 +8,9 @@ use BotRiconferme\Exception\ConfigException;
  * Singleton class holding user-defined config
  */
 class Config {
-	/** @var self */
-	private static $instance;
+	private static self $instance;
 	/** @var string[] */
-	private $opts = [];
+	private array $opts = [];
 
 	/**
 	 * Use self::init() and self::getInstance()

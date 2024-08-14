@@ -12,17 +12,12 @@ use Psr\Log\LogLevel;
 class WikiLogger extends AbstractLogger implements IFlushingAwareLogger {
 	use LoggerTrait;
 
-	/** @var Page */
-	private $logPage;
-
-	/** @var string */
-	private $summary;
-
-	/** @var int */
-	private $minLevel;
+	private int $minLevel;
+	private Page $logPage;
+	private string $summary;
 
 	/** @var string[] */
-	private $buffer;
+	private array $buffer;
 
 	/**
 	 * @param Page $logPage

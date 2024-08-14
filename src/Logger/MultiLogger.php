@@ -9,7 +9,7 @@ use Psr\Log\AbstractLogger;
  */
 class MultiLogger extends AbstractLogger implements IFlushingAwareLogger {
 	/** @var IFlushingAwareLogger[] */
-	private $loggers;
+	private array $loggers;
 
 	/**
 	 * @param IFlushingAwareLogger ...$loggers

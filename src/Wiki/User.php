@@ -12,12 +12,9 @@ use Stringable;
  * Class representing a single user. NOTE: this can only represent users stored in the JSON list
  */
 class User implements IRegexable, Stringable {
-	/** @var string */
-	private $name;
-	/** @var Wiki */
-	private $wiki;
-	/** @var UserInfo */
-	private $ui;
+	private string $name;
+	private Wiki $wiki;
+	private UserInfo $ui;
 
 	/**
 	 * @param UserInfo $ui

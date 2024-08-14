@@ -55,16 +55,11 @@ class TaskManager {
 		'start-vote',
 		'close-old'
 	];
-	/** @var TaskDataProvider */
-	private $provider;
-	/** @var LoggerInterface */
-	private $logger;
-	/** @var WikiGroup */
-	private $wikiGroup;
-	/** @var MessageProvider */
-	private $messageProvider;
-	/** @var PageBotList */
-	private $pageBotList;
+	private TaskDataProvider $provider;
+	private LoggerInterface $logger;
+	private WikiGroup $wikiGroup;
+	private MessageProvider $messageProvider;
+	private PageBotList $pageBotList;
 
 	/**
 	 * @param LoggerInterface $logger
