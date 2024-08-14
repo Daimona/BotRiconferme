@@ -11,7 +11,7 @@ use DateTime;
  */
 class PageBotList extends Page {
 	/** @var UserInfo[]|null */
-	private ?array $adminsList;
+	private ?array $adminsList = null;
 
 	/**
 	 * Use self::get() instead

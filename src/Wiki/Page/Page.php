@@ -12,7 +12,7 @@ use LogicException;
  */
 class Page implements IRegexable {
 	protected string $title;
-	protected ?string $content;
+	protected ?string $content = null;
 	protected Wiki $wiki;
 
 	/**
