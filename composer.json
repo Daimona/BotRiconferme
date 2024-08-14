@@ -30,10 +30,11 @@
 		}
 	},
 	"scripts": {
+		"phan": "phan --long-progress-bar --require-config-exists --color",
 		"test": [
 			"parallel-lint . --exclude vendor",
 			"phpcs -p -s",
-			"phan --long-progress-bar --require-config-exists --color"
+			"@phan"
 		],
 		"fix": "phpcbf"
 	},

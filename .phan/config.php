@@ -29,4 +29,7 @@ $cfg['plugins'] = array_merge(
 	]
 );
 
+// Infer these from composer.json.
+unset( $cfg['minimum_target_php_version'], $cfg['target_php_version'] );
+
 return $cfg;
