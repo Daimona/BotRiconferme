@@ -8,7 +8,7 @@ use BotRiconferme\Exception\ConfigException;
  * Singleton class holding user-defined config
  */
 class Config {
-	private static self $instance;
+	private static ?self $instance;
 	/** @phan-var array<mixed> */
 	private array $opts = [];
 
