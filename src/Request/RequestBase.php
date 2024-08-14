@@ -31,7 +31,7 @@ abstract class RequestBase {
 
 	protected string $url;
 	/** @var string[] */
-	protected array $cookiesToSet;
+	protected array $cookiesToSet = [];
 	/**
 	 * @phan-var array<int|string|bool>
 	 */

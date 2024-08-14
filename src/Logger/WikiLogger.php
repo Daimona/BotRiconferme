@@ -17,7 +17,7 @@ class WikiLogger extends AbstractLogger implements IFlushingAwareLogger {
 	private string $summary;
 
 	/** @var string[] */
-	private array $buffer;
+	private array $buffer = [];
 
 	/**
 	 * @param Page $logPage

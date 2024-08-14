@@ -18,7 +18,7 @@ class Wiki {
 	private bool $loggedIn = false;
 	private LoggerInterface $logger;
 	/** @var string[] */
-	private array $tokens;
+	private array $tokens = [];
 	private LoginInfo $loginInfo;
 	private RequestFactory $requestFactory;
 	private string $localUserIdentifier = '';
