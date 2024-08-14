@@ -11,12 +11,9 @@ use LogicException;
  * Represents a single on-wiki page
  */
 class Page implements IRegexable {
-	/** @var string */
-	protected $title;
-	/** @var string|null */
-	protected $content;
-	/** @var Wiki */
-	protected $wiki;
+	protected string $title;
+	protected ?string $content;
+	protected Wiki $wiki;
 
 	/**
 	 * @param string $title

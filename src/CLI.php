@@ -154,7 +154,7 @@ class CLI {
 	 * @param string $msg
 	 * @return never
 	 */
-	private function fatal( string $msg ): void {
+	private function fatal( string $msg ): never {
 		exit( $msg . "\n" );
 	}
 

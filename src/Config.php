@@ -9,7 +9,7 @@ use BotRiconferme\Exception\ConfigException;
  */
 class Config {
 	private static self $instance;
-	/** @var string[] */
+	/** @phan-var array<mixed> */
 	private array $opts = [];
 
 	/**
@@ -21,7 +21,8 @@ class Config {
 	/**
 	 * Initialize a new self instance with CLI params set and retrieve on-wiki config.
 	 *
-	 * @param string[] $confValues
+	 * @param array $confValues
+	 * @phan-param array<mixed> $confValues
 	 * @throws ConfigException
 	 */
 	public static function init( array $confValues ): void {
@@ -43,7 +44,7 @@ class Config {
 	 * @param string $key
 	 * @param mixed $value
 	 */
-	protected function set( string $key, $value ): void {
+	protected function set( string $key, mixed $value ): void {
 		$this->opts[ $key ] = $value;
 	}
 
@@ -67,7 +68,7 @@ class Config {
 	 * @return mixed
 	 * @throws ConfigException
 	 */
-	public function get( string $opt ) {
+	public function get( string $opt ): mixed {
 		if ( !isset( $this->opts[ $opt ] ) ) {
 			throw new ConfigException( "Config option '$opt' not set." );
 		}

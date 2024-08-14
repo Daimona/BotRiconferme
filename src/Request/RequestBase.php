@@ -134,7 +134,7 @@ abstract class RequestBase {
 	 */
 	private function parseLimit(): int {
 		foreach ( $this->params as $name => $val ) {
-			if ( substr( $name, -strlen( 'limit' ) ) === 'limit' ) {
+			if ( str_ends_with( $name, 'limit' ) ) {
 				return $val === 'max' ? -1 : (int)$val;
 			}
 		}
@@ -191,7 +191,7 @@ abstract class RequestBase {
 		}
 
 		( $this->cookiesHandlerCallback )( $this->newCookies );
-		return json_decode( $body );
+		return json_decode( $body, false, 512, JSON_THROW_ON_ERROR );
 	}
 
 	/**
@@ -216,6 +216,8 @@ abstract class RequestBase {
 	 *
 	 * @param string $params
 	 * @return string
+	 * @throws TimeoutException
+	 * @throws APIRequestException
 	 */
 	abstract protected function reallyMakeRequest( string $params ): string;
 
@@ -226,23 +228,13 @@ abstract class RequestBase {
 	 * @return APIRequestException
 	 */
 	private function getException( stdClass $res ): APIRequestException {
-		switch ( $res->error->code ) {
-			case 'missingtitle':
-				$ex = new MissingPageException;
-				break;
-			case 'protectedpage':
-				$ex = new ProtectedPageException;
-				break;
-			case 'permissiondenied':
-				$ex = new PermissionDeniedException( $res->error->info );
-				break;
-			case 'blocked':
-				$ex = new BlockedException( $res->error->info );
-				break;
-			default:
-				$ex = new APIRequestException( $res->error->code . ' - ' . $res->error->info );
-		}
-		return $ex;
+		return match ( $res->error->code ) {
+			'missingtitle' => new MissingPageException,
+			'protectedpage' => new ProtectedPageException,
+			'permissiondenied' => new PermissionDeniedException( $res->error->info ),
+			'blocked' => new BlockedException( $res->error->info ),
+			default => new APIRequestException( $res->error->code . ' - ' . $res->error->info )
+		};
 	}
 
 	/**
@@ -298,7 +290,7 @@ abstract class RequestBase {
 	 * @return string
 	 */
 	protected function getDebugURL( string $actualParams ): string {
-		return strpos( $this->url, 'login' ) !== false
+		return str_contains( $this->url, 'login' )
 			? '[Login request]'
 			: "{$this->url}?$actualParams";
 	}

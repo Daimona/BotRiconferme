@@ -3,7 +3,6 @@
 namespace BotRiconferme\Wiki;
 
 use BotRiconferme\Exception\APIRequestException;
-use BotRiconferme\Exception\CannotLoginException;
 use BotRiconferme\Exception\EditException;
 use BotRiconferme\Exception\LoginException;
 use BotRiconferme\Exception\MissingPageException;
@@ -160,9 +159,6 @@ class Wiki {
 	 * @throws LoginException
 	 */
 	public function login(): void {
-		if ( $this->loginInfo === null ) {
-			throw new CannotLoginException( 'Missing login data' );
-		}
 		if ( $this->loggedIn ) {
 			return;
 		}

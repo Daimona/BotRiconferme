@@ -130,7 +130,6 @@ class FailedUpdates extends Subtask {
 			$text .= $this->msg( 'annunci-text' )->params( [ '$user' => $user ] )->text();
 		}
 
-		/** @var string $curMonth */
 		$curMonth = date( 'F' );
 		$month = ucfirst( Message::MONTHS[$curMonth] );
 

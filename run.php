@@ -20,9 +20,9 @@ if ( !CLI::isCLI() ) {
 	exit( 'CLI only!' );
 }
 
-define( 'BOT_VERSION', '2.2' );
+const BOT_VERSION = '2.2';
 // TODO make this configurable?
-define( 'BOT_EDITS', false );
+const BOT_EDITS = false;
 
 date_default_timezone_set( 'Europe/Rome' );
 

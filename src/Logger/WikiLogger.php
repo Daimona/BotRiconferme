@@ -24,7 +24,7 @@ class WikiLogger extends AbstractLogger implements IFlushingAwareLogger {
 	 * @param string $summary
 	 * @param string $minlevel
 	 */
-	public function __construct( Page $logPage, string $summary, $minlevel = LogLevel::INFO ) {
+	public function __construct( Page $logPage, string $summary, string $minlevel = LogLevel::INFO ) {
 		$this->minLevel = $this->levelToInt( $minlevel );
 		$this->logPage = $logPage;
 		$this->summary = $summary;

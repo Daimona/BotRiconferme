@@ -33,7 +33,7 @@ class MessageProvider {
 		}
 		try {
 			$cont = $this->wiki->getPageContent( $this->msgTitle );
-			self::$messages = json_decode( $cont, true );
+			self::$messages = json_decode( $cont, true, 512, JSON_THROW_ON_ERROR );
 		} catch ( MissingPageException $_ ) {
 			throw new MessagesPageDoesNotExistException( 'Please create a messages page.' );
 		}

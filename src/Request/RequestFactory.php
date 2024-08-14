@@ -31,7 +31,7 @@ class RequestFactory {
 	 * @param callable $cookiesCallback
 	 * @return RequestBase
 	 */
-	public function createRequest( array $params, array $cookies, callable $cookiesCallback ) {
+	public function createRequest( array $params, array $cookies, callable $cookiesCallback ): RequestBase {
 		$ret = extension_loaded( 'curl' )
 			? new CurlRequest( $this->logger, $params, $this->domain, $cookiesCallback )
 			: new NativeRequest( $this->logger, $params, $this->domain, $cookiesCallback );
@@ -46,7 +46,7 @@ class RequestFactory {
 	 * @phan-param array<int|string|bool> $params
 	 * @return RequestBase
 	 */
-	public function createStandaloneRequest( array $params ) {
+	public function createStandaloneRequest( array $params ): RequestBase {
 		/** @param string[] $newCookies */
 		$cookiesCallback = function ( array $newCookies ) {
 			$newCookies = array_map( 'trim', array_keys( $newCookies ) );

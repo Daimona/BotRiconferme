@@ -141,7 +141,12 @@ class Bot {
 	private function initConfig(): void {
 		$wiki = $this->wikiGroup->getMainWiki();
 		try {
-			$confValues = json_decode( $wiki->getPageContent( $this->cli->getSetOpt( 'config-title' ) ), true );
+			$confValues = json_decode(
+				$wiki->getPageContent( $this->cli->getSetOpt( 'config-title' ) ),
+				true,
+				512,
+				JSON_THROW_ON_ERROR
+			);
 		} catch ( MissingPageException $_ ) {
 			exit( 'Please create a config page.' );
 		}

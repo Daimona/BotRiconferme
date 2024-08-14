@@ -11,7 +11,6 @@ use BotRiconferme\Exception\TimeoutException;
 class CurlRequest extends RequestBase {
 	/**
 	 * @inheritDoc
-	 * @throws APIRequestException
 	 */
 	protected function reallyMakeRequest( string $params ): string {
 		$curl = curl_init();

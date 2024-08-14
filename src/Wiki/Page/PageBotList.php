@@ -162,6 +162,6 @@ class PageBotList extends Page {
 	 * @phan-return array<string,array{sysop:string,checkuser?:string,bureaucrat?:string,override?:string,override-perm?:string,aliases?:list<string>}>
 	 */
 	public function getDecodedContent(): array {
-		return json_decode( $this->getContent(), true );
+		return json_decode( $this->getContent(), true, 512, JSON_THROW_ON_ERROR );
 	}
 }

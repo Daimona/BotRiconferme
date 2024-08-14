@@ -16,7 +16,7 @@ class SimpleLogger extends AbstractLogger implements IFlushingAwareLogger {
 	/**
 	 * @param string $minlevel
 	 */
-	public function __construct( $minlevel = LogLevel::INFO ) {
+	public function __construct( string $minlevel = LogLevel::INFO ) {
 		$this->minLevel = $this->levelToInt( $minlevel );
 	}
 

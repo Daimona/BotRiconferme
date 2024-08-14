@@ -17,9 +17,8 @@ use ReflectionClass;
  */
 abstract class TaskBase extends ContextSource {
 	/** @var string[] */
-	protected $errors = [];
-	/** @var TaskDataProvider */
-	protected $dataProvider;
+	protected array $errors = [];
+	protected TaskDataProvider $dataProvider;
 
 	/**
 	 * Final to keep calls linear in the TaskManager
@@ -53,20 +52,13 @@ abstract class TaskBase extends ContextSource {
 
 		$status = $this->runInternal();
 
-		switch ( $status ) {
-			case TaskResult::STATUS_GOOD:
-				$msg = ucfirst( $opName ) . " $class completed successfully.";
-				break;
-			case TaskResult::STATUS_NOTHING:
-				$msg = ucfirst( $opName ) . " $class: nothing to do.";
-				break;
-			case TaskResult::STATUS_ERROR:
-				// We're fine with it, but don't run other tasks
-				$msg = ucfirst( $opName ) . " $class completed with warnings.";
-				break;
-			default:
-				throw new LogicException( "Unexpected status: $status." );
-		}
+		$msg = match ( $status ) {
+			TaskResult::STATUS_GOOD => ucfirst( $opName ) . " $class completed successfully.",
+			TaskResult::STATUS_NOTHING => ucfirst( $opName ) . " $class: nothing to do.",
+			// We're fine with it, but don't run other tasks
+			TaskResult::STATUS_ERROR => ucfirst( $opName ) . " $class completed with warnings.",
+			default => throw new LogicException( "Unexpected status: $status." )
+		};
 
 		$this->getLogger()->info( $msg );
 		return new TaskResult( $status, $this->errors );
