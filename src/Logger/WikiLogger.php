@@ -2,6 +2,7 @@
 
 namespace BotRiconferme\Logger;
 
+use BotRiconferme\MessageProvider;
 use BotRiconferme\Wiki\Page\Page;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
@@ -12,22 +13,17 @@ use Psr\Log\LogLevel;
 class WikiLogger extends AbstractLogger implements IFlushingAwareLogger {
 	use LoggerTrait;
 
+	private MessageProvider $messageProvider;
 	private int $minLevel;
 	private Page $logPage;
-	private string $summary;
 
 	/** @var string[] */
 	private array $buffer = [];
 
-	/**
-	 * @param Page $logPage
-	 * @param string $summary
-	 * @param string $minlevel
-	 */
-	public function __construct( Page $logPage, string $summary, string $minlevel = LogLevel::INFO ) {
+	public function __construct( MessageProvider $messageProvider, Page $logPage, string $minlevel = LogLevel::INFO ) {
+		$this->messageProvider = $messageProvider;
 		$this->minLevel = $this->levelToInt( $minlevel );
 		$this->logPage = $logPage;
-		$this->summary = $summary;
 	}
 
 	/**
@@ -56,7 +52,7 @@ class WikiLogger extends AbstractLogger implements IFlushingAwareLogger {
 		if ( $this->buffer ) {
 			$this->logPage->edit( [
 				'appendtext' => $this->getOutput(),
-				'summary' => $this->summary
+				'summary' => $this->messageProvider->getMessage( 'error-page-summary' )->text()
 			] );
 		}
 	}

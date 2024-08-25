@@ -113,7 +113,6 @@ class Bot {
 	 */
 	private function createMainLogger( IFlushingAwareLogger $baseLogger ): void {
 		$mainWiki = $this->wikiGroup->getMainWiki();
-		$mp = $this->messageProvider;
 		$errTitle = $this->cli->getOpt( 'error-title' );
 		if ( $errTitle !== null ) {
 			// Use a different Wiki with higher min level.
@@ -125,8 +124,8 @@ class Bot {
 			);
 			$errPage = new Page( $errTitle, $wikiLoggerWiki );
 			$wikiLogger = new WikiLogger(
+				$this->messageProvider,
 				$errPage,
-				$mp->getMessage( 'error-page-summary' )->text(),
 				LogLevel::ERROR
 			);
 			$this->mainLogger = new MultiLogger( $baseLogger, $wikiLogger );
