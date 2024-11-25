@@ -37,11 +37,7 @@ abstract class Task extends TaskBase {
 	 */
 	protected function runSubtask( string $subtask ): TaskResult {
 		$map = $this->getSubtasksMap();
-		if ( !isset( $map[ $subtask ] ) ) {
-			throw new InvalidArgumentException( "'$subtask' is not a valid task." );
-		}
-
-		$class = $map[ $subtask ];
+		$class = $map[ $subtask ] ?? throw new InvalidArgumentException( "'$subtask' is not a valid task." );
 		return $this->getSubtaskInstance( $class )->run();
 	}
 

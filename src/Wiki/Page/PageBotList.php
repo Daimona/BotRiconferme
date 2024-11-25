@@ -185,6 +185,42 @@ class PageBotList extends Page {
 	 * @phan-return array<string,array{sysop:string,checkuser?:string,bureaucrat?:string,override?:string,override-perm?:string,aliases?:list<string>}>
 	 */
 	public function getDecodedContent(): array {
-		return json_decode( $this->getContent(), true, 512, JSON_THROW_ON_ERROR );
+		$stringKeys = [ 'sysop', 'checkuser', 'bureaucrat', 'override', 'override-perm' ];
+		$allowedKeys = [ ...$stringKeys, 'aliases' ];
+		$decoded = json_decode( $this->getContent(), true, 512, JSON_THROW_ON_ERROR );
+		if ( !is_array( $decoded ) ) {
+			throw new ConfigException( "Admin list is not a list..." );
+		}
+		foreach ( $decoded as $user => $data ) {
+			if ( !is_string( $user ) ) {
+				throw new ConfigException( "Invalid key `$user` in the admin list." );
+			}
+			$extraneousKeys = array_diff( array_keys( $data ), $allowedKeys );
+			if ( $extraneousKeys ) {
+				throw new ConfigException( "Extraneous keys for user `$user`: " . implode( ', ', $extraneousKeys ) );
+			}
+			if ( !isset( $data['sysop'] ) ) {
+				throw new ConfigException( "Missing sysop date for user $user." );
+			}
+			foreach ( $stringKeys as $stringKey ) {
+				if ( isset( $data[$stringKey] ) && !is_string( $data[$stringKey] ) ) {
+					throw new ConfigException(
+						"Invalid value `{$data[$stringKey]}` for key `$stringKey` and user $user."
+					);
+				}
+			}
+			if ( isset( $data['aliases'] ) ) {
+				$aliases = $data['aliases'];
+				if ( !is_array( $aliases ) || !array_is_list( $aliases ) ) {
+					throw new ConfigException( "Invalid aliases format for $user." );
+				}
+				$stringAliases = array_filter( $aliases, 'is_string' );
+				if ( $stringAliases !== $aliases ) {
+					throw new ConfigException( "Non-string aliases for $user." );
+				}
+			}
+		}
+
+		return $decoded;
 	}
 }

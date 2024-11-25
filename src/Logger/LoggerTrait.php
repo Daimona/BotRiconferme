@@ -2,6 +2,7 @@
 
 namespace BotRiconferme\Logger;
 
+use LogicException;
 use Psr\Log\LogLevel;
 use Stringable;
 
@@ -24,7 +25,11 @@ trait LoggerTrait {
 			LogLevel::ALERT,
 			LogLevel::EMERGENCY
 		];
-		return array_search( $level, $mapping, true );
+		$intLevel = array_search( $level, $mapping, true );
+		if ( $intLevel === false ) {
+			throw new LogicException( "Unexpected log level $level" );
+		}
+		return $intLevel;
 	}
 
 	protected function getFormattedMessage( string $level, string|Stringable $message ): string {

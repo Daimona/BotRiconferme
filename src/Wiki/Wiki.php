@@ -228,7 +228,12 @@ class Wiki {
 		];
 
 		$page = $this->buildRequest( $params )->executeAsQuery()->current();
-		return strtotime( $page->revisions[0]->timestamp );
+		$rawTS = $page->revisions[0]->timestamp;
+		$ts = strtotime( $rawTS );
+		if ( $ts === false ) {
+			throw new APIRequestException( "Invalid timestamp in API response: `$rawTS`" );
+		}
+		return $ts;
 	}
 
 	/**

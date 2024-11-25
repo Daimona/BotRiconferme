@@ -46,9 +46,10 @@ class UserInfo {
 	}
 
 	/**
-	 * @return string[]
+	 * @return array<string,string>
 	 */
 	public function getGroupsWithDates(): array {
+		// @phan-suppress-next-line PhanPartialTypeMismatchReturn Not fully inferring the type.
 		return array_intersect_key( $this->info, array_fill_keys( self::GROUP_KEYS, 1 ) );
 	}
 

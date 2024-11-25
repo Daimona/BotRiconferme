@@ -2,6 +2,8 @@
 
 namespace BotRiconferme\Request;
 
+use BotRiconferme\Exception\APIRequestException;
+
 /**
  * Request done via file_get_contents, when cURL isn't available
  */
@@ -24,6 +26,10 @@ class NativeRequest extends RequestBase {
 		}
 		$context = stream_context_create( $context );
 		$body = file_get_contents( $url, false, $context );
+
+		if ( $body === false ) {
+			throw new APIRequestException( "Can't make request to $url" );
+		}
 
 		foreach ( $http_response_header as $header ) {
 			$this->handleResponseHeader( $header );

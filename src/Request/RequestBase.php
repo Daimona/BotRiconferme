@@ -192,7 +192,11 @@ abstract class RequestBase {
 		}
 
 		( $this->cookiesHandlerCallback )( $this->newCookies );
-		return json_decode( $body, false, 512, JSON_THROW_ON_ERROR );
+		$decodedResp = json_decode( $body, false, 512, JSON_THROW_ON_ERROR );
+		if ( !$decodedResp instanceof stdClass ) {
+			throw new APIRequestException( "API response is not an object" );
+		}
+		return $decodedResp;
 	}
 
 	/**

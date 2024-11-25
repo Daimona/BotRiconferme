@@ -45,11 +45,13 @@ class PageRiconferma extends Page {
 
 	private function getSupportSection(): int {
 		$this->defineSections();
+		// @phan-suppress-next-line PhanPartialTypeMismatchReturn Guaranteed to be set
 		return $this->supportSection;
 	}
 
 	private function getOpposeSection(): int {
 		$this->defineSections();
+		// @phan-suppress-next-line PhanPartialTypeMismatchReturn Guaranteed to be set
 		return $this->opposeSection;
 	}
 

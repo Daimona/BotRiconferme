@@ -19,7 +19,7 @@ $cfg = [
 	'strict_object_checking' => true,
 	'strict_param_checking' => true,
 	'strict_property_checking' => true,
-	// 'strict_return_checking' => true,
+	'strict_return_checking' => true,
 
 	'dead_code_detection' => true,
 	'dead_code_detection_prefer_false_negative' => true,

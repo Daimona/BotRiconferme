@@ -55,10 +55,7 @@ class Config {
 	 * @throws ConfigException
 	 */
 	public static function getInstance(): self {
-		if ( !self::$instance ) {
-			throw new ConfigException( 'Config not yet initialized' );
-		}
-		return self::$instance;
+		return self::$instance ?? throw new ConfigException( 'Config not yet initialized' );
 	}
 
 	/**
@@ -69,9 +66,6 @@ class Config {
 	 * @throws ConfigException
 	 */
 	public function get( string $opt ): mixed {
-		if ( !isset( $this->opts[ $opt ] ) ) {
-			throw new ConfigException( "Config option '$opt' not set." );
-		}
-		return $this->opts[ $opt ];
+		return $this->opts[ $opt ] ?? throw new ConfigException( "Config option '$opt' not set." );
 	}
 }

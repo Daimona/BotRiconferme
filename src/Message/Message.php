@@ -2,6 +2,8 @@
 
 namespace BotRiconferme\Message;
 
+use RuntimeException;
+
 class Message {
 	public const MONTHS = [
 		'January' => 'gennaio',
@@ -79,8 +81,11 @@ class Message {
 			$timeString
 		);
 		'@phan-var string $englishTime';
-
-		return strtotime( $englishTime );
+		$parsedTime = strtotime( $englishTime );
+		if ( $parsedTime === false ) {
+			throw new RuntimeException( 'Could not parse time: ' . $timeString );
+		}
+		return $parsedTime;
 	}
 
 	/**
