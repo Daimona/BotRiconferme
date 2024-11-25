@@ -111,7 +111,9 @@ class TaskManager {
 	private function runTasks( array $tasks ): TaskResult {
 		$res = new TaskResult( TaskResult::STATUS_GOOD );
 		do {
-			$res->merge( $this->runTask( current( $tasks ) ) );
+			$curTask = current( $tasks );
+			'@phan-var string $curTask';
+			$res->merge( $this->runTask( $curTask ) );
 		} while ( $res->isOK() && next( $tasks ) );
 
 		return $res;

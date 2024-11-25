@@ -78,6 +78,7 @@ class Message {
 			array_keys( self::MONTHS ),
 			$timeString
 		);
+		'@phan-var string $englishTime';
 
 		return strtotime( $englishTime );
 	}

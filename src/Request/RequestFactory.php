@@ -47,7 +47,7 @@ class RequestFactory {
 	 * @return RequestBase
 	 */
 	public function createStandaloneRequest( array $params ): RequestBase {
-		/** @param string[] $newCookies */
+		/** @param array<string,string> $newCookies */
 		$cookiesCallback = function ( array $newCookies ) {
 			$newCookies = array_map( 'trim', array_keys( $newCookies ) );
 			$relevantCookies = array_diff( $newCookies, self::STANDALONE_REQUEST_ALLOWED_COOKIES );

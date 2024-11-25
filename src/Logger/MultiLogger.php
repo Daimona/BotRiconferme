@@ -3,6 +3,7 @@
 namespace BotRiconferme\Logger;
 
 use Psr\Log\AbstractLogger;
+use Stringable;
 
 /**
  * Proxies calls to multiple loggers
@@ -23,7 +24,7 @@ class MultiLogger extends AbstractLogger implements IFlushingAwareLogger {
 	 * @param mixed[] $context
 	 * @suppress PhanUnusedPublicMethodParameter
 	 */
-	public function log( $level, $message, array $context = [] ): void {
+	public function log( $level, string|Stringable $message, array $context = [] ): void {
 		foreach ( $this->loggers as $logger ) {
 			$logger->log( $level, $message );
 		}

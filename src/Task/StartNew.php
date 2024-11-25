@@ -5,7 +5,6 @@ namespace BotRiconferme\Task;
 use BotRiconferme\Task\Subtask\CreatePages;
 use BotRiconferme\Task\Subtask\OpenUpdates;
 use BotRiconferme\Task\Subtask\UserNotice;
-use BotRiconferme\TaskHelper\TaskResult;
 
 /**
  * Task for opening new procedures
@@ -21,12 +20,7 @@ class StartNew extends Task {
 			'user-notice'
 		];
 
-		$res = new TaskResult( TaskResult::STATUS_NOTHING );
-		do {
-			$res->merge( $this->runSubtask( current( $orderedList ) ) );
-		} while ( $res->isOK() && next( $orderedList ) );
-
-		return $res->getStatus();
+		return $this->runSubtaskList( $orderedList );
 	}
 
 	/**

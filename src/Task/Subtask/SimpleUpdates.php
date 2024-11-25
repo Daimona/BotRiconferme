@@ -102,7 +102,7 @@ class SimpleUpdates extends Subtask {
 	/**
 	 * Update date on WP:Amministratori/Lista
 	 *
-	 * @param bool[] $outcomes
+	 * @param array<string,bool> $outcomes
 	 */
 	protected function updateAdminList( array $outcomes ): void {
 		$this->getLogger()->info( 'Updating admin list' );
@@ -151,7 +151,7 @@ class SimpleUpdates extends Subtask {
 	}
 
 	/**
-	 * @param bool[] $outcomes
+	 * @param array<string,bool> $outcomes
 	 */
 	protected function updateCUList( array $outcomes ): void {
 		$this->getLogger()->info( 'Updating CU list.' );
@@ -195,7 +195,7 @@ class SimpleUpdates extends Subtask {
 	 * which are in the given groups and the outcome of the procedure (true = confirmed)
 	 * @param string $group
 	 * @param PageRiconferma[] $pages
-	 * @return bool[]
+	 * @return array<string,bool>
 	 */
 	private function getGroupOutcomes( string $group, array $pages ): array {
 		$ret = [];

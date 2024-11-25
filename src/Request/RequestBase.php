@@ -33,7 +33,7 @@ abstract class RequestBase {
 	/** @var string[] */
 	protected array $cookiesToSet = [];
 	/**
-	 * @phan-var array<int|string|bool>
+	 * @phan-var array<string,int|string|bool>
 	 */
 	protected array $params;
 	protected string $method = self::METHOD_GET;
@@ -49,7 +49,7 @@ abstract class RequestBase {
 	 *
 	 * @param LoggerInterface $logger
 	 * @param array $params
-	 * @phan-param array<int|string|bool> $params
+	 * @phan-param array<string,int|string|bool> $params
 	 * @param string $domain
 	 * @param callable $cookiesHandlerCallback
 	 */
@@ -94,6 +94,7 @@ abstract class RequestBase {
 		}
 		// TODO Is this always correct?
 		$key = $this->params['list'] ?? 'pages';
+		'@phan-var string $key';
 		$curParams = $this->params;
 		$lim = $this->parseLimit();
 		do {
@@ -249,8 +250,12 @@ abstract class RequestBase {
 		}
 		if ( isset( $res->warnings ) ) {
 			$act = $this->params[ 'action' ];
-			$warning = $res->warnings->$act ?? $res->warnings->main;
-			throw new APIRequestException( reset( $warning ) );
+			$warnings = $res->warnings->$act ?? $res->warnings->main;
+			$warning = reset( $warnings );
+			if ( !$warning ) {
+				throw new APIRequestException( "Can't figure out warnings" );
+			}
+			throw new APIRequestException( $warning );
 		}
 	}
 

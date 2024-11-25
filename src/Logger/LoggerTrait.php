@@ -3,6 +3,7 @@
 namespace BotRiconferme\Logger;
 
 use Psr\Log\LogLevel;
+use Stringable;
 
 trait LoggerTrait {
 	/**
@@ -26,12 +27,7 @@ trait LoggerTrait {
 		return array_search( $level, $mapping, true );
 	}
 
-	/**
-	 * @param string $level
-	 * @param string $message
-	 * @return string
-	 */
-	protected function getFormattedMessage( string $level, string $message ): string {
+	protected function getFormattedMessage( string $level, string|Stringable $message ): string {
 		return sprintf( '%s [%s] - %s', date( 'd M H:i:s' ), $level, $message );
 	}
 }

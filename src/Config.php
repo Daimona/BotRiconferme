@@ -22,7 +22,7 @@ class Config {
 	 * Initialize a new self instance with CLI params set and retrieve on-wiki config.
 	 *
 	 * @param array $confValues
-	 * @phan-param array<mixed> $confValues
+	 * @phan-param array<string,mixed> $confValues
 	 * @throws ConfigException
 	 */
 	public static function init( array $confValues ): void {

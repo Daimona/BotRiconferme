@@ -5,6 +5,7 @@ namespace BotRiconferme\Task;
 use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Wiki\Page\PageBotList;
 use Generator;
+use RuntimeException;
 
 /**
  * Updates the JSON list, adding and removing dates according to the API list of privileged people
@@ -112,7 +113,7 @@ class UpdateList extends Task {
 	/**
 	 * @param array &$newList
 	 * @phan-param array<string,array<string,string|string[]>> &$newList
-	 * @param string[][] $extra
+	 * @param array<string,array<string,string>> $extra
 	 */
 	private function handleExtraAndMissing( array &$newList, array $extra ): void {
 		$missing = $this->getMissingAdminGroups( $newList );
@@ -190,7 +191,15 @@ class UpdateList extends Task {
 		$data = $wiki->getRequestFactory()->createStandaloneRequest( $params )->executeAsQuery();
 		$ts = $this->extractTimestamp( $data, $group );
 
-		return $ts !== null ? date( 'd/m/Y', strtotime( $ts ) ) : null;
+		if ( $ts === null ) {
+			return null;
+		}
+
+		$time = strtotime( $ts );
+		if ( $time === false ) {
+			throw new RuntimeException( "Can't parse time `$ts`" );
+		}
+		return date( 'd/m/Y', $time );
 	}
 
 	/**
@@ -220,7 +229,7 @@ class UpdateList extends Task {
 	 * @param array[] $botList
 	 * @phpcs:ignore Generic.Files.LineLength
 	 * @phan-param array<string,array{sysop:string,checkuser?:string,bureaucrat?:string,override?:string,override-perm?:string,aliases?:list<string>}> $botList
-	 * @return string[][]
+	 * @return array<string,array<string,string>>
 	 */
 	private function getExtraAdminGroups( array $botList ): array {
 		$extra = [];
@@ -286,7 +295,7 @@ class UpdateList extends Task {
 	 *
 	 * @param array &$newList
 	 * @phan-param array<string,array<string,string|string[]>> $newList
-	 * @param string[][] $extra
+	 * @param array<string,array<string,string>> $extra
 	 * @return array<string,string> Map of renamed users
 	 */
 	private function handleRenames( array &$newList, array $extra ): array {

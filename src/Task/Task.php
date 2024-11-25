@@ -18,6 +18,20 @@ abstract class Task extends TaskBase {
 	abstract protected function getSubtasksMap(): array;
 
 	/**
+	 * @phan-param non-empty-list<string> $orderedList
+	 */
+	protected function runSubtaskList( array $orderedList ): int {
+		$res = new TaskResult( TaskResult::STATUS_NOTHING );
+		do {
+			$subtask = current( $orderedList );
+			'@phan-var string $subtask';
+			$res->merge( $this->runSubtask( $subtask ) );
+		} while ( $res->isOK() && next( $orderedList ) );
+
+		return $res->getStatus();
+	}
+
+	/**
 	 * @param string $subtask Defined in self::SUBTASKS_MAP
 	 * @return TaskResult
 	 */

@@ -36,8 +36,21 @@ class PageRiconferma extends Page {
 	 * expensive to know since it requires parsing the content of the page.
 	 */
 	private function defineSections(): void {
+		if ( $this->supportSection !== null ) {
+			return;
+		}
 		$this->supportSection = $this->isVote() ? 3 : 0;
 		$this->opposeSection = $this->isVote() ? 4 : 3;
+	}
+
+	private function getSupportSection(): int {
+		$this->defineSections();
+		return $this->supportSection;
+	}
+
+	private function getOpposeSection(): int {
+		$this->defineSections();
+		return $this->opposeSection;
 	}
 
 	/**
@@ -74,8 +87,7 @@ class PageRiconferma extends Page {
 	 * @return int
 	 */
 	public function getOpposingCount(): int {
-		$this->defineSections();
-		return $this->getCountForSection( $this->opposeSection );
+		return $this->getCountForSection( $this->getOpposeSection() );
 	}
 
 	/**
@@ -88,8 +100,7 @@ class PageRiconferma extends Page {
 		if ( !$this->isVote() ) {
 			throw new BadMethodCallException( 'Cannot get support for a non-vote page.' );
 		}
-		$this->defineSections();
-		return $this->getCountForSection( $this->supportSection );
+		return $this->getCountForSection( $this->getSupportSection() );
 	}
 
 	/**

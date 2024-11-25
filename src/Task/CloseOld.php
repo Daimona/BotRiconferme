@@ -6,7 +6,6 @@ use BotRiconferme\Task\Subtask\ArchivePages;
 use BotRiconferme\Task\Subtask\ClosePages;
 use BotRiconferme\Task\Subtask\FailedUpdates;
 use BotRiconferme\Task\Subtask\SimpleUpdates;
-use BotRiconferme\TaskHelper\TaskResult;
 
 /**
  * Task for closing old procedures
@@ -23,12 +22,7 @@ class CloseOld extends Task {
 			'failed-updates'
 		];
 
-		$res = new TaskResult( TaskResult::STATUS_NOTHING );
-		do {
-			$res->merge( $this->runSubtask( current( $orderedList ) ) );
-		} while ( $res->isOK() && next( $orderedList ) );
-
-		return $res->getStatus();
+		return $this->runSubtaskList( $orderedList );
 	}
 
 	/**

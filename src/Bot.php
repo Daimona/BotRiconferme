@@ -2,6 +2,7 @@
 
 namespace BotRiconferme;
 
+use BotRiconferme\Exception\ConfigException;
 use BotRiconferme\Exception\MissingPageException;
 use BotRiconferme\Logger\IFlushingAwareLogger;
 use BotRiconferme\Logger\MultiLogger;
@@ -148,6 +149,10 @@ class Bot {
 			);
 		} catch ( MissingPageException $_ ) {
 			exit( 'Please create a config page.' );
+		}
+
+		if ( !is_array( $confValues ) ) {
+			throw new ConfigException( "Invalid config page" );
 		}
 
 		Config::init( $confValues );

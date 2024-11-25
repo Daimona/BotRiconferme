@@ -140,12 +140,12 @@ class CLI {
 	 */
 	private function canonicalize( array &$opts ): void {
 		if ( array_key_exists( 'use-password-file', $opts ) ) {
-			$pw = trim( file_get_contents( self::PASSWORD_FILE ) );
+			$pw = trim( file_get_contents( self::PASSWORD_FILE ) ?: '' );
 			$opts['password'] = $pw;
 			unset( $opts['use-password-file'] );
 		}
 		if ( array_key_exists( 'use-private-password-file', $opts ) ) {
-			$pw = trim( file_get_contents( self::PRIVATE_PASSWORD_FILE ) );
+			$pw = trim( file_get_contents( self::PRIVATE_PASSWORD_FILE ) ?: '' );
 			$opts['private-password'] = $pw;
 			unset( $opts['use-private-password-file'] );
 		}

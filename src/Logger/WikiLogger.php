@@ -6,6 +6,7 @@ use BotRiconferme\MessageProvider;
 use BotRiconferme\Wiki\Page\Page;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
+use Stringable;
 
 /**
  * Logger that sends messages on-wiki
@@ -31,7 +32,7 @@ class WikiLogger extends AbstractLogger implements IFlushingAwareLogger {
 	 * @param mixed[] $context
 	 * @suppress PhanUnusedPublicMethodParameter
 	 */
-	public function log( $level, $message, array $context = [] ): void {
+	public function log( $level, string|Stringable $message, array $context = [] ): void {
 		if ( $this->levelToInt( $level ) >= $this->minLevel ) {
 			$this->buffer[] = $this->getFormattedMessage( $level, $message );
 		}
