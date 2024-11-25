@@ -48,15 +48,28 @@ class PageBotList extends Page {
 			return null;
 		}
 
-		// A one-time override takes precedence
+		// A one-time override takes precedence, unless it's expired
 		if ( array_key_exists( 'override', $info ) ) {
 			$date = $info['override'];
-		} else {
-			$date = $info['override-perm'] . '/' . date( 'Y' );
+			$dateTime = DateTime::createFromFormat( 'd/m/Y', $date );
+			if ( !$dateTime ) {
+				throw new ConfigException( "Invalid override date `$date`." );
+			}
+			$timestamp = $dateTime->getTimestamp();
+			// Make sure it's not an expired override.
+			if ( $timestamp > time() ) {
+				return $timestamp;
+			}
 		}
+
+		if ( !array_key_exists( 'override-perm', $info ) ) {
+			return null;
+		}
+
+		$date = $info['override-perm'] . '/' . date( 'Y' );
 		$dateTime = DateTime::createFromFormat( 'd/m/Y', $date );
 		if ( !$dateTime ) {
-			throw new ConfigException( "Invalid date `$date`." );
+			throw new ConfigException( "Invalid override-perm date `$date`." );
 		}
 		return $dateTime->getTimestamp();
 	}
@@ -72,14 +85,8 @@ class PageBotList extends Page {
 		$userInfo = $this->getUserInfo( $user );
 		$now = new DateTime();
 
-		$overrideTS = $this->getOverrideTimestamp( $userInfo );
-		if ( $overrideTS === null || $overrideTS <= $now->getTimestamp() ) {
-			$ts = self::getValidFlagTimestamp( $userInfo );
-			$date = ( new DateTime )->setTimestamp( $ts );
-			$date->modify( '+1 year' );
-		} else {
-			$date = ( new DateTime )->setTimestamp( $overrideTS );
-		}
+		$ts = $this->getOverrideTimestamp( $userInfo ) ?? self::getValidFlagTimestamp( $userInfo );
+		$date = ( new DateTime )->setTimestamp( $ts );
 
 		// @phan-suppress-next-line PhanPossiblyInfiniteLoop
 		while ( $date <= $now ) {
