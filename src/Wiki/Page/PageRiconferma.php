@@ -36,7 +36,7 @@ class PageRiconferma extends Page {
 	 * expensive to know since it requires parsing the content of the page.
 	 */
 	private function defineSections(): void {
-		if ( $this->supportSection !== null ) {
+		if ( isset( $this->supportSection ) ) {
 			return;
 		}
 		$this->supportSection = $this->isVote() ? 3 : 0;
