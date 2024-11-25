@@ -76,6 +76,7 @@ class CLI {
 	public function __construct() {
 		/** @var string[] $opts */
 		$opts = getopt( self::SHORT_OPTS, self::LONG_OPTS );
+		'@phan-var string[] $opts';
 		$this->checkRequiredOpts( $opts );
 		$this->checkConflictingOpts( $opts );
 		$this->canonicalize( $opts );

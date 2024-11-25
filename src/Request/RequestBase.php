@@ -39,7 +39,7 @@ abstract class RequestBase {
 	protected string $method = self::METHOD_GET;
 	/** @var string[] */
 	protected array $newCookies = [];
-	/** @var callable|null */
+	/** @var callable */
 	private $cookiesHandlerCallback;
 
 	protected LoggerInterface $logger;

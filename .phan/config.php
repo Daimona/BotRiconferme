@@ -15,10 +15,10 @@ $cfg = [
 	'enable_extended_internal_return_type_plugins' => true,
 	'enable_include_path_checks' => true,
 
-	// 'strict_method_checking' => true,
+	'strict_method_checking' => true,
 	'strict_object_checking' => true,
 	// 'strict_param_checking' => true,
-	// 'strict_property_checking' => true,
+	'strict_property_checking' => true,
 	// 'strict_return_checking' => true,
 
 	'dead_code_detection' => true,

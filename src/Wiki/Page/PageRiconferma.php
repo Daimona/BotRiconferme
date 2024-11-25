@@ -3,6 +3,7 @@
 namespace BotRiconferme\Wiki\Page;
 
 use BadMethodCallException;
+use BotRiconferme\Exception\MissingMatchException;
 use BotRiconferme\Message\Message;
 use LogicException;
 
@@ -101,7 +102,11 @@ class PageRiconferma extends Page {
 		if ( !isset( $this->sectionCounts[ $secNum ] ) ) {
 			$content = $this->wiki->getPageContent( $this->title, $secNum );
 			// Let's hope that this is good enough...
-			$this->sectionCounts[$secNum] = preg_match_all( "/^# *(?![# *:]|\.\.\.$)/m", $content );
+			$voteCount = preg_match_all( "/^# *(?![# *:]|\.\.\.$)/m", $content );
+			if ( $voteCount === false ) {
+				throw new MissingMatchException( "Can't figure out vote count for $this->title#$secNum." );
+			}
+			$this->sectionCounts[$secNum] = $voteCount;
 		}
 		return $this->sectionCounts[$secNum];
 	}

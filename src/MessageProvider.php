@@ -2,6 +2,7 @@
 
 namespace BotRiconferme;
 
+use BotRiconferme\Exception\ConfigException;
 use BotRiconferme\Exception\MessageNotFoundException;
 use BotRiconferme\Exception\MessagesPageDoesNotExistException;
 use BotRiconferme\Exception\MissingPageException;
@@ -33,7 +34,11 @@ class MessageProvider {
 		}
 		try {
 			$cont = $this->wiki->getPageContent( $this->msgTitle );
-			self::$messages = json_decode( $cont, true, 512, JSON_THROW_ON_ERROR );
+			$wikiMessages = json_decode( $cont, true, 512, JSON_THROW_ON_ERROR );
+			if ( !is_array( $wikiMessages ) ) {
+				throw new ConfigException( "Invalid messages page" );
+			}
+			self::$messages = $wikiMessages;
 		} catch ( MissingPageException $_ ) {
 			throw new MessagesPageDoesNotExistException( 'Please create a messages page.' );
 		}

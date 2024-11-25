@@ -2,6 +2,7 @@
 
 namespace BotRiconferme\Wiki\Page;
 
+use BotRiconferme\Exception\ConfigException;
 use BotRiconferme\Wiki\UserInfo;
 use BotRiconferme\Wiki\Wiki;
 use DateTime;
@@ -53,7 +54,11 @@ class PageBotList extends Page {
 		} else {
 			$date = $info['override-perm'] . '/' . date( 'Y' );
 		}
-		return DateTime::createFromFormat( 'd/m/Y', $date )->getTimestamp();
+		$dateTime = DateTime::createFromFormat( 'd/m/Y', $date );
+		if ( !$dateTime ) {
+			throw new ConfigException( "Invalid date `$date`." );
+		}
+		return $dateTime->getTimestamp();
 	}
 
 	/**
@@ -67,14 +72,22 @@ class PageBotList extends Page {
 		$userInfo = $this->getUserInfo( $user )->getInfo();
 		$now = new DateTime();
 		if ( isset( $userInfo['override-perm'] ) ) {
+			$overridePerm = $userInfo['override-perm'];
 			$date = DateTime::createFromFormat(
 				'd/m/Y',
-				$userInfo['override-perm'] . '/' . date( 'Y' )
+				$overridePerm . '/' . date( 'Y' )
 			);
+			if ( !$date ) {
+				throw new ConfigException( "Invalid override-perm date `$overridePerm`." );
+			}
 		} else {
 			$date = null;
 			if ( isset( $userInfo['override'] ) ) {
-				$date = DateTime::createFromFormat( 'd/m/Y', $userInfo['override'] );
+				$override = $userInfo['override'];
+				$date = DateTime::createFromFormat( 'd/m/Y', $override );
+				if ( !$date ) {
+					throw new ConfigException( "Invalid override date `$override`." );
+				}
 			}
 			if ( !$date || $date <= $now ) {
 				$ts = self::getValidFlagTimestamp( $userInfo );
@@ -96,16 +109,30 @@ class PageBotList extends Page {
 	 * @return int
 	 */
 	public static function getValidFlagTimestamp( array $groups ): int {
-		$checkuser = isset( $groups['checkuser'] ) ?
-			DateTime::createFromFormat( 'd/m/Y', $groups['checkuser'] )->getTimestamp() :
-			0;
-		$bureaucrat = isset( $groups['bureaucrat'] ) ?
-			DateTime::createFromFormat( 'd/m/Y', $groups['bureaucrat'] )->getTimestamp() :
-			0;
+		$checkuser = 0;
+		if ( isset( $groups['checkuser'] ) ) {
+			$checkuserDate = DateTime::createFromFormat( 'd/m/Y', $groups['checkuser'] );
+			if ( !$checkuserDate ) {
+				throw new ConfigException( "Invalid checkuser date `{$groups['checkuser']}`." );
+			}
+			$checkuser = $checkuserDate->getTimestamp();
+		}
+		$bureaucrat = 0;
+		if ( isset( $groups['bureaucrat'] ) ) {
+			$bureaucratDate = DateTime::createFromFormat( 'd/m/Y', $groups['bureaucrat'] );
+			if ( !$bureaucratDate ) {
+				throw new ConfigException( "Invalid bureaucrat date `{$groups['bureaucrat']}`." );
+			}
+			$bureaucrat = $bureaucratDate->getTimestamp();
+		}
 
 		$timestamp = max( $bureaucrat, $checkuser );
 		if ( $timestamp === 0 ) {
-			$timestamp = DateTime::createFromFormat( 'd/m/Y', $groups['sysop'] )->getTimestamp();
+			$sysopDate = DateTime::createFromFormat( 'd/m/Y', $groups['sysop'] );
+			if ( !$sysopDate ) {
+				throw new ConfigException( "Invalid sysop date `{$groups['sysop']}`." );
+			}
+			$timestamp = $sysopDate->getTimestamp();
 		}
 		return $timestamp;
 	}
@@ -126,7 +153,11 @@ class PageBotList extends Page {
 
 		$flagTS = self::getValidFlagTimestamp( $groups );
 		$usualTS = strtotime( date( 'Y' ) . '-' . date( 'm-d', $flagTS ) );
-		$overrideTS = DateTime::createFromFormat( 'd/m/Y', $groups['override'] )->getTimestamp();
+		$overrideDate = DateTime::createFromFormat( 'd/m/Y', $groups['override'] );
+		if ( !$overrideDate ) {
+			throw new ConfigException( "Invalid override date `{$groups['override']}`." );
+		}
+		$overrideTS = $overrideDate->getTimestamp();
 		$delay = 60 * 60 * 24 * 3;
 
 		return time() > $usualTS + $delay && time() > $overrideTS + $delay;
