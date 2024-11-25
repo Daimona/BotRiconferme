@@ -9,7 +9,7 @@ class ProtectedPageException extends EditException {
 	/**
 	 * @param string|null $title If available
 	 */
-	public function __construct( string $title = null ) {
+	public function __construct( ?string $title = null ) {
 		if ( $title ) {
 			parent::__construct( "The specified page is protected: $title" );
 		} else {

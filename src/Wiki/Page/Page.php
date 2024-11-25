@@ -37,7 +37,7 @@ class Page implements IRegexable {
 	 * @param int|null $section A section number to retrieve the content of that section
 	 * @return string
 	 */
-	public function getContent( int $section = null ): string {
+	public function getContent( ?int $section = null ): string {
 		if ( $this->content === null ) {
 			$this->content = $this->wiki->getPageContent( $this->title, $section );
 		}

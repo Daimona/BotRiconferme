@@ -81,7 +81,7 @@ class Wiki {
 	 * @param string $title
 	 * @param int|null $section
 	 */
-	private function logRead( string $title, int $section = null ): void {
+	private function logRead( string $title, ?int $section = null ): void {
 		$fullTitle = $this->pagePrefix . $title;
 		$msg = "Retrieving content of $fullTitle" . ( $section !== null ? ", section $section" : '' );
 		$this->logger->info( $msg );
@@ -96,7 +96,7 @@ class Wiki {
 	 * @throws MissingPageException
 	 * @throws MissingSectionException
 	 */
-	public function getPageContent( string $title, int $section = null ): string {
+	public function getPageContent( string $title, ?int $section = null ): string {
 		$this->logRead( $title, $section );
 		$params = [
 			'action' => 'query',

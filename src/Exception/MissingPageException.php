@@ -9,7 +9,7 @@ class MissingPageException extends APIRequestException {
 	/**
 	 * @param string|null $title If available
 	 */
-	public function __construct( string $title = null ) {
+	public function __construct( ?string $title = null ) {
 		if ( $title ) {
 			parent::__construct( "The specified page doesn't exist: $title" );
 		} else {
