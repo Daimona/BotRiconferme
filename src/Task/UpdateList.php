@@ -240,21 +240,19 @@ class UpdateList extends Task {
 	 * @return Generator
 	 */
 	private function getRenameEntries( array $oldNames ): Generator {
-		$titles = array_map( static function ( string $x ): string {
-			return "Utente:$x";
-		}, $oldNames );
+		foreach ( $oldNames as $oldName ) {
+			$params = [
+				'action' => 'query',
+				'list' => 'logevents',
+				'leprop' => 'title|details|timestamp',
+				'letype' => 'renameuser',
+				'letitle' => "Utente:$oldName",
+				'lelimit' => 'max',
+				// lestart seems to be broken (?)
+			];
 
-		$params = [
-			'action' => 'query',
-			'list' => 'logevents',
-			'leprop' => 'title|details|timestamp',
-			'letype' => 'renameuser',
-			'letitle' => implode( '|', $titles ),
-			'lelimit' => 'max',
-			// lestart seems to be broken (?)
-		];
-
-		return $this->getWiki()->getRequestFactory()->createStandaloneRequest( $params )->executeAsQuery();
+			yield from $this->getWiki()->getRequestFactory()->createStandaloneRequest( $params )->executeAsQuery();
+		}
 	}
 
 	/**
