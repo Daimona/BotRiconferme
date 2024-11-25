@@ -39,7 +39,7 @@ class User implements IRegexable, Stringable {
 	 * @return string[]
 	 */
 	public function getGroups(): array {
-		return $this->ui->extractGroups();
+		return $this->ui->getGroupNames();
 	}
 
 	/**
@@ -48,7 +48,7 @@ class User implements IRegexable, Stringable {
 	 * @return string[] [ group => date ]
 	 */
 	public function getGroupsWithDates(): array {
-		return $this->ui->extractGroupsWithDates();
+		return $this->ui->getGroupsWithDates();
 	}
 
 	/**

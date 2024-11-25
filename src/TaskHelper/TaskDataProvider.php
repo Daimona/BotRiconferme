@@ -50,7 +50,7 @@ class TaskDataProvider extends ContextSource {
 		$override = $timestamp !== null;
 
 		if ( $timestamp === null ) {
-			$timestamp = PageBotList::getValidFlagTimestamp( $ui->getInfo() );
+			$timestamp = PageBotList::getValidFlagTimestamp( $ui );
 		}
 
 		$datesMatch = date( 'd/m', $timestamp ) === date( 'd/m' );

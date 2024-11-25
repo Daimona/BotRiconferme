@@ -43,7 +43,7 @@ class PageBotList extends Page {
 	 * @return int|null
 	 */
 	public function getOverrideTimestamp( UserInfo $ui ): ?int {
-		$info = $ui->getInfo();
+		$info = $ui->getInfoArray();
 		if ( !array_intersect_key( $info, [ 'override-perm' => true, 'override' => true ] ) ) {
 			return null;
 		}
@@ -69,32 +69,18 @@ class PageBotList extends Page {
 	 * @suppress PhanPluginComparisonObjectOrdering DateTime objects can be compared (phan issue #2907)
 	 */
 	public function getNextTimestamp( string $user ): int {
-		$userInfo = $this->getUserInfo( $user )->getInfo();
+		$userInfo = $this->getUserInfo( $user );
 		$now = new DateTime();
-		if ( isset( $userInfo['override-perm'] ) ) {
-			$overridePerm = $userInfo['override-perm'];
-			$date = DateTime::createFromFormat(
-				'd/m/Y',
-				$overridePerm . '/' . date( 'Y' )
-			);
-			if ( !$date ) {
-				throw new ConfigException( "Invalid override-perm date `$overridePerm`." );
-			}
+
+		$overrideTS = $this->getOverrideTimestamp( $userInfo );
+		if ( $overrideTS === null || $overrideTS <= $now->getTimestamp() ) {
+			$ts = self::getValidFlagTimestamp( $userInfo );
+			$date = ( new DateTime )->setTimestamp( $ts );
+			$date->modify( '+1 year' );
 		} else {
-			$date = null;
-			if ( isset( $userInfo['override'] ) ) {
-				$override = $userInfo['override'];
-				$date = DateTime::createFromFormat( 'd/m/Y', $override );
-				if ( !$date ) {
-					throw new ConfigException( "Invalid override date `$override`." );
-				}
-			}
-			if ( !$date || $date <= $now ) {
-				$ts = self::getValidFlagTimestamp( $userInfo );
-				$date = ( new DateTime )->setTimestamp( $ts );
-				$date->modify( '+1 year' );
-			}
+			$date = ( new DateTime )->setTimestamp( $overrideTS );
 		}
+
 		// @phan-suppress-next-line PhanPossiblyInfiniteLoop
 		while ( $date <= $now ) {
 			$date->modify( '+1 year' );
@@ -105,10 +91,12 @@ class PageBotList extends Page {
 	/**
 	 * Get the valid timestamp for the given groups
 	 *
-	 * @param string[] $groups
+	 * @param UserInfo $userInfo
 	 * @return int
 	 */
-	public static function getValidFlagTimestamp( array $groups ): int {
+	public static function getValidFlagTimestamp( UserInfo $userInfo ): int {
+		$groups = $userInfo->getGroupsWithDates();
+
 		$checkuser = 0;
 		if ( isset( $groups['checkuser'] ) ) {
 			$checkuserDate = DateTime::createFromFormat( 'd/m/Y', $groups['checkuser'] );
@@ -143,19 +131,20 @@ class PageBotList extends Page {
 	 * - The "normal" date has passed (otherwise we'd use two different dates for the same year)
 	 * For decreased risk, we add an additional delay of 3 days.
 	 *
-	 * @param string[] $groups
+	 * @param UserInfo $userInfo
 	 * @return bool
 	 */
-	public static function isOverrideExpired( array $groups ): bool {
-		if ( !isset( $groups['override'] ) ) {
+	public static function isOverrideExpired( UserInfo $userInfo ): bool {
+		$override = $userInfo->getOverride();
+		if ( $override === null ) {
 			return false;
 		}
 
-		$flagTS = self::getValidFlagTimestamp( $groups );
+		$flagTS = self::getValidFlagTimestamp( $userInfo );
 		$usualTS = strtotime( date( 'Y' ) . '-' . date( 'm-d', $flagTS ) );
-		$overrideDate = DateTime::createFromFormat( 'd/m/Y', $groups['override'] );
+		$overrideDate = DateTime::createFromFormat( 'd/m/Y', $override );
 		if ( !$overrideDate ) {
-			throw new ConfigException( "Invalid override date `{$groups['override']}`." );
+			throw new ConfigException( "Invalid override date `$override`." );
 		}
 		$overrideTS = $overrideDate->getTimestamp();
 		$delay = 60 * 60 * 24 * 3;

@@ -33,28 +33,65 @@ class UserInfo {
 	 * @return array
 	 * @phan-return array<string,string|string[]>
 	 */
-	public function getInfo(): array {
+	public function getInfoArray(): array {
 		return $this->info;
 	}
 
 	/**
 	 * @return string[]
 	 */
-	public function extractGroups(): array {
-		return array_keys( $this->extractGroupsWithDates() );
+	public function getGroupNames(): array {
+		return array_keys( $this->getGroupsWithDates() );
 	}
 
 	/**
 	 * @return string[]
 	 */
-	public function extractGroupsWithDates(): array {
-		return array_intersect_key( $this->getInfo(), array_fill_keys( self::GROUP_KEYS, 1 ) );
+	public function getGroupsWithDates(): array {
+		return array_intersect_key( $this->info, array_fill_keys( self::GROUP_KEYS, 1 ) );
 	}
 
 	/**
 	 * @return string[]
 	 */
 	public function getAliases(): array {
-		return $this->getInfo()['aliases'] ?? [];
+		return $this->info['aliases'] ?? [];
+	}
+
+	public function getOverride(): ?string {
+		return $this->info['override'] ?? null;
+	}
+
+	public function withAddedAlias( string $alias ): self {
+		$ret = clone $this;
+		$ret->info['aliases'] = array_unique( array_merge( $ret->info['aliases'] ?? [], [ $alias ] ) );
+		return $ret;
+	}
+
+	public function withoutOverride(): self {
+		$ret = clone $this;
+		unset( $ret->info['override'] );
+		return $ret;
+	}
+
+	public function equals( self $other ): bool {
+		if (
+			$this->name !== $other->name ||
+			array_diff_key( $this->info, $other->info ) ||
+			count( $this->info ) !== count( $other->info )
+		) {
+			return false;
+		}
+		foreach ( $this->info as $key => $value ) {
+			$otherValue = $other->info[$key];
+			if ( is_array( $value ) ) {
+				sort( $value );
+				sort( $otherValue );
+			}
+			if ( $value !== $otherValue ) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
