@@ -3,11 +3,12 @@
 namespace BotRiconferme\Wiki;
 
 /**
- * Value object containing the data about a User that is stored in the list page
+ * Value object containing the data about a User that is stored in the list page.
+ * @phan-type RawList = array{sysop:string,checkuser?:string,bureaucrat?:string,override?:string,override-perm?:string,aliases?:list<string>}
  */
 class UserInfo {
 	private string $name;
-	/** @phan-var array<string,string|string[]> */
+	/** @phan-var RawList */
 	private array $info;
 
 	private const GROUP_KEYS = [ 'sysop', 'bureaucrat', 'checkuser' ];
@@ -15,7 +16,7 @@ class UserInfo {
 	/**
 	 * @param string $name
 	 * @param array $info
-	 * @phan-param array<string,string|string[]> $info
+	 * @phan-param RawList $info
 	 */
 	public function __construct( string $name, array $info ) {
 		$this->name = $name;
@@ -31,7 +32,7 @@ class UserInfo {
 
 	/**
 	 * @return array
-	 * @phan-return array<string,string|string[]>
+	 * @phan-return RawList
 	 */
 	public function getInfoArray(): array {
 		return $this->info;
@@ -62,9 +63,13 @@ class UserInfo {
 		return $this->info['override'] ?? null;
 	}
 
+	public function getPermanentOverride(): ?string {
+		return $this->info['override-perm'] ?? null;
+	}
+
 	public function withAddedAlias( string $alias ): self {
 		$ret = clone $this;
-		$ret->info['aliases'] = array_unique( array_merge( $ret->info['aliases'] ?? [], [ $alias ] ) );
+		$ret->info['aliases'] = array_values( array_unique( array_merge( $ret->info['aliases'] ?? [], [ $alias ] ) ) );
 		return $ret;
 	}
 
@@ -84,7 +89,7 @@ class UserInfo {
 		}
 		foreach ( $this->info as $key => $value ) {
 			$otherValue = $other->info[$key];
-			if ( is_array( $value ) ) {
+			if ( is_array( $value ) && is_array( $otherValue ) ) {
 				sort( $value );
 				sort( $otherValue );
 			}

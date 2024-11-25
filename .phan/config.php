@@ -17,7 +17,7 @@ $cfg = [
 
 	'strict_method_checking' => true,
 	'strict_object_checking' => true,
-	// 'strict_param_checking' => true,
+	'strict_param_checking' => true,
 	'strict_property_checking' => true,
 	// 'strict_return_checking' => true,
 

@@ -43,17 +43,12 @@ class PageBotList extends Page {
 	 * @return int|null
 	 */
 	public function getOverrideTimestamp( UserInfo $ui ): ?int {
-		$info = $ui->getInfoArray();
-		if ( !array_intersect_key( $info, [ 'override-perm' => true, 'override' => true ] ) ) {
-			return null;
-		}
-
 		// A one-time override takes precedence, unless it's expired
-		if ( array_key_exists( 'override', $info ) ) {
-			$date = $info['override'];
-			$dateTime = DateTime::createFromFormat( 'd/m/Y', $date );
+		$override = $ui->getOverride();
+		if ( $override !== null ) {
+			$dateTime = DateTime::createFromFormat( 'd/m/Y', $override );
 			if ( !$dateTime ) {
-				throw new ConfigException( "Invalid override date `$date`." );
+				throw new ConfigException( "Invalid override date `$override`." );
 			}
 			$timestamp = $dateTime->getTimestamp();
 			// Make sure it's not an expired override.
@@ -62,11 +57,12 @@ class PageBotList extends Page {
 			}
 		}
 
-		if ( !array_key_exists( 'override-perm', $info ) ) {
+		$permanentOverride = $ui->getPermanentOverride();
+		if ( $permanentOverride === null ) {
 			return null;
 		}
 
-		$date = $info['override-perm'] . '/' . date( 'Y' );
+		$date = $permanentOverride . '/' . date( 'Y' );
 		$dateTime = DateTime::createFromFormat( 'd/m/Y', $date );
 		if ( !$dateTime ) {
 			throw new ConfigException( "Invalid override-perm date `$date`." );

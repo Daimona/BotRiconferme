@@ -54,8 +54,8 @@ class UpdateList extends Task {
 	}
 
 	/**
-	 * @param UserInfo[] $oldList
-	 * @param UserInfo[] $newList
+	 * @param array<string,UserInfo> $oldList
+	 * @param array<string,UserInfo> $newList
 	 * @return bool
 	 */
 	private function listsAreDifferent( array $oldList, array $newList ): bool {
@@ -114,8 +114,8 @@ class UpdateList extends Task {
 	/**
 	 * Get the new content for the list
 	 *
-	 * @param UserInfo[] $curList
-	 * @return UserInfo[]
+	 * @param array<string,UserInfo> $curList
+	 * @return array<string,UserInfo>
 	 */
 	private function computeNewList( array $curList ): array {
 		$newList = unserialize( serialize( $curList ), [ 'allowed_classes' => [ UserInfo::class ] ] );
@@ -133,7 +133,7 @@ class UpdateList extends Task {
 	}
 
 	/**
-	 * @param UserInfo[] &$newList
+	 * @param array<string,UserInfo> &$newList
 	 * @param array<string,array<string,string>> $extra
 	 */
 	private function handleExtraAndMissing( array &$newList, array $extra ): void {
@@ -156,8 +156,8 @@ class UpdateList extends Task {
 			}
 		}
 		// Add users which don't have an entry at all
-		foreach ( $missing as $user => $info ) {
-			$newList[$user] = new UserInfo( $user, $info );
+		foreach ( $missing as $user => $data ) {
+			$newList[$user] = new UserInfo( $user, $data );
 		}
 		if ( $removed ) {
 			$this->getLogger()->info( 'The following admins were removed: ' . implode( ', ', $removed ) );
@@ -167,8 +167,9 @@ class UpdateList extends Task {
 	/**
 	 * Populate a list of admins with user groups that are not in the current JSON list.
 	 *
-	 * @param UserInfo[] $botList
-	 * @return string[][]
+	 * @param array<string,UserInfo> $botList
+	 * @return array<string,array<string,string>>
+	 * @phan-return array<string,array{sysop:string,checkuser?:string,bureaucrat?:string,override?:string}>
 	 */
 	private function getMissingAdminGroups( array $botList ): array {
 		$missing = [];
@@ -249,7 +250,7 @@ class UpdateList extends Task {
 	/**
 	 * Get a list of admins who are in the JSON page but don't have the listed privileges anymore
 	 *
-	 * @param UserInfo[] $botList
+	 * @param array<string,UserInfo> $botList
 	 * @return array<string,array<string,string>>
 	 */
 	private function getExtraAdminGroups( array $botList ): array {
@@ -289,7 +290,7 @@ class UpdateList extends Task {
 	 * Given a list of (old) usernames, check if these people have been renamed recently.
 	 *
 	 * @param string[] $oldNames
-	 * @return string[] [ old_name => new_name ]
+	 * @return array<string,string> [ old_name => new_name ]
 	 */
 	private function getRenamedUsers( array $oldNames ): array {
 		if ( !$oldNames ) {
@@ -314,7 +315,7 @@ class UpdateList extends Task {
 	 * Checks whether any user that is on the bot list but is not an admin according to MW
 	 * was actually renamed, and updates the list accordingly.
 	 *
-	 * @param UserInfo[] &$newList
+	 * @param array<string,UserInfo> &$newList
 	 * @param array<string,array<string,string>> $extra
 	 * @return array<string,string> Map of renamed users
 	 */
@@ -331,7 +332,7 @@ class UpdateList extends Task {
 	/**
 	 * Remove expired overrides.
 	 *
-	 * @param UserInfo[] &$newList
+	 * @param array<string,UserInfo> &$newList
 	 */
 	private function removeOverrides( array &$newList ): void {
 		$removed = [];

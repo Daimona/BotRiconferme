@@ -142,7 +142,9 @@ class TaskManager {
 	private function runSubtasks( array $subtasks ): TaskResult {
 		$res = new TaskResult( TaskResult::STATUS_GOOD );
 		do {
-			$res->merge( $this->runSubtask( current( $subtasks ) ) );
+			$subtask = current( $subtasks );
+			'@phan-var string $subtask';
+			$res->merge( $this->runSubtask( $subtask ) );
 		} while ( $res->isOK() && next( $subtasks ) );
 
 		return $res;
