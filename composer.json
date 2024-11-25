@@ -13,7 +13,7 @@
 	"require": {
 		"php": ">=8.2.0",
 		"ext-json": "*",
-		"psr/log": "^1.1"
+		"psr/log": "^3.0.2"
 	},
 	"suggest": {
 		"ext-curl": "Faster requests"
@@ -30,7 +30,7 @@
 		}
 	},
 	"scripts": {
-		"phan": "phan --long-progress-bar --require-config-exists --color",
+		"phan": "phan --long-progress-bar --require-config-exists --analyze-twice --color",
 		"test": [
 			"parallel-lint . --exclude vendor",
 			"phpcs -p -s",
