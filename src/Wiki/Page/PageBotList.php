@@ -51,7 +51,7 @@ class PageBotList extends Page {
 		if ( array_key_exists( 'override', $info ) ) {
 			$date = $info['override'];
 		} else {
-			$date = $info['override-prem'] . '/' . date( 'Y' );
+			$date = $info['override-perm'] . '/' . date( 'Y' );
 		}
 		return DateTime::createFromFormat( 'd/m/Y', $date )->getTimestamp();
 	}
