@@ -2,6 +2,7 @@
 
 namespace BotRiconferme\Task\Subtask;
 
+use BotRiconferme\Clock;
 use BotRiconferme\Message\Message;
 use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Utils\RegexUtils;
@@ -115,7 +116,7 @@ class SimpleUpdates extends Subtask {
 			$userReg = $user->getRegex( '!' );
 			$reg = "!({{Ammini\w+\/riga\|$userReg\|\D+\|\d{8}\|)(?:\d{8})?\|\d{8}((?:\|[a-z]*)?}}.*\n)!";
 			if ( $confirmed ) {
-				$nextDate = date(
+				$nextDate = Clock::getDate(
 					'Ymd',
 					$this->getBotList()->getNextTimestamp( $user->getName() )
 				);

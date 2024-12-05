@@ -3,6 +3,7 @@
 namespace BotRiconferme\Task\Subtask;
 
 use AppendIterator;
+use BotRiconferme\Clock;
 use BotRiconferme\Exception\TaskException;
 use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Wiki\Page\Page;
@@ -101,7 +102,7 @@ class CreatePages extends Subtask {
 
 			// Note: we may be able to just check the page with the greatest number, but unsure if that
 			// assumption will work when considering renames etc.
-			if ( date( 'z/Y', $page->getCreationTimestamp() ) === date( 'z/Y' ) ) {
+			if ( Clock::getDate( 'z/Y', $page->getCreationTimestamp() ) === Clock::getDate( 'z/Y' ) ) {
 				throw new TaskException( "Page $page was already created today!" );
 			}
 			if ( $page->getNum() > $lastNum ) {

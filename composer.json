@@ -22,11 +22,13 @@
 		"php-parallel-lint/php-console-highlighter": "1.0.0",
 		"php-parallel-lint/php-parallel-lint": "^1.4.0",
 		"mediawiki/mediawiki-codesniffer": "45.0.0",
-		"mediawiki/mediawiki-phan-config": "0.14.0"
+		"mediawiki/mediawiki-phan-config": "0.14.0",
+		"phpunit/phpunit": "^11.4"
 	},
 	"autoload": {
 		"psr-4": {
-			"BotRiconferme\\": "src/"
+			"BotRiconferme\\": "src/",
+			"BotRiconferme\\Tests\\": "tests/"
 		}
 	},
 	"scripts": {
@@ -34,9 +36,11 @@
 		"test": [
 			"parallel-lint . --exclude vendor",
 			"phpcs -p -s",
-			"@phan"
+			"@phan",
+			"phpunit"
 		],
-		"fix": "phpcbf"
+		"fix": "phpcbf",
+		"phpunit": "phpunit"
 	},
 	"config": {
 		"allow-plugins": {

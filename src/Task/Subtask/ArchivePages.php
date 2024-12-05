@@ -2,6 +2,7 @@
 
 namespace BotRiconferme\Task\Subtask;
 
+use BotRiconferme\Clock;
 use BotRiconferme\Message\Message;
 use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Wiki\Page\PageRiconferma;
@@ -104,7 +105,7 @@ class ArchivePages extends Subtask {
 	 * @param PageRiconferma[] $pages
 	 */
 	private function reallyAddToArchive( string $archiveTitle, array $pages ): void {
-		$archivePage = $this->getPage( "$archiveTitle/" . date( 'Y' ) );
+		$archivePage = $this->getPage( "$archiveTitle/" . Clock::getDate( 'Y' ) );
 		$existed = $archivePage->exists();
 
 		$append = "\n";
@@ -134,7 +135,7 @@ class ArchivePages extends Subtask {
 	 */
 	private function addArchiveYear( string $archiveTitle ): void {
 		$page = $this->getPage( $archiveTitle );
-		$year = date( 'Y' );
+		$year = Clock::getDate( 'Y' );
 
 		$summary = $this->msg( 'new-archive-summary' )
 			->params( [ '$year' => $year ] )->text();

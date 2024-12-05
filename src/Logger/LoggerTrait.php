@@ -2,6 +2,7 @@
 
 namespace BotRiconferme\Logger;
 
+use BotRiconferme\Clock;
 use LogicException;
 use Psr\Log\LogLevel;
 use Stringable;
@@ -33,6 +34,6 @@ trait LoggerTrait {
 	}
 
 	protected function getFormattedMessage( string $level, string|Stringable $message ): string {
-		return sprintf( '%s [%s] - %s', date( 'd M H:i:s' ), $level, $message );
+		return sprintf( '%s [%s] - %s', Clock::getDate( 'd M H:i:s' ), $level, $message );
 	}
 }

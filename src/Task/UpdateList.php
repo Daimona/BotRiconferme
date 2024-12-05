@@ -2,6 +2,7 @@
 
 namespace BotRiconferme\Task;
 
+use BotRiconferme\Clock;
 use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Wiki\Page\PageBotList;
 use BotRiconferme\Wiki\UserInfo;
@@ -223,7 +224,7 @@ class UpdateList extends Task {
 		if ( $time === false ) {
 			throw new RuntimeException( "Can't parse time `$ts`" );
 		}
-		return date( 'd/m/Y', $time );
+		return Clock::getDate( 'd/m/Y', $time );
 	}
 
 	/**

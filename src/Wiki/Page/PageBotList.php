@@ -2,6 +2,7 @@
 
 namespace BotRiconferme\Wiki\Page;
 
+use BotRiconferme\Clock;
 use BotRiconferme\Exception\ConfigException;
 use BotRiconferme\Wiki\UserInfo;
 use BotRiconferme\Wiki\Wiki;
@@ -62,7 +63,7 @@ class PageBotList extends Page {
 			return null;
 		}
 
-		$date = $permanentOverride . '/' . date( 'Y' );
+		$date = $permanentOverride . '/' . Clock::getDate( 'Y' );
 		$dateTime = DateTime::createFromFormat( 'd/m/Y', $date );
 		if ( !$dateTime ) {
 			throw new ConfigException( "Invalid override-perm date `$date`." );
@@ -144,7 +145,7 @@ class PageBotList extends Page {
 		}
 
 		$flagTS = self::getValidFlagTimestamp( $userInfo );
-		$usualTS = strtotime( date( 'Y' ) . '-' . date( 'm-d', $flagTS ) );
+		$usualTS = strtotime( Clock::getDate( 'Y' ) . '-' . Clock::getDate( 'm-d', $flagTS ) );
 		$overrideDate = DateTime::createFromFormat( 'd/m/Y', $override );
 		if ( !$overrideDate ) {
 			throw new ConfigException( "Invalid override date `$override`." );

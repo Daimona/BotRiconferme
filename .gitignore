@@ -1,9 +1,15 @@
+# Misc
 /vendor/
 /composer.lock
 /.idea/
-password.txt
-private-password.txt
+.phpunit.cache/
+
+# PHPDA
 phpda.yml
 base.html
 class-level.html
 class-level-with-all-visitors.html
+
+# Bot secrets
+password.txt
+private-password.txt

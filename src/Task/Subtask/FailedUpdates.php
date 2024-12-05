@@ -2,6 +2,7 @@
 
 namespace BotRiconferme\Task\Subtask;
 
+use BotRiconferme\Clock;
 use BotRiconferme\Message\Message;
 use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Utils\RegexUtils;
@@ -130,7 +131,7 @@ class FailedUpdates extends Subtask {
 			$text .= $this->msg( 'annunci-text' )->params( [ '$user' => $user ] )->text();
 		}
 
-		$curMonth = date( 'F' );
+		$curMonth = Clock::getDate( 'F' );
 		$month = ucfirst( Message::MONTHS[$curMonth] );
 
 		$annunciPage = $this->getPage( $this->getOpt( 'annunci-page-title' ) );
@@ -173,7 +174,7 @@ class FailedUpdates extends Subtask {
 		}
 
 		$content = $notiziePage->getContent();
-		$year = date( 'Y' );
+		$year = Clock::getDate( 'Y' );
 		$secReg = "!== *$year *==!";
 		if ( preg_match( $secReg, $content ) ) {
 			$newContent = preg_replace( $secReg, '$0' . "\n" . $text, $content );
@@ -201,7 +202,7 @@ class FailedUpdates extends Subtask {
 		$timelinePage = $this->getPage( $this->getOpt( 'timeline-page-title' ) );
 		$content = $timelinePage->getContent();
 
-		$today = date( 'm/d/Y' );
+		$today = Clock::getDate( 'm/d/Y' );
 		foreach ( $pages as $page ) {
 			$name = $page->getUserName();
 			$content = preg_replace(

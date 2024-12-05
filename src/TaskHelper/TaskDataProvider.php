@@ -2,6 +2,7 @@
 
 namespace BotRiconferme\TaskHelper;
 
+use BotRiconferme\Clock;
 use BotRiconferme\ContextSource;
 use BotRiconferme\Wiki\Page\PageBotList;
 use BotRiconferme\Wiki\Page\PageRiconferma;
@@ -53,8 +54,8 @@ class TaskDataProvider extends ContextSource {
 			$timestamp = PageBotList::getValidFlagTimestamp( $ui );
 		}
 
-		$datesMatch = date( 'd/m', $timestamp ) === date( 'd/m' );
-		$dateIsToday = date( 'd/m/Y', $timestamp ) === date( 'd/m/Y' );
+		$datesMatch = Clock::getDate( 'd/m', $timestamp ) === Clock::getDate( 'd/m' );
+		$dateIsToday = Clock::getDate( 'd/m/Y', $timestamp ) === Clock::getDate( 'd/m/Y' );
 		return ( $datesMatch && ( $override || !$dateIsToday ) );
 	}
 
