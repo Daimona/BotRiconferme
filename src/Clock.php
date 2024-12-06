@@ -20,6 +20,10 @@ class Clock {
 		return ( new DateTime() )->setTimestamp( $curTime );
 	}
 
+	public static function now(): int {
+		return self::$fakeTime ?? time();
+	}
+
 	/** @suppress PhanUnreferencedPublicMethod */
 	public static function setFakeTime( int $time ): void {
 		self::$fakeTime = $time;

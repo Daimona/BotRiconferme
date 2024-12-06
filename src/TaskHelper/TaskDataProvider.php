@@ -97,7 +97,7 @@ class TaskDataProvider extends ContextSource {
 		if ( $this->pagesToClose === null ) {
 			$this->pagesToClose = [];
 			foreach ( $this->getOpenPages() as $page ) {
-				if ( time() > $page->getEndTimestamp() ) {
+				if ( Clock::now() > $page->getEndTimestamp() ) {
 					$this->pagesToClose[] = $page;
 				}
 			}

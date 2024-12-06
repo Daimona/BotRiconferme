@@ -61,7 +61,7 @@ class PageBotList extends Page {
 			}
 			$timestamp = $dateTime->getTimestamp();
 			// Make sure it's not an expired override.
-			if ( $timestamp > time() ) {
+			if ( $timestamp > Clock::now() ) {
 				return $timestamp;
 			}
 		}
@@ -161,8 +161,9 @@ class PageBotList extends Page {
 		}
 		$overrideTS = $overrideDate->getTimestamp();
 		$delay = 60 * 60 * 24 * 3;
+		$now = Clock::now();
 
-		return time() > $usualTS + $delay && time() > $overrideTS + $delay;
+		return $now > $usualTS + $delay && $now > $overrideTS + $delay;
 	}
 
 	/**
