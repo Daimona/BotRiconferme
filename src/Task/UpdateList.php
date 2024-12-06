@@ -46,8 +46,9 @@ class UpdateList extends Task {
 
 		$this->getLogger()->info( 'Updating admin list' );
 
+		$plainList = array_map( static fn ( UserInfo $ui ) => $ui->getInfoArray(), $newList );
 		$pageBotList->edit( [
-			'text' => json_encode( $newList, JSON_THROW_ON_ERROR ),
+			'text' => json_encode( $plainList, JSON_THROW_ON_ERROR ),
 			'summary' => $this->msg( 'list-update-summary' )->text()
 		] );
 
