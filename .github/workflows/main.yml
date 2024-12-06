@@ -48,3 +48,12 @@ jobs:
 
     - name: Run test suite
       run: composer run-script test
+
+    - name: Generate coverage report
+      run: composer run-script coverage
+
+    - name: Store coverage data
+      uses: actions/upload-artifact@v4
+      with:
+        name: phpunit-coverage
+        path: .phpunit.coverage/
