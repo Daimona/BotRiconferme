@@ -4,6 +4,7 @@
 /.idea/
 .phpunit.cache/
 .phpunit.coverage/
+infection.html
 
 # PHPDA
 phpda.yml

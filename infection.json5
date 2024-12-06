@@ -1,0 +1,15 @@
+{
+	"$schema": "vendor/infection/infection/resources/schema.json",
+	"source": {
+		"directories": [
+			"src"
+		]
+	},
+	"mutators": {
+		"@default": true
+	},
+	"logs": {
+		"html": "infection.html",
+	},
+	"initialTestsPhpOptions": "-d pcov.enabled=1"
+}
