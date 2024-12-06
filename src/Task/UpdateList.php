@@ -175,9 +175,10 @@ class UpdateList extends Task {
 	private function getMissingAdminGroups( array $botList ): array {
 		$missing = [];
 		foreach ( $this->actualList as $admin => $groups ) {
-			$missingGroups = array_diff( $groups, $botList[$admin]->getGroupNames() );
+			$userInfo = $botList[$admin];
+			$missingGroups = array_diff( $groups, $userInfo->getGroupNames() );
 			foreach ( $missingGroups as $group ) {
-				$ts = $this->getFlagDate( $admin, $group );
+				$ts = $this->getFlagDate( $userInfo, $group );
 				if ( $ts === null ) {
 					$this->errors[] = "$group flag date unavailable for $admin";
 					continue;
@@ -190,31 +191,41 @@ class UpdateList extends Task {
 
 	/**
 	 * Get the flag date for the given admin and group.
-	 *
-	 * @param string $admin
-	 * @param string $group
-	 * @return string|null
 	 */
-	private function getFlagDate( string $admin, string $group ): ?string {
-		$this->getLogger()->info( "Retrieving $group flag date for $admin" );
+	private function getFlagDate( UserInfo $userInfo, string $group ): ?string {
+		$this->getLogger()->info( "Retrieving $group flag date for {$userInfo->getName()}" );
 
+		$usernamesToTry = [ $userInfo->getName(), ...$userInfo->getAliases() ];
 		$wiki = $this->getWiki();
 		if ( $group === 'checkuser' ) {
 			$wiki = $this->getWikiGroup()->getCentralWiki();
-			$admin .= $wiki->getLocalUserIdentifier();
+			$localUserIdentifier = $wiki->getLocalUserIdentifier();
+			$usernamesToTry = array_map(
+				static fn ( $name ) => $name . $localUserIdentifier,
+				$usernamesToTry
+			);
 		}
 
-		$params = [
+		$baseParams = [
 			'action' => 'query',
 			'list' => 'logevents',
 			'leprop' => 'timestamp|details',
 			'leaction' => 'rights/rights',
-			'letitle' => "User:$admin",
 			'lelimit' => 'max'
 		];
 
-		$data = $wiki->getRequestFactory()->createStandaloneRequest( $params )->executeAsQuery();
-		$ts = $this->extractTimestamp( $data, $group );
+		$requestFactory = $wiki->getRequestFactory();
+		$ts = null;
+		foreach ( $usernamesToTry as $username ) {
+			$curParams = $baseParams;
+			$curParams['letitle'] = "User:$username";
+			$data = $requestFactory->createStandaloneRequest( $curParams )->executeAsQuery();
+			$ts = $this->extractTimestamp( $data, $group );
+
+			if ( $ts !== null ) {
+				break;
+			}
+		}
 
 		if ( $ts === null ) {
 			return null;
