@@ -54,16 +54,12 @@ class PageBotList extends Page {
 	public static function getOverrideTimestamp( UserInfo $ui ): ?int {
 		// A one-time override takes precedence, unless it's expired
 		$override = $ui->getOverride();
-		if ( $override !== null ) {
+		if ( $override !== null && !self::isOverrideExpired( $ui ) ) {
 			$dateTime = DateTime::createFromFormat( '!d/m/Y', $override );
 			if ( !$dateTime ) {
 				throw new ConfigException( "Invalid override date `$override`." );
 			}
-			$timestamp = $dateTime->getTimestamp();
-			// Make sure it's not an expired override.
-			if ( $timestamp > Clock::now() ) {
-				return $timestamp;
-			}
+			return $dateTime->getTimestamp();
 		}
 
 		$permanentOverride = $ui->getPermanentOverride();
