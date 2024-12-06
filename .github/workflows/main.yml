@@ -57,3 +57,5 @@ jobs:
       with:
         name: phpunit-coverage
         path: .phpunit.coverage/
+        if-no-files-found: error
+        include-hidden-files: true
