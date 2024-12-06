@@ -28,7 +28,7 @@
 	"autoload": {
 		"psr-4": {
 			"BotRiconferme\\": "src/",
-			"BotRiconferme\\Tests\\": "tests/"
+			"BotRiconferme\\Tests\\": "tests/phpunit/"
 		}
 	},
 	"scripts": {
