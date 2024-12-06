@@ -1,6 +1,6 @@
 <?php declare( strict_types=1 );
 
-namespace BotRiconferme\Exception;
+namespace BotRiconferme\Request\Exception;
 
 use Exception;
 

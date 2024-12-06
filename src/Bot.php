@@ -3,11 +3,12 @@
 namespace BotRiconferme;
 
 use BotRiconferme\Exception\ConfigException;
-use BotRiconferme\Exception\MissingPageException;
 use BotRiconferme\Logger\IFlushingAwareLogger;
 use BotRiconferme\Logger\MultiLogger;
 use BotRiconferme\Logger\SimpleLogger;
 use BotRiconferme\Logger\WikiLogger;
+use BotRiconferme\Message\MessageProvider;
+use BotRiconferme\Request\Exception\MissingPageException;
 use BotRiconferme\Request\RequestFactory;
 use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Wiki\LoginInfo;

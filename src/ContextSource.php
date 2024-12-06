@@ -3,6 +3,7 @@
 namespace BotRiconferme;
 
 use BotRiconferme\Message\Message;
+use BotRiconferme\Message\MessageProvider;
 use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageBotList;
 use BotRiconferme\Wiki\User;

@@ -2,8 +2,8 @@
 
 namespace BotRiconferme\Wiki\Page;
 
-use BotRiconferme\Exception\MissingMatchException;
 use BotRiconferme\Utils\IRegexable;
+use BotRiconferme\Wiki\Page\Exception\MissingMatchException;
 use BotRiconferme\Wiki\Wiki;
 use LogicException;
 

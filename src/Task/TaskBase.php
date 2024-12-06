@@ -3,7 +3,7 @@
 namespace BotRiconferme\Task;
 
 use BotRiconferme\ContextSource;
-use BotRiconferme\MessageProvider;
+use BotRiconferme\Message\MessageProvider;
 use BotRiconferme\TaskHelper\TaskDataProvider;
 use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Wiki\Page\PageBotList;

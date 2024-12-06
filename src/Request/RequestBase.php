@@ -3,12 +3,12 @@
 namespace BotRiconferme\Request;
 
 use BadMethodCallException;
-use BotRiconferme\Exception\APIRequestException;
-use BotRiconferme\Exception\BlockedException;
-use BotRiconferme\Exception\MissingPageException;
-use BotRiconferme\Exception\PermissionDeniedException;
-use BotRiconferme\Exception\ProtectedPageException;
-use BotRiconferme\Exception\TimeoutException;
+use BotRiconferme\Request\Exception\APIRequestException;
+use BotRiconferme\Request\Exception\BlockedException;
+use BotRiconferme\Request\Exception\MissingPageException;
+use BotRiconferme\Request\Exception\PermissionDeniedException;
+use BotRiconferme\Request\Exception\ProtectedPageException;
+use BotRiconferme\Request\Exception\TimeoutException;
 use Generator;
 use Psr\Log\LoggerInterface;
 use stdClass;

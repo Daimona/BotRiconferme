@@ -3,7 +3,7 @@
 namespace BotRiconferme\Wiki;
 
 use BotRiconferme\Config;
-use BotRiconferme\Exception\MissingPageException;
+use BotRiconferme\Request\Exception\MissingPageException;
 use BotRiconferme\Utils\IRegexable;
 use BotRiconferme\Wiki\Page\Page;
 use Stringable;

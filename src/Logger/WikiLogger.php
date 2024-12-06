@@ -2,7 +2,7 @@
 
 namespace BotRiconferme\Logger;
 
-use BotRiconferme\MessageProvider;
+use BotRiconferme\Message\MessageProvider;
 use BotRiconferme\Wiki\Page\Page;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;

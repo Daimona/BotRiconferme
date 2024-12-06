@@ -2,7 +2,7 @@
 
 namespace BotRiconferme\Request;
 
-use BotRiconferme\Exception\APIRequestException;
+use BotRiconferme\Request\Exception\APIRequestException;
 
 /**
  * Request done via file_get_contents, when cURL isn't available

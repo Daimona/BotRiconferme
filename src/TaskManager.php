@@ -3,6 +3,7 @@
 namespace BotRiconferme;
 
 use BadMethodCallException;
+use BotRiconferme\Message\MessageProvider;
 use BotRiconferme\Task\CloseOld;
 use BotRiconferme\Task\StartNew;
 use BotRiconferme\Task\StartVote;

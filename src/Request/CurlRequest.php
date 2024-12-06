@@ -2,8 +2,8 @@
 
 namespace BotRiconferme\Request;
 
-use BotRiconferme\Exception\APIRequestException;
-use BotRiconferme\Exception\TimeoutException;
+use BotRiconferme\Request\Exception\APIRequestException;
+use BotRiconferme\Request\Exception\TimeoutException;
 
 /**
  * Request done using cURL, if available

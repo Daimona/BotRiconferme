@@ -3,8 +3,8 @@
 namespace BotRiconferme\Wiki\Page;
 
 use BadMethodCallException;
-use BotRiconferme\Exception\MissingMatchException;
 use BotRiconferme\Message\Message;
+use BotRiconferme\Wiki\Page\Exception\MissingMatchException;
 use LogicException;
 
 /**

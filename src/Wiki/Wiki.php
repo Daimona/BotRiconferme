@@ -2,11 +2,11 @@
 
 namespace BotRiconferme\Wiki;
 
-use BotRiconferme\Exception\APIRequestException;
-use BotRiconferme\Exception\EditException;
-use BotRiconferme\Exception\LoginException;
-use BotRiconferme\Exception\MissingPageException;
-use BotRiconferme\Exception\MissingSectionException;
+use BotRiconferme\Request\Exception\APIRequestException;
+use BotRiconferme\Request\Exception\EditException;
+use BotRiconferme\Request\Exception\LoginException;
+use BotRiconferme\Request\Exception\MissingPageException;
+use BotRiconferme\Request\Exception\MissingSectionException;
 use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Request\RequestFactory;
 use Psr\Log\LoggerInterface;

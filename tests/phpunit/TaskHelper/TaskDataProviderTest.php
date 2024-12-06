@@ -4,7 +4,7 @@ namespace BotRiconferme\Tests\TaskHelper;
 
 use BotRiconferme\Clock;
 use BotRiconferme\Config;
-use BotRiconferme\MessageProvider;
+use BotRiconferme\Message\MessageProvider;
 use BotRiconferme\TaskHelper\TaskDataProvider;
 use BotRiconferme\Tests\ConfigAwareTestCase;
 use BotRiconferme\Wiki\Page\PageBotList;

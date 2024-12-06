@@ -1,12 +1,11 @@
 <?php declare( strict_types = 1 );
 
-namespace BotRiconferme;
+namespace BotRiconferme\Message;
 
 use BotRiconferme\Exception\ConfigException;
-use BotRiconferme\Exception\MessageNotFoundException;
-use BotRiconferme\Exception\MessagesPageDoesNotExistException;
-use BotRiconferme\Exception\MissingPageException;
-use BotRiconferme\Message\Message;
+use BotRiconferme\Message\Exception\MessageNotFoundException;
+use BotRiconferme\Message\Exception\MessagesPageDoesNotExistException;
+use BotRiconferme\Request\Exception\MissingPageException;
 use BotRiconferme\Wiki\Wiki;
 
 class MessageProvider {
