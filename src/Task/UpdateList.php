@@ -46,7 +46,11 @@ class UpdateList extends Task {
 
 		$this->getLogger()->info( 'Updating admin list' );
 
-		$plainList = array_map( static fn ( UserInfo $ui ) => $ui->getInfoArray(), $newList );
+		$plainList = array_map(
+			/** @return array<string,string|string[]> */
+			static fn ( UserInfo $ui ): array => $ui->getInfoArray(),
+			$newList
+		);
 		$pageBotList->edit( [
 			'text' => json_encode( $plainList, JSON_THROW_ON_ERROR ),
 			'summary' => $this->msg( 'list-update-summary' )->text()
@@ -202,7 +206,7 @@ class UpdateList extends Task {
 			$wiki = $this->getWikiGroup()->getCentralWiki();
 			$localUserIdentifier = $wiki->getLocalUserIdentifier();
 			$usernamesToTry = array_map(
-				static fn ( $name ) => $name . $localUserIdentifier,
+				static fn ( string $name ): string => $name . $localUserIdentifier,
 				$usernamesToTry
 			);
 		}

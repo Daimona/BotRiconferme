@@ -13,10 +13,12 @@ class Clock {
 		return date( $format, $timestamp );
 	}
 
+	/** @suppress PhanUnreferencedPublicMethod */
 	public static function setFakeTime( int $time ): void {
 		self::$fakeTime = $time;
 	}
 
+	/** @suppress PhanUnreferencedPublicMethod */
 	public static function clearFakeTime(): void {
 		self::$fakeTime = null;
 	}
