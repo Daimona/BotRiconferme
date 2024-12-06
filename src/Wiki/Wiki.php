@@ -294,7 +294,7 @@ class Wiki {
 			$params,
 			$this->cookies,
 			/** @param string[] $newCookies */
-			function ( array $newCookies ) {
+			function ( array $newCookies ): void {
 				$this->cookies = $newCookies + $this->cookies;
 			}
 		);

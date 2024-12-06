@@ -9,10 +9,9 @@ use BotRiconferme\CLI;
 
 set_error_handler(
 	/**
-	 * @return never
 	 * @throws ErrorException
 	 */
-	static function ( int $errno, string $errstr, string $errfile, int $errline ) {
+	static function ( int $errno, string $errstr, string $errfile, int $errline ): never {
 		throw new ErrorException( $errstr, 0, $errno, $errfile, $errline );
 	}
 );

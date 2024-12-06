@@ -35,10 +35,16 @@ $cfg = [
 $cfg['plugins'] = array_merge(
 	$cfg['plugins'],
 	[
-		'StrictLiteralComparisonPlugin',
+		'AlwaysReturnPlugin',
+		'DeprecateAliasPlugin',
 		'DollarDollarPlugin',
-		'UnknownElementTypePlugin',
+		// 'PHPDocRedundantPlugin',
+		'PHPDocToRealTypesPlugin',
+		'PreferNamespaceUsePlugin',
+		'PrintfCheckerPlugin',
 		'StrictComparisonPlugin',
+		'StrictLiteralComparisonPlugin',
+		'UnknownElementTypePlugin',
 	]
 );
 

@@ -69,9 +69,7 @@ class User implements IRegexable, Stringable {
 	public function getRegex( string $delimiter = '/' ): string {
 		$bits = $this->getAliases();
 		$bits[] = $this->name;
-		$regexify = static function ( string $el ) use ( $delimiter ): string {
-			return str_replace( ' ', '[ _]', preg_quote( $el, $delimiter ) );
-		};
+		$regexify = static fn ( string $el ): string => str_replace( ' ', '[ _]', preg_quote( $el, $delimiter ) );
 		return '(?:' . implode( '|', array_map( $regexify, $bits ) ) . ')';
 	}
 
