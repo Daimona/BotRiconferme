@@ -58,6 +58,7 @@ class Config {
 		return self::$instance ?? throw new ConfigException( 'Config not yet initialized' );
 	}
 
+	/** @suppress PhanUnreferencedPublicMethod */
 	public static function clearInstance(): void {
 		self::$instance = null;
 	}

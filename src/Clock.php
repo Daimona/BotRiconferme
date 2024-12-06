@@ -16,11 +16,8 @@ class Clock {
 	}
 
 	public static function dateTimeNow(): DateTime {
-		$ret = new DateTime();
-		if ( self::$fakeTime ) {
-			$ret->setTimestamp( self::$fakeTime );
-		}
-		return $ret;
+		$curTime = self::$fakeTime ?? time();
+		return ( new DateTime() )->setTimestamp( $curTime );
 	}
 
 	/** @suppress PhanUnreferencedPublicMethod */

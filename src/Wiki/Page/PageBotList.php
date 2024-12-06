@@ -38,9 +38,11 @@ class PageBotList extends Page {
 		if ( self::$instance === null ) {
 			self::$instance = new self( $listTitle, $wiki );
 		}
+		// @phan-suppress-next-line PhanPartialTypeMismatchReturn Type not inferred properly.
 		return self::$instance;
 	}
 
+	/** @suppress PhanUnreferencedPublicMethod */
 	public static function clearInstance(): void {
 		self::$instance = null;
 	}
