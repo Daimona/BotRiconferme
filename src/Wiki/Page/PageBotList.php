@@ -52,27 +52,44 @@ class PageBotList extends Page {
 	 * @return int|null
 	 */
 	public static function getOverrideTimestamp( UserInfo $ui ): ?int {
+		[ 'override' => $override, 'override-perm' => $permanentOverride ] = self::getOverrideTimestamps( $ui );
+
 		// A one-time override takes precedence, unless it's expired
-		$override = $ui->getOverride();
 		if ( $override !== null && !self::isOverrideExpired( $ui ) ) {
+			return $override;
+		}
+
+		return $permanentOverride;
+	}
+
+	/**
+	 * @param UserInfo $ui
+	 * @return array<int|null>
+	 * @phan-return array{override:?int,override-perm:?int}
+	 */
+	private static function getOverrideTimestamps( UserInfo $ui ): array {
+		$ret = [ 'override' => null, 'override-perm' => null ];
+
+		$override = $ui->getOverride();
+		if ( $override !== null ) {
 			$dateTime = DateTime::createFromFormat( '!d/m/Y', $override );
 			if ( !$dateTime ) {
 				throw new ConfigException( "Invalid override date `$override`." );
 			}
-			return $dateTime->getTimestamp();
+			$ret['override'] = $dateTime->getTimestamp();
 		}
 
 		$permanentOverride = $ui->getPermanentOverride();
-		if ( $permanentOverride === null ) {
-			return null;
+		if ( $permanentOverride !== null ) {
+			$date = $permanentOverride . '/' . Clock::getDate( 'Y' );
+			$dateTime = DateTime::createFromFormat( '!d/m/Y', $date );
+			if ( !$dateTime ) {
+				throw new ConfigException( "Invalid override-perm date `$date`." );
+			}
+			$ret['override-perm'] = $dateTime->getTimestamp();
 		}
 
-		$date = $permanentOverride . '/' . Clock::getDate( 'Y' );
-		$dateTime = DateTime::createFromFormat( '!d/m/Y', $date );
-		if ( !$dateTime ) {
-			throw new ConfigException( "Invalid override-perm date `$date`." );
-		}
-		return $dateTime->getTimestamp();
+		return $ret;
 	}
 
 	/**
@@ -86,14 +103,31 @@ class PageBotList extends Page {
 		$userInfo = $this->getUserInfo( $user );
 		$now = Clock::dateTimeNow();
 
-		$ts = self::getOverrideTimestamp( $userInfo ) ?? self::getValidFlagTimestamp( $userInfo );
-		$date = ( new DateTime )->setTimestamp( $ts );
+		[ 'override' => $override, 'override-perm' => $permanentOverride ] = self::getOverrideTimestamps( $userInfo );
+		// Check that the override isn't expired, or that it's already been used this year.
+		$hasExpiredOverride = $override !== null && self::isOverrideExpired( $userInfo );
+		$usedOverrideThisYear = $override !== null && $override < $now->getTimestamp() &&
+			date( 'Y', $override ) === $now->format( 'Y' );
 
-		// @phan-suppress-next-line PhanPossiblyInfiniteLoop
-		while ( $date <= $now ) {
-			$date->modify( '+1 year' );
+		if ( $override && !$hasExpiredOverride && !$usedOverrideThisYear ) {
+			$nextTS = $override;
+		} else {
+			$baseTS = $permanentOverride ?: self::getValidFlagTimestamp( $userInfo );
+			$date = ( new DateTime )->setTimestamp( $baseTS );
+			// Next date must be at least this year...
+			while ( (int)$date->format( 'Y' ) < (int)$now->format( 'Y' ) ) {
+				$date->modify( '+1 year' );
+			}
+			$dateIsPast = $date->format( 'Ymd' ) === $now->format( 'Ymd' ) || $date < $now;
+			if ( $usedOverrideThisYear || $dateIsPast ) {
+				// ... Or next year, if we've already had an override for this year, or if the date has passed
+				// (including if it's today).
+				$date->modify( '+1 year' );
+			}
+			$nextTS = $date->getTimestamp();
 		}
-		return $date->getTimestamp();
+
+		return $nextTS;
 	}
 
 	/**
@@ -146,26 +180,20 @@ class PageBotList extends Page {
 	 * @return bool
 	 */
 	public static function isOverrideExpired( UserInfo $userInfo ): bool {
-		$override = $userInfo->getOverride();
+		[ 'override' => $override, 'override-perm' => $permanentOverride ] = self::getOverrideTimestamps( $userInfo );
 		if ( $override === null ) {
 			return false;
 		}
 
-		$overrideDate = DateTime::createFromFormat( '!d/m/Y', $override );
-		if ( !$overrideDate ) {
-			throw new ConfigException( "Invalid override date `$override`." );
-		}
-		$overrideTS = $overrideDate->getTimestamp();
-
-		$flagTS = self::getValidFlagTimestamp( $userInfo );
+		$usualTS = $permanentOverride ?? self::getValidFlagTimestamp( $userInfo );
 		$usualTSOnOverrideYear = strtotime(
-			Clock::getDate( 'Y', $overrideTS ) . '-' . Clock::getDate( 'm-d', $flagTS )
+			Clock::getDate( 'Y', $override ) . '-' . Clock::getDate( 'm-d', $usualTS )
 		);
 
 		$delay = 60 * 60 * 24 * 3;
 		$now = Clock::now();
 
-		return $now > $usualTSOnOverrideYear + $delay && $now > $overrideTS + $delay;
+		return $now > $usualTSOnOverrideYear + $delay && $now > $override + $delay;
 	}
 
 	/**

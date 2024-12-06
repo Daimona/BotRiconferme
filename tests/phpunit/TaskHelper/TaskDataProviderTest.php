@@ -230,7 +230,7 @@ class TaskDataProviderTest extends ConfigAwareTestCase {
 					'sysop' => date( 'd/m/Y', $today ),
 				]
 			],
-			[ 'Rick' ]
+			[]
 		];
 		yield 'Override today, permanent override not today, flag this day last year' => [
 			[
@@ -260,7 +260,7 @@ class TaskDataProviderTest extends ConfigAwareTestCase {
 					'sysop' => date( 'd/m/Y', $today ),
 				]
 			],
-			[ 'Rick' ]
+			[]
 		];
 		yield 'Override today, permanent override today, flag this day last year' => [
 			[

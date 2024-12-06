@@ -47,16 +47,16 @@ class TaskDataProvider extends ContextSource {
 	 * @return bool
 	 */
 	private function shouldAddUser( UserInfo $ui ): bool {
-		$timestamp = PageBotList::getOverrideTimestamp( $ui );
-		$override = $timestamp !== null;
-
-		if ( $timestamp === null ) {
-			$timestamp = PageBotList::getValidFlagTimestamp( $ui );
+		$flagDate = PageBotList::getValidFlagTimestamp( $ui );
+		$flaggedToday = Clock::getDate( 'd/m/Y', $flagDate ) === Clock::getDate( 'd/m/Y' );
+		if ( $flaggedToday ) {
+			// Ignore everything else if the user got flagged today.
+			return false;
 		}
 
-		$datesMatch = Clock::getDate( 'd/m', $timestamp ) === Clock::getDate( 'd/m' );
-		$dateIsToday = Clock::getDate( 'd/m/Y', $timestamp ) === Clock::getDate( 'd/m/Y' );
-		return ( $datesMatch && ( $override || !$dateIsToday ) );
+		$timestamp = PageBotList::getOverrideTimestamp( $ui ) ?? $flagDate;
+
+		return Clock::getDate( 'd/m', $timestamp ) === Clock::getDate( 'd/m' );
 	}
 
 	/**
