@@ -142,6 +142,7 @@ class PageBotList extends Page {
 	 * - The override date has passed (that's the point of having an override), AND
 	 * - The "normal" date has passed (otherwise we'd use two different dates for the same year)
 	 * For decreased risk, we add an additional delay of 3 days.
+	 * @todo Worth considering a different approach? As it stands, override can only be used for dates in the same year.
 	 *
 	 * @param UserInfo $userInfo
 	 * @return bool

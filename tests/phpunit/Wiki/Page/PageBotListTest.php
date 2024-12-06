@@ -374,4 +374,169 @@ class PageBotListTest extends TestCase {
 			[ 'override' => $inTenDays, 'next' => $inTenDays ]
 		];
 	}
+
+	#[DataProvider( 'provideIsOverrideExpired' )]
+	public function testIsOverrideExpired( int $overrideTS, int $flagTS, bool $expected ) {
+		$userInfo = new UserInfo(
+			'Edsger',
+			[ 'sysop' => date( 'd/m/Y', $flagTS ), 'override' => date( 'd/m/Y', $overrideTS ) ]
+		);
+		$this->assertSame( $expected, PageBotList::isOverrideExpired( $userInfo ) );
+	}
+
+	public static function provideIsOverrideExpired(): Generator {
+		$today = self::FAKE_TIME;
+		$thisDayLastYear = DateTime::createFromFormat( 'U', $today )->modify( '-1 year' )->getTimestamp();
+		$thisDayNextYear = DateTime::createFromFormat( 'U', $today )->modify( '+1 year' )->getTimestamp();
+		$tenDaysAgo = $today - 60 * 60 * 24 * 10;
+		$tenDaysAgoLastYear = DateTime::createFromFormat( 'U', $tenDaysAgo )->modify( '-1 year' )->getTimestamp();
+		$tenDaysAgoNextYear = DateTime::createFromFormat( 'U', $tenDaysAgo )->modify( '+1 year' )->getTimestamp();
+		$inTenDays = $today + 60 * 60 * 24 * 10;
+		$inTenDaysLastYear = DateTime::createFromFormat( 'U', $inTenDays )->modify( '-1 year' )->getTimestamp();
+		$inTenDaysNextYear = DateTime::createFromFormat( 'U', $inTenDays )->modify( '+1 year' )->getTimestamp();
+
+		yield 'Override 10 days ago last year, flag 10 days ago last year' => [
+			$tenDaysAgoLastYear, $tenDaysAgoLastYear, true
+		];
+		yield 'Override 10 days ago last year, flag this day last year' => [
+			$tenDaysAgoLastYear, $thisDayLastYear, true
+		];
+		yield 'Override 10 days ago last year, flag in 10 days last year' => [
+			$tenDaysAgoLastYear, $inTenDaysLastYear, true
+		];
+		yield 'Override 10 days ago last year, flag 10 days ago' => [
+			$tenDaysAgoLastYear, $tenDaysAgo, true
+		];
+		yield 'Override 10 days ago last year, flag today' => [
+			$tenDaysAgoLastYear, $today, true
+		];
+
+		yield 'Override this day last year, flag 10 days ago last year' => [
+			$thisDayLastYear, $tenDaysAgoLastYear, true
+		];
+		yield 'Override this day last year, flag this day last year' => [
+			$thisDayLastYear, $thisDayLastYear, true
+		];
+		yield 'Override this day last year, flag in 10 days last year' => [
+			$thisDayLastYear, $inTenDaysLastYear, true
+		];
+		yield 'Override this day last year, flag 10 days ago' => [
+			$thisDayLastYear, $tenDaysAgo, true
+		];
+		yield 'Override this day last year, flag today' => [
+			$thisDayLastYear, $today, true
+		];
+
+		yield 'Override in 10 days last year, flag 10 days ago last year' => [
+			$inTenDaysLastYear, $tenDaysAgoLastYear, true
+		];
+		yield 'Override in 10 days last year, flag this day last year' => [
+			$inTenDaysLastYear, $thisDayLastYear, true
+		];
+		yield 'Override in 10 days last year, flag in 10 days last year' => [
+			$inTenDaysLastYear, $inTenDaysLastYear, true
+		];
+		yield 'Override in 10 days last year, flag 10 days ago' => [
+			$inTenDaysLastYear, $tenDaysAgo, true
+		];
+		yield 'Override in 10 days last year, flag today' => [
+			$inTenDaysLastYear, $today, true
+		];
+
+		yield 'Override 10 days ago, flag 10 days ago last year' => [
+			$tenDaysAgo, $tenDaysAgoLastYear, true
+		];
+		yield 'Override 10 days ago, flag this day last year' => [
+			$tenDaysAgo, $thisDayLastYear, false
+		];
+		yield 'Override 10 days ago, flag in 10 days last year' => [
+			$tenDaysAgo, $inTenDaysLastYear, false
+		];
+		yield 'Override 10 days ago, flag 10 days ago' => [
+			$tenDaysAgo, $tenDaysAgo, true
+		];
+		yield 'Override 10 days ago, flag today' => [
+			$tenDaysAgo, $today, false
+		];
+
+		yield 'Override today, flag 10 days ago last year' => [
+			$today, $tenDaysAgoLastYear, true
+		];
+		yield 'Override today, flag this day last year' => [
+			$today, $thisDayLastYear, false
+		];
+		yield 'Override today, flag in 10 days last year' => [
+			$today, $inTenDaysLastYear, false
+		];
+		yield 'Override today, flag 10 days ago' => [
+			$today, $tenDaysAgo, true
+		];
+		yield 'Override today, flag today' => [
+			$today, $today, false
+		];
+
+		yield 'Override in 10 days, flag 10 days ago last year' => [
+			$inTenDays, $tenDaysAgoLastYear, false
+		];
+		yield 'Override in 10 days, flag this day last year' => [
+			$inTenDays, $thisDayLastYear, false
+		];
+		yield 'Override in 10 days, flag in 10 days last year' => [
+			$inTenDays, $inTenDaysLastYear, false
+		];
+		yield 'Override in 10 days, flag 10 days ago' => [
+			$inTenDays, $tenDaysAgo, false
+		];
+		yield 'Override in 10 days, flag today' => [
+			$inTenDays, $today, false
+		];
+
+		yield 'Override 10 days ago next year, flag 10 days ago last year' => [
+			$tenDaysAgoNextYear, $tenDaysAgoLastYear, false
+		];
+		yield 'Override 10 days ago next year, flag this day last year' => [
+			$tenDaysAgoNextYear, $thisDayLastYear, false
+		];
+		yield 'Override 10 days ago next year, flag in 10 days last year' => [
+			$tenDaysAgoNextYear, $inTenDaysLastYear, false
+		];
+		yield 'Override 10 days ago next year, flag 10 days ago' => [
+			$tenDaysAgoNextYear, $tenDaysAgo, false
+		];
+		yield 'Override 10 days ago next year, flag today' => [
+			$tenDaysAgoNextYear, $today, false
+		];
+
+		yield 'Override this day next year, flag 10 days ago last year' => [
+			$thisDayNextYear, $tenDaysAgoLastYear, false
+		];
+		yield 'Override this day next year, flag this day last year' => [
+			$thisDayNextYear, $thisDayLastYear, false
+		];
+		yield 'Override this day next year, flag in 10 days last year' => [
+			$thisDayNextYear, $inTenDaysLastYear, false
+		];
+		yield 'Override this day next year, flag 10 days ago' => [
+			$thisDayNextYear, $tenDaysAgo, false
+		];
+		yield 'Override this day next year, flag today' => [
+			$thisDayNextYear, $today, false
+		];
+
+		yield 'Override in 10 days next year, flag 10 days ago last year' => [
+			$inTenDaysNextYear, $tenDaysAgoLastYear, false
+		];
+		yield 'Override in 10 days next year, flag this day last year' => [
+			$inTenDaysNextYear, $thisDayLastYear, false
+		];
+		yield 'Override in 10 days next year, flag in 10 days last year' => [
+			$inTenDaysNextYear, $inTenDaysLastYear, false
+		];
+		yield 'Override in 10 days next year, flag 10 days ago' => [
+			$inTenDaysNextYear, $tenDaysAgo, false
+		];
+		yield 'Override in 10 days next year, flag today' => [
+			$inTenDaysNextYear, $today, false
+		];
+	}
 }
