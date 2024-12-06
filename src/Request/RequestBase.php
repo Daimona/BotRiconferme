@@ -186,7 +186,7 @@ abstract class RequestBase {
 
 		try {
 			$body = $this->reallyMakeRequest( $query );
-		} catch ( TimeoutException $_ ) {
+		} catch ( TimeoutException ) {
 			$this->logger->warning( 'Retrying request after timeout' );
 			$body = $this->reallyMakeRequest( $query );
 		}
@@ -208,7 +208,7 @@ abstract class RequestBase {
 		$headerParts = explode( ':', $rawHeader, 2 );
 		$headerName = $headerParts[0];
 		$headerValue = $headerParts[1] ?? null;
-		if ( strtolower( trim( $headerName ) ) === 'set-cookie' && $headerValue ) {
+		if ( $headerValue && strtolower( trim( $headerName ) ) === 'set-cookie' ) {
 			// TODO Maybe use a cookie file?
 			$cookieKeyVal = explode( ';', $headerValue )[0];
 			[ $name, $value ] = explode( '=', $cookieKeyVal );

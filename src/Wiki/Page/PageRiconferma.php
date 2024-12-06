@@ -113,7 +113,7 @@ class PageRiconferma extends Page {
 	 */
 	protected function getCountForSection( int $secNum ): int {
 		if ( !isset( $this->sectionCounts[ $secNum ] ) ) {
-			$content = $this->wiki->getPageContent( $this->title, $secNum );
+			$content = $this->wiki->getPageSectionContent( $this->title, $secNum );
 			// Let's hope that this is good enough...
 			$voteCount = preg_match_all( "/^# *(?![# *:]|\.\.\.$)/m", $content );
 			if ( $voteCount === false ) {

@@ -10,6 +10,7 @@ use BotRiconferme\Exception\MissingSectionException;
 use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Request\RequestFactory;
 use Psr\Log\LoggerInterface;
+use stdClass;
 
 /**
  * Class for wiki interaction, contains some requests shorthands
@@ -27,11 +28,6 @@ class Wiki {
 	/** @var string[] */
 	private array $cookies = [];
 
-	/**
-	 * @param LoginInfo $li
-	 * @param LoggerInterface $logger
-	 * @param RequestFactory $requestFactory
-	 */
 	public function __construct(
 		LoginInfo $li,
 		LoggerInterface $logger,
@@ -42,45 +38,26 @@ class Wiki {
 		$this->requestFactory = $requestFactory;
 	}
 
-	/**
-	 * @return LoginInfo
-	 */
 	public function getLoginInfo(): LoginInfo {
 		return $this->loginInfo;
 	}
 
-	/**
-	 * @return RequestFactory
-	 */
 	public function getRequestFactory(): RequestFactory {
 		return $this->requestFactory;
 	}
 
-	/**
-	 * @param string $prefix
-	 */
 	public function setPagePrefix( string $prefix ): void {
 		$this->pagePrefix = $prefix;
 	}
 
-	/**
-	 * @param string $ident
-	 */
 	public function setLocalUserIdentifier( string $ident ): void {
 		$this->localUserIdentifier = $ident;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getLocalUserIdentifier(): string {
 		return $this->localUserIdentifier;
 	}
 
-	/**
-	 * @param string $title
-	 * @param int|null $section
-	 */
 	private function logRead( string $title, ?int $section = null ): void {
 		$fullTitle = $this->pagePrefix . $title;
 		$msg = "Retrieving content of $fullTitle" . ( $section !== null ? ", section $section" : '' );
@@ -91,19 +68,44 @@ class Wiki {
 	 * Gets the content of a wiki page
 	 *
 	 * @param string $title
-	 * @param int|null $section
+	 * @return string
+	 * @throws MissingPageException
+	 */
+	public function getPageContent( string $title ): string {
+		return $this->queryPageContent( $title, null )->{ '*' };
+	}
+
+	/**
+	 * Get the content of a specific section of a wiki page
+	 *
+	 * @param string $title
+	 * @param int $section
 	 * @return string
 	 * @throws MissingPageException
 	 * @throws MissingSectionException
 	 */
-	public function getPageContent( string $title, ?int $section = null ): string {
+	public function getPageSectionContent( string $title, int $section ): string {
+		$mainSlot = $this->queryPageContent( $title, $section );
+		if ( isset( $mainSlot->nosuchsection ) ) {
+			throw new MissingSectionException( $title, $section );
+		}
+		return $mainSlot->{ '*' };
+	}
+
+	/**
+	 * @param string $title
+	 * @param int|null $section
+	 * @return stdClass Response object for the main slot
+	 * @throws MissingPageException
+	 */
+	private function queryPageContent( string $title, ?int $section ): stdClass {
 		$this->logRead( $title, $section );
 		$params = [
 			'action' => 'query',
 			'titles' => $title,
 			'prop' => 'revisions',
 			'rvslots' => 'main',
-			'rvprop' => 'content'
+			'rvprop' => 'content',
 		];
 
 		if ( $section !== null ) {
@@ -112,16 +114,12 @@ class Wiki {
 
 		$req = $this->buildRequest( $params );
 		$page = $req->executeAsQuery()->current();
+
 		if ( isset( $page->missing ) ) {
 			throw new MissingPageException( $title );
 		}
 
-		$mainSlot = $page->revisions[0]->slots->main;
-
-		if ( $section !== null && isset( $mainSlot->nosuchsection ) ) {
-			throw new MissingSectionException( $title, $section );
-		}
-		return $mainSlot->{ '*' };
+		return $page->revisions[0]->slots->main;
 	}
 
 	/**

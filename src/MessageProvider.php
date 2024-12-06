@@ -39,7 +39,7 @@ class MessageProvider {
 				throw new ConfigException( "Invalid messages page" );
 			}
 			self::$messages = $wikiMessages;
-		} catch ( MissingPageException $_ ) {
+		} catch ( MissingPageException ) {
 			throw new MessagesPageDoesNotExistException( 'Please create a messages page.' );
 		}
 	}

@@ -8,6 +8,7 @@
 	"mutators": {
 		"@default": true
 	},
+	"timeout": 10,
 	"logs": {
 		"html": "infection.html",
 	},

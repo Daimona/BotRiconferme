@@ -7,12 +7,15 @@ use BotRiconferme\CLI;
  * Entry point for the bot, called by CLI
  */
 
-/**
- * @return never
- */
-set_error_handler( static function ( int $errno, string $errstr, string $errfile, int $errline ) {
-	throw new ErrorException( $errstr, 0, $errno, $errfile, $errline );
-} );
+set_error_handler(
+	/**
+	 * @return never
+	 * @throws ErrorException
+	 */
+	static function ( int $errno, string $errstr, string $errfile, int $errline ) {
+		throw new ErrorException( $errstr, 0, $errno, $errfile, $errline );
+	}
+);
 
 require __DIR__ . '/vendor/autoload.php';
 

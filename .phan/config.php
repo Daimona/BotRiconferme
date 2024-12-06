@@ -23,6 +23,13 @@ $cfg = [
 
 	'dead_code_detection' => true,
 	'dead_code_detection_prefer_false_negative' => true,
+
+	'warn_about_undocumented_throw_statements' => true,
+	'exception_classes_with_optional_throws_phpdoc' => [
+		'LogicException',
+		'RuntimeException',
+	],
+	'warn_about_undocumented_exceptions_thrown_by_invoked_functions' => true,
 ] + $cfg;
 
 $cfg['plugins'] = array_merge(

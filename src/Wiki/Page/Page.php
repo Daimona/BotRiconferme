@@ -13,6 +13,8 @@ use LogicException;
 class Page implements IRegexable {
 	protected string $title;
 	protected ?string $content = null;
+	/** @var array<int,string> */
+	protected array $sectionContents = [];
 	protected Wiki $wiki;
 
 	/**
@@ -34,14 +36,26 @@ class Page implements IRegexable {
 	/**
 	 * Get the content of this page
 	 *
-	 * @param int|null $section A section number to retrieve the content of that section
 	 * @return string
 	 */
-	public function getContent( ?int $section = null ): string {
+	public function getContent(): string {
 		if ( $this->content === null ) {
-			$this->content = $this->wiki->getPageContent( $this->title, $section );
+			$this->content = $this->wiki->getPageContent( $this->title );
 		}
 		return $this->content;
+	}
+
+	/**
+	 * Get the content of the given section of this page
+	 *
+	 * @param int $section
+	 * @return string
+	 */
+	public function getSectionContent( int $section ): string {
+		if ( !isset( $this->sectionContents[$section] ) ) {
+			$this->sectionContents[$section] = $this->wiki->getPageSectionContent( $this->title, $section );
+		}
+		return $this->sectionContents[$section];
 	}
 
 	/**

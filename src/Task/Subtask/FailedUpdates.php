@@ -135,7 +135,7 @@ class FailedUpdates extends Subtask {
 		$month = ucfirst( Message::MONTHS[$curMonth] );
 
 		$annunciPage = $this->getPage( $this->getOpt( 'annunci-page-title' ) );
-		$content = $annunciPage->getContent( $section );
+		$content = $annunciPage->getSectionContent( $section );
 		$secReg = "!=== *$month *===!";
 		if ( $annunciPage->matches( $secReg ) ) {
 			$newContent = preg_replace( $secReg, '$0' . "\n" . $text, $content );

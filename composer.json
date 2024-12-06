@@ -41,6 +41,7 @@
 			"phpunit"
 		],
 		"coverage": "php -dextension=pcov.so -dpcov.enabled=1 vendor/bin/phpunit --coverage-html .phpunit.coverage/",
+		"infection": "infection --threads=16 --show-mutations",
 		"fix": "phpcbf",
 		"phpunit": "phpunit"
 	},

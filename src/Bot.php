@@ -15,6 +15,7 @@ use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageBotList;
 use BotRiconferme\Wiki\Wiki;
 use BotRiconferme\Wiki\WikiGroup;
+use JsonException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Throwable;
@@ -147,8 +148,10 @@ class Bot {
 				512,
 				JSON_THROW_ON_ERROR
 			);
-		} catch ( MissingPageException $_ ) {
+		} catch ( MissingPageException ) {
 			exit( 'Please create a config page.' );
+		} catch ( JsonException ) {
+			exit( 'Invalid config page content.' );
 		}
 
 		if ( !is_array( $confValues ) ) {

@@ -2,10 +2,10 @@
 
 namespace BotRiconferme\Exception;
 
-use Exception;
+use RuntimeException;
 
 /**
  * Errors happened due to the on-wiki config being not setup properly
  */
-class ConfigException extends Exception {
+class ConfigException extends RuntimeException {
 }
