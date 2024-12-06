@@ -57,7 +57,15 @@ class PageBotListTest extends TestCase {
 	#[DataProvider( 'provideGetOverrideTimestamp' )]
 	public function testGetOverrideTimestamp( array $userData, ?int $expected ) {
 		$userInfo = new UserInfo( 'William', $userData );
-		$this->assertSame( $expected, PageBotList::getOverrideTimestamp( $userInfo ) );
+		if ( $expected !== null ) {
+			$normalizedExpected = DateTime::createFromFormat( 'U', $expected )
+				->setTime( 0, 0 )
+				->getTimestamp();
+		} else {
+			$normalizedExpected = null;
+		}
+
+		$this->assertSame( $normalizedExpected, PageBotList::getOverrideTimestamp( $userInfo ) );
 	}
 
 	public static function provideGetOverrideTimestamp(): Generator {
