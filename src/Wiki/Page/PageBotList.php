@@ -10,8 +10,11 @@ use DateTime;
 
 /**
  * Singleton class representing the JSON list of admins
+ * @todo Refactor: everything that deals with dates etc. (as opposed to the page) should go elsewhere.
  */
 class PageBotList extends Page {
+	private static ?self $instance = null;
+
 	/** @var UserInfo[]|null */
 	private ?array $adminsList = null;
 
@@ -32,22 +35,25 @@ class PageBotList extends Page {
 	 * @return self
 	 */
 	public static function get( Wiki $wiki, string $listTitle ): self {
-		static $instance = null;
-		if ( $instance === null ) {
-			$instance = new self( $listTitle, $wiki );
+		if ( self::$instance === null ) {
+			self::$instance = new self( $listTitle, $wiki );
 		}
-		return $instance;
+		return self::$instance;
+	}
+
+	public static function clearInstance(): void {
+		self::$instance = null;
 	}
 
 	/**
 	 * @param UserInfo $ui
 	 * @return int|null
 	 */
-	public function getOverrideTimestamp( UserInfo $ui ): ?int {
+	public static function getOverrideTimestamp( UserInfo $ui ): ?int {
 		// A one-time override takes precedence, unless it's expired
 		$override = $ui->getOverride();
 		if ( $override !== null ) {
-			$dateTime = DateTime::createFromFormat( 'd/m/Y', $override );
+			$dateTime = DateTime::createFromFormat( '!d/m/Y', $override );
 			if ( !$dateTime ) {
 				throw new ConfigException( "Invalid override date `$override`." );
 			}
@@ -64,7 +70,7 @@ class PageBotList extends Page {
 		}
 
 		$date = $permanentOverride . '/' . Clock::getDate( 'Y' );
-		$dateTime = DateTime::createFromFormat( 'd/m/Y', $date );
+		$dateTime = DateTime::createFromFormat( '!d/m/Y', $date );
 		if ( !$dateTime ) {
 			throw new ConfigException( "Invalid override-perm date `$date`." );
 		}
@@ -80,9 +86,9 @@ class PageBotList extends Page {
 	 */
 	public function getNextTimestamp( string $user ): int {
 		$userInfo = $this->getUserInfo( $user );
-		$now = new DateTime();
+		$now = Clock::dateTimeNow();
 
-		$ts = $this->getOverrideTimestamp( $userInfo ) ?? self::getValidFlagTimestamp( $userInfo );
+		$ts = self::getOverrideTimestamp( $userInfo ) ?? self::getValidFlagTimestamp( $userInfo );
 		$date = ( new DateTime )->setTimestamp( $ts );
 
 		// @phan-suppress-next-line PhanPossiblyInfiniteLoop
@@ -103,7 +109,7 @@ class PageBotList extends Page {
 
 		$checkuser = 0;
 		if ( isset( $groups['checkuser'] ) ) {
-			$checkuserDate = DateTime::createFromFormat( 'd/m/Y', $groups['checkuser'] );
+			$checkuserDate = DateTime::createFromFormat( '!d/m/Y', $groups['checkuser'] );
 			if ( !$checkuserDate ) {
 				throw new ConfigException( "Invalid checkuser date `{$groups['checkuser']}`." );
 			}
@@ -111,7 +117,7 @@ class PageBotList extends Page {
 		}
 		$bureaucrat = 0;
 		if ( isset( $groups['bureaucrat'] ) ) {
-			$bureaucratDate = DateTime::createFromFormat( 'd/m/Y', $groups['bureaucrat'] );
+			$bureaucratDate = DateTime::createFromFormat( '!d/m/Y', $groups['bureaucrat'] );
 			if ( !$bureaucratDate ) {
 				throw new ConfigException( "Invalid bureaucrat date `{$groups['bureaucrat']}`." );
 			}
@@ -120,7 +126,7 @@ class PageBotList extends Page {
 
 		$timestamp = max( $bureaucrat, $checkuser );
 		if ( $timestamp === 0 ) {
-			$sysopDate = DateTime::createFromFormat( 'd/m/Y', $groups['sysop'] );
+			$sysopDate = DateTime::createFromFormat( '!d/m/Y', $groups['sysop'] );
 			if ( !$sysopDate ) {
 				throw new ConfigException( "Invalid sysop date `{$groups['sysop']}`." );
 			}
@@ -146,7 +152,7 @@ class PageBotList extends Page {
 
 		$flagTS = self::getValidFlagTimestamp( $userInfo );
 		$usualTS = strtotime( Clock::getDate( 'Y' ) . '-' . Clock::getDate( 'm-d', $flagTS ) );
-		$overrideDate = DateTime::createFromFormat( 'd/m/Y', $override );
+		$overrideDate = DateTime::createFromFormat( '!d/m/Y', $override );
 		if ( !$overrideDate ) {
 			throw new ConfigException( "Invalid override date `$override`." );
 		}
@@ -185,7 +191,7 @@ class PageBotList extends Page {
 	 * @return array[]
 	 * @phan-return array<string,array{sysop:string,checkuser?:string,bureaucrat?:string,override?:string,override-perm?:string,aliases?:list<string>}>
 	 */
-	public function getDecodedContent(): array {
+	private function getDecodedContent(): array {
 		$stringKeys = [ 'sysop', 'checkuser', 'bureaucrat', 'override', 'override-perm' ];
 		$allowedKeys = [ ...$stringKeys, 'aliases' ];
 		$decoded = json_decode( $this->getContent(), true, 512, JSON_THROW_ON_ERROR );

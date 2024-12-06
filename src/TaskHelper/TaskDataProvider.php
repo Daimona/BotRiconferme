@@ -47,7 +47,7 @@ class TaskDataProvider extends ContextSource {
 	 * @return bool
 	 */
 	private function shouldAddUser( UserInfo $ui ): bool {
-		$timestamp = $this->getBotList()->getOverrideTimestamp( $ui );
+		$timestamp = PageBotList::getOverrideTimestamp( $ui );
 		$override = $timestamp !== null;
 
 		if ( $timestamp === null ) {

@@ -58,6 +58,10 @@ class Config {
 		return self::$instance ?? throw new ConfigException( 'Config not yet initialized' );
 	}
 
+	public static function clearInstance(): void {
+		self::$instance = null;
+	}
+
 	/**
 	 * Get the requested option, or fail if it doesn't exist
 	 *
