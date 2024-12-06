@@ -80,7 +80,7 @@ class Message {
 			array_keys( self::MONTHS ),
 			$timeString
 		);
-		'@phan-var string $englishTime';
+		assert( is_string( $englishTime ) );
 		$parsedTime = strtotime( $englishTime );
 		if ( $parsedTime === false ) {
 			throw new RuntimeException( 'Could not parse time: ' . $timeString );

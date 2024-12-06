@@ -113,7 +113,7 @@ class TaskManager {
 		$res = new TaskResult( TaskResult::STATUS_GOOD );
 		do {
 			$curTask = current( $tasks );
-			'@phan-var string $curTask';
+			assert( is_string( $curTask ) );
 			$res->merge( $this->runTask( $curTask ) );
 		} while ( $res->isOK() && next( $tasks ) );
 
@@ -144,7 +144,7 @@ class TaskManager {
 		$res = new TaskResult( TaskResult::STATUS_GOOD );
 		do {
 			$subtask = current( $subtasks );
-			'@phan-var string $subtask';
+			assert( is_string( $subtask ) );
 			$res->merge( $this->runSubtask( $subtask ) );
 		} while ( $res->isOK() && next( $subtasks ) );
 

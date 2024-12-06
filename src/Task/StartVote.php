@@ -2,10 +2,10 @@
 
 namespace BotRiconferme\Task;
 
-use BotRiconferme\Exception\TaskException;
 use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Utils\RegexUtils;
 use BotRiconferme\Wiki\Page\PageRiconferma;
+use RuntimeException;
 
 /**
  * Start a vote if there are >= PageRiconferma::REQUIRED_OPPOSE opposing comments
@@ -161,7 +161,6 @@ class StartVote extends Task {
 	 * Template:VotazioniRCnews
 	 *
 	 * @param int $amount Of pages to move
-	 * @throws TaskException
 	 * @see SimpleUpdates::updateNews()
 	 * @see OpenUpdates::addToNews()
 	 */
@@ -174,10 +173,10 @@ class StartVote extends Task {
 		$regVot = '!(\| *riconferme[ _]voto[ _]amministratori *= *)(\d*)(?=\s*[}|])!';
 
 		if ( !$newsPage->matches( $regTac ) ) {
-			throw new TaskException( 'Param "tacite" not found in news page' );
+			throw new RuntimeException( 'Param "tacite" not found in news page' );
 		}
 		if ( !$newsPage->matches( $regVot ) ) {
-			throw new TaskException( 'Param "voto" not found in news page' );
+			throw new RuntimeException( 'Param "voto" not found in news page' );
 		}
 
 		$newTac = ( (int)$newsPage->getMatch( $regTac )[2] - $amount ) ?: '';

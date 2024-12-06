@@ -1,9 +1,11 @@
-<?php declare( strict_types=1 );
+<?php /** @noinspection PhpComposerExtensionStubsInspection */
+declare( strict_types=1 );
 
 namespace BotRiconferme\Request;
 
 use BotRiconferme\Request\Exception\APIRequestException;
 use BotRiconferme\Request\Exception\TimeoutException;
+use CurlHandle;
 use RuntimeException;
 
 /**
@@ -43,8 +45,7 @@ class CurlRequest extends RequestBase {
 
 		// Extract response body
 		$headerSize = curl_getinfo( $curl, CURLINFO_HEADER_SIZE );
-		/** @var string $result Because RETURNTRANSFER is set */
-		'@phan-var string $result';
+		assert( is_string( $result ), 'Result must be string when RETURNTRANSFER is set' );
 		$body = substr( $result, $headerSize );
 		curl_close( $curl );
 
@@ -54,13 +55,13 @@ class CurlRequest extends RequestBase {
 	/**
 	 * cURL's headers handler
 	 *
-	 * @param resource $ch TODO CurlHandle on PHP 8
+	 * @param CurlHandle $ch
 	 * @param string $header
 	 * @return int
 	 * @internal Only used as CB for cURL (CURLOPT_HEADERFUNCTION)
 	 * @suppress PhanUnreferencedPublicMethod,PhanUnusedPublicNoOverrideMethodParameter
 	 */
-	public function headersHandler( $ch, string $header ): int {
+	public function headersHandler( CurlHandle $ch, string $header ): int {
 		$this->handleResponseHeader( $header );
 		return strlen( $header );
 	}

@@ -23,7 +23,6 @@ class Config {
 	 *
 	 * @param array $confValues
 	 * @phan-param array<string,mixed> $confValues
-	 * @throws ConfigException
 	 */
 	public static function init( array $confValues ): void {
 		if ( self::$instance ) {
@@ -52,7 +51,6 @@ class Config {
 	 * Generic instance getter
 	 *
 	 * @return self
-	 * @throws ConfigException
 	 */
 	public static function getInstance(): self {
 		return self::$instance ?? throw new ConfigException( 'Config not yet initialized' );
@@ -68,7 +66,6 @@ class Config {
 	 *
 	 * @param string $opt
 	 * @return mixed
-	 * @throws ConfigException
 	 */
 	public function get( string $opt ): mixed {
 		return $this->opts[ $opt ] ?? throw new ConfigException( "Config option '$opt' not set." );

@@ -2,10 +2,10 @@
 
 namespace BotRiconferme\Message\Exception;
 
-use Exception;
+use RuntimeException;
 
 /**
  * Error thrown when a message doesn't exist
  */
-class MessageNotFoundException extends Exception {
+class MessageNotFoundException extends RuntimeException {
 }

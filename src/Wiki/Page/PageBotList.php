@@ -7,6 +7,7 @@ use BotRiconferme\Exception\ConfigException;
 use BotRiconferme\Wiki\UserInfo;
 use BotRiconferme\Wiki\Wiki;
 use DateTime;
+use JsonException;
 
 /**
  * Singleton class representing the JSON list of admins
@@ -228,7 +229,11 @@ class PageBotList extends Page {
 	private function getDecodedContent(): array {
 		$stringKeys = [ 'sysop', 'checkuser', 'bureaucrat', 'override', 'override-perm' ];
 		$allowedKeys = [ ...$stringKeys, 'aliases' ];
-		$decoded = json_decode( $this->getContent(), true, 512, JSON_THROW_ON_ERROR );
+		try {
+			$decoded = json_decode( $this->getContent(), true, 512, JSON_THROW_ON_ERROR );
+		} catch ( JsonException ) {
+			$decoded = null;
+		}
 		if ( !is_array( $decoded ) ) {
 			throw new ConfigException( "Admin list is not a list..." );
 		}

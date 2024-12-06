@@ -24,7 +24,7 @@ abstract class Task extends TaskBase {
 		$res = new TaskResult( TaskResult::STATUS_NOTHING );
 		do {
 			$subtask = current( $orderedList );
-			'@phan-var string $subtask';
+			assert( is_string( $subtask ) );
 			$res->merge( $this->runSubtask( $subtask ) );
 		} while ( $res->isOK() && next( $orderedList ) );
 

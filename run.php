@@ -23,7 +23,7 @@ if ( !CLI::isCLI() ) {
 	exit( 'CLI only!' );
 }
 
-const BOT_VERSION = '2.2';
+const BOT_VERSION = '3.0';
 // TODO make this configurable?
 const BOT_EDITS = false;
 

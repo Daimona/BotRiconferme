@@ -104,7 +104,6 @@ class User implements IRegexable, Stringable {
 	 * Get an *existing* base page for this user. If no existing page is found, this will throw.
 	 * Don't use this method if the page is allowed not to exist.
 	 *
-	 * @throws MissingPageException
 	 * @return Page
 	 */
 	public function getExistingBasePage(): Page {

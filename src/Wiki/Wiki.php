@@ -128,7 +128,6 @@ class Wiki {
 	 *
 	 * @param array $params
 	 * @phan-param array<int|string|bool> $params
-	 * @throws EditException
 	 */
 	public function editPage( array $params ): void {
 		$this->login();
@@ -155,8 +154,7 @@ class Wiki {
 	}
 
 	/**
-	 * Login wrapper. Checks if we're already logged in and clears tokens cache
-	 * @throws LoginException
+	 * Login wrapper. Checks if we're already logged in and clears tokens cache.
 	 */
 	public function login(): void {
 		if ( $this->loggedIn ) {

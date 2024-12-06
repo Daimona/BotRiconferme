@@ -11,8 +11,10 @@ use BotRiconferme\Request\Exception\ProtectedPageException;
 use BotRiconferme\Request\Exception\TimeoutException;
 use BotRiconferme\Request\Exception\UnexpectedAPIResponseException;
 use Generator;
+use JsonException;
 use Psr\Log\LoggerInterface;
 use stdClass;
+use UnexpectedValueException;
 
 /**
  * Core wrapper for an API request. Current implementations use either cURL or file_get_contents
@@ -95,7 +97,9 @@ abstract class RequestBase {
 		}
 		// TODO Is this always correct?
 		$key = $this->params['list'] ?? 'pages';
-		'@phan-var string $key';
+		if ( !is_string( $key ) ) {
+			throw new UnexpectedValueException( 'List is not a key' );
+		}
 		$curParams = $this->params;
 		$lim = $this->parseLimit();
 		do {
@@ -193,9 +197,13 @@ abstract class RequestBase {
 		}
 
 		( $this->cookiesHandlerCallback )( $this->newCookies );
-		$decodedResp = json_decode( $body, false, 512, JSON_THROW_ON_ERROR );
+		try {
+			$decodedResp = json_decode( $body, false, 512, JSON_THROW_ON_ERROR );
+		} catch ( JsonException ) {
+			$decodedResp = null;
+		}
 		if ( !$decodedResp instanceof stdClass ) {
-			throw new UnexpectedAPIResponseException( "API response is not an object" );
+			throw new UnexpectedAPIResponseException( "API response is not a valid object" );
 		}
 		return $decodedResp;
 	}
@@ -222,8 +230,6 @@ abstract class RequestBase {
 	 *
 	 * @param string $params
 	 * @return string
-	 * @throws TimeoutException
-	 * @throws APIRequestException
 	 */
 	abstract protected function reallyMakeRequest( string $params ): string;
 
@@ -247,7 +253,6 @@ abstract class RequestBase {
 	 * Handle known warning and errors from an API request
 	 *
 	 * @param stdClass $res
-	 * @throws APIRequestException
 	 */
 	protected function handleErrorAndWarnings( stdClass $res ): void {
 		if ( isset( $res->error ) ) {
@@ -258,7 +263,7 @@ abstract class RequestBase {
 			$warnings = $res->warnings->$act ?? $res->warnings->main;
 			$warning = reset( $warnings );
 			if ( !$warning ) {
-				throw new APIRequestException( "Can't figure out warnings" );
+				throw new UnexpectedAPIResponseException( "Can't figure out warnings" );
 			}
 			throw new APIRequestException( $warning );
 		}

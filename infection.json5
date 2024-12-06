@@ -10,7 +10,7 @@
 	},
 	"timeout": 10,
 	"logs": {
-		"html": "infection.html",
+		"html": ".infection/infection.html",
 	},
 	"initialTestsPhpOptions": "-d pcov.enabled=1"
 }

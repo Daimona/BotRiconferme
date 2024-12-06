@@ -96,7 +96,6 @@ class PageRiconferma extends Page {
 	 * Get the amount support votes
 	 *
 	 * @return int
-	 * @throws BadMethodCallException
 	 */
 	public function getSupportCount(): int {
 		if ( !$this->isVote() ) {
@@ -172,8 +171,6 @@ class PageRiconferma extends Page {
 	 * Get the result text for the page itself
 	 *
 	 * @return string
-	 * @throws BadMethodCallException
-	 * @throws LogicException
 	 */
 	public function getOutcomeText(): string {
 		if ( !$this->isVote() ) {

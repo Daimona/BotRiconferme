@@ -2,9 +2,9 @@
 
 namespace BotRiconferme\Task\Subtask;
 
-use BotRiconferme\Exception\TaskException;
 use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Wiki\Page\PageRiconferma;
+use RuntimeException;
 
 /**
  * Do some updates around to notify people of the newly created pages
@@ -103,7 +103,6 @@ class OpenUpdates extends Subtask {
 	 * Update the counter on Template:VotazioniRCnews
 	 *
 	 * @param int $amount
-	 * @throws TaskException
 	 */
 	protected function addToNews( int $amount ): void {
 		$this->getLogger()->info( "Increasing the news counter by $amount" );
@@ -113,7 +112,7 @@ class OpenUpdates extends Subtask {
 		$reg = '!(\| *riconferme[ _]tacite[ _]amministratori *= *)(\d*)(?=\s*[}|])!';
 
 		if ( !$newsPage->matches( $reg ) ) {
-			throw new TaskException( 'Param not found in news page' );
+			throw new RuntimeException( 'Param not found in news page' );
 		}
 
 		$matches = $newsPage->getMatch( $reg );

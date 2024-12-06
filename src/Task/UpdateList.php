@@ -7,6 +7,7 @@ use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Wiki\Page\PageBotList;
 use BotRiconferme\Wiki\UserInfo;
 use Generator;
+use JsonException;
 use RuntimeException;
 
 /**
@@ -51,8 +52,14 @@ class UpdateList extends Task {
 			static fn ( UserInfo $ui ): array => $ui->getInfoArray(),
 			$newList
 		);
+
+		try {
+			$encodedList = json_encode( $plainList, JSON_THROW_ON_ERROR );
+		} catch ( JsonException ) {
+			throw new RuntimeException( 'Unable to encode admin list' );
+		}
 		$pageBotList->edit( [
-			'text' => json_encode( $plainList, JSON_THROW_ON_ERROR ),
+			'text' => $encodedList,
 			'summary' => $this->msg( 'list-update-summary' )->text()
 		] );
 

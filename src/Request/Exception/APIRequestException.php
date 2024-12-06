@@ -2,10 +2,10 @@
 
 namespace BotRiconferme\Request\Exception;
 
-use Exception;
+use RuntimeException;
 
 /**
  * A generic error occurred during an API request.
  */
-class APIRequestException extends Exception {
+class APIRequestException extends RuntimeException {
 }

@@ -4,7 +4,7 @@ namespace BotRiconferme\Task\Subtask;
 
 use AppendIterator;
 use BotRiconferme\Clock;
-use BotRiconferme\Exception\TaskException;
+use BotRiconferme\Task\Exception\PageCreatedTodayException;
 use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageRiconferma;
@@ -12,7 +12,7 @@ use BotRiconferme\Wiki\User;
 use NoRewindIterator;
 
 /**
- * For each user, create the WP:A/Riconferma_annuale/USERNAME/XXX page and add it to its base page
+ * For each user, create the WP:A/Riconferma_annuale/USERNAME/XYZ page and add it to its base page
  */
 class CreatePages extends Subtask {
 	/**
@@ -41,7 +41,7 @@ class CreatePages extends Subtask {
 		$this->getLogger()->info( "Processing user $user" );
 		try {
 			$num = $this->getLastPageNum( $user ) + 1;
-		} catch ( TaskException $e ) {
+		} catch ( PageCreatedTodayException $e ) {
 			// The page was already created today. PLZ let this poor bot work!
 			$this->getDataProvider()->removeUser( $user->getName() );
 			$this->getLogger()->warning( $e->getMessage() . " - User $user won't be processed." );
@@ -70,7 +70,7 @@ class CreatePages extends Subtask {
 	 *
 	 * @param User $user
 	 * @return int
-	 * @throws TaskException
+	 * @throws PageCreatedTodayException
 	 */
 	protected function getLastPageNum( User $user ): int {
 		$this->getLogger()->info( "Retrieving previous pages for $user" );
@@ -103,7 +103,7 @@ class CreatePages extends Subtask {
 			// Note: we may be able to just check the page with the greatest number, but unsure if that
 			// assumption will work when considering renames etc.
 			if ( Clock::getDate( 'z/Y', $page->getCreationTimestamp() ) === Clock::getDate( 'z/Y' ) ) {
-				throw new TaskException( "Page $page was already created today!" );
+				throw new PageCreatedTodayException( "Page $page was already created today!" );
 			}
 			if ( $page->getNum() > $lastNum ) {
 				$lastNum = $page->getNum();
@@ -114,7 +114,7 @@ class CreatePages extends Subtask {
 	}
 
 	/**
-	 * Really creates the page WP:A/Riconferma_annuale/USERNAME/XXX
+	 * Really creates the page WP:A/Riconferma_annuale/USERNAME/XYZ
 	 *
 	 * @param string $title
 	 * @param User $user

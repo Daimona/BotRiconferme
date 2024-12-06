@@ -2,10 +2,10 @@
 
 namespace BotRiconferme\Message\Exception;
 
-use Exception;
+use RuntimeException;
 
 /**
  * Error thrown when the page for messages doesn't exist
  */
-class MessagesPageDoesNotExistException extends Exception {
+class MessagesPageDoesNotExistException extends RuntimeException {
 }
