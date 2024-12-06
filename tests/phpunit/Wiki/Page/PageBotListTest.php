@@ -4,6 +4,7 @@ namespace BotRiconferme\Tests\Wiki\Page;
 
 use BotRiconferme\Clock;
 use BotRiconferme\Wiki\Page\PageBotList;
+use BotRiconferme\Wiki\UserInfo;
 use BotRiconferme\Wiki\Wiki;
 use DateTime;
 use Generator;
@@ -37,9 +38,9 @@ class PageBotListTest extends TestCase {
 	}
 
 	#[DataProvider( 'provideGetNextTimestamp' )]
-	public function testGetNextTimestamp( array $userInfo, int $expected ) {
+	public function testGetNextTimestamp( array $userData, int $expected ) {
 		$username = 'Margarita';
-		$pbl = $this->getPageBotList( [ $username => $userInfo ] );
+		$pbl = $this->getPageBotList( [ $username => $userData ] );
 		$normalizedExpected = DateTime::createFromFormat( 'U', $expected )
 			->setTime( 0, 0 )
 			->getTimestamp();
@@ -47,6 +48,26 @@ class PageBotListTest extends TestCase {
 	}
 
 	public static function provideGetNextTimestamp(): Generator {
+		$baseTestCases = iterator_to_array( self::getTestCases() );
+		foreach ( $baseTestCases as $desc => [ $userData, $timestamps ] ) {
+			yield $desc => [ $userData, $timestamps['next'] ];
+		}
+	}
+
+	#[DataProvider( 'provideGetOverrideTimestamp' )]
+	public function testGetOverrideTimestamp( array $userData, ?int $expected ) {
+		$userInfo = new UserInfo( 'William', $userData );
+		$this->assertSame( $expected, PageBotList::getOverrideTimestamp( $userInfo ) );
+	}
+
+	public static function provideGetOverrideTimestamp(): Generator {
+		$baseTestCases = iterator_to_array( self::getTestCases() );
+		foreach ( $baseTestCases as $desc => [ $userData, $timestamps ] ) {
+			yield $desc => [ $userData, $timestamps['override'] ];
+		}
+	}
+
+	private static function getTestCases(): Generator {
 		$today = self::FAKE_TIME;
 		$thisDayLastYear = DateTime::createFromFormat( 'U', $today )->modify( '-1 year' )->getTimestamp();
 		$thisDayNextYear = DateTime::createFromFormat( 'U', $today )->modify( '+1 year' )->getTimestamp();
@@ -56,52 +77,51 @@ class PageBotListTest extends TestCase {
 		$inTenDays = $today + 60 * 60 * 24 * 10;
 		$inTenDaysLastYear = DateTime::createFromFormat( 'U', $inTenDays )->modify( '-1 year' )->getTimestamp();
 		$inTenDaysNextYear = DateTime::createFromFormat( 'U', $inTenDays )->modify( '+1 year' )->getTimestamp();
-		$notTodayDate = $today - 60 * 60 * 24 * 50;
 
 		yield 'No overrides, flagged today' => [
 			[ 'sysop' => date( 'd/m/Y', $today ) ],
-			$thisDayNextYear
+			[ 'override' => null, 'next' => $thisDayNextYear ]
 		];
 		yield 'No overrides, flagged on this day last year' => [
 			[ 'sysop' => date( 'd/m/Y', $thisDayLastYear ) ],
-			$thisDayNextYear
+			[ 'override' => null, 'next' => $thisDayNextYear ]
 		];
 		yield 'No overrides, flagged in 10 days last year' => [
 			[ 'sysop' => date( 'd/m/Y', $inTenDaysLastYear ) ],
-			$inTenDays
+			[ 'override' => null, 'next' => $inTenDays ]
 		];
 		yield 'No overrides, flagged 10 days ago last year' => [
 			[ 'sysop' => date( 'd/m/Y', $inTenDaysLastYear ) ],
-			$inTenDays
+			[ 'override' => null, 'next' => $inTenDays ]
 		];
 
-		yield 'Permanent override today\'s date, flag not today' => [
+		yield 'Permanent override today\'s date, flag 10 days ago last year' => [
 			[
-				'sysop' => date( 'd/m/Y', $notTodayDate ),
+				'sysop' => date( 'd/m/Y', $tenDaysAgoLastYear ),
 				'override-perm' => date( 'd/m', $today ),
 			],
-			$thisDayNextYear
+			[ 'override' => $today, 'next' => $thisDayNextYear ]
 		];
 		yield 'Permanent override today\'s date, flag this day last year' => [
 			[
 				'sysop' => date( 'd/m/Y', $thisDayLastYear ),
 				'override-perm' => date( 'd/m', $today ),
 			],
-			$thisDayNextYear
+			[ 'override' => $today, 'next' => $thisDayNextYear ]
 		];
 		yield 'Permanent override in 10 days, flag 10 days ago last year' => [
 			[
 				'sysop' => date( 'd/m/Y', $tenDaysAgoLastYear ),
 				'override-perm' => date( 'd/m', $inTenDays ),
 			],
-			$inTenDays
+			[ 'override' => $inTenDays, 'next' => $inTenDays ]
 		];
 		yield 'Permanent override 10 days ago, flag this day last year' => [
 			[
 				'sysop' => date( 'd/m/Y', $thisDayLastYear ),
 				'override-perm' => date( 'd/m', $tenDaysAgo ),
 			],
-			$tenDaysAgoNextYear
+			[ 'override' => $tenDaysAgo, 'next' => $tenDaysAgoNextYear ]
 		];
 
 		yield 'Override this day last year, flag in 10 days last year' => [
@@ -109,21 +129,21 @@ class PageBotListTest extends TestCase {
 				'sysop' => date( 'd/m/Y', $inTenDaysLastYear ),
 				'override' => date( 'd/m/Y', $thisDayLastYear ),
 			],
-			$inTenDays
+			[ 'override' => null, 'next' => $inTenDays ]
 		];
 		yield 'Override this day last year, flag today' => [
 			[
 				'sysop' => date( 'd/m/Y', $today ),
 				'override' => date( 'd/m/Y', $thisDayLastYear ),
 			],
-			$thisDayNextYear
+			[ 'override' => null, 'next' => $thisDayNextYear ]
 		];
 		yield 'Override this day last year, flag this day last year' => [
 			[
 				'sysop' => date( 'd/m/Y', $thisDayLastYear ),
 				'override' => date( 'd/m/Y', $thisDayLastYear ),
 			],
-			$thisDayNextYear
+			[ 'override' => null, 'next' => $thisDayNextYear ]
 		];
 
 		yield 'Override 10 days ago, flag in 10 days last year' => [
@@ -131,21 +151,28 @@ class PageBotListTest extends TestCase {
 				'sysop' => date( 'd/m/Y', $inTenDaysLastYear ),
 				'override' => date( 'd/m/Y', $tenDaysAgo ),
 			],
-			$inTenDays
+			[ 'override' => $tenDaysAgo, 'next' => $inTenDays ]
 		];
 		yield 'Override 10 days ago, flag today' => [
 			[
 				'sysop' => date( 'd/m/Y', $today ),
 				'override' => date( 'd/m/Y', $tenDaysAgo ),
 			],
-			$thisDayNextYear
+			[ 'override' => $tenDaysAgo, 'next' => $thisDayNextYear ]
 		];
 		yield 'Override 10 days ago, flag this day last year' => [
 			[
 				'sysop' => date( 'd/m/Y', $thisDayLastYear ),
 				'override' => date( 'd/m/Y', $tenDaysAgo ),
 			],
-			$thisDayNextYear
+			[ 'override' => $tenDaysAgo, 'next' => $thisDayNextYear ]
+		];
+		yield 'Override 10 days ago, flag 10 days ago last year' => [
+			[
+				'sysop' => date( 'd/m/Y', $tenDaysAgoLastYear ),
+				'override' => date( 'd/m/Y', $tenDaysAgo ),
+			],
+			[ 'override' => null, 'next' => $tenDaysAgoNextYear ]
 		];
 
 		yield 'Override today, flag in 10 days last year' => [
@@ -153,21 +180,21 @@ class PageBotListTest extends TestCase {
 				'sysop' => date( 'd/m/Y', $inTenDaysLastYear ),
 				'override' => date( 'd/m/Y', $today ),
 			],
-			$inTenDaysNextYear
+			[ 'override' => $today, 'next' => $inTenDaysNextYear ]
 		];
 		yield 'Override today, flag today' => [
 			[
 				'sysop' => date( 'd/m/Y', $today ),
 				'override' => date( 'd/m/Y', $today ),
 			],
-			$thisDayNextYear
+			[ 'override' => $today, 'next' => $thisDayNextYear ]
 		];
 		yield 'Override today, flag this day last year' => [
 			[
 				'sysop' => date( 'd/m/Y', $thisDayLastYear ),
 				'override' => date( 'd/m/Y', $today ),
 			],
-			$thisDayNextYear
+			[ 'override' => $today, 'next' => $thisDayNextYear ]
 		];
 
 		yield 'Override in 10 days, flag 10 days ago last year' => [
@@ -175,21 +202,21 @@ class PageBotListTest extends TestCase {
 				'sysop' => date( 'd/m/Y', $tenDaysAgoLastYear ),
 				'override' => date( 'd/m/Y', $inTenDays ),
 			],
-			$inTenDays
+			[ 'override' => $inTenDays, 'next' => $inTenDays ]
 		];
 		yield 'Override in 10 days, flag today' => [
 			[
 				'sysop' => date( 'd/m/Y', $today ),
 				'override' => date( 'd/m/Y', $inTenDays ),
 			],
-			$inTenDays
+			[ 'override' => $inTenDays, 'next' => $inTenDays ]
 		];
 		yield 'Override in 10 days, flag this day last year' => [
 			[
 				'sysop' => date( 'd/m/Y', $thisDayLastYear ),
 				'override' => date( 'd/m/Y', $inTenDays ),
 			],
-			$inTenDays
+			[ 'override' => $inTenDays, 'next' => $inTenDays ]
 		];
 
 		yield 'Override today, permanent override in 10 days, flag 10 days ago last year' => [
@@ -198,7 +225,7 @@ class PageBotListTest extends TestCase {
 				'override-perm' => date( 'd/m', $inTenDays ),
 				'sysop' => date( 'd/m/Y', $tenDaysAgoLastYear ),
 			],
-			$inTenDaysNextYear
+			[ 'override' => $today, 'next' => $inTenDaysNextYear ]
 		];
 		yield 'Override today, permanent override in 10 days, flag today' => [
 			[
@@ -206,7 +233,7 @@ class PageBotListTest extends TestCase {
 				'override-perm' => date( 'd/m', $inTenDays ),
 				'sysop' => date( 'd/m/Y', $today ),
 			],
-			$inTenDaysNextYear
+			[ 'override' => $today, 'next' => $inTenDaysNextYear ]
 		];
 		yield 'Override today, permanent override in 10 days, flag this day last year' => [
 			[
@@ -214,15 +241,15 @@ class PageBotListTest extends TestCase {
 				'override-perm' => date( 'd/m', $inTenDays ),
 				'sysop' => date( 'd/m/Y', $thisDayLastYear ),
 			],
-			$inTenDaysNextYear
+			[ 'override' => $today, 'next' => $inTenDaysNextYear ]
 		];
-		yield 'Override today, permanent override today, flag not today' => [
+		yield 'Override today, permanent override today, flag in 10 days last year' => [
 			[
 				'override' => date( 'd/m/Y', $today ),
 				'override-perm' => date( 'd/m', $today ),
-				'sysop' => date( 'd/m/Y', $notTodayDate ),
+				'sysop' => date( 'd/m/Y', $inTenDaysLastYear ),
 			],
-			$thisDayNextYear
+			[ 'override' => $today, 'next' => $thisDayNextYear ]
 		];
 		yield 'Override today, permanent override today, flag today' => [
 			[
@@ -230,7 +257,7 @@ class PageBotListTest extends TestCase {
 				'override-perm' => date( 'd/m', $today ),
 				'sysop' => date( 'd/m/Y', $today ),
 			],
-			$thisDayNextYear
+			[ 'override' => $today, 'next' => $thisDayNextYear ]
 		];
 		yield 'Override today, permanent override today, flag this day last year' => [
 			[
@@ -238,16 +265,16 @@ class PageBotListTest extends TestCase {
 				'override-perm' => date( 'd/m', $today ),
 				'sysop' => date( 'd/m/Y', $thisDayLastYear ),
 			],
-			$thisDayNextYear
+			[ 'override' => $today, 'next' => $thisDayNextYear ]
 		];
 
-		yield 'Override 10 days ago, permanent override in 10 days, flag not today' => [
+		yield 'Override 10 days ago, permanent override in 10 days, flag 10 days ago last year' => [
 			[
 				'override' => date( 'd/m/Y', $tenDaysAgo ),
 				'override-perm' => date( 'd/m', $inTenDays ),
-				'sysop' => date( 'd/m/Y', $notTodayDate ),
+				'sysop' => date( 'd/m/Y', $tenDaysAgoLastYear ),
 			],
-			$inTenDaysNextYear
+			[ 'override' => $inTenDays, 'next' => $inTenDaysNextYear ]
 		];
 		yield 'Override 10 days ago, permanent override in 10 days, flag today' => [
 			[
@@ -255,7 +282,7 @@ class PageBotListTest extends TestCase {
 				'override-perm' => date( 'd/m', $inTenDays ),
 				'sysop' => date( 'd/m/Y', $today ),
 			],
-			$inTenDaysNextYear
+			[ 'override' => $inTenDays, 'next' => $inTenDaysNextYear ]
 		];
 		yield 'Override 10 days ago, permanent override in 10 days, flag this day last year' => [
 			[
@@ -263,15 +290,15 @@ class PageBotListTest extends TestCase {
 				'override-perm' => date( 'd/m', $inTenDays ),
 				'sysop' => date( 'd/m/Y', $thisDayLastYear ),
 			],
-			$inTenDaysNextYear
+			[ 'override' => $inTenDays, 'next' => $inTenDaysNextYear ]
 		];
-		yield 'Override 10 days ago, permanent override today, flag not today' => [
+		yield 'Override 10 days ago, permanent override today, flag 10 days ago last year' => [
 			[
 				'override' => date( 'd/m/Y', $tenDaysAgo ),
 				'override-perm' => date( 'd/m', $today ),
-				'sysop' => date( 'd/m/Y', $notTodayDate ),
+				'sysop' => date( 'd/m/Y', $tenDaysAgoLastYear ),
 			],
-			$thisDayNextYear
+			[ 'override' => $today, 'next' => $thisDayNextYear ]
 		];
 		yield 'Override 10 days ago, permanent override today, flag today' => [
 			[
@@ -279,7 +306,7 @@ class PageBotListTest extends TestCase {
 				'override-perm' => date( 'd/m', $today ),
 				'sysop' => date( 'd/m/Y', $today ),
 			],
-			$thisDayNextYear
+			[ 'override' => $today, 'next' => $thisDayNextYear ]
 		];
 		yield 'Override 10 days ago, permanent override today, flag this day last year' => [
 			[
@@ -287,16 +314,16 @@ class PageBotListTest extends TestCase {
 				'override-perm' => date( 'd/m', $today ),
 				'sysop' => date( 'd/m/Y', $thisDayLastYear ),
 			],
-			$thisDayNextYear
+			[ 'override' => $today, 'next' => $thisDayNextYear ]
 		];
 
-		yield 'Override in 10 days, permanent override 10 days ago, flag not today' => [
+		yield 'Override in 10 days, permanent override 10 days ago, flag 10 days ago last year' => [
 			[
 				'override' => date( 'd/m/Y', $inTenDays ),
 				'override-perm' => date( 'd/m', $tenDaysAgo ),
-				'sysop' => date( 'd/m/Y', $notTodayDate ),
+				'sysop' => date( 'd/m/Y', $tenDaysAgoLastYear ),
 			],
-			$inTenDays
+			[ 'override' => $inTenDays, 'next' => $inTenDays ]
 		];
 		yield 'Override in 10 days, permanent override 10 days ago, flag today' => [
 			[
@@ -304,7 +331,7 @@ class PageBotListTest extends TestCase {
 				'override-perm' => date( 'd/m', $tenDaysAgo ),
 				'sysop' => date( 'd/m/Y', $today ),
 			],
-			$inTenDays
+			[ 'override' => $inTenDays, 'next' => $inTenDays ]
 		];
 		yield 'Override in 10 days, permanent override 10 days ago, flag this day last year' => [
 			[
@@ -312,15 +339,15 @@ class PageBotListTest extends TestCase {
 				'override-perm' => date( 'd/m', $tenDaysAgo ),
 				'sysop' => date( 'd/m/Y', $thisDayLastYear ),
 			],
-			$inTenDays
+			[ 'override' => $inTenDays, 'next' => $inTenDays ]
 		];
-		yield 'Override in 10 days, permanent override today, flag not today' => [
+		yield 'Override in 10 days, permanent override today, flag 10 days ago last year' => [
 			[
 				'override' => date( 'd/m/Y', $inTenDays ),
 				'override-perm' => date( 'd/m', $today ),
-				'sysop' => date( 'd/m/Y', $notTodayDate ),
+				'sysop' => date( 'd/m/Y', $tenDaysAgoLastYear ),
 			],
-			$inTenDays
+			[ 'override' => $inTenDays, 'next' => $inTenDays ]
 		];
 		yield 'Override in 10 days, permanent override today, flag today' => [
 			[
@@ -328,7 +355,7 @@ class PageBotListTest extends TestCase {
 				'override-perm' => date( 'd/m', $today ),
 				'sysop' => date( 'd/m/Y', $today ),
 			],
-			$inTenDays
+			[ 'override' => $inTenDays, 'next' => $inTenDays ]
 		];
 		yield 'Override in 10 days, permanent override today, flag this day last year' => [
 			[
@@ -336,7 +363,7 @@ class PageBotListTest extends TestCase {
 				'override-perm' => date( 'd/m', $today ),
 				'sysop' => date( 'd/m/Y', $thisDayLastYear ),
 			],
-			$inTenDays
+			[ 'override' => $inTenDays, 'next' => $inTenDays ]
 		];
 	}
 }
