@@ -39,6 +39,7 @@
 			"@phan",
 			"phpunit"
 		],
+		"coverage": "php -dextension=pcov.so -dpcov.enabled=1 vendor/bin/phpunit --coverage-html .phpunit.coverage/",
 		"fix": "phpcbf",
 		"phpunit": "phpunit"
 	},

@@ -3,19 +3,27 @@
 namespace BotRiconferme\Tests\TaskHelper;
 
 use BotRiconferme\Clock;
+use BotRiconferme\Config;
 use BotRiconferme\MessageProvider;
 use BotRiconferme\TaskHelper\TaskDataProvider;
 use BotRiconferme\Tests\ConfigAwareTestCase;
 use BotRiconferme\Wiki\Page\PageBotList;
+use BotRiconferme\Wiki\User;
 use BotRiconferme\Wiki\UserInfo;
 use BotRiconferme\Wiki\WikiGroup;
 use DateTime;
 use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\UsesClass;
 use Psr\Log\LoggerInterface;
 
 #[CoversClass( TaskDataProvider::class )]
+#[UsesClass( Clock::class )]
+#[UsesClass( UserInfo::class )]
+#[UsesClass( PageBotList::class )]
+#[UsesClass( User::class )]
+#[UsesClass( Config::class )]
 class TaskDataProviderTest extends ConfigAwareTestCase {
 	private const FAKE_TIME = 1733500000;
 

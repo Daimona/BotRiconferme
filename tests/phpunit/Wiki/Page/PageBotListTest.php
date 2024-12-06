@@ -10,9 +10,12 @@ use DateTime;
 use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass( PageBotList::class )]
+#[UsesClass( Clock::class )]
+#[UsesClass( UserInfo::class )]
 class PageBotListTest extends TestCase {
 	private const FAKE_TIME = 1733500000;
 
