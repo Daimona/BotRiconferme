@@ -4,6 +4,7 @@ namespace BotRiconferme\Request;
 
 use BotRiconferme\Request\Exception\APIRequestException;
 use BotRiconferme\Request\Exception\TimeoutException;
+use RuntimeException;
 
 /**
  * Request done using cURL, if available
@@ -15,7 +16,7 @@ class CurlRequest extends RequestBase {
 	protected function reallyMakeRequest( string $params ): string {
 		$curl = curl_init();
 		if ( $curl === false ) {
-			throw new APIRequestException( 'Cannot open cURL handler.' );
+			throw new RuntimeException( 'Cannot open cURL handler.' );
 		}
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, true );
 		curl_setopt( $curl, CURLOPT_HEADER, true );

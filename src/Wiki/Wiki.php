@@ -7,6 +7,7 @@ use BotRiconferme\Request\Exception\EditException;
 use BotRiconferme\Request\Exception\LoginException;
 use BotRiconferme\Request\Exception\MissingPageException;
 use BotRiconferme\Request\Exception\MissingSectionException;
+use BotRiconferme\Request\Exception\UnexpectedAPIResponseException;
 use BotRiconferme\Request\RequestBase;
 use BotRiconferme\Request\RequestFactory;
 use Psr\Log\LoggerInterface;
@@ -229,7 +230,7 @@ class Wiki {
 		$rawTS = $page->revisions[0]->timestamp;
 		$ts = strtotime( $rawTS );
 		if ( $ts === false ) {
-			throw new APIRequestException( "Invalid timestamp in API response: `$rawTS`" );
+			throw new UnexpectedAPIResponseException( "Invalid timestamp in API response: `$rawTS`" );
 		}
 		return $ts;
 	}

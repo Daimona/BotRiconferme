@@ -9,6 +9,7 @@ use BotRiconferme\Request\Exception\MissingPageException;
 use BotRiconferme\Request\Exception\PermissionDeniedException;
 use BotRiconferme\Request\Exception\ProtectedPageException;
 use BotRiconferme\Request\Exception\TimeoutException;
+use BotRiconferme\Request\Exception\UnexpectedAPIResponseException;
 use Generator;
 use Psr\Log\LoggerInterface;
 use stdClass;
@@ -194,7 +195,7 @@ abstract class RequestBase {
 		( $this->cookiesHandlerCallback )( $this->newCookies );
 		$decodedResp = json_decode( $body, false, 512, JSON_THROW_ON_ERROR );
 		if ( !$decodedResp instanceof stdClass ) {
-			throw new APIRequestException( "API response is not an object" );
+			throw new UnexpectedAPIResponseException( "API response is not an object" );
 		}
 		return $decodedResp;
 	}
