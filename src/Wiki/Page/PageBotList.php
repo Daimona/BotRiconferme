@@ -140,9 +140,11 @@ class PageBotList extends Page {
 	/**
 	 * An override is considered expired if:
 	 * - The override date has passed (that's the point of having an override), AND
-	 * - The "normal" date has passed (otherwise we'd use two different dates for the same year)
-	 * For decreased risk, we add an additional delay of 3 days.
+	 * - The "normal" date on the same year as the override date has passed (otherwise we'd use two different dates for
+	 *   that year)
+	 * A date is considered to have passed if at least 3 full days have passed, to reduce risk.
 	 * @todo Worth considering a different approach? As it stands, override can only be used for dates in the same year.
+	 * Unsure how this works exactly for days near the year's start/end.
 	 *
 	 * @param UserInfo $userInfo
 	 * @return bool
@@ -153,17 +155,21 @@ class PageBotList extends Page {
 			return false;
 		}
 
-		$flagTS = self::getValidFlagTimestamp( $userInfo );
-		$usualTS = strtotime( Clock::getDate( 'Y' ) . '-' . Clock::getDate( 'm-d', $flagTS ) );
 		$overrideDate = DateTime::createFromFormat( '!d/m/Y', $override );
 		if ( !$overrideDate ) {
 			throw new ConfigException( "Invalid override date `$override`." );
 		}
 		$overrideTS = $overrideDate->getTimestamp();
+
+		$flagTS = self::getValidFlagTimestamp( $userInfo );
+		$usualTSOnOverrideYear = strtotime(
+			Clock::getDate( 'Y', $overrideTS ) . '-' . Clock::getDate( 'm-d', $flagTS )
+		);
+
 		$delay = 60 * 60 * 24 * 3;
 		$now = Clock::now();
 
-		return $now > $usualTS + $delay && $now > $overrideTS + $delay;
+		return $now > $usualTSOnOverrideYear + $delay && $now > $overrideTS + $delay;
 	}
 
 	/**

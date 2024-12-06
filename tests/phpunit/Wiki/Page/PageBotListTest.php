@@ -395,6 +395,7 @@ class PageBotListTest extends TestCase {
 		$inTenDaysLastYear = DateTime::createFromFormat( 'U', $inTenDays )->modify( '-1 year' )->getTimestamp();
 		$inTenDaysNextYear = DateTime::createFromFormat( 'U', $inTenDays )->modify( '+1 year' )->getTimestamp();
 
+		// Old override has definitely expired
 		yield 'Override 10 days ago last year, flag 10 days ago last year' => [
 			$tenDaysAgoLastYear, $tenDaysAgoLastYear, true
 		];
@@ -411,6 +412,7 @@ class PageBotListTest extends TestCase {
 			$tenDaysAgoLastYear, $today, true
 		];
 
+		// Old override has definitely expired
 		yield 'Override this day last year, flag 10 days ago last year' => [
 			$thisDayLastYear, $tenDaysAgoLastYear, true
 		];
@@ -427,6 +429,7 @@ class PageBotListTest extends TestCase {
 			$thisDayLastYear, $today, true
 		];
 
+		// Old override has definitely expired
 		yield 'Override in 10 days last year, flag 10 days ago last year' => [
 			$inTenDaysLastYear, $tenDaysAgoLastYear, true
 		];
@@ -459,8 +462,9 @@ class PageBotListTest extends TestCase {
 			$tenDaysAgo, $today, false
 		];
 
+		// Overrides can't expire until 3 days have passed from the override date.
 		yield 'Override today, flag 10 days ago last year' => [
-			$today, $tenDaysAgoLastYear, true
+			$today, $tenDaysAgoLastYear, false
 		];
 		yield 'Override today, flag this day last year' => [
 			$today, $thisDayLastYear, false
@@ -469,12 +473,13 @@ class PageBotListTest extends TestCase {
 			$today, $inTenDaysLastYear, false
 		];
 		yield 'Override today, flag 10 days ago' => [
-			$today, $tenDaysAgo, true
+			$today, $tenDaysAgo, false
 		];
 		yield 'Override today, flag today' => [
 			$today, $today, false
 		];
 
+		// Future overrides can't have expired.
 		yield 'Override in 10 days, flag 10 days ago last year' => [
 			$inTenDays, $tenDaysAgoLastYear, false
 		];
@@ -491,6 +496,7 @@ class PageBotListTest extends TestCase {
 			$inTenDays, $today, false
 		];
 
+		// Future overrides can't have expired.
 		yield 'Override 10 days ago next year, flag 10 days ago last year' => [
 			$tenDaysAgoNextYear, $tenDaysAgoLastYear, false
 		];
@@ -507,6 +513,7 @@ class PageBotListTest extends TestCase {
 			$tenDaysAgoNextYear, $today, false
 		];
 
+		// Future overrides can't have expired.
 		yield 'Override this day next year, flag 10 days ago last year' => [
 			$thisDayNextYear, $tenDaysAgoLastYear, false
 		];
@@ -523,6 +530,7 @@ class PageBotListTest extends TestCase {
 			$thisDayNextYear, $today, false
 		];
 
+		// Future overrides can't have expired.
 		yield 'Override in 10 days next year, flag 10 days ago last year' => [
 			$inTenDaysNextYear, $tenDaysAgoLastYear, false
 		];
