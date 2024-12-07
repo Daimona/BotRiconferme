@@ -1,5 +1,7 @@
 <?php
 
+declare( strict_types = 1 );
+
 namespace BotRiconferme\Tests\TaskHelper;
 
 use BotRiconferme\Clock;
@@ -55,7 +57,7 @@ class TaskDataProviderTest extends ConfigAwareTestCase {
 
 	public static function provideUsersToProcess(): Generator {
 		$today = self::FAKE_TIME;
-		$thisDayLastYear = DateTime::createFromFormat( 'U', $today )->modify( '-1 year' )->getTimestamp();
+		$thisDayLastYear = ( new DateTime )->setTimestamp( $today )->modify( '-1 year' )->getTimestamp();
 		$earlierThisYear = $today - 60 * 60 * 24 * 10;
 		$laterThisYear = $today + 60 * 60 * 24 * 10;
 		$notTodayDate = $today - 60 * 60 * 24 * 50;

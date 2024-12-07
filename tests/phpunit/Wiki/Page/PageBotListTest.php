@@ -1,5 +1,7 @@
 <?php
 
+declare( strict_types = 1 );
+
 namespace BotRiconferme\Tests\Wiki\Page;
 
 use BotRiconferme\Clock;
@@ -44,7 +46,7 @@ class PageBotListTest extends TestCase {
 	public function testGetNextTimestamp( array $userData, int $expected ) {
 		$username = 'Margarita';
 		$pbl = $this->getPageBotList( [ $username => $userData ] );
-		$normalizedExpected = DateTime::createFromFormat( 'U', $expected )
+		$normalizedExpected = ( new DateTime )->setTimestamp( $expected )
 			->setTime( 0, 0 )
 			->getTimestamp();
 		$this->assertSame( $normalizedExpected, $pbl->getNextTimestamp( $username ) );
@@ -61,7 +63,7 @@ class PageBotListTest extends TestCase {
 	public function testGetOverrideTimestamp( array $userData, ?int $expected ) {
 		$userInfo = new UserInfo( 'William', $userData );
 		if ( $expected !== null ) {
-			$normalizedExpected = DateTime::createFromFormat( 'U', $expected )
+			$normalizedExpected = ( new DateTime )->setTimestamp( $expected )
 				->setTime( 0, 0 )
 				->getTimestamp();
 		} else {
@@ -80,14 +82,14 @@ class PageBotListTest extends TestCase {
 
 	private static function getTestCases(): Generator {
 		$today = self::FAKE_TIME;
-		$thisDayLastYear = DateTime::createFromFormat( 'U', $today )->modify( '-1 year' )->getTimestamp();
-		$thisDayNextYear = DateTime::createFromFormat( 'U', $today )->modify( '+1 year' )->getTimestamp();
+		$thisDayLastYear = ( new DateTime )->setTimestamp( $today )->modify( '-1 year' )->getTimestamp();
+		$thisDayNextYear = ( new DateTime )->setTimestamp( $today )->modify( '+1 year' )->getTimestamp();
 		$tenDaysAgo = $today - 60 * 60 * 24 * 10;
-		$tenDaysAgoLastYear = DateTime::createFromFormat( 'U', $tenDaysAgo )->modify( '-1 year' )->getTimestamp();
-		$tenDaysAgoNextYear = DateTime::createFromFormat( 'U', $tenDaysAgo )->modify( '+1 year' )->getTimestamp();
+		$tenDaysAgoLastYear = ( new DateTime )->setTimestamp( $tenDaysAgo )->modify( '-1 year' )->getTimestamp();
+		$tenDaysAgoNextYear = ( new DateTime )->setTimestamp( $tenDaysAgo )->modify( '+1 year' )->getTimestamp();
 		$inTenDays = $today + 60 * 60 * 24 * 10;
-		$inTenDaysLastYear = DateTime::createFromFormat( 'U', $inTenDays )->modify( '-1 year' )->getTimestamp();
-		$inTenDaysNextYear = DateTime::createFromFormat( 'U', $inTenDays )->modify( '+1 year' )->getTimestamp();
+		$inTenDaysLastYear = ( new DateTime )->setTimestamp( $inTenDays )->modify( '-1 year' )->getTimestamp();
+		$inTenDaysNextYear = ( new DateTime )->setTimestamp( $inTenDays )->modify( '+1 year' )->getTimestamp();
 
 		yield 'No overrides, flagged today' => [
 			[ 'sysop' => date( 'd/m/Y', $today ) ],
@@ -389,14 +391,14 @@ class PageBotListTest extends TestCase {
 
 	public static function provideIsOverrideExpired(): Generator {
 		$today = self::FAKE_TIME;
-		$thisDayLastYear = DateTime::createFromFormat( 'U', $today )->modify( '-1 year' )->getTimestamp();
-		$thisDayNextYear = DateTime::createFromFormat( 'U', $today )->modify( '+1 year' )->getTimestamp();
+		$thisDayLastYear = ( new DateTime )->setTimestamp( $today )->modify( '-1 year' )->getTimestamp();
+		$thisDayNextYear = ( new DateTime )->setTimestamp( $today )->modify( '+1 year' )->getTimestamp();
 		$tenDaysAgo = $today - 60 * 60 * 24 * 10;
-		$tenDaysAgoLastYear = DateTime::createFromFormat( 'U', $tenDaysAgo )->modify( '-1 year' )->getTimestamp();
-		$tenDaysAgoNextYear = DateTime::createFromFormat( 'U', $tenDaysAgo )->modify( '+1 year' )->getTimestamp();
+		$tenDaysAgoLastYear = ( new DateTime )->setTimestamp( $tenDaysAgo )->modify( '-1 year' )->getTimestamp();
+		$tenDaysAgoNextYear = ( new DateTime )->setTimestamp( $tenDaysAgo )->modify( '+1 year' )->getTimestamp();
 		$inTenDays = $today + 60 * 60 * 24 * 10;
-		$inTenDaysLastYear = DateTime::createFromFormat( 'U', $inTenDays )->modify( '-1 year' )->getTimestamp();
-		$inTenDaysNextYear = DateTime::createFromFormat( 'U', $inTenDays )->modify( '+1 year' )->getTimestamp();
+		$inTenDaysLastYear = ( new DateTime )->setTimestamp( $inTenDays )->modify( '-1 year' )->getTimestamp();
+		$inTenDaysNextYear = ( new DateTime )->setTimestamp( $inTenDays )->modify( '+1 year' )->getTimestamp();
 
 		// Old override has definitely expired
 		yield 'Override 10 days ago last year, flag 10 days ago last year' => [

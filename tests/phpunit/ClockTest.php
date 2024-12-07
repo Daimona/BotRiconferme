@@ -1,5 +1,7 @@
 <?php
 
+declare( strict_types = 1 );
+
 namespace BotRiconferme\Tests;
 
 use BotRiconferme\Clock;

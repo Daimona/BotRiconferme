@@ -1,5 +1,7 @@
 <?php
 
+declare( strict_types = 1 );
+
 namespace BotRiconferme\Tests;
 
 use BotRiconferme\Config;
@@ -9,12 +11,12 @@ use PHPUnit\Framework\TestCase;
 
 abstract class ConfigAwareTestCase extends TestCase {
 	#[BeforeClass]
-	public static function initConfig() {
+	public static function initConfig(): void {
 		Config::init( [] );
 	}
 
 	#[AfterClass]
-	public static function clearConfig() {
+	public static function clearConfig(): void {
 		Config::clearInstance();
 	}
 }
