@@ -49,14 +49,15 @@ abstract class Task extends TaskBase {
 
 	/**
 	 * Helper to make type inferencing easier
+	 * @phan-param class-string<Subtask> $class
 	 */
 	private function getSubtaskInstance( string $class ): Subtask {
 		return new $class(
 			$this->getLogger(),
 			$this->getWikiGroup(),
-			$this->getDataProvider(),
 			$this->getMessageProvider(),
-			$this->getBotList()
+			$this->getBotList(),
+			$this->getDataProvider()
 		);
 	}
 }
