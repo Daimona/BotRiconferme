@@ -55,9 +55,6 @@ class CurlRequest extends RequestBase {
 	/**
 	 * cURL's headers handler
 	 *
-	 * @param CurlHandle $ch
-	 * @param string $header
-	 * @return int
 	 * @internal Only used as CB for cURL (CURLOPT_HEADERFUNCTION)
 	 * @suppress PhanUnreferencedPublicMethod,PhanUnusedPublicNoOverrideMethodParameter
 	 */

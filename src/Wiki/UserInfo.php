@@ -6,26 +6,18 @@ namespace BotRiconferme\Wiki;
  * Value object containing the data about a User that is stored in the list page.
  * @phan-type RawList = array{sysop:string,checkuser?:string,bureaucrat?:string,override?:string,override-perm?:string,aliases?:list<string>}
  */
-class UserInfo {
-	private string $name;
-	/** @phan-var RawList */
-	private array $info;
-
+readonly class UserInfo {
 	private const GROUP_KEYS = [ 'sysop', 'bureaucrat', 'checkuser' ];
 
 	/**
-	 * @param string $name
-	 * @param array $info
 	 * @phan-param RawList $info
 	 */
-	public function __construct( string $name, array $info ) {
-		$this->name = $name;
-		$this->info = $info;
+	public function __construct(
+		private string $name,
+		private array $info
+	) {
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName(): string {
 		return $this->name;
 	}
@@ -69,15 +61,15 @@ class UserInfo {
 	}
 
 	public function withAddedAlias( string $alias ): self {
-		$ret = clone $this;
-		$ret->info['aliases'] = array_values( array_unique( array_merge( $ret->info['aliases'] ?? [], [ $alias ] ) ) );
-		return $ret;
+		$newInfo = $this->info;
+		$newInfo['aliases'] = array_values( array_unique( array_merge( $newInfo['aliases'] ?? [], [ $alias ] ) ) );
+		return new self( $this->name, $newInfo );
 	}
 
 	public function withoutOverride(): self {
-		$ret = clone $this;
-		unset( $ret->info['override'] );
-		return $ret;
+		$newInfo = $this->info;
+		unset( $newInfo['override'] );
+		return new self( $this->name, $newInfo );
 	}
 
 	public function equals( self $other ): bool {

@@ -18,11 +18,8 @@ use stdClass;
  */
 class Wiki {
 	private bool $loggedIn = false;
-	private LoggerInterface $logger;
 	/** @var string[] */
 	private array $tokens = [];
-	private LoginInfo $loginInfo;
-	private RequestFactory $requestFactory;
 	private string $localUserIdentifier = '';
 	/** Used for logging */
 	private string $pagePrefix = '';
@@ -30,13 +27,10 @@ class Wiki {
 	private array $cookies = [];
 
 	public function __construct(
-		LoginInfo $li,
-		LoggerInterface $logger,
-		RequestFactory $requestFactory
+		private readonly LoginInfo $loginInfo,
+		private readonly LoggerInterface $logger,
+		private readonly RequestFactory $requestFactory
 	) {
-		$this->loginInfo = $li;
-		$this->logger = $logger;
-		$this->requestFactory = $requestFactory;
 	}
 
 	public function getLoginInfo(): LoginInfo {
@@ -68,8 +62,6 @@ class Wiki {
 	/**
 	 * Gets the content of a wiki page
 	 *
-	 * @param string $title
-	 * @return string
 	 * @throws MissingPageException
 	 */
 	public function getPageContent( string $title ): string {
@@ -79,9 +71,6 @@ class Wiki {
 	/**
 	 * Get the content of a specific section of a wiki page
 	 *
-	 * @param string $title
-	 * @param int $section
-	 * @return string
 	 * @throws MissingPageException
 	 * @throws MissingSectionException
 	 */
@@ -94,8 +83,6 @@ class Wiki {
 	}
 
 	/**
-	 * @param string $title
-	 * @param int|null $section
 	 * @return stdClass Response object for the main slot
 	 * @throws MissingPageException
 	 */
@@ -126,8 +113,7 @@ class Wiki {
 	/**
 	 * Basically a wrapper for action=edit
 	 *
-	 * @param array $params
-	 * @phan-param array<int|string|bool> $params
+	 * @param array<int|string|bool> $params
 	 */
 	public function editPage( array $params ): void {
 		$this->login();
@@ -189,9 +175,6 @@ class Wiki {
 
 	/**
 	 * Get a token, cached.
-	 *
-	 * @param string $type
-	 * @return string
 	 */
 	public function getToken( string $type ): string {
 		if ( !isset( $this->tokens[ $type ] ) ) {
@@ -209,9 +192,6 @@ class Wiki {
 
 	/**
 	 * Get the timestamp of the creation of the given page
-	 *
-	 * @param string $title
-	 * @return int
 	 */
 	public function getPageCreationTS( string $title ): int {
 		$params = [
@@ -235,9 +215,6 @@ class Wiki {
 
 	/**
 	 * Sysop-level inifinite protection for a given page
-	 *
-	 * @param string $title
-	 * @param string $reason
 	 */
 	public function protectPage( string $title, string $reason ): void {
 		$fullTitle = $this->pagePrefix . $title;
@@ -258,9 +235,6 @@ class Wiki {
 
 	/**
 	 * Block a user, infinite expiry
-	 *
-	 * @param string $username
-	 * @param string $reason
 	 */
 	public function blockUser( string $username, string $reason ): void {
 		$this->logger->info( "Blocking user $username" );
@@ -285,9 +259,7 @@ class Wiki {
 
 	/**
 	 * Shorthand
-	 * @param array $params
-	 * @phan-param array<int|string|bool> $params
-	 * @return RequestBase
+	 * @param array<int|string|bool> $params
 	 */
 	private function buildRequest( array $params ): RequestBase {
 		return $this->requestFactory->createRequest(

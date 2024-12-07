@@ -34,8 +34,6 @@ class CreatePages extends Subtask {
 
 	/**
 	 * Determine what pages we need to create for a single user.
-	 *
-	 * @param User $user
 	 */
 	protected function processUser( User $user ): void {
 		$this->getLogger()->info( "Processing user $user" );
@@ -68,8 +66,6 @@ class CreatePages extends Subtask {
 	/**
 	 * Get the number of last page for the given user
 	 *
-	 * @param User $user
-	 * @return int
 	 * @throws PageCreatedTodayException
 	 */
 	protected function getLastPageNum( User $user ): int {
@@ -115,9 +111,6 @@ class CreatePages extends Subtask {
 
 	/**
 	 * Really creates the page WP:A/Riconferma_annuale/USERNAME/XYZ
-	 *
-	 * @param string $title
-	 * @param User $user
 	 */
 	protected function createPage( string $title, User $user ): void {
 		$this->getLogger()->info( "Creating page $title" );
@@ -140,9 +133,6 @@ class CreatePages extends Subtask {
 
 	/**
 	 * Creates the page WP:A/Riconferma_annuale/USERNAME if it doesn't exist
-	 *
-	 * @param Page $basePage
-	 * @param string $newText
 	 */
 	protected function createBasePage( Page $basePage, string $newText ): void {
 		$this->getLogger()->info( "Creating base page $basePage" );
@@ -157,8 +147,6 @@ class CreatePages extends Subtask {
 
 	/**
 	 * Updates the page WP:A/Riconferma_annuale/USERNAME if it already exists
-	 * @param Page $basePage
-	 * @param string $newText
 	 */
 	protected function updateBasePage( Page $basePage, string $newText ): void {
 		$this->getLogger()->info( "Updating base page $basePage" );

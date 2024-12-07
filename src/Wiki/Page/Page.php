@@ -11,32 +11,22 @@ use InvalidArgumentException;
  * Represents a single on-wiki page
  */
 class Page implements IRegexable {
-	protected string $title;
 	protected ?string $content = null;
 	/** @var array<int,string> */
 	protected array $sectionContents = [];
-	protected Wiki $wiki;
 
-	/**
-	 * @param string $title
-	 * @param Wiki $wiki For the site where the page lives
-	 */
-	public function __construct( string $title, Wiki $wiki ) {
-		$this->wiki = $wiki;
-		$this->title = $title;
+	public function __construct(
+		protected string $title,
+		protected Wiki $wiki
+	) {
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getTitle(): string {
 		return $this->title;
 	}
 
 	/**
 	 * Get the content of this page
-	 *
-	 * @return string
 	 */
 	public function getContent(): string {
 		if ( $this->content === null ) {
@@ -47,9 +37,6 @@ class Page implements IRegexable {
 
 	/**
 	 * Get the content of the given section of this page
-	 *
-	 * @param int $section
-	 * @return string
 	 */
 	public function getSectionContent( int $section ): string {
 		if ( !isset( $this->sectionContents[$section] ) ) {
@@ -61,8 +48,7 @@ class Page implements IRegexable {
 	/**
 	 * Edit this page and update content
 	 *
-	 * @param array $params
-	 * @phan-param array<int|string|bool> $params
+	 * @param array<int|string|bool> $params
 	 */
 	public function edit( array $params ): void {
 		$params = [
@@ -85,8 +71,6 @@ class Page implements IRegexable {
 
 	/**
 	 * Whether this page exists
-	 *
-	 * @return bool
 	 */
 	public function exists(): bool {
 		$pages = $this->wiki->getRequestFactory()->createStandaloneRequest( [
@@ -98,9 +82,6 @@ class Page implements IRegexable {
 
 	/**
 	 * Check whether the page content is matched by the given regex
-	 *
-	 * @param string $regex
-	 * @return bool
 	 */
 	public function matches( string $regex ): bool {
 		return (bool)preg_match( $regex, $this->getContent() );
@@ -133,8 +114,6 @@ class Page implements IRegexable {
 
 	/**
 	 * For easier logging etc.
-	 *
-	 * @return string
 	 */
 	public function __toString(): string {
 		return $this->getTitle();

@@ -18,32 +18,22 @@ use ReflectionClass;
 abstract class TaskBase extends ContextSource {
 	/** @var string[] */
 	protected array $errors = [];
-	protected TaskDataProvider $dataProvider;
 
 	/**
 	 * Final to keep calls linear in the TaskManager
-	 *
-	 * @param LoggerInterface $logger
-	 * @param WikiGroup $wikiGroup
-	 * @param TaskDataProvider $dataProvider
-	 * @param MessageProvider $mp
-	 * @param PageBotList $pbl
 	 */
 	final public function __construct(
 		LoggerInterface $logger,
 		WikiGroup $wikiGroup,
-		TaskDataProvider $dataProvider,
 		MessageProvider $mp,
-		PageBotList $pbl
+		PageBotList $pbl,
+		protected TaskDataProvider $dataProvider,
 	) {
 		parent::__construct( $logger, $wikiGroup, $mp, $pbl );
-		$this->dataProvider = $dataProvider;
 	}
 
 	/**
 	 * Entry point
-	 *
-	 * @return TaskResult
 	 */
 	final public function run(): TaskResult {
 		$class = ( new ReflectionClass( $this ) )->getShortName();
@@ -73,14 +63,9 @@ abstract class TaskBase extends ContextSource {
 
 	/**
 	 * How this operation should be called in logs
-	 *
-	 * @return string
 	 */
 	abstract public function getOperationName(): string;
 
-	/**
-	 * @return TaskDataProvider
-	 */
 	protected function getDataProvider(): TaskDataProvider {
 		return $this->dataProvider;
 	}

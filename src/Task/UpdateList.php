@@ -69,7 +69,6 @@ class UpdateList extends Task {
 	/**
 	 * @param array<string,UserInfo> $oldList
 	 * @param array<string,UserInfo> $newList
-	 * @return bool
 	 */
 	private function listsAreDifferent( array $oldList, array $newList ): bool {
 		if ( count( $newList ) !== count( $oldList ) ) {
@@ -90,8 +89,7 @@ class UpdateList extends Task {
 	}
 
 	/**
-	 * @return string[][]
-	 * @phan-return array<string,string[]>
+	 * @return array<string,string[]>
 	 */
 	private function computeActualList(): array {
 		$params = [
@@ -107,9 +105,7 @@ class UpdateList extends Task {
 	}
 
 	/**
-	 * @param Generator $data
-	 * @return string[][]
-	 * @phan-return array<string,string[]>
+	 * @return array<string,string[]>
 	 */
 	private function extractAdminsData( Generator $data ): array {
 		$ret = [];
@@ -252,10 +248,6 @@ class UpdateList extends Task {
 
 	/**
 	 * Find the actual timestamp when the user was given the searched group
-	 *
-	 * @param Generator $data
-	 * @param string $group
-	 * @return string|null
 	 */
 	private function extractTimestamp( Generator $data, string $group ): ?string {
 		$ts = null;
@@ -292,7 +284,6 @@ class UpdateList extends Task {
 
 	/**
 	 * @param string[] $oldNames
-	 * @return Generator
 	 */
 	private function getRenameEntries( array $oldNames ): Generator {
 		foreach ( $oldNames as $oldName ) {

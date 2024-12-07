@@ -63,9 +63,6 @@ class CLI {
 	/** @var string[] */
 	private array $opts;
 
-	/**
-	 * @return bool
-	 */
 	public static function isCLI(): bool {
 		return PHP_SAPI === 'cli';
 	}
@@ -151,28 +148,17 @@ class CLI {
 		}
 	}
 
-	/**
-	 * @param string $msg
-	 * @return never
-	 */
 	private function fatal( string $msg ): never {
 		exit( $msg . "\n" );
 	}
 
 	/**
 	 * Get an option that is known to be set.
-	 * @param string $opt
-	 * @return string
 	 */
 	public function getSetOpt( string $opt ): string {
 		return $this->opts[$opt];
 	}
 
-	/**
-	 * @param string $opt
-	 * @param string|null $default
-	 * @return string|null
-	 */
 	public function getOpt( string $opt, ?string $default = null ): ?string {
 		return $this->opts[$opt] ?? $default;
 	}
@@ -187,9 +173,6 @@ class CLI {
 		);
 	}
 
-	/**
-	 * @return string|null
-	 */
 	public function getURL(): ?string {
 		return $this->getOpt( 'force-url' );
 	}

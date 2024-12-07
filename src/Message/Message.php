@@ -3,6 +3,7 @@
 namespace BotRiconferme\Message;
 
 use RuntimeException;
+use Stringable;
 
 class Message {
 	public const MONTHS = [
@@ -19,28 +20,20 @@ class Message {
 		'November' => 'novembre',
 		'December' => 'dicembre'
 	];
-	private string $value;
 
-	/**
-	 * @param string $value
-	 */
-	public function __construct( string $value ) {
-		$this->value = $value;
+	public function __construct(
+		private string $value
+	) {
 	}
 
 	/**
-	 * @param array $args
-	 * @phan-param array<string,int|string> $args
-	 * @return self
+	 * @param array<string,int|string> $args
 	 */
 	public function params( array $args ): self {
 		$this->value = strtr( $this->value, $args );
 		return $this;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function text(): string {
 		$this->parsePlurals();
 		return $this->value;
@@ -57,10 +50,7 @@ class Message {
 		}
 		$this->value = preg_replace_callback(
 			$reg,
-			/**
-			 * @param string[] $matches
-			 * @return string
-			 */
+			/** @param string[] $matches */
 			static function ( array $matches ): string {
 				return (int)$matches['amount'] > 1 ? trim( $matches['plur'] ) : trim( $matches['sing'] );
 			},
@@ -72,7 +62,6 @@ class Message {
 	 * Get a timestamp from a localized time string
 	 *
 	 * @param string $timeString Full format, e.g. "15 aprile 2019 18:27"
-	 * @return int
 	 */
 	public static function getTimestampFromLocalTime( string $timeString ): int {
 		$englishTime = str_ireplace(
@@ -92,10 +81,7 @@ class Message {
 	 * Given an array of data, returns a list of its elements using commas, and " e " before
 	 * the last one. $emptyText can be used to specify the text in case $data is empty.
 	 *
-	 * @param array $data
-	 * @phan-param array<int|string|\Stringable> $data
-	 * @param string $emptyText
-	 * @return string
+	 * @param array<int|string|Stringable> $data
 	 */
 	public static function commaList( array $data, string $emptyText = 'nessuno' ): string {
 		if ( count( $data ) > 1 ) {

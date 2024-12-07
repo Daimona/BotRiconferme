@@ -38,7 +38,7 @@ $cfg['plugins'] = array_merge(
 		'AlwaysReturnPlugin',
 		'DeprecateAliasPlugin',
 		'DollarDollarPlugin',
-		// 'PHPDocRedundantPlugin',
+		'PHPDocRedundantPlugin',
 		'PHPDocToRealTypesPlugin',
 		'PreferNamespaceUsePlugin',
 		'PrintfCheckerPlugin',

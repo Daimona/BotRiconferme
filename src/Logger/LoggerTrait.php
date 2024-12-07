@@ -10,9 +10,6 @@ use Stringable;
 trait LoggerTrait {
 	/**
 	 * Translate a LogLevel constant to an integer
-	 *
-	 * @param string $level
-	 * @return int
 	 */
 	protected function levelToInt( string $level ): int {
 		// Order matters

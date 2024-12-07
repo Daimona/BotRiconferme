@@ -12,24 +12,15 @@ class RequestFactory {
 		'NetworkProbeLimit',
 	];
 
-	private string $domain;
-	private LoggerInterface $logger;
-
-	/**
-	 * @param LoggerInterface $logger
-	 * @param string $domain
-	 */
-	public function __construct( LoggerInterface $logger, string $domain ) {
-		$this->logger = $logger;
-		$this->domain = $domain;
+	public function __construct(
+		private readonly LoggerInterface $logger,
+		private readonly string $domain
+	) {
 	}
 
 	/**
-	 * @param array $params
-	 * @phan-param array<int|string|bool> $params
+	 * @param array<int|string|bool> $params
 	 * @param string[] $cookies
-	 * @param callable $cookiesCallback
-	 * @return RequestBase
 	 */
 	public function createRequest( array $params, array $cookies, callable $cookiesCallback ): RequestBase {
 		$ret = extension_loaded( 'curl' )
@@ -42,9 +33,7 @@ class RequestFactory {
 	/**
 	 * Similar to createRequest, but doesn't save any info like cookies.
 	 *
-	 * @param array $params
-	 * @phan-param array<int|string|bool> $params
-	 * @return RequestBase
+	 * @param array<int|string|bool> $params
 	 */
 	public function createStandaloneRequest( array $params ): RequestBase {
 		/** @param array<string,string> $newCookies */

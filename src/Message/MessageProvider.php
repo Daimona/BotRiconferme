@@ -14,16 +14,10 @@ class MessageProvider {
 	/** @var string[]|null */
 	private static ?array $messages = null;
 
-	private Wiki $wiki;
-	private string $msgTitle;
-
-	/**
-	 * @param Wiki $wiki
-	 * @param string $msgTitle
-	 */
-	public function __construct( Wiki $wiki, string $msgTitle ) {
-		$this->wiki = $wiki;
-		$this->msgTitle = $msgTitle;
+	public function __construct(
+		private readonly Wiki $wiki,
+		private readonly string $msgTitle
+	) {
 	}
 
 	private function grabWikiMessages(): void {
@@ -44,10 +38,6 @@ class MessageProvider {
 		self::$messages = $wikiMessages;
 	}
 
-	/**
-	 * @param string $key
-	 * @return Message
-	 */
 	public function getMessage( string $key ): Message {
 		$this->grabWikiMessages();
 		$messageText = self::$messages[$key] ?? null;

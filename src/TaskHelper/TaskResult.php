@@ -11,22 +11,16 @@ class TaskResult {
 	public const STATUS_GOOD = 1;
 	public const STATUS_ERROR = 3;
 
-	/** @var string[] */
-	private array $errors;
-	private int $status;
-
 	/**
 	 * @param int $status One of the Task::STATUS_* constants
 	 * @param string[] $errors
 	 */
-	public function __construct( int $status, array $errors = [] ) {
-		$this->status = $status;
-		$this->errors = $errors;
+	public function __construct(
+		private int $status,
+		private array $errors = []
+	) {
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getStatus(): int {
 		return $this->status;
 	}
@@ -39,17 +33,11 @@ class TaskResult {
 		return $this->errors;
 	}
 
-	/**
-	 * @param TaskResult $that
-	 */
 	public function merge( TaskResult $that ): void {
 		$this->status |= $that->status;
 		$this->errors = array_merge( $this->errors, $that->errors );
 	}
 
-	/**
-	 * @return string
-	 */
 	public function __toString(): string {
 		if ( $this->isOK() ) {
 			$stat = 'OK';
@@ -67,8 +55,6 @@ class TaskResult {
 
 	/**
 	 * Shorthand
-	 *
-	 * @return bool
 	 */
 	public function isOK(): bool {
 		return ( $this->status | self::STATUS_GOOD ) === self::STATUS_GOOD;

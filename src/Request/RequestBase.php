@@ -45,24 +45,20 @@ abstract class RequestBase {
 	/** @var callable */
 	private $cookiesHandlerCallback;
 
-	protected LoggerInterface $logger;
-
 	/**
 	 * @private Use RequestFactory
 	 *
 	 * @param LoggerInterface $logger
-	 * @param array $params
-	 * @phan-param array<string,int|string|bool> $params
+	 * @param array<string,int|string|bool> $params
 	 * @param string $domain
 	 * @param callable $cookiesHandlerCallback
 	 */
 	public function __construct(
-		LoggerInterface $logger,
+		protected LoggerInterface $logger,
 		array $params,
 		string $domain,
 		callable $cookiesHandlerCallback
 	) {
-		$this->logger = $logger;
 		$this->params = [ 'format' => 'json' ] + $params;
 		$this->url = $domain;
 		$this->cookiesHandlerCallback = $cookiesHandlerCallback;
@@ -89,7 +85,6 @@ abstract class RequestBase {
 
 	/**
 	 * Execute a query request
-	 * @return Generator
 	 */
 	public function executeAsQuery(): Generator {
 		if ( ( $this->params['action'] ?? false ) !== 'query' ) {
@@ -126,7 +121,6 @@ abstract class RequestBase {
 
 	/**
 	 * Execute a request that doesn't need any continuation.
-	 * @return stdClass
 	 */
 	public function executeSingle(): stdClass {
 		$curParams = $this->params;
@@ -135,9 +129,6 @@ abstract class RequestBase {
 		return $res;
 	}
 
-	/**
-	 * @return int
-	 */
 	private function parseLimit(): int {
 		foreach ( $this->params as $name => $val ) {
 			if ( str_ends_with( $name, 'limit' ) ) {
@@ -150,10 +141,6 @@ abstract class RequestBase {
 
 	/**
 	 * Try to count the amount of entries in a result.
-	 *
-	 * @param stdClass $res
-	 * @param string $resKey
-	 * @return int|null
 	 */
 	private function countQueryResults( stdClass $res, string $resKey ): ?int {
 		if ( !isset( $res->query->$resKey ) ) {
@@ -179,9 +166,7 @@ abstract class RequestBase {
 	/**
 	 * Process parameters and call the actual request method
 	 *
-	 * @param array $params
-	 * @phan-param array<int|string|bool> $params
-	 * @return stdClass
+	 * @param array<int|string|bool> $params
 	 */
 	private function makeRequestInternal( array $params ): stdClass {
 		if ( $this->method === self::METHOD_POST ) {
@@ -210,8 +195,6 @@ abstract class RequestBase {
 
 	/**
 	 * Parses an HTTP response header.
-	 *
-	 * @param string $rawHeader
 	 */
 	protected function handleResponseHeader( string $rawHeader ): void {
 		$headerParts = explode( ':', $rawHeader, 2 );
@@ -227,17 +210,11 @@ abstract class RequestBase {
 
 	/**
 	 * Actual method which will make the request
-	 *
-	 * @param string $params
-	 * @return string
 	 */
 	abstract protected function reallyMakeRequest( string $params ): string;
 
 	/**
 	 * Get a specific exception class depending on the error code
-	 *
-	 * @param stdClass $res
-	 * @return APIRequestException
 	 */
 	private function getException( stdClass $res ): APIRequestException {
 		return match ( $res->error->code ) {
@@ -251,8 +228,6 @@ abstract class RequestBase {
 
 	/**
 	 * Handle known warning and errors from an API request
-	 *
-	 * @param stdClass $res
 	 */
 	protected function handleErrorAndWarnings( stdClass $res ): void {
 		if ( isset( $res->error ) ) {
@@ -290,7 +265,6 @@ abstract class RequestBase {
 	 * Utility function to implode headers
 	 *
 	 * @param string[] $headers
-	 * @return string
 	 */
 	protected function buildHeadersString( array $headers ): string {
 		$ret = '';
@@ -300,10 +274,6 @@ abstract class RequestBase {
 		return $ret;
 	}
 
-	/**
-	 * @param string $actualParams
-	 * @return string
-	 */
 	protected function getDebugURL( string $actualParams ): string {
 		return str_contains( $this->url, 'login' )
 			? '[Login request]'

@@ -57,8 +57,6 @@ class PageRiconferma extends Page {
 
 	/**
 	 * Get the name of the user from the title
-	 *
-	 * @return string
 	 */
 	public function getUserName(): string {
 		return explode( '/', $this->title )[2];
@@ -66,8 +64,6 @@ class PageRiconferma extends Page {
 
 	/**
 	 * Returns the progressive number in the title
-	 *
-	 * @return int
 	 */
 	public function getNum(): int {
 		$bits = explode( '/', $this->getTitle() );
@@ -76,8 +72,6 @@ class PageRiconferma extends Page {
 
 	/**
 	 * Get the last part of the title as Username/Num
-	 *
-	 * @return string
 	 */
 	public function getUserNum(): string {
 		return explode( '/', $this->getTitle(), 3 )[2];
@@ -85,8 +79,6 @@ class PageRiconferma extends Page {
 
 	/**
 	 * Get the amount of opposing votes
-	 *
-	 * @return int
 	 */
 	public function getOpposingCount(): int {
 		return $this->getCountForSection( $this->getOpposeSection() );
@@ -94,8 +86,6 @@ class PageRiconferma extends Page {
 
 	/**
 	 * Get the amount support votes
-	 *
-	 * @return int
 	 */
 	public function getSupportCount(): int {
 		if ( !$this->isVote() ) {
@@ -106,9 +96,6 @@ class PageRiconferma extends Page {
 
 	/**
 	 * Count the votes in the given section
-	 *
-	 * @param int $secNum
-	 * @return int
 	 */
 	protected function getCountForSection( int $secNum ): int {
 		if ( !isset( $this->sectionCounts[ $secNum ] ) ) {
@@ -125,8 +112,6 @@ class PageRiconferma extends Page {
 
 	/**
 	 * Gets the quorum used for the current page
-	 *
-	 * @return int
 	 */
 	protected function getQuorum(): int {
 		$reg = "!soddisfare il \[\[[^|\]]+\|quorum]] di '''(\d+) voti'''!";
@@ -135,8 +120,6 @@ class PageRiconferma extends Page {
 
 	/**
 	 * Whether this page has enough opposing votes
-	 *
-	 * @return bool
 	 */
 	public function hasOpposition(): bool {
 		$req = min(
@@ -169,8 +152,6 @@ class PageRiconferma extends Page {
 
 	/**
 	 * Get the result text for the page itself
-	 *
-	 * @return string
 	 */
 	public function getOutcomeText(): string {
 		if ( !$this->isVote() ) {
@@ -203,8 +184,6 @@ class PageRiconferma extends Page {
 
 	/**
 	 * Whether this page is a vote
-	 *
-	 * @return bool
 	 */
 	public function isVote(): bool {
 		$sectionReg = '/<!-- SEZIONE DA UTILIZZARE PER/';
@@ -213,8 +192,6 @@ class PageRiconferma extends Page {
 
 	/**
 	 * Get the timestamp of the creation of the page
-	 *
-	 * @return int
 	 */
 	public function getCreationTimestamp(): int {
 		return $this->wiki->getPageCreationTS( $this->title );
@@ -222,8 +199,6 @@ class PageRiconferma extends Page {
 
 	/**
 	 * Get the end time
-	 *
-	 * @return int
 	 */
 	public function getEndTimestamp(): int {
 		if ( $this->isVote() ) {

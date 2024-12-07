@@ -41,9 +41,6 @@ abstract class ContextSource implements LoggerAwareInterface {
 		$this->pageBotList = $pbl;
 	}
 
-	/**
-	 * @return LoggerInterface
-	 */
 	protected function getLogger(): LoggerInterface {
 		return $this->logger;
 	}
@@ -57,86 +54,49 @@ abstract class ContextSource implements LoggerAwareInterface {
 
 	/**
 	 * Shorthand to $this->getConfig()->get
-	 *
-	 * @param string $optname
-	 * @return mixed
 	 */
 	protected function getOpt( string $optname ): mixed {
 		return $this->getConfig()->get( $optname );
 	}
 
-	/**
-	 * @return Config
-	 */
 	protected function getConfig(): Config {
 		return $this->config;
 	}
 
-	/**
-	 * @param Config $cfg
-	 */
 	protected function setConfig( Config $cfg ): void {
 		$this->config = $cfg;
 	}
 
-	/**
-	 * Shorthand
-	 * @return Wiki
-	 */
 	protected function getWiki(): Wiki {
 		return $this->getWikiGroup()->getMainWiki();
 	}
 
-	/**
-	 * @return WikiGroup
-	 */
 	protected function getWikiGroup(): WikiGroup {
 		return $this->wikiGroup;
 	}
 
-	/**
-	 * @param WikiGroup $wikiGroup
-	 */
 	protected function setWikiGroup( WikiGroup $wikiGroup ): void {
 		$this->wikiGroup = $wikiGroup;
 	}
 
-	/**
-	 * @return MessageProvider
-	 */
 	protected function getMessageProvider(): MessageProvider {
 		return $this->messageProvider;
 	}
 
-	/**
-	 * @param MessageProvider $mp
-	 */
 	protected function setMessageProvider( MessageProvider $mp ): void {
 		$this->messageProvider = $mp;
 	}
 
-	/**
-	 * Get a message
-	 *
-	 * @param string $key
-	 * @return Message
-	 */
 	protected function msg( string $key ): Message {
 		return $this->messageProvider->getMessage( $key );
 	}
 
-	/**
-	 * @return PageBotList
-	 */
 	public function getBotList(): PageBotList {
 		return $this->pageBotList;
 	}
 
 	/**
 	 * Shorthand to get a page using the local wiki
-	 *
-	 * @param string $title
-	 * @return Page
 	 */
 	protected function getPage( string $title ): Page {
 		return new Page( $title, $this->getWiki() );
@@ -144,9 +104,6 @@ abstract class ContextSource implements LoggerAwareInterface {
 
 	/**
 	 * Shorthand to get a user using the local wiki
-	 *
-	 * @param string $name
-	 * @return User
 	 */
 	protected function getUser( string $name ): User {
 		$ui = $this->getBotList()->getUserInfo( $name );

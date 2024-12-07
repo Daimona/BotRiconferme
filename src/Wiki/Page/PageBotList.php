@@ -21,8 +21,6 @@ class PageBotList extends Page {
 
 	/**
 	 * Use self::get() instead
-	 * @param string $listTitle
-	 * @param Wiki $wiki
 	 */
 	private function __construct( string $listTitle, Wiki $wiki ) {
 		parent::__construct( $listTitle, $wiki );
@@ -30,10 +28,6 @@ class PageBotList extends Page {
 
 	/**
 	 * Instance getter
-	 *
-	 * @param Wiki $wiki
-	 * @param string $listTitle
-	 * @return self
 	 */
 	public static function get( Wiki $wiki, string $listTitle ): self {
 		if ( self::$instance === null ) {
@@ -48,10 +42,6 @@ class PageBotList extends Page {
 		self::$instance = null;
 	}
 
-	/**
-	 * @param UserInfo $ui
-	 * @return int|null
-	 */
 	public static function getOverrideTimestamp( UserInfo $ui ): ?int {
 		[ 'override' => $override, 'override-perm' => $permanentOverride ] = self::getOverrideTimestamps( $ui );
 
@@ -64,7 +54,6 @@ class PageBotList extends Page {
 	}
 
 	/**
-	 * @param UserInfo $ui
 	 * @return array<int|null>
 	 * @phan-return array{override:?int,override-perm:?int}
 	 */
@@ -96,8 +85,6 @@ class PageBotList extends Page {
 	/**
 	 * Get the next valid timestamp for the given user
 	 *
-	 * @param string $user
-	 * @return int
 	 * @suppress PhanPluginComparisonObjectOrdering DateTime objects can be compared (phan issue #2907)
 	 */
 	public function getNextTimestamp( string $user ): int {
@@ -133,9 +120,6 @@ class PageBotList extends Page {
 
 	/**
 	 * Get the valid timestamp for the given groups
-	 *
-	 * @param UserInfo $userInfo
-	 * @return int
 	 */
 	public static function getValidFlagTimestamp( UserInfo $userInfo ): int {
 		$groups = $userInfo->getGroupsWithDates();
@@ -176,9 +160,6 @@ class PageBotList extends Page {
 	 * A date is considered to have passed if at least 3 full days have passed, to reduce risk.
 	 * @todo Worth considering a different approach? As it stands, override can only be used for dates in the same year.
 	 * Unsure how this works exactly for days near the year's start/end.
-	 *
-	 * @param UserInfo $userInfo
-	 * @return bool
 	 */
 	public static function isOverrideExpired( UserInfo $userInfo ): bool {
 		[ 'override' => $override, 'override-perm' => $permanentOverride ] = self::getOverrideTimestamps( $userInfo );
@@ -212,10 +193,6 @@ class PageBotList extends Page {
 		return $this->adminsList;
 	}
 
-	/**
-	 * @param string $user
-	 * @return UserInfo
-	 */
 	public function getUserInfo( string $user ): UserInfo {
 		return $this->getAdminsList()[$user];
 	}

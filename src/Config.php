@@ -21,8 +21,7 @@ class Config {
 	/**
 	 * Initialize a new self instance with CLI params set and retrieve on-wiki config.
 	 *
-	 * @param array $confValues
-	 * @phan-param array<string,mixed> $confValues
+	 * @param array<string,mixed> $confValues
 	 */
 	public static function init( array $confValues ): void {
 		if ( self::$instance ) {
@@ -39,19 +38,11 @@ class Config {
 
 	/**
 	 * Set a config value.
-	 *
-	 * @param string $key
-	 * @param mixed $value
 	 */
 	protected function set( string $key, mixed $value ): void {
 		$this->opts[ $key ] = $value;
 	}
 
-	/**
-	 * Generic instance getter
-	 *
-	 * @return self
-	 */
 	public static function getInstance(): self {
 		return self::$instance ?? throw new ConfigException( 'Config not yet initialized' );
 	}
@@ -63,9 +54,6 @@ class Config {
 
 	/**
 	 * Get the requested option, or fail if it doesn't exist
-	 *
-	 * @param string $opt
-	 * @return mixed
 	 */
 	public function get( string $opt ): mixed {
 		return $this->opts[ $opt ] ?? throw new ConfigException( "Config option '$opt' not set." );

@@ -34,7 +34,6 @@ class TaskManager {
 	public const MODE_TASK = 'task';
 	public const MODE_SUBTASK = 'subtask';
 
-	/** @var string[] */
 	private const TASKS_MAP = [
 		'start-new' => StartNew::class,
 		'close-old' => CloseOld::class,
@@ -57,32 +56,18 @@ class TaskManager {
 		'close-old'
 	];
 	private TaskDataProvider $provider;
-	private LoggerInterface $logger;
-	private WikiGroup $wikiGroup;
-	private MessageProvider $messageProvider;
-	private PageBotList $pageBotList;
 
-	/**
-	 * @param LoggerInterface $logger
-	 * @param WikiGroup $wikiGroup
-	 * @param MessageProvider $mp
-	 * @param PageBotList $pbl
-	 */
 	public function __construct(
-		LoggerInterface $logger,
-		WikiGroup $wikiGroup,
-		MessageProvider $mp,
-		PageBotList $pbl
+		private readonly LoggerInterface $logger,
+		private readonly WikiGroup $wikiGroup,
+		private readonly MessageProvider $messageProvider,
+		private readonly PageBotList $pageBotList
 	) {
-		$this->logger = $logger;
-		$this->wikiGroup = $wikiGroup;
-		$this->messageProvider = $mp;
-		$this->pageBotList = $pbl;
 		$this->provider = new TaskDataProvider(
 			$this->logger,
 			$this->wikiGroup,
 			$this->messageProvider,
-			$pbl
+			$pageBotList
 		);
 	}
 
@@ -91,7 +76,6 @@ class TaskManager {
 	 *
 	 * @param string $mode One of the MODE_ constants
 	 * @param string[] $tasks Only used in MODE_TASK and MODE_SUBTASK
-	 * @return TaskResult
 	 */
 	public function run( string $mode, array $tasks = [] ): TaskResult {
 		if ( $mode === self::MODE_COMPLETE ) {
@@ -107,7 +91,6 @@ class TaskManager {
 	 * Run $tasks in the given order
 	 *
 	 * @param string[] $tasks
-	 * @return TaskResult
 	 */
 	private function runTasks( array $tasks ): TaskResult {
 		$res = new TaskResult( TaskResult::STATUS_GOOD );
@@ -122,9 +105,6 @@ class TaskManager {
 
 	/**
 	 * Run a single task
-	 *
-	 * @param string $name
-	 * @return TaskResult
 	 */
 	protected function runTask( string $name ): TaskResult {
 		if ( !isset( self::TASKS_MAP[ $name ] ) ) {
@@ -138,7 +118,6 @@ class TaskManager {
 	 * Run $subtasks in the given order
 	 *
 	 * @param string[] $subtasks
-	 * @return TaskResult
 	 */
 	private function runSubtasks( array $subtasks ): TaskResult {
 		$res = new TaskResult( TaskResult::STATUS_GOOD );
@@ -153,9 +132,6 @@ class TaskManager {
 
 	/**
 	 * Run a single subtask
-	 *
-	 * @param string $name
-	 * @return TaskResult
 	 */
 	protected function runSubtask( string $name ): TaskResult {
 		if ( !isset( self::SUBTASKS_MAP[ $name ] ) ) {
@@ -168,34 +144,30 @@ class TaskManager {
 
 	/**
 	 * Helper to make type inferencing easier
-	 *
-	 * @param string $name
-	 * @return Task
 	 */
 	private function getTaskInstance( string $name ): Task {
 		$class = self::TASKS_MAP[ $name ];
+		'@phan-var class-string<Task> $class';
 		return new $class(
 			$this->logger,
 			$this->wikiGroup,
-			$this->provider,
 			$this->messageProvider,
-			$this->pageBotList
+			$this->pageBotList,
+			$this->provider
 		);
 	}
 
 	/**
 	 * Helper to make type inferencing easier
-	 *
-	 * @param string $class
-	 * @return Subtask
+	 * @phan-param class-string<Subtask> $class
 	 */
 	private function getSubtaskInstance( string $class ): Subtask {
 		return new $class(
 			$this->logger,
 			$this->wikiGroup,
-			$this->provider,
 			$this->messageProvider,
-			$this->pageBotList
+			$this->pageBotList,
+			$this->provider
 		);
 	}
 }

@@ -32,9 +32,6 @@ class ClosePages extends Subtask {
 		return TaskResult::STATUS_GOOD;
 	}
 
-	/**
-	 * @param PageRiconferma $page
-	 */
 	protected function addVoteCloseText( PageRiconferma $page ): void {
 		$content = $page->getContent();
 		$beforeReg = '!è necessario ottenere una maggioranza .+ votanti\.!u';
@@ -47,7 +44,6 @@ class ClosePages extends Subtask {
 	}
 
 	/**
-	 * @param PageRiconferma $page
 	 * @see CreatePages::updateBasePage()
 	 */
 	protected function updateBasePage( PageRiconferma $page ): void {

@@ -11,24 +11,16 @@ use Stringable;
 /**
  * Class representing a single user. NOTE: this can only represent users stored in the JSON list
  */
-class User implements IRegexable, Stringable {
+readonly class User implements IRegexable, Stringable {
 	private string $name;
-	private Wiki $wiki;
-	private UserInfo $ui;
 
-	/**
-	 * @param UserInfo $ui
-	 * @param Wiki $wiki
-	 */
-	public function __construct( UserInfo $ui, Wiki $wiki ) {
-		$this->wiki = $wiki;
-		$this->name = $ui->getName();
-		$this->ui = $ui;
+	public function __construct(
+		private UserInfo $userInfo,
+		private Wiki $wiki
+	) {
+		$this->name = $userInfo->getName();
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName(): string {
 		return $this->name;
 	}
@@ -39,7 +31,7 @@ class User implements IRegexable, Stringable {
 	 * @return string[]
 	 */
 	public function getGroups(): array {
-		return $this->ui->getGroupNames();
+		return $this->userInfo->getGroupNames();
 	}
 
 	/**
@@ -48,14 +40,11 @@ class User implements IRegexable, Stringable {
 	 * @return string[] [ group => date ]
 	 */
 	public function getGroupsWithDates(): array {
-		return $this->ui->getGroupsWithDates();
+		return $this->userInfo->getGroupsWithDates();
 	}
 
 	/**
 	 * Whether the user is in the given group
-	 *
-	 * @param string $groupName
-	 * @return bool
 	 */
 	public function inGroup( string $groupName ): bool {
 		return in_array( $groupName, $this->getGroups(), true );
@@ -79,19 +68,15 @@ class User implements IRegexable, Stringable {
 	 * @return string[]
 	 */
 	public function getAliases(): array {
-		return $this->ui->getAliases();
+		return $this->userInfo->getAliases();
 	}
 
-	/**
-	 * @return Page
-	 */
 	public function getTalkPage(): Page {
 		return new Page( "User talk:{$this->name}", $this->wiki );
 	}
 
 	/**
-	 * Get the default base page, e.g. WP:A/Riconferma annuale/XXX
-	 * @return Page
+	 * Get the default base page, e.g. WP:A/Riconferma annuale/XYZ
 	 */
 	public function getBasePage(): Page {
 		$prefix = Config::getInstance()->get( 'main-page-title' );
@@ -101,8 +86,6 @@ class User implements IRegexable, Stringable {
 	/**
 	 * Get an *existing* base page for this user. If no existing page is found, this will throw.
 	 * Don't use this method if the page is allowed not to exist.
-	 *
-	 * @return Page
 	 */
 	public function getExistingBasePage(): Page {
 		$basePage = $this->getBasePage();
@@ -125,9 +108,6 @@ class User implements IRegexable, Stringable {
 		return $basePage;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function __toString(): string {
 		return $this->name;
 	}

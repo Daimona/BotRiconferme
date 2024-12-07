@@ -5,29 +5,17 @@ namespace BotRiconferme\Wiki;
 /**
  * Immutable value object with login info
  */
-class LoginInfo {
-	private string $username;
-	private string $password;
-
-	/**
-	 * @param string $username
-	 * @param string $password
-	 */
-	public function __construct( string $username, string $password ) {
-		$this->username = $username;
-		$this->password = $password;
+readonly class LoginInfo {
+	public function __construct(
+		private string $username,
+		private string $password
+	) {
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getUsername(): string {
 		return $this->username;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getPassword(): string {
 		return $this->password;
 	}

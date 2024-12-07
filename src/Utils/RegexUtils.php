@@ -5,10 +5,6 @@ namespace BotRiconferme\Utils;
 class RegexUtils {
 	/**
 	 * Get a regex matching any element in the given array
-	 *
-	 * @param string $delimiter
-	 * @param IRegexable ...$elements
-	 * @return string
 	 */
 	public static function regexFromArray(
 		string $delimiter = '/',

@@ -14,17 +14,17 @@ use Stringable;
 class WikiLogger extends AbstractLogger implements IFlushingAwareLogger {
 	use LoggerTrait;
 
-	private MessageProvider $messageProvider;
-	private int $minLevel;
-	private Page $logPage;
+	private readonly int $minLevel;
 
 	/** @var string[] */
 	private array $buffer = [];
 
-	public function __construct( MessageProvider $messageProvider, Page $logPage, string $minlevel = LogLevel::INFO ) {
-		$this->messageProvider = $messageProvider;
+	public function __construct(
+		private readonly MessageProvider $messageProvider,
+		private readonly Page $logPage,
+		string $minlevel = LogLevel::INFO
+	) {
 		$this->minLevel = $this->levelToInt( $minlevel );
-		$this->logPage = $logPage;
 	}
 
 	/**
@@ -38,9 +38,6 @@ class WikiLogger extends AbstractLogger implements IFlushingAwareLogger {
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	protected function getOutput(): string {
 		$line = str_repeat( '-', 80 );
 		return "\n\n" . implode( "\n", $this->buffer ) . "\n$line\n\n";

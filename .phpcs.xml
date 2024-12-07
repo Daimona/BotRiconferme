@@ -4,6 +4,7 @@
 		<exclude name="MediaWiki.Commenting.MissingCovers" />
 		<exclude name="MediaWiki.Usage.ForbiddenFunctions.assert" />
 	</rule>
+	<rule ref="Generic.PHP.RequireStrictTypes" />
 	<file>.</file>
 	<arg name="bootstrap" value="./vendor/mediawiki/mediawiki-codesniffer/utils/bootstrap-ci.php"/>
 	<arg name="extensions" value="php"/>

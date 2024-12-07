@@ -33,7 +33,6 @@ abstract class Task extends TaskBase {
 
 	/**
 	 * @param string $subtask Defined in self::SUBTASKS_MAP
-	 * @return TaskResult
 	 */
 	protected function runSubtask( string $subtask ): TaskResult {
 		$map = $this->getSubtasksMap();
@@ -50,9 +49,6 @@ abstract class Task extends TaskBase {
 
 	/**
 	 * Helper to make type inferencing easier
-	 *
-	 * @param string $class
-	 * @return Subtask
 	 */
 	private function getSubtaskInstance( string $class ): Subtask {
 		return new $class(

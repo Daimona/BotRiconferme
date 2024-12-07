@@ -42,9 +42,6 @@ class TaskDataProvider extends ContextSource {
 
 	/**
 	 * Whether the given user should be processed
-	 *
-	 * @param UserInfo $ui
-	 * @return bool
 	 */
 	private function shouldAddUser( UserInfo $ui ): bool {
 		$flagDate = PageBotList::getValidFlagTimestamp( $ui );
@@ -107,8 +104,6 @@ class TaskDataProvider extends ContextSource {
 
 	/**
 	 * Discard an user from the current list
-	 *
-	 * @param string $name
 	 */
 	public function removeUser( string $name ): void {
 		unset( $this->processUsers[ $name ] );
@@ -121,9 +116,6 @@ class TaskDataProvider extends ContextSource {
 		return $this->createdPages;
 	}
 
-	/**
-	 * @param PageRiconferma $page
-	 */
 	public function addCreatedPage( PageRiconferma $page ): void {
 		$this->createdPages[] = $page;
 	}

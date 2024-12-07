@@ -28,13 +28,10 @@ class Bot {
 	private IFlushingAwareLogger $mainLogger;
 	private WikiGroup $wikiGroup;
 	private MessageProvider $messageProvider;
-	private CLI $cli;
 
-	/**
-	 * @param CLI $cli
-	 */
-	public function __construct( CLI $cli ) {
-		$this->cli = $cli;
+	public function __construct(
+		private readonly CLI $cli
+	) {
 		$this->initialize();
 	}
 
@@ -73,9 +70,6 @@ class Bot {
 		}
 	}
 
-	/**
-	 * @param LoggerInterface $baseLogger
-	 */
 	private function createWikiGroup( LoggerInterface $baseLogger ): void {
 		// FIXME Hardcoded
 		$url = $this->cli->getURL() ?? 'https://it.wikipedia.org/w/api.php';
