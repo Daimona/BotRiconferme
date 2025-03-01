@@ -183,7 +183,7 @@ class UpdateList extends Task {
 	private function getMissingAdminGroups( array $botList ): array {
 		$missing = [];
 		foreach ( $this->actualList as $admin => $groups ) {
-			$userInfo = $botList[$admin];
+			$userInfo = $botList[$admin] ?? new UserInfo( $admin, [] );
 			$missingGroups = array_diff( $groups, $userInfo->getGroupNames() );
 			foreach ( $missingGroups as $group ) {
 				$ts = $this->getFlagDate( $userInfo, $group );
