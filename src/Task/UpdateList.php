@@ -183,10 +183,12 @@ class UpdateList extends Task {
 	private function getMissingAdminGroups( array $botList ): array {
 		$missing = [];
 		foreach ( $this->actualList as $admin => $groups ) {
-			$userInfo = $botList[$admin] ?? new UserInfo( $admin, [] );
-			$missingGroups = array_diff( $groups, $userInfo->getGroupNames() );
+			$userInfo = $botList[$admin] ?? null;
+			$knownGroups = $userInfo ? $userInfo->getGroupNames() : [];
+			$knownAliases = $userInfo ? $userInfo->getAliases() : [];
+			$missingGroups = array_diff( $groups, $knownGroups );
 			foreach ( $missingGroups as $group ) {
-				$ts = $this->getFlagDate( $userInfo, $group );
+				$ts = $this->getFlagDate( $admin, $group, $knownAliases );
 				if ( $ts === null ) {
 					$this->errors[] = "$group flag date unavailable for $admin";
 					continue;
@@ -199,11 +201,12 @@ class UpdateList extends Task {
 
 	/**
 	 * Get the flag date for the given admin and group.
+	 * @phan-param list<string> $aliases
 	 */
-	private function getFlagDate( UserInfo $userInfo, string $group ): ?string {
-		$this->getLogger()->info( "Retrieving $group flag date for {$userInfo->getName()}" );
+	private function getFlagDate( string $username, string $group, array $aliases ): ?string {
+		$this->getLogger()->info( "Retrieving $group flag date for $username" );
 
-		$usernamesToTry = [ $userInfo->getName(), ...$userInfo->getAliases() ];
+		$usernamesToTry = [ $username, ...$aliases ];
 		$wiki = $this->getWiki();
 		if ( $group === 'checkuser' ) {
 			$wiki = $this->getWikiGroup()->getCentralWiki();
@@ -224,9 +227,9 @@ class UpdateList extends Task {
 
 		$requestFactory = $wiki->getRequestFactory();
 		$ts = null;
-		foreach ( $usernamesToTry as $username ) {
+		foreach ( $usernamesToTry as $curName ) {
 			$curParams = $baseParams;
-			$curParams['letitle'] = "User:$username";
+			$curParams['letitle'] = "User:$curName";
 			$data = $requestFactory->createStandaloneRequest( $curParams )->executeAsQuery();
 			$ts = $this->extractTimestamp( $data, $group );
 
