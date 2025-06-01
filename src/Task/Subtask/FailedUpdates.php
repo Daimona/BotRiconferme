@@ -30,8 +30,8 @@ class FailedUpdates extends Subtask {
 			$this->updateBurList( $bureaucrats );
 		}
 
-		$this->requestRemovalOnCentralWiki( $failed );
 		$this->requestRemovalOnLocalWiki( $failed );
+		$this->requestRemovalOnCentralWiki( $failed );
 
 		$this->updateAnnunci( $failed );
 		$this->updateUltimeNotizie( $failed );
@@ -80,6 +80,58 @@ class FailedUpdates extends Subtask {
 	}
 
 	/**
+	 * Request removal of locally-managed groups on the local wiki
+	 *
+	 * @param PageRiconferma[] $pages
+	 */
+	protected function requestRemovalOnLocalWiki( array $pages ): void {
+		$this->getLogger()->info( 'Checking local group removal for: ' . implode( ', ', $pages ) );
+
+		$flagRemPage = new Page(
+			$this->getOpt( 'flag-removal-page-title-local' ),
+			$this->getWiki()
+		);
+		$baseText = $this->msg( 'flag-removal-text-local' );
+
+		$append = '';
+		$localRemovalsCount = 0;
+		$debugInfo = [];
+		foreach ( $pages as $page ) {
+			$username = $page->getUserName();
+			$groups = $this->getUser( $page->getUserName() )->getGroups();
+			$locallyRemovedGroups = array_intersect( $groups, self::LOCALLY_REMOVED_GROUPS );
+			if ( $locallyRemovedGroups ) {
+				$append .= $baseText->params( [
+					'$username' => $username,
+					'$linkTarget' => $page->getTitle(),
+				] )->text() . "\n";
+				$localRemovalsCount++;
+				$debugInfo[] = "$username (" . implode( $locallyRemovedGroups ) . ')';
+			}
+		}
+
+		if ( !$localRemovalsCount ) {
+			return;
+		}
+
+		$this->getLogger()->info( 'Requesting removal on local wiki for: ' . implode( '; ', $debugInfo ) );
+
+		// NOTE: This assumes that the section for removal of access comes immediately
+		// before the "Amministratori dell'interfaccia" section. This is obviously not guaranteed, and this code
+		// might break if the page structure changes.
+		$after = "== Amministratori dell'interfaccia ==";
+		$newContent = str_replace( $after, "$append\n$after", $flagRemPage->getContent() );
+		$summary = $this->msg( 'flag-removal-summary-local' )
+			->params( [ '$num' => $localRemovalsCount ] )
+			->text();
+
+		$flagRemPage->edit( [
+			'text' => $newContent,
+			'summary' => $summary
+		] );
+	}
+
+	/**
 	 * Request removal of centrally-managed groups on the central wiki
 	 *
 	 * @param PageRiconferma[] $pages
@@ -104,9 +156,9 @@ class FailedUpdates extends Subtask {
 			if ( $centrallyRemovedGroups ) {
 				$append .= $baseText->params( [
 					'$username' => $username,
-					'$link' => '[[:it:' . $page->getTitle() . ']]',
+					'$linkTarget' => $page->getTitle(),
 					'$groups' => implode( ', ', $centrallyRemovedGroups )
-				] )->text();
+				] )->text() . "\n";
 				$centralRemovalsCount++;
 				$debugInfo[] = "$username (" . implode( $centrallyRemovedGroups ) . ')';
 			}
@@ -131,17 +183,6 @@ class FailedUpdates extends Subtask {
 			'text' => $newContent,
 			'summary' => $summary
 		] );
-	}
-
-	/**
-	 * Request removal of locally-managed groups on the local wiki
-	 *
-	 * @param PageRiconferma[] $pages
-	 */
-	protected function requestRemovalOnLocalWiki( array $pages ): void {
-		if ( $pages ) {
-			throw new \Error( 'Not implemented' );
-		}
 	}
 
 	/**
