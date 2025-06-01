@@ -14,7 +14,7 @@ use BotRiconferme\Wiki\User;
  * Update various pages around, to be done for all failed procedures
  */
 class FailedUpdates extends Subtask {
-	private const LOCALLY_REMOVED_GROUPS = [];
+	private const LOCALLY_REMOVED_GROUPS = [ 'sysop' ];
 
 	/**
 	 * @inheritDoc
