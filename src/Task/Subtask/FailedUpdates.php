@@ -14,6 +14,8 @@ use BotRiconferme\Wiki\User;
  * Update various pages around, to be done for all failed procedures
  */
 class FailedUpdates extends Subtask {
+	private const LOCALLY_REMOVED_GROUPS = [];
+
 	/**
 	 * @inheritDoc
 	 */
@@ -27,7 +29,10 @@ class FailedUpdates extends Subtask {
 		if ( $bureaucrats ) {
 			$this->updateBurList( $bureaucrats );
 		}
-		$this->requestRemoval( $failed );
+
+		$this->requestRemovalOnCentralWiki( $failed );
+		$this->requestRemovalOnLocalWiki( $failed );
+
 		$this->updateAnnunci( $failed );
 		$this->updateUltimeNotizie( $failed );
 		$this->updateTimeline( $failed );
@@ -75,43 +80,68 @@ class FailedUpdates extends Subtask {
 	}
 
 	/**
-	 * Request the removal of the flag on meta
+	 * Request removal of centrally-managed groups on the central wiki
 	 *
 	 * @param PageRiconferma[] $pages
 	 */
-	protected function requestRemoval( array $pages ): void {
-		$this->getLogger()->info( 'Requesting flag removal for: ' . implode( ', ', $pages ) );
+	protected function requestRemovalOnCentralWiki( array $pages ): void {
+		$this->getLogger()->info( 'Checking central group removal for: ' . implode( ', ', $pages ) );
 
 		$metaWiki = $this->getWikiGroup()->getCentralWiki();
 		$flagRemPage = new Page(
-			$this->getOpt( 'flag-removal-page-title' ),
+			$this->getOpt( 'flag-removal-page-title-central' ),
 			$metaWiki
 		);
-		$baseText = $this->msg( 'flag-removal-text' );
+		$baseText = $this->msg( 'flag-removal-text-central' );
 
 		$append = '';
+		$centralRemovalsCount = 0;
+		$debugInfo = [];
 		foreach ( $pages as $page ) {
-			$append .=
-				$baseText->params( [
-					'$username' => $page->getUserName(),
+			$username = $page->getUserName();
+			$groups = $this->getUser( $page->getUserName() )->getGroups();
+			$centrallyRemovedGroups = array_diff( $groups, self::LOCALLY_REMOVED_GROUPS );
+			if ( $centrallyRemovedGroups ) {
+				$append .= $baseText->params( [
+					'$username' => $username,
 					'$link' => '[[:it:' . $page->getTitle() . ']]',
-					'$groups' => implode( ', ', $this->getUser( $page->getUserName() )->getGroups() )
+					'$groups' => implode( ', ', $centrallyRemovedGroups )
 				] )->text();
+				$centralRemovalsCount++;
+				$debugInfo[] = "$username (" . implode( $centrallyRemovedGroups ) . ')';
+			}
 		}
+
+		if ( !$centralRemovalsCount ) {
+			return;
+		}
+
+		$this->getLogger()->info( 'Requesting removal on central wiki for: ' . implode( '; ', $debugInfo ) );
 
 		// NOTE: This assumes that the section for removal of access comes immediately
 		// before the "see also" section. This is obviously not guaranteed, and this code
 		// might break if the page structure changes.
 		$after = '== See also ==';
 		$newContent = str_replace( $after, "$append\n$after", $flagRemPage->getContent() );
-		$summary = $this->msg( 'flag-removal-summary' )
-			->params( [ '$num' => count( $pages ) ] )
+		$summary = $this->msg( 'flag-removal-summary-central' )
+			->params( [ '$num' => $centralRemovalsCount ] )
 			->text();
 
 		$flagRemPage->edit( [
 			'text' => $newContent,
 			'summary' => $summary
 		] );
+	}
+
+	/**
+	 * Request removal of locally-managed groups on the local wiki
+	 *
+	 * @param PageRiconferma[] $pages
+	 */
+	protected function requestRemovalOnLocalWiki( array $pages ): void {
+		if ( $pages ) {
+			throw new \Error( 'Not implemented' );
+		}
 	}
 
 	/**
