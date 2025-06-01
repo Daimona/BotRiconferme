@@ -258,10 +258,9 @@ class Wiki {
 	}
 
 	/**
-	 * Shorthand
 	 * @param array<int|string|bool> $params
 	 */
-	private function buildRequest( array $params ): RequestBase {
+	public function buildRequest( array $params ): RequestBase {
 		return $this->requestFactory->createRequest(
 			$params,
 			$this->cookies,

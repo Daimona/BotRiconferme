@@ -73,7 +73,7 @@ class Page implements IRegexable {
 	 * Whether this page exists
 	 */
 	public function exists(): bool {
-		$pages = $this->wiki->getRequestFactory()->createStandaloneRequest( [
+		$pages = $this->wiki->buildRequest( [
 			'action' => 'query',
 			'titles' => $this->getTitle()
 		] )->executeAsQuery();
