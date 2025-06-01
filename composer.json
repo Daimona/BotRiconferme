@@ -23,7 +23,7 @@
 		"php-parallel-lint/php-parallel-lint": "^1.4.0",
 		"mediawiki/mediawiki-codesniffer": "47.0.0",
 		"mediawiki/mediawiki-phan-config": "0.15.1",
-		"phpunit/phpunit": "^12.1",
+		"phpunit/phpunit": "^11.4",
 		"infection/infection": "^0.29.8"
 	},
 	"autoload": {
