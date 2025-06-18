@@ -55,17 +55,24 @@ class Page implements IRegexable {
 			'title' => $this->getTitle()
 		] + $params;
 
-		$this->wiki->editPage( $params );
+		$this->wiki->editPage( $params ); )
 		if ( isset( $params['text'] ) ) {
-			$this->content = $params['text'];
+			$updatedContent = $params['text'];
 		} elseif ( isset( $params['appendtext'] ) ) {
-			$this->content .= $params['appendtext'];
+			$updatedContent = $this->content . $params['appendtext'];
 		} elseif ( isset( $params['prependtext'] ) ) {
-			$this->content = $params['prependtext'] . $this->content;
+			$updatedContent = $params['prependtext'] . $this->content;
 		} else {
 			throw new InvalidArgumentException(
 				'Unrecognized text param for edit. Params: ' . var_export( $params, true )
 			);
+		}
+		// Try to update the local cache to avoid subsequent requests, but not if the new content contains
+		// things affected by PST (subst, pipe trick, etc.). Only checking subst for the time being.
+		if ( !str_contains( $updatedContent, '{{subst' ) ) {
+			$this->content = $updatedContent;
+		} else {
+			$this->content = null;
 		}
 	}
 
