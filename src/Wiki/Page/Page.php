@@ -55,7 +55,7 @@ class Page implements IRegexable {
 			'title' => $this->getTitle()
 		] + $params;
 
-		$this->wiki->editPage( $params ); )
+		$this->wiki->editPage( $params );
 		if ( isset( $params['text'] ) ) {
 			$updatedContent = $params['text'];
 		} elseif ( isset( $params['appendtext'] ) ) {
