@@ -203,7 +203,7 @@ class SimpleUpdates extends Subtask {
 		foreach ( $pages as $page ) {
 			$user = $this->getUser( $page->getUserName() );
 			if ( $user->inGroup( $group ) ) {
-				$ret[ $user->getName() ] = !( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL );
+				$ret[ $user->getName() ] = !$page->getOutcome()->isFailure();
 			}
 		}
 		return $ret;

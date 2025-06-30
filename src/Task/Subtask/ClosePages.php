@@ -57,7 +57,7 @@ class ClosePages extends Subtask {
 
 		$current = $basePage->getContent();
 
-		$outcomeText = ( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ) ?
+		$outcomeText = $page->getOutcome()->isFailure() ?
 			'non riconfermato' :
 			'riconfermato';
 		$text = $page->isVote() ? "votazione di riconferma: $outcomeText" : 'riconferma tacita';

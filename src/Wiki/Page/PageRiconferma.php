@@ -4,8 +4,8 @@ namespace BotRiconferme\Wiki\Page;
 
 use BadMethodCallException;
 use BotRiconferme\Message\Message;
+use BotRiconferme\Wiki\Outcome;
 use BotRiconferme\Wiki\Page\Exception\MissingMatchException;
-use LogicException;
 
 /**
  * Represents a single riconferma page
@@ -16,12 +16,6 @@ class PageRiconferma extends Page {
 	private ?int $opposeSection;
 	/** @var int[] Counts of votes for each section */
 	private array $sectionCounts = [];
-
-	// Possible outcomes of a vote
-	public const OUTCOME_OK = 0;
-	public const OUTCOME_FAIL_VOTES = 1;
-	public const OUTCOME_NO_QUOR = 2;
-	public const OUTCOME_FAIL = self::OUTCOME_FAIL_VOTES | self::OUTCOME_NO_QUOR;
 
 	// Values depending on bureaucracy
 	public const REQUIRED_OPPOSE_MAX = 15;
@@ -131,21 +125,19 @@ class PageRiconferma extends Page {
 
 	/**
 	 * Gets the outcome for the vote
-	 *
-	 * @return int One of the OUTCOME_* constants
 	 */
-	public function getOutcome(): int {
+	public function getOutcome(): Outcome {
 		if ( !$this->isVote() ) {
-			return self::OUTCOME_OK;
+			return Outcome::OK;
 		}
 		$totalVotes = $this->getOpposingCount() + $this->getSupportCount();
 
 		if ( $this->getSupportCount() < $this->getQuorum() ) {
-			$ret = self::OUTCOME_NO_QUOR;
+			$ret = Outcome::NO_QUORUM;
 		} elseif ( $this->getSupportCount() < self::SUCCESS_RATIO * $totalVotes ) {
-			$ret = self::OUTCOME_FAIL_VOTES;
+			$ret = Outcome::FAIL_VOTES;
 		} else {
-			$ret = self::OUTCOME_OK;
+			$ret = Outcome::OK;
 		}
 		return $ret;
 	}
@@ -164,22 +156,16 @@ class PageRiconferma extends Page {
 			$this->getOpposingCount()
 		);
 		$user = $this->getUserName();
+		$outcome = $this->getOutcome();
 
-		switch ( $this->getOutcome() ) {
-			case self::OUTCOME_OK:
-				$text .= " $user viene riconfermato amministratore.";
-				break;
-			/** @noinspection PhpMissingBreakStatementInspection */
-			case self::OUTCOME_NO_QUOR:
-				$text .= ', non raggiungendo il quorum,';
-				// Fall-through intended
-			case self::OUTCOME_FAIL:
-				$text .= " $user non viene riconfermato amministratore.";
-				break;
-			default:
-				throw new LogicException( 'Invalid outcome: ' . $this->getOutcome() );
+		if ( $outcome === Outcome::OK ) {
+			return $text . " $user viene riconfermato amministratore.";
 		}
-		return $text;
+
+		if ( $outcome === Outcome::NO_QUORUM ) {
+			$text .= ', non raggiungendo il quorum,';
+		}
+		return $text . " $user non viene riconfermato amministratore.";
 	}
 
 	/**

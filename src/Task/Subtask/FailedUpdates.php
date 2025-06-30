@@ -51,7 +51,7 @@ class FailedUpdates extends Subtask {
 		$ret = [];
 		$allPages = $this->getDataProvider()->getPagesToClose();
 		foreach ( $allPages as $page ) {
-			if ( $page->getOutcome() & PageRiconferma::OUTCOME_FAIL ) {
+			if ( $page->getOutcome()->isFailure() ) {
 				$ret[] = $page;
 			}
 		}
