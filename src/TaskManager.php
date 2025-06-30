@@ -17,6 +17,7 @@ use BotRiconferme\Task\Subtask\Subtask;
 use BotRiconferme\Task\Subtask\UserNotice;
 use BotRiconferme\Task\Task;
 use BotRiconferme\Task\UpdateList;
+use BotRiconferme\TaskHelper\Status;
 use BotRiconferme\TaskHelper\TaskDataProvider;
 use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Wiki\Page\PageBotList;
@@ -93,7 +94,7 @@ class TaskManager {
 	 * @param string[] $tasks
 	 */
 	private function runTasks( array $tasks ): TaskResult {
-		$res = new TaskResult( TaskResult::STATUS_GOOD );
+		$res = new TaskResult( Status::GOOD );
 		do {
 			$curTask = current( $tasks );
 			assert( is_string( $curTask ) );
@@ -120,7 +121,7 @@ class TaskManager {
 	 * @param string[] $subtasks
 	 */
 	private function runSubtasks( array $subtasks ): TaskResult {
-		$res = new TaskResult( TaskResult::STATUS_GOOD );
+		$res = new TaskResult( Status::GOOD );
 		do {
 			$subtask = current( $subtasks );
 			assert( is_string( $subtask ) );

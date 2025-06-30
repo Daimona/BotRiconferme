@@ -3,6 +3,7 @@
 namespace BotRiconferme\Task;
 
 use BotRiconferme\Task\Subtask\Subtask;
+use BotRiconferme\TaskHelper\Status;
 use BotRiconferme\TaskHelper\TaskResult;
 use InvalidArgumentException;
 
@@ -20,8 +21,8 @@ abstract class Task extends TaskBase {
 	/**
 	 * @phan-param non-empty-list<string> $orderedList
 	 */
-	protected function runSubtaskList( array $orderedList ): int {
-		$res = new TaskResult( TaskResult::STATUS_NOTHING );
+	protected function runSubtaskList( array $orderedList ): Status {
+		$res = new TaskResult( Status::NOTHING );
 		do {
 			$subtask = current( $orderedList );
 			assert( is_string( $subtask ) );

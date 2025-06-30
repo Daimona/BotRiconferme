@@ -4,7 +4,7 @@ namespace BotRiconferme\Task\Subtask;
 
 use BotRiconferme\Clock;
 use BotRiconferme\Message\Message;
-use BotRiconferme\TaskHelper\TaskResult;
+use BotRiconferme\TaskHelper\Status;
 use BotRiconferme\Utils\RegexUtils;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 
@@ -15,11 +15,11 @@ class SimpleUpdates extends Subtask {
 	/**
 	 * @inheritDoc
 	 */
-	public function runInternal(): int {
+	public function runInternal(): Status {
 		$pages = $this->getDataProvider()->getPagesToClose();
 
 		if ( !$pages ) {
-			return TaskResult::STATUS_NOTHING;
+			return Status::NOTHING;
 		}
 
 		$this->updateVotazioni( $pages );
@@ -30,7 +30,7 @@ class SimpleUpdates extends Subtask {
 			$this->updateCUList( $checkUsers );
 		}
 
-		return TaskResult::STATUS_GOOD;
+		return Status::GOOD;
 	}
 
 	/**

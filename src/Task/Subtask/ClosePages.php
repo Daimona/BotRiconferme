@@ -2,7 +2,7 @@
 
 namespace BotRiconferme\Task\Subtask;
 
-use BotRiconferme\TaskHelper\TaskResult;
+use BotRiconferme\TaskHelper\Status;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 
 /**
@@ -13,11 +13,11 @@ class ClosePages extends Subtask {
 	/**
 	 * @inheritDoc
 	 */
-	public function runInternal(): int {
+	public function runInternal(): Status {
 		$pages = $this->getDataProvider()->getPagesToClose();
 
 		if ( !$pages ) {
-			return TaskResult::STATUS_NOTHING;
+			return Status::NOTHING;
 		}
 
 		$protectReason = $this->msg( 'close-protect-summary' )->text();
@@ -29,7 +29,7 @@ class ClosePages extends Subtask {
 			$this->updateBasePage( $page );
 		}
 
-		return TaskResult::STATUS_GOOD;
+		return Status::GOOD;
 	}
 
 	protected function addVoteCloseText( PageRiconferma $page ): void {

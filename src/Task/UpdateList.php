@@ -3,7 +3,7 @@
 namespace BotRiconferme\Task;
 
 use BotRiconferme\Clock;
-use BotRiconferme\TaskHelper\TaskResult;
+use BotRiconferme\TaskHelper\Status;
 use BotRiconferme\Wiki\Page\PageBotList;
 use BotRiconferme\Wiki\UserInfo;
 use Generator;
@@ -34,7 +34,7 @@ class UpdateList extends Task {
 	/**
 	 * @inheritDoc
 	 */
-	public function runInternal(): int {
+	public function runInternal(): Status {
 		$this->actualList = $this->computeActualList();
 		$pageBotList = $this->getBotList();
 		$currentList = $pageBotList->getAdminsList();
@@ -42,7 +42,7 @@ class UpdateList extends Task {
 		$newList = $this->computeNewList( $currentList );
 
 		if ( !$this->listsAreDifferent( $currentList, $newList ) ) {
-			return TaskResult::STATUS_NOTHING;
+			return Status::NOTHING;
 		}
 
 		$this->getLogger()->info( 'Updating admin list' );
@@ -63,7 +63,7 @@ class UpdateList extends Task {
 			'summary' => $this->msg( 'list-update-summary' )->text()
 		] );
 
-		return $this->errors ? TaskResult::STATUS_ERROR : TaskResult::STATUS_GOOD;
+		return $this->errors ? Status::ERROR : Status::GOOD;
 	}
 
 	/**

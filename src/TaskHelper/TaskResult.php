@@ -6,22 +6,17 @@ namespace BotRiconferme\TaskHelper;
  * Object wrapping the result of the execution of a task.
  */
 class TaskResult {
-	// Status codes. GOOD = everything fine, NOTHING = nothing to do, ERROR = found non-fatal errors
-	public const STATUS_NOTHING = 0;
-	public const STATUS_GOOD = 1;
-	public const STATUS_ERROR = 3;
-
 	/**
-	 * @param int $status One of the Task::STATUS_* constants
+	 * @param Status $status
 	 * @param string[] $errors
 	 */
 	public function __construct(
-		private int $status,
+		private Status $status,
 		private array $errors = []
 	) {
 	}
 
-	public function getStatus(): int {
+	public function getStatus(): Status {
 		return $this->status;
 	}
 
@@ -34,7 +29,7 @@ class TaskResult {
 	}
 
 	public function merge( TaskResult $that ): void {
-		$this->status |= $that->status;
+		$this->status = $that->status->combinedWith( $that->status );
 		$this->errors = array_merge( $this->errors, $that->errors );
 	}
 
@@ -57,6 +52,6 @@ class TaskResult {
 	 * Shorthand
 	 */
 	public function isOK(): bool {
-		return ( $this->status | self::STATUS_GOOD ) === self::STATUS_GOOD;
+		return $this->status->isOK();
 	}
 }

@@ -5,7 +5,7 @@ namespace BotRiconferme\Task\Subtask;
 use AppendIterator;
 use BotRiconferme\Clock;
 use BotRiconferme\Task\Exception\PageCreatedTodayException;
-use BotRiconferme\TaskHelper\TaskResult;
+use BotRiconferme\TaskHelper\Status;
 use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use BotRiconferme\Wiki\User;
@@ -18,18 +18,18 @@ class CreatePages extends Subtask {
 	/**
 	 * @inheritDoc
 	 */
-	public function runInternal(): int {
+	public function runInternal(): Status {
 		$users = $this->getDataProvider()->getUsersToProcess();
 
 		if ( !$users ) {
-			return TaskResult::STATUS_NOTHING;
+			return Status::NOTHING;
 		}
 
 		foreach ( $users as $user ) {
 			$this->processUser( $user );
 		}
 
-		return TaskResult::STATUS_GOOD;
+		return Status::GOOD;
 	}
 
 	/**

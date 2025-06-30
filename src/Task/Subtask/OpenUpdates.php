@@ -2,7 +2,7 @@
 
 namespace BotRiconferme\Task\Subtask;
 
-use BotRiconferme\TaskHelper\TaskResult;
+use BotRiconferme\TaskHelper\Status;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use RuntimeException;
 
@@ -13,11 +13,11 @@ class OpenUpdates extends Subtask {
 	/**
 	 * @inheritDoc
 	 */
-	public function runInternal(): int {
+	public function runInternal(): Status {
 		$pages = $this->getDataProvider()->getCreatedPages();
 
 		if ( !$pages ) {
-			return TaskResult::STATUS_NOTHING;
+			return Status::NOTHING;
 		}
 
 		// Wikipedia:Amministratori/Riconferma annuale
@@ -27,7 +27,7 @@ class OpenUpdates extends Subtask {
 		// Template:VotazioniRCnews
 		$this->addToNews( count( $pages ) );
 
-		return TaskResult::STATUS_GOOD;
+		return Status::GOOD;
 	}
 
 	/**

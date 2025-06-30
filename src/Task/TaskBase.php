@@ -4,11 +4,11 @@ namespace BotRiconferme\Task;
 
 use BotRiconferme\ContextSource;
 use BotRiconferme\Message\MessageProvider;
+use BotRiconferme\TaskHelper\Status;
 use BotRiconferme\TaskHelper\TaskDataProvider;
 use BotRiconferme\TaskHelper\TaskResult;
 use BotRiconferme\Wiki\Page\PageBotList;
 use BotRiconferme\Wiki\WikiGroup;
-use LogicException;
 use Psr\Log\LoggerInterface;
 use ReflectionClass;
 
@@ -43,11 +43,10 @@ abstract class TaskBase extends ContextSource {
 		$status = $this->runInternal();
 
 		$msg = match ( $status ) {
-			TaskResult::STATUS_GOOD => ucfirst( $opName ) . " $class completed successfully.",
-			TaskResult::STATUS_NOTHING => ucfirst( $opName ) . " $class: nothing to do.",
+			Status::GOOD => ucfirst( $opName ) . " $class completed successfully.",
+			Status::NOTHING => ucfirst( $opName ) . " $class: nothing to do.",
 			// We're fine with it, but don't run other tasks
-			TaskResult::STATUS_ERROR => ucfirst( $opName ) . " $class completed with warnings.",
-			default => throw new LogicException( "Unexpected status: $status." )
+			Status::ERROR => ucfirst( $opName ) . " $class completed with warnings."
 		};
 
 		$this->getLogger()->info( $msg );
@@ -56,10 +55,8 @@ abstract class TaskBase extends ContextSource {
 
 	/**
 	 * Actual main routine.
-	 *
-	 * @return int One of the STATUS_* constants
 	 */
-	abstract protected function runInternal(): int;
+	abstract protected function runInternal(): Status;
 
 	/**
 	 * How this operation should be called in logs

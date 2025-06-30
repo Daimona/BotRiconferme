@@ -5,6 +5,7 @@ namespace BotRiconferme\Task;
 use BotRiconferme\Task\Subtask\CreatePages;
 use BotRiconferme\Task\Subtask\OpenUpdates;
 use BotRiconferme\Task\Subtask\UserNotice;
+use BotRiconferme\TaskHelper\Status;
 
 /**
  * Task for opening new procedures
@@ -13,7 +14,7 @@ class StartNew extends Task {
 	/**
 	 * @inheritDoc
 	 */
-	public function runInternal(): int {
+	public function runInternal(): Status {
 		$orderedList = [
 			'create-pages',
 			'open-updates',

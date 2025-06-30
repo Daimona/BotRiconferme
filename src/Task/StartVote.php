@@ -2,7 +2,7 @@
 
 namespace BotRiconferme\Task;
 
-use BotRiconferme\TaskHelper\TaskResult;
+use BotRiconferme\TaskHelper\Status;
 use BotRiconferme\Utils\RegexUtils;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 use RuntimeException;
@@ -22,11 +22,11 @@ class StartVote extends Task {
 	/**
 	 * @inheritDoc
 	 */
-	public function runInternal(): int {
+	public function runInternal(): Status {
 		$pages = $this->getDataProvider()->getOpenPages();
 
 		if ( !$pages ) {
-			return TaskResult::STATUS_NOTHING;
+			return Status::NOTHING;
 		}
 
 		return $this->processPages( $pages );
@@ -34,9 +34,8 @@ class StartVote extends Task {
 
 	/**
 	 * @param PageRiconferma[] $pages
-	 * @return int a STATUS_* constant
 	 */
-	protected function processPages( array $pages ): int {
+	protected function processPages( array $pages ): Status {
 		$donePages = [];
 		foreach ( $pages as $page ) {
 			if ( $page->hasOpposition() && !$page->isVote() ) {
@@ -47,12 +46,12 @@ class StartVote extends Task {
 		}
 
 		if ( !$donePages ) {
-			return TaskResult::STATUS_NOTHING;
+			return Status::NOTHING;
 		}
 
 		$this->updateVotazioni( $donePages );
 		$this->updateNews( count( $donePages ) );
-		return TaskResult::STATUS_GOOD;
+		return Status::GOOD;
 	}
 
 	/**

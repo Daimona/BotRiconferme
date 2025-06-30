@@ -6,6 +6,7 @@ use BotRiconferme\Task\Subtask\ArchivePages;
 use BotRiconferme\Task\Subtask\ClosePages;
 use BotRiconferme\Task\Subtask\FailedUpdates;
 use BotRiconferme\Task\Subtask\SimpleUpdates;
+use BotRiconferme\TaskHelper\Status;
 
 /**
  * Task for closing old procedures
@@ -14,7 +15,7 @@ class CloseOld extends Task {
 	/**
 	 * @inheritDoc
 	 */
-	public function runInternal(): int {
+	public function runInternal(): Status {
 		$orderedList = [
 			'close-pages',
 			'archive-pages',

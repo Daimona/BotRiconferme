@@ -2,7 +2,7 @@
 
 namespace BotRiconferme\Task\Subtask;
 
-use BotRiconferme\TaskHelper\TaskResult;
+use BotRiconferme\TaskHelper\Status;
 use BotRiconferme\Wiki\User;
 
 /**
@@ -12,12 +12,12 @@ class UserNotice extends Subtask {
 	/**
 	 * @inheritDoc
 	 */
-	public function runInternal(): int {
+	public function runInternal(): Status {
 		$pages = $this->getDataProvider()->getCreatedPages();
 		$users = $this->getDataProvider()->getUsersToProcess();
 
 		if ( !$pages || !$users ) {
-			return TaskResult::STATUS_NOTHING;
+			return Status::NOTHING;
 		}
 
 		$ricNums = [];
@@ -29,7 +29,7 @@ class UserNotice extends Subtask {
 			$this->addMsg( $user, $ricNums[ $name ] );
 		}
 
-		return TaskResult::STATUS_GOOD;
+		return Status::GOOD;
 	}
 
 	/**

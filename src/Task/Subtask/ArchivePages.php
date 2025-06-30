@@ -4,7 +4,7 @@ namespace BotRiconferme\Task\Subtask;
 
 use BotRiconferme\Clock;
 use BotRiconferme\Message\Message;
-use BotRiconferme\TaskHelper\TaskResult;
+use BotRiconferme\TaskHelper\Status;
 use BotRiconferme\Wiki\Page\PageRiconferma;
 
 /**
@@ -14,17 +14,17 @@ class ArchivePages extends Subtask {
 	/**
 	 * @inheritDoc
 	 */
-	public function runInternal(): int {
+	public function runInternal(): Status {
 		$pages = $this->getDataProvider()->getPagesToClose();
 
 		if ( !$pages ) {
-			return TaskResult::STATUS_NOTHING;
+			return Status::NOTHING;
 		}
 
 		$this->removeFromMainPage( $pages );
 		$this->addToArchive( $pages );
 
-		return TaskResult::STATUS_GOOD;
+		return Status::GOOD;
 	}
 
 	/**

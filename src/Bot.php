@@ -10,7 +10,7 @@ use BotRiconferme\Logger\WikiLogger;
 use BotRiconferme\Message\MessageProvider;
 use BotRiconferme\Request\Exception\MissingPageException;
 use BotRiconferme\Request\RequestFactory;
-use BotRiconferme\TaskHelper\TaskResult;
+use BotRiconferme\TaskHelper\Status;
 use BotRiconferme\Wiki\LoginInfo;
 use BotRiconferme\Wiki\Page\Page;
 use BotRiconferme\Wiki\Page\PageBotList;
@@ -183,7 +183,7 @@ class Bot {
 		$res = $manager->run( $mode, $taskNames );
 		$base = "Execution of $activity";
 		if ( $res->isOK() ) {
-			$msg = $res->getStatus() === TaskResult::STATUS_NOTHING ?
+			$msg = $res->getStatus() === Status::NOTHING ?
 				': nothing to do' :
 				' completed successfully';
 			$this->mainLogger->info( $base . $msg );
