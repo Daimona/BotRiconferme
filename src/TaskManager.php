@@ -17,6 +17,7 @@ use BotRiconferme\Task\Subtask\Subtask;
 use BotRiconferme\Task\Subtask\UserNotice;
 use BotRiconferme\Task\Task;
 use BotRiconferme\Task\UpdateList;
+use BotRiconferme\TaskHelper\RunMode;
 use BotRiconferme\TaskHelper\Status;
 use BotRiconferme\TaskHelper\TaskDataProvider;
 use BotRiconferme\TaskHelper\TaskResult;
@@ -30,11 +31,6 @@ use Psr\Log\LoggerInterface;
  * @todo Reduce duplication with Task class and subclasses
  */
 class TaskManager {
-	// Run modes
-	public const MODE_COMPLETE = 'full';
-	public const MODE_TASK = 'task';
-	public const MODE_SUBTASK = 'subtask';
-
 	private const TASKS_MAP = [
 		'start-new' => StartNew::class,
 		'close-old' => CloseOld::class,
@@ -75,17 +71,17 @@ class TaskManager {
 	/**
 	 * Main entry point
 	 *
-	 * @param string $mode One of the MODE_ constants
-	 * @param string[] $tasks Only used in MODE_TASK and MODE_SUBTASK
+	 * @param RunMode $mode
+	 * @param string[] $tasks Only used in "task" or "subtask" mode
 	 */
-	public function run( string $mode, array $tasks = [] ): TaskResult {
-		if ( $mode === self::MODE_COMPLETE ) {
+	public function run( RunMode $mode, array $tasks = [] ): TaskResult {
+		if ( $mode === RunMode::FULL ) {
 			return $this->runTasks( self::FULL_RUN_ORDERED );
 		}
 		if ( !$tasks ) {
-			throw new BadMethodCallException( 'MODE_TASK and MODE_SUBTASK need at least a (sub)task name.' );
+			throw new BadMethodCallException( 'Task and subtask need at least a (sub)task name.' );
 		}
-		return $mode === self::MODE_TASK ? $this->runTasks( $tasks ) : $this->runSubtasks( $tasks );
+		return $mode === RunMode::TASK ? $this->runTasks( $tasks ) : $this->runSubtasks( $tasks );
 	}
 
 	/**

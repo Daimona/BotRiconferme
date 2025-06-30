@@ -10,6 +10,7 @@ use BotRiconferme\Logger\WikiLogger;
 use BotRiconferme\Message\MessageProvider;
 use BotRiconferme\Request\Exception\MissingPageException;
 use BotRiconferme\Request\RequestFactory;
+use BotRiconferme\TaskHelper\RunMode;
 use BotRiconferme\TaskHelper\Status;
 use BotRiconferme\Wiki\LoginInfo;
 use BotRiconferme\Wiki\Page\Page;
@@ -57,9 +58,9 @@ class Bot {
 		$type = current( array_keys( $taskOpt ) );
 		try {
 			if ( $type === 'tasks' ) {
-				$this->runInternal( TaskManager::MODE_TASK, explode( ',', $taskOpt['tasks'] ) );
+				$this->runInternal( RunMode::TASK, explode( ',', $taskOpt['tasks'] ) );
 			} elseif ( $type === 'subtasks' ) {
-				$this->runInternal( TaskManager::MODE_SUBTASK, explode( ',', $taskOpt['subtasks'] ) );
+				$this->runInternal( RunMode::SUBTASK, explode( ',', $taskOpt['subtasks'] ) );
 			} else {
 				$this->runInternal();
 			}
@@ -159,16 +160,16 @@ class Bot {
 	/**
 	 * Internal call to TaskManager
 	 *
-	 * @param string $mode
+	 * @param RunMode $mode
 	 * @param string[] $taskNames
 	 */
 	private function runInternal(
-		string $mode = TaskManager::MODE_COMPLETE,
+		RunMode $mode = RunMode::FULL,
 		array $taskNames = []
 	): void {
-		$activity = $mode === TaskManager::MODE_COMPLETE
+		$activity = $mode === RunMode::FULL
 			? 'full process'
-			: ( $mode === TaskManager::MODE_TASK ? 'tasks' : 'subtasks' ) . ': ' . implode( ', ', $taskNames );
+			: ( $mode === RunMode::TASK ? 'tasks' : 'subtasks' ) . ': ' . implode( ', ', $taskNames );
 		$this->mainLogger->info( "Running $activity" );
 		$pbl = PageBotList::get(
 			$this->wikiGroup->getMainWiki(),
