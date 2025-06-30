@@ -6,8 +6,8 @@ use Psr\Log\LoggerInterface;
 
 readonly class RequestFactory {
 	public function __construct(
-		private readonly LoggerInterface $logger,
-		private readonly string $domain
+		private LoggerInterface $logger,
+		private string $domain
 	) {
 	}
 
