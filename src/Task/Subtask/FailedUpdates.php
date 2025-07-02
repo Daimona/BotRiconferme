@@ -276,8 +276,9 @@ class FailedUpdates extends Subtask {
 		$today = Clock::getDate( 'm/d/Y' );
 		foreach ( $pages as $page ) {
 			$name = $page->getUserName();
+			$userLinkRe = "\[\[(User|Utente):$name|$name]]";
 			$content = preg_replace(
-				"!(?<=color:)current( *from:\d+/\d+/\d+ till:)end(?= text:\"\[\[(User|Utente):$name|$name]]\")!",
+				"!(?<=color:)current( *from:\d+/\d+/\d+ till:)end(?=(?: shift:\([^)]+\))? text:\"$userLinkRe\")!",
 				'nonriconf$1' . $today,
 				$content
 			);
@@ -304,7 +305,7 @@ class FailedUpdates extends Subtask {
 		foreach ( $pages as $page ) {
 			$name = $page->getUserName();
 			$content = preg_replace(
-				"!(\* *)'''(\[\[(Utente|User):$name|$name]])'''( <small>dal \d+ \w+ \d+)(</small>)!",
+				"!(\* *'''\[\[(?:Utente|User):$name|$name]]''' <small>(?:[^;\n]+; )*dal \d+ \w+ \d+)(</small>)!",
 				'$1$2$3' . " al {{subst:#timel:j F Y}} (non riconfermato)" . '$4',
 				$content
 			);
