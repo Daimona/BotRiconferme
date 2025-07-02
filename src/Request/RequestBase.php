@@ -3,6 +3,7 @@
 namespace BotRiconferme\Request;
 
 use BadMethodCallException;
+use BotRiconferme\Request\Exception\AlreadyBlockedException;
 use BotRiconferme\Request\Exception\APIRequestException;
 use BotRiconferme\Request\Exception\BlockedException;
 use BotRiconferme\Request\Exception\MissingPageException;
@@ -222,6 +223,7 @@ abstract class RequestBase {
 			'protectedpage' => new ProtectedPageException,
 			'permissiondenied' => new PermissionDeniedException( $res->error->info ),
 			'blocked' => new BlockedException( $res->error->info ),
+			'alreadyblocked' => new AlreadyBlockedException,
 			default => new APIRequestException( $res->error->code . ' - ' . $res->error->info )
 		};
 	}

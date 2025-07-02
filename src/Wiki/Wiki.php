@@ -2,6 +2,7 @@
 
 namespace BotRiconferme\Wiki;
 
+use BotRiconferme\Request\Exception\AlreadyBlockedException;
 use BotRiconferme\Request\Exception\APIRequestException;
 use BotRiconferme\Request\Exception\EditException;
 use BotRiconferme\Request\Exception\LoginException;
@@ -254,7 +255,11 @@ class Wiki {
 			'token' => $this->getToken( 'csrf' )
 		];
 
-		$this->buildRequest( $params )->setPost()->executeSingle();
+		try {
+			$this->buildRequest( $params )->setPost()->executeSingle();
+		} catch ( AlreadyBlockedException ) {
+			// No problem.
+		}
 	}
 
 	/**
