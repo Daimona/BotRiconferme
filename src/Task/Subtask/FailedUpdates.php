@@ -66,7 +66,7 @@ class FailedUpdates extends Subtask {
 		$remList = RegexUtils::regexFromArray( '!', ...$users );
 		$burList = $this->getPage( $this->getOpt( 'bur-list-title' ) );
 		$content = $burList->getContent();
-		$reg = "!^\#\{\{ *Burocrate *\| *$remList.+\n!m";
+		$reg = "!^#\{\{ *Burocrate *\| *$remList.+\n!m";
 		$newContent = preg_replace( $reg, '', $content );
 
 		$summary = $this->msg( 'bur-list-update-summary' )
@@ -250,7 +250,7 @@ class FailedUpdates extends Subtask {
 		if ( preg_match( $secReg, $content ) ) {
 			$newContent = preg_replace( $secReg, '$0' . "\n" . $text, $content );
 		} else {
-			$reg = '!si veda la \[\[[^\]+relativa discussione]]\.\n!';
+			$reg = '!si veda la \[\[[^\]]+relativa discussione]]\.\n!';
 			$newContent = preg_replace( $reg, '$0' . "\n== $year ==\n" . $text, $content );
 		}
 
