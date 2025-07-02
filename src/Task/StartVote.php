@@ -56,8 +56,6 @@ class StartVote extends Task {
 
 	/**
 	 * Start the vote for the given page
-	 *
-	 * @param PageRiconferma $page
 	 */
 	protected function openVote( PageRiconferma $page ): void {
 		$this->getLogger()->info( "Starting vote on $page" );

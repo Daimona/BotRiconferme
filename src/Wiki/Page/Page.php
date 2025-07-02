@@ -98,7 +98,6 @@ class Page implements IRegexable {
 	 * Get the matches from a preg_match on the page content, and throws if the
 	 * regex doesn't match. Check $this->matches() first.
 	 *
-	 * @param string $regex
 	 * @return string[]
 	 * @throws MissingMatchException
 	 */

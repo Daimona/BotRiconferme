@@ -325,7 +325,7 @@ class FailedUpdates extends Subtask {
 	 * @param PageRiconferma[] $pages
 	 */
 	private function blockOnPrivate( array $pages ): void {
-		$usernames = array_map( static fn ( PageRiconferma $page ) => $page->getUsername(), $pages );
+		$usernames = array_map( static fn ( PageRiconferma $page ): string => $page->getUsername(), $pages );
 		$this->getLogger()->info( 'Blocking on private wiki: ' . implode( ', ', $usernames ) );
 
 		$privWiki = $this->getWikiGroup()->getPrivateWiki();

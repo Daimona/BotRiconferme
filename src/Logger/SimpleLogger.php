@@ -14,9 +14,6 @@ class SimpleLogger extends AbstractLogger implements IFlushingAwareLogger {
 
 	private int $minLevel;
 
-	/**
-	 * @param string $minlevel
-	 */
 	public function __construct( string $minlevel = LogLevel::INFO ) {
 		$this->minLevel = $this->levelToInt( $minlevel );
 	}
@@ -24,7 +21,6 @@ class SimpleLogger extends AbstractLogger implements IFlushingAwareLogger {
 	/**
 	 * @inheritDoc
 	 * @phan-param mixed[] $context
-	 * @suppress PhanUnusedPublicMethodParameter
 	 */
 	public function log( $level, string|Stringable $message, array $context = [] ): void {
 		if ( $this->levelToInt( $level ) >= $this->minLevel ) {

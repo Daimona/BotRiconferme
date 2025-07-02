@@ -106,8 +106,6 @@ class Bot {
 
 	/**
 	 * FIXME SO MUCH DEPENDENCY HELL
-	 *
-	 * @param IFlushingAwareLogger $baseLogger
 	 */
 	private function createMainLogger( IFlushingAwareLogger $baseLogger ): void {
 		$mainWiki = $this->wikiGroup->getMainWiki();

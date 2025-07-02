@@ -30,7 +30,6 @@ class WikiLogger extends AbstractLogger implements IFlushingAwareLogger {
 	/**
 	 * @inheritDoc
 	 * @phan-param mixed[] $context
-	 * @suppress PhanUnusedPublicMethodParameter
 	 */
 	public function log( $level, string|Stringable $message, array $context = [] ): void {
 		if ( $this->levelToInt( $level ) >= $this->minLevel ) {

@@ -130,8 +130,6 @@ class ArchivePages extends Subtask {
 
 	/**
 	 * Add a link to the newly-created archive for this year to the main archive page
-	 *
-	 * @param string $archiveTitle
 	 */
 	private function addArchiveYear( string $archiveTitle ): void {
 		$page = $this->getPage( $archiveTitle );

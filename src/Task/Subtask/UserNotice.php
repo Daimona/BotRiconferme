@@ -34,9 +34,6 @@ class UserNotice extends Subtask {
 
 	/**
 	 * Leaves a message to the talk page
-	 *
-	 * @param User $user
-	 * @param int $ricNum
 	 */
 	protected function addMsg( User $user, int $ricNum ): void {
 		$this->getLogger()->info( "Leaving msg to $user" );

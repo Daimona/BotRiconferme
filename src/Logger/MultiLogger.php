@@ -22,7 +22,6 @@ class MultiLogger extends AbstractLogger implements IFlushingAwareLogger {
 	/**
 	 * @inheritDoc
 	 * @phan-param mixed[] $context
-	 * @suppress PhanUnusedPublicMethodParameter
 	 */
 	public function log( $level, string|Stringable $message, array $context = [] ): void {
 		foreach ( $this->loggers as $logger ) {

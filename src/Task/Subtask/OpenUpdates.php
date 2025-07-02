@@ -101,8 +101,6 @@ class OpenUpdates extends Subtask {
 
 	/**
 	 * Update the counter on Template:VotazioniRCnews
-	 *
-	 * @param int $amount
 	 */
 	protected function addToNews( int $amount ): void {
 		$this->getLogger()->info( "Increasing the news counter by $amount" );

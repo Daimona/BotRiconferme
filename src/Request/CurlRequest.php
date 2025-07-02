@@ -56,7 +56,7 @@ class CurlRequest extends RequestBase {
 	 * cURL's headers handler
 	 *
 	 * @internal Only used as CB for cURL (CURLOPT_HEADERFUNCTION)
-	 * @suppress PhanUnreferencedPublicMethod,PhanUnusedPublicNoOverrideMethodParameter
+	 * @suppress PhanUnreferencedPublicMethod
 	 */
 	public function headersHandler( CurlHandle $ch, string $header ): int {
 		$this->handleResponseHeader( $header );

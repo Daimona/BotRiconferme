@@ -22,12 +22,6 @@ abstract class ContextSource implements LoggerAwareInterface {
 	private MessageProvider $messageProvider;
 	private PageBotList $pageBotList;
 
-	/**
-	 * @param LoggerInterface $logger
-	 * @param WikiGroup $wikiGroup
-	 * @param MessageProvider $mp
-	 * @param PageBotList $pbl
-	 */
 	public function __construct(
 		LoggerInterface $logger,
 		WikiGroup $wikiGroup,
