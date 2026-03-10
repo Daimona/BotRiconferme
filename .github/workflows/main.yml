@@ -17,7 +17,7 @@ jobs:
 
     strategy:
       matrix:
-       php-versions: ['8.2', '8.3', '8.4','8.5']
+       php-versions: ['8.4','8.5']
 
     steps:
     - uses: actions/checkout@v4
@@ -61,4 +61,3 @@ jobs:
         if-no-files-found: error
         include-hidden-files: true
         overwrite: true
-        archive: false
