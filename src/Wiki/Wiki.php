@@ -124,7 +124,7 @@ class Wiki {
 			'token' => $this->getToken( 'csrf' ),
 		] + $params;
 
-		// @phan-suppress-next-line PhanImpossibleCondition,PhanSuspiciousValueComparison
+		// @phan-suppress-next-line PhanImpossibleCondition,PhanImpossibleValueComparison
 		if ( BOT_EDITS === true ) {
 			$params['bot'] = 1;
 		}

@@ -47,7 +47,6 @@ class CurlRequest extends RequestBase {
 		$headerSize = curl_getinfo( $curl, CURLINFO_HEADER_SIZE );
 		assert( is_string( $result ), 'Result must be string when RETURNTRANSFER is set' );
 		$body = substr( $result, $headerSize );
-		curl_close( $curl );
 
 		return $body;
 	}
