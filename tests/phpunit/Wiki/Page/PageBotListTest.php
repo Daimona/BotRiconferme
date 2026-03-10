@@ -36,7 +36,8 @@ class PageBotListTest extends TestCase {
 	private function getPageBotList( array $rawList ): PageBotList {
 		$pageName = 'My bot list';
 		$wiki = $this->createMock( Wiki::class );
-		$wiki->method( 'getPageContent' )
+		$wiki->expects( $this->once() )
+			->method( 'getPageContent' )
 			->with( $pageName )
 			->willReturn( json_encode( $rawList, JSON_THROW_ON_ERROR ) );
 		return PageBotList::get( $wiki, $pageName );

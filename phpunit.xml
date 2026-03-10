@@ -12,7 +12,10 @@
          failOnPhpunitDeprecation="true"
          failOnRisky="true"
          failOnWarning="true"
-         failOnNotice="true">
+         failOnNotice="true"
+         failOnPhpunitNotice="true"
+         failOnPhpunitWarning="true"
+         failOnDeprecation="true">
     <testsuites>
         <testsuite name="default">
             <directory>tests</directory>
