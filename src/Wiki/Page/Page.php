@@ -12,6 +12,7 @@ use InvalidArgumentException;
  */
 class Page implements IRegexable {
 	protected ?string $content = null;
+	private ?array $sections;
 	/** @var array<int,string> */
 	protected array $sectionContents = [];
 
@@ -43,6 +44,29 @@ class Page implements IRegexable {
 			$this->sectionContents[$section] = $this->wiki->getPageSectionContent( $this->title, $section );
 		}
 		return $this->sectionContents[$section];
+	}
+
+	/**
+	 * @return array<int,string> Mapping section index to section title
+	 */
+	public function getSections(): array {
+		if ( $this->sections === null ) {
+			$params = [
+				'action' => 'parse',
+				'page' => $this->title,
+				'prop' => 'tocdata',
+			];
+			$res = $this->wiki->buildRequest( $params )->executeSingle();
+			$sectionData = $res->parse->tocdata->sections;
+
+			$this->sections = [];
+			foreach ( $sectionData as $section ) {
+				if ( isset( $section['index'] ) ) {
+					$this->sections[$section['index']] = $section['line'];
+				}
+			}
+		}
+		return $this->sections;
 	}
 
 	/**

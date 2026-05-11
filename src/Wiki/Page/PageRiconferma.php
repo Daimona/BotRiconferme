@@ -6,6 +6,7 @@ use BadMethodCallException;
 use BotRiconferme\Message\Message;
 use BotRiconferme\Wiki\Outcome;
 use BotRiconferme\Wiki\Page\Exception\MissingMatchException;
+use RuntimeException;
 
 /**
  * Represents a single riconferma page
@@ -23,18 +24,31 @@ class PageRiconferma extends Page {
 	public const SIMPLE_DURATION = 7;
 	public const VOTE_DURATION = 14;
 	public const SUCCESS_RATIO = 2 / 3;
+	private const SUPPORT_SECTION_TITLE = 'Favorevoli alla riconferma';
+	private const OPPOSE_SECTION_TITLE = 'Contrari alla riconferma';
 
 	/**
 	 * Define the numbers of the support and oppose sections. These are lazy-loaded
-	 * because they can vary depending on whether the page is a vote, which is relatively
+	 * because they can vary depending on whether the page is a vote (plus any extra sections), which is relatively
 	 * expensive to know since it requires parsing the content of the page.
 	 */
 	private function defineSections(): void {
-		if ( isset( $this->supportSection ) ) {
+		if ( isset( $this->opposeSection ) ) {
 			return;
 		}
-		$this->supportSection = $this->isVote() ? 3 : 0;
-		$this->opposeSection = $this->isVote() ? 4 : 3;
+		foreach ( $this->getSections() as $idx => $title ) {
+			if ( $title === self::SUPPORT_SECTION_TITLE ) {
+				$this->supportSection = $idx;
+			} elseif ( $title === self::OPPOSE_SECTION_TITLE ) {
+				$this->opposeSection = $idx;
+			}
+		}
+		if ( !$this->opposeSection ) {
+			throw new RuntimeException( "Cannot find oppose section!" );
+		}
+		if ( !$this->supportSection && $this->isVote() ) {
+			throw new RuntimeException( "Cannot find support section for vote!" );
+		}
 	}
 
 	private function getSupportSection(): int {
