@@ -12,6 +12,7 @@ use InvalidArgumentException;
  */
 class Page implements IRegexable {
 	protected ?string $content = null;
+	/** @var array<int,string> Mapping section index to section title */
 	private ?array $sections;
 	/** @var array<int,string> */
 	protected array $sectionContents = [];
