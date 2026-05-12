@@ -43,10 +43,10 @@ class PageRiconferma extends Page {
 				$this->opposeSection = $idx;
 			}
 		}
-		if ( !$this->opposeSection ) {
+		if ( !isset( $this->opposeSection ) ) {
 			throw new RuntimeException( "Cannot find oppose section!" );
 		}
-		if ( !$this->supportSection && $this->isVote() ) {
+		if ( !isset( $this->supportSection ) && $this->isVote() ) {
 			throw new RuntimeException( "Cannot find support section for vote!" );
 		}
 	}
