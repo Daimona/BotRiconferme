@@ -62,8 +62,8 @@ class Page implements IRegexable {
 
 			$this->sections = [];
 			foreach ( $sectionData as $section ) {
-				if ( isset( $section['index'] ) ) {
-					$this->sections[$section['index']] = $section['line'];
+				if ( isset( $section->index ) ) {
+					$this->sections[$section->index] = $section->line;
 				}
 			}
 		}
