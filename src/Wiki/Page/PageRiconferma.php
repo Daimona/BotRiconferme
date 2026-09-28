@@ -46,6 +46,7 @@ class PageRiconferma extends Page {
 		if ( !isset( $this->opposeSection ) ) {
 			throw new RuntimeException( "Cannot find oppose section!" );
 		}
+		// @phan-suppress-next-line PhanRedundantCondition Lazy-loaded typed property may be uninitialized
 		if ( !isset( $this->supportSection ) && $this->isVote() ) {
 			throw new RuntimeException( "Cannot find support section for vote!" );
 		}

@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using these metadata."
+title: BotRiconferme
+abstract: "Bot per le riconferme degli amministratori di Wikipedia in italiano (itwiki)."
+type: software
+authors:
+  - given-names: Daimona
+    family-names: Eaytoy
+    alias: Daimona
+    website: "https://it.wikipedia.org/wiki/User:Daimona_Eaytoy"
+license: AGPL-3.0-or-later
+repository-code: "https://github.com/Daimona/BotRiconferme"
+identifiers:
+  - type: swh
+    value: "swh:1:dir:dcb9cabd8ecd3830d37188c3f0c108d2d1fefad9;origin=https://github.com/Daimona/BotRiconferme;visit=swh:1:snp:e18e6f2202fb4f827f8446c4e0876dfeb65034d5;anchor=swh:1:rev:998f3355ab84731b79ba45a1fe007c7ac6f1ad59"
+    description: "Software Heritage identifier (SWHID) of the archived source tree."
+keywords:
+  - wikipedia
+  - mediawiki
+  - bot
+  - itwiki
+  - php

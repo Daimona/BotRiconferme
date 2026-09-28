@@ -1,0 +1,58 @@
+{
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "name": "BotRiconferme",
+  "description": "Bot per le riconferme degli amministratori di Wikipedia in italiano (itwiki).",
+  "identifier": [
+    "daimona/bot-riconferme",
+    {
+      "@type": "PropertyValue",
+      "propertyID": "swhid",
+      "value": "swh:1:dir:dcb9cabd8ecd3830d37188c3f0c108d2d1fefad9;origin=https://github.com/Daimona/BotRiconferme;visit=swh:1:snp:e18e6f2202fb4f827f8446c4e0876dfeb65034d5;anchor=swh:1:rev:998f3355ab84731b79ba45a1fe007c7ac6f1ad59"
+    }
+  ],
+  "codeRepository": "https://github.com/Daimona/BotRiconferme",
+  "issueTracker": "https://github.com/Daimona/BotRiconferme/issues",
+  "license": "https://spdx.org/licenses/AGPL-3.0-or-later",
+  "programmingLanguage": [
+    {
+      "@type": "ComputerLanguage",
+      "name": "PHP",
+      "url": "https://www.php.net/"
+    }
+  ],
+  "runtimePlatform": "PHP 8.4",
+  "operatingSystem": "OS Independent",
+  "keywords": [
+    "wikipedia",
+    "mediawiki",
+    "bot",
+    "itwiki",
+    "php"
+  ],
+  "author": [
+    {
+      "@type": "Person",
+      "givenName": "Daimona",
+      "familyName": "Eaytoy",
+      "url": "https://it.wikipedia.org/wiki/User:Daimona_Eaytoy"
+    }
+  ],
+  "maintainer": [
+    {
+      "@type": "Person",
+      "givenName": "Daimona",
+      "familyName": "Eaytoy",
+      "url": "https://it.wikipedia.org/wiki/User:Daimona_Eaytoy"
+    }
+  ],
+  "softwareRequirements": [
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "php",
+      "name": "PHP",
+      "runtimePlatform": "PHP",
+      "version": ">=8.4.0"
+    }
+  ]
+}
