@@ -25,10 +25,12 @@ class NativeRequest extends RequestBase {
 			$url = "$url?$params";
 		}
 		$context = stream_context_create( $context );
-		$body = file_get_contents( $url, false, $context );
+		// @phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
+		$body = @file_get_contents( $url, false, $context );
 
 		if ( $body === false ) {
-			throw new APIRequestException( "Can't make request to $url" );
+			$httpStatus = http_get_last_response_headers()[0] ?? '(unset)';
+			throw new APIRequestException( "Can't make request to $url. HTTP status: $httpStatus" );
 		}
 
 		foreach ( $http_response_header as $header ) {

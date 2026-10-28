@@ -43,6 +43,12 @@ class CurlRequest extends RequestBase {
 			throw new APIRequestException( "Curl error for $debugUrl: " . curl_error( $curl ) );
 		}
 
+		$httpStatus = curl_getinfo( $curl, CURLINFO_RESPONSE_CODE );
+		if ( $httpStatus < 200 || $httpStatus >= 300 ) {
+			$debugUrl = $this->getDebugURL( $params );
+			throw new APIRequestException( "Request for $debugUrl failed with status code $httpStatus" );
+		}
+
 		// Extract response body
 		$headerSize = curl_getinfo( $curl, CURLINFO_HEADER_SIZE );
 		assert( is_string( $result ), 'Result must be string when RETURNTRANSFER is set' );
