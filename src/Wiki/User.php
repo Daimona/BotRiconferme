@@ -88,7 +88,7 @@ readonly class User implements IRegexable, Stringable {
 	 */
 	public function getBasePage(): Page {
 		$basePage = $this->getCanonicalBasePage();
-		if ( !$basePage->exists() ) {
+		if ( !$basePage->exists() || $basePage->isRedirect() ) {
 			// Try aliases in case the user was renamed.
 			$prefix = Config::getInstance()->get( 'main-page-title' );
 			foreach ( $this->getAliases() as $alias ) {

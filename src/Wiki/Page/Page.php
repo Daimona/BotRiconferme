@@ -112,6 +112,10 @@ class Page implements IRegexable {
 		return !isset( $pages->current()->missing );
 	}
 
+	public function isRedirect(): bool {
+		return $this->matches( '/^\s*#(REDIRECT|RINVIA)\[\[/g' );
+	}
+
 	/**
 	 * Check whether the page content is matched by the given regex
 	 */
