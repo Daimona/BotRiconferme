@@ -3,7 +3,6 @@
 namespace BotRiconferme\Wiki;
 
 use BotRiconferme\Config;
-use BotRiconferme\Request\Exception\MissingPageException;
 use BotRiconferme\Utils\IRegexable;
 use BotRiconferme\Wiki\Page\Page;
 use Stringable;
@@ -99,10 +98,6 @@ readonly class User implements IRegexable, Stringable {
 					$basePage = $altPage;
 					break;
 				}
-			}
-			if ( $basePage === null ) {
-				// We've tried hard enough.
-				throw new MissingPageException( "Couldn't find base page for $this" );
 			}
 		}
 		// Even if no page exists, return the canonical version with the current username
