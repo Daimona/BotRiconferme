@@ -76,21 +76,21 @@ readonly class User implements IRegexable, Stringable {
 	}
 
 	/**
-	 * Get the default base page, e.g. WP:A/Riconferma annuale/XYZ
+	 * Get the canonical base page (WP:A/Riconferma annuale/XYZ), always using the current username, even if
+	 * a different alias exists.
 	 */
-	public function getBasePage(): Page {
+	public function getCanonicalBasePage(): Page {
 		$prefix = Config::getInstance()->get( 'main-page-title' );
 		return new Page( "$prefix/$this", $this->wiki );
 	}
 
 	/**
-	 * Get an *existing* base page for this user. If no existing page is found, this will throw.
-	 * Don't use this method if the page is allowed not to exist.
+	 * Get the base page for this user. The returned page may not exist.
 	 */
-	public function getExistingBasePage(): Page {
-		$basePage = $this->getBasePage();
+	public function getBasePage(): Page {
+		$basePage = $this->getCanonicalBasePage();
 		if ( !$basePage->exists() ) {
-			$basePage = null;
+			// Try aliases in case the user was renamed.
 			$prefix = Config::getInstance()->get( 'main-page-title' );
 			foreach ( $this->getAliases() as $alias ) {
 				$altTitle = "$prefix/$alias";
@@ -105,6 +105,7 @@ readonly class User implements IRegexable, Stringable {
 				throw new MissingPageException( "Couldn't find base page for $this" );
 			}
 		}
+		// Even if no page exists, return the canonical version with the current username
 		return $basePage;
 	}
 

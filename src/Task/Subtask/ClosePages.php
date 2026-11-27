@@ -49,12 +49,7 @@ class ClosePages extends Subtask {
 	protected function updateBasePage( PageRiconferma $page ): void {
 		$this->getLogger()->info( "Updating base page for $page" );
 
-		if ( $page->getNum() === 1 ) {
-			$basePage = $this->getUser( $page->getUserName() )->getBasePage();
-		} else {
-			$basePage = $this->getUser( $page->getUserName() )->getExistingBasePage();
-		}
-
+		$basePage = $this->getUser( $page->getUserName() )->getBasePage();
 		$current = $basePage->getContent();
 
 		$outcomeText = $page->getOutcome()->isFailure() ?

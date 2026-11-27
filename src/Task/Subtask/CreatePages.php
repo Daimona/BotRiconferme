@@ -46,8 +46,8 @@ class CreatePages extends Subtask {
 			return;
 		}
 
-		$basePage = $user->getBasePage();
 		// This should always use the new username
+		$basePage = $user->getCanonicalBasePage();
 		$pageTitle = "$basePage/$num";
 		$this->createPage( $pageTitle, $user );
 		$ricPage = new PageRiconferma( $pageTitle, $this->getWiki() );
@@ -56,7 +56,7 @@ class CreatePages extends Subtask {
 		if ( $num === 1 ) {
 			$this->createBasePage( $basePage, $newText );
 		} else {
-			$basePage = $user->getExistingBasePage();
+			$basePage = $user->getBasePage();
 			$this->updateBasePage( $basePage, $newText );
 		}
 
