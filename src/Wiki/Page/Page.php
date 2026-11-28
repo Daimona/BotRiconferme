@@ -113,7 +113,7 @@ class Page implements IRegexable {
 	}
 
 	public function isRedirect(): bool {
-		return $this->matches( '/^\s*#(REDIRECT|RINVIA)\[\[/g' );
+		return $this->matches( '/^\s*#(REDIRECT|RINVIA)\[\[/' );
 	}
 
 	/**
